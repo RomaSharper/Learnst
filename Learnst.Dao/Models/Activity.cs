@@ -14,7 +14,7 @@ public class Activity
 
     [StringLength(2048)] public string? AvatarUrl { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     [Required] public Level Level { get; set; }
 

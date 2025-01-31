@@ -59,11 +59,7 @@ public class TicketsController(ApplicationDbContext context) : ControllerBase
     [SwaggerResponse(400, "Некорректные данные тикета")]
     public async Task<ActionResult<Ticket>> CreateTicket(Ticket ticket)
     {
-        ticket.StatusHistories = [new()
-        {
-            Status = TicketStatus.Open,
-            ChangedAt = DateTime.UtcNow
-        }];
+        ticket.StatusHistories = [new StatusHistory()];
         await context.Tickets.AddAsync(ticket);
         await context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetQuestion), new { id = ticket.Id }, ticket);
@@ -101,7 +97,7 @@ public class TicketsController(ApplicationDbContext context) : ControllerBase
         {
             TicketId = id,
             Status = newStatus,
-            ChangedAt = DateTime.UtcNow
+            ChangedAt = DateTime.Now
         };
 
         ticket.Status = newStatus;
