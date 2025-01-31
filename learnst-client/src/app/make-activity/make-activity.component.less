@@ -1,0 +1,119 @@
+@import url(../../styles/vars.less);
+
+.activity-form-container {
+  width: 100%;
+  padding: @step * 5;
+  max-width: @step * 200;
+  margin: @step * 5 auto;
+  border-radius: @step * 5;
+  background-color: @background-color-dark; // Тёмный фон контейнера
+
+  @media (max-width: @medium-screen) {
+    margin: 0;
+    max-width: 100%;
+    border-radius: 0;
+    padding: @step * 3;
+  }
+
+  .activity-form {
+    display: flex;
+    flex-direction: column;
+
+    mat-form-field {
+      margin-bottom: @step * 5;
+
+      .mat-form-field-label {
+        color: @text-color-dark; // Цвет текста лейблов
+      }
+
+      .mat-input-element {
+        color: @text-color-dark; // Цвет текста ввода
+      }
+
+      .mat-form-field-underline {
+        background-color: @border-color-dark; // Цвет подчёркивания
+      }
+
+      .mat-form-field-ripple {
+        background-color: @primary-color; // Цвет акцента при фокусе
+      }
+    }
+
+    button[type="submit"] {
+      align-self: flex-end;
+    }
+
+    .topic,
+    .info-card {
+      position: relative;
+      padding: @step * 2;
+      margin-bottom: @step * 2;
+      border-radius: @step * 2;
+      border: @step * 0.25 solid @border-color-dark;
+      background-color: @background-color-dark-secondary;
+
+      .topic-content {
+        p {
+          padding-left: @step * 3;
+        }
+      }
+
+      .info-card-content {
+        .preview-container {
+          display: flex;
+          overflow: hidden;
+          width: @step * 40;
+          height: @step * 40;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: @step * 2;
+          border-radius: @step * 2;
+          background-color: #181818;
+          border: @step * 0.5 dashed @border-color-dark;
+
+          img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            border-radius: @step * 2;
+          }
+        }
+      }
+
+      .more-button {
+        top: @step * 5 !important;
+      }
+    }
+
+    .avatar-section {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: @step * 5;
+
+      .avatar-preview-container {
+        display: flex;
+        overflow: hidden;
+        width: @step * 40;
+        height: @step * 40;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: @step * 2;
+        border-radius: @step * 2;
+        border: @step * 0.5 dashed @border-color-dark;
+        background-color: @background-color-dark-secondary;
+
+        .avatar-preview {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: cover;
+          border-radius: @step * 2;
+        }
+      }
+
+      .choose-preview-button {
+        margin-top: @step * 2;
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+@import url(../../styles/vars.less);
+
+.profile-container {
+  .avatar {
+    cursor: pointer;
+  }
+
+  // Обёртка для кнопки с блюром
+  .save-button-wrapper {
+    inset: 0;
+    position: sticky;
+    z-index: @overlay;
+    padding: @step * 6 @step * 4;
+    -webkit-backdrop-filter: blur(@step);
+    backdrop-filter: blur(@step);
+  }
+
+  .save-button {
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    color: @text-high-emphasis;
+    background-color: #005cf4;
+    font-size: @font-size-medium;
+    padding: @step * 3 @step * 6;
+    transition: background-color @transition-time ease;
+    box-shadow: 0 @step * 0.5 @step rgba(0, 0, 0, 0.2);
+
+    &:hover {
+      background-color: darken(#005cf4, 10%);
+    }
+
+    @media (max-width: @medium-screen) {
+      padding: @step * 4 @step * 8;
+    }
+  }
+
+  .delete-profile-wrapper {
+    margin-top: @step * 4;
+    text-align: center;
+
+    button {
+      margin-bottom: @step;
+    }
+
+    .warning-text {
+      font-size: 0.9em;
+      color: @not-found-error;
+    }
+  }
+}

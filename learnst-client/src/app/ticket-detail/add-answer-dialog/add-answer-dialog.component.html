@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Добавить ответ</h2>
+<mat-dialog-content>
+  <form [formGroup]="answerForm">
+    <mat-form-field appearance="outline">
+      <mat-label>Ответ</mat-label>
+      <textarea matInput formControlName="content" required></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button type="button" mat-button (click)="onCancel()">Отмена</button>
+  <button type="button" mat-button (click)="onSubmit()" [disabled]="answerForm.invalid" color="primary">Добавить</button>
+</mat-dialog-actions>

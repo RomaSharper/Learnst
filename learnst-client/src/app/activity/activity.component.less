@@ -1,0 +1,189 @@
+@import url(../../styles/vars.less);
+
+.activity-container {
+  display: flex;
+  padding: @step * 5;
+  flex-direction: column;
+}
+
+.activity-info:not(:empty) {
+  padding: @step * 5;
+  background: @dark-bg;
+  border-radius: @step;
+  box-shadow: 0 @step * 0.5 @step @card-shadow;
+}
+
+.activity-details {
+  display: flex;
+}
+
+.activity-left {
+  flex: 2; // Левый столбец занимает больше пространства
+  padding: @step * 2;
+}
+
+.activity-right {
+  flex: 1;
+  display: flex;
+  gap: @step * 2;
+  padding: @step * 2;
+  flex-direction: column;
+}
+
+.card {
+  padding: @step * 2;
+  border-radius: @step;
+  background: @light-bg;
+  box-shadow: 0 @step * 0.5 @step @card-shadow;
+}
+
+.activity-avatar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: @step * 2;
+
+  img {
+    width: 100%;
+    height: auto;
+    max-width: 400px;
+    object-fit: cover;
+    border-radius: @step;
+  }
+}
+
+ul {
+  li {
+    font-weight: bold;
+    color: @text-secondary;
+  }
+}
+
+.info-cards {
+  display: grid;
+  gap: @step * 2;
+  grid-template-columns: repeat(auto-fill, minmax(@step * 50), 1fr);
+}
+
+.info-card {
+  flex: 1;
+  padding: @step * 2;
+  text-align: center;
+  background: @card-bg;
+  border-radius: @step;
+  min-width: @step * 50;
+  transition: transform @transition-time ease;
+  box-shadow: 0 @step * 0.25 @step * 0.5 @card-shadow;
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.info-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: @step * 2;
+  justify-content: center;
+}
+
+.loading {
+  font-weight: bold;
+  padding: @step * 5;
+  text-align: center;
+  color: @text-primary;
+  font-size: @font-size-large;
+}
+
+.topics-container {
+  padding: @step * 2 @step * 5;
+}
+
+.topic-card {
+  padding: @step * 4;
+  background: @card-bg;
+  border-radius: @step;
+  margin-bottom: @step * 4;
+  transition: box-shadow @transition-time ease;
+  box-shadow: 0 @step * 0.25 @step * 0.5 @card-shadow;
+
+  &:hover {
+    box-shadow: 0 @step @step * 2 @card-shadow;
+  }
+}
+
+.tags-container {
+  display: flex;
+  gap: @step * 2;
+  flex-wrap: wrap;
+  margin-bottom: @step * 4;
+
+  .tag-card {
+    background: @card-bg;
+    border-radius: @step * 4;
+    font-size: @font-size-medium;
+    padding: @step * 1.5 @step * 3;
+    transition: box-shadow @transition-time ease;
+    box-shadow: 0 @step * 0.25 @step * 0.5 @card-shadow;
+
+    @media (max-width: @medium-screen) {
+      width: 100%;
+      text-align: center;
+    }
+  }
+}
+
+@media (min-width: @large-screen) {
+  .activity-details {
+    display: flex;
+  }
+
+  .activity-right {
+    padding: @step * 2;
+    border-radius: @step;
+    box-shadow: 0 @step * 0.5 @step @card-shadow;
+  }
+}
+
+@media (max-width: @medium-screen) {
+  .activity-info {
+    display: block;
+  }
+
+  .activity-details {
+    display: block;
+  }
+}
+
+.topics-container {
+  padding: @step * 2 @step * 5;
+
+  mat-tree {
+    padding: @step * 2;
+    border-radius: @step;
+
+    .tree-node {
+      display: flex;
+      padding: @step;
+      cursor: pointer;
+      align-items: center;
+      font-size: @font-size-large;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      button {
+        margin-right: @step;
+      }
+    }
+
+    .tree-node-hidden {
+      display: none;
+    }
+  }
+}

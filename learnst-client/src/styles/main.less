@@ -1,0 +1,715 @@
+@import url(./vars.less);
+
+* {
+  word-break: break-word;
+  box-sizing: border-box;
+  font-family: @font-family-primary;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-size: @font-size-medium;
+  line-height: @line-height-base;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: @step * 2;
+  color: @text-primary;
+  border-radius: @step;
+  font-size: @font-size-medium;
+  border: @step * 0.25 solid @muted;
+  background-color: darken(@primary-bg, 10%);
+
+  &:focus {
+    border-color: @accent;
+    outline: none;
+  }
+
+  &::placeholder {
+    color: @text-secondary;
+  }
+}
+
+textarea {
+  resize: vertical;
+  max-height: @step * 50;
+  min-height: fit-content;
+}
+
+a {
+  text-decoration: none;
+  font-size: @font-size-medium !important;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+mat-paginator {
+  color: @text-color;
+  margin-top: @step * 5;
+  background-color: @background-color;
+
+  .mat-paginator-page-size {
+    select {
+      background-color: @background-color;
+      color: @text-color;
+      border: @step * 0.25 solid @border-color;
+    }
+  }
+
+  .mat-paginator-range-actions {
+    button {
+      background-color: @background-color;
+      color: @text-color;
+      border: @step * 0.25 solid @border-color;
+
+      &:hover {
+        background-color: @card-hover-color;
+      }
+
+      &:active {
+        background-color: @card-active-color;
+      }
+    }
+  }
+
+  @media (max-width: @medium-screen) {
+    margin: @step * 3;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+mat-date-range-input {
+  width: 100%;
+}
+
+.mat-calendar-body-cell {
+  border-radius: @step * 5;
+}
+
+.container {
+  margin: @step * 5;
+
+  @media (max-width: @medium-screen) {
+    margin: @step * 3;
+  }
+}
+
+.input-button {
+  right: @step * 2;
+}
+
+.more-button {
+  top: @step * 3;
+  right: @step * 3;
+  position: absolute !important;
+}
+
+.upload-button {
+  right: 0;
+  top: @step * 2;
+  position: absolute !important;
+}
+
+.main-button {
+  scale: 1.5;
+  right: @step * 8;
+  z-index: @overlay;
+  bottom: @step * 8;
+  position: fixed !important;
+  font-size: @font-size-large;
+}
+
+.m {
+  margin: @step * 3 !important;
+}
+
+.mt {
+  margin-top: @step * 3 !important;
+}
+
+.mr {
+  margin-right: @step * 3 !important;
+}
+
+.mb {
+  margin-bottom: @step * 3 !important;
+}
+
+.ml {
+  margin-left: @step * 3 !important;
+}
+
+.mv {
+  margin-top: @step * 3 !important;
+  margin-bottom: @step * 3 !important;
+}
+
+.mh {
+  margin-left: @step * 3 !important;
+  margin-right: @step * 3 !important;
+}
+
+.m-2 {
+  margin: @step * 6 !important;
+}
+
+.mt-2 {
+  margin-top: @step * 6 !important;
+}
+
+.mr-2 {
+  margin-right: @step * 6 !important;
+}
+
+.mb-2 {
+  margin-bottom: @step * 6 !important;
+}
+
+.ml-2 {
+  margin-left: @step * 6 !important;
+}
+
+.mv-2 {
+  margin-top: @step * 6 !important;
+  margin-bottom: @step * 6 !important;
+}
+
+.mh-2 {
+  margin-left: @step * 6 !important;
+  margin-right: @step * 6 !important;
+}
+
+.cursor-default {
+  cursor: default;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.full-height {
+  height: 100%;
+}
+
+.search-group {
+  margin: @step * 5 @step * 4;
+}
+
+.hidden {
+  display: none;
+}
+
+.delete {
+  color: @delete-color;
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: @step * 5;
+  border-bottom: @step * 0.5 solid @border-color;
+}
+
+.tab-button {
+  border: none;
+  cursor: pointer;
+  border-radius: @step;
+  color: @text-secondary;
+  background: @primary-bg;
+  margin-right: @step * 2;
+  font-size: @font-size-medium;
+  padding: @step * 2 @step * 5;
+  transition: background @transition-time ease, color @transition-time ease;
+
+  &.active {
+    background: @highlight;
+    color: @text-high-emphasis;
+    border-bottom: @step * 0.5 solid @accent;
+  }
+
+  &:hover {
+    background: @hover-bg;
+    color: @text-high-emphasis;
+  }
+}
+
+.center-control {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.center {
+  text-align: center;
+}
+
+.right {
+  text-align: right;
+}
+
+.closed {
+  opacity: 0.6;
+}
+
+.muted {
+  color: @muted;
+  font-style: italic;
+}
+
+.fit {
+  width: fit-content;
+}
+
+.context-menu {
+  display: block;
+  position: fixed;
+  width: @step * 50;
+  padding: @step * 2;
+  border-radius: @step;
+  z-index: @context-menu;
+  background-color: @context-bg;
+  border: @step * 0.25 solid @context-border;
+  box-shadow: 0 @step @step * 2 rgba(0, 0, 0, 0.5);
+
+  button {
+    width: 100%;
+    display: block;
+    cursor: pointer;
+    text-align: left;
+    border-radius: @step;
+    color: @text-high-emphasis;
+    padding: @step * 2 @step * 3;
+    background-color: transparent;
+    transition: background-color @short-transition-time;
+
+    /* Отступ между элементами */
+    &:not(:last-child) {
+      margin-bottom: @step;
+      border-bottom: @step * 0.25 solid @context-border;
+    }
+
+    &:hover {
+      background-color: @context-hover;
+    }
+  }
+}
+
+.mobile-only {
+  @media(min-width: @more-than-medium-screen) {
+    display: none !important;
+  }
+}
+
+.danger,
+.warning,
+.success {
+  display: none;
+  padding: @step * 2;
+  font-size: @step * 3;
+  border-radius: @step;
+  margin: @step * 3 0 @step;
+
+  &:not(:empty) {
+    display: block;
+  }
+}
+
+.danger {
+  color: darken(@danger, 20%);
+  border-left: @step solid @danger;
+  background: lighten(@danger, 30%);
+}
+
+.warning {
+  color: darken(@warning, 20%);
+  border-left: @step solid @warning;
+  background: lighten(@warning, 30%);
+}
+
+.success {
+  color: darken(@success, 20%);
+  border-left: @step solid @success;
+  background: lighten(@success, 30%);
+}
+
+.list {
+  padding-left: 0;
+  list-style-type: none !important;
+
+  li {
+    position: relative;
+    padding-left: 1.5em;
+
+    &::before {
+      left: 0;
+      content: '';
+      width: 0.5em;
+      height: 0.5em;
+      top: @step * 2;
+      position: absolute;
+      border-radius: 50%;
+      background-color: @info;
+    }
+  }
+}
+
+.chevron {
+  width: @step * 5;
+  right: @step * 3;
+  height: @step * 3;
+  position: absolute;
+  top: 50% - (@step * 1.5);
+  background-size: 100% 100%;
+  transition: transform @short-transition-time;
+}
+
+// Components
+
+input,
+textarea {
+  padding: @step * 2.5;
+  border-radius: @step;
+  color: @text-high-emphasis;
+  background-color: #2a4751;
+  border: @step * 0.25 solid #66c0f4;
+
+  &:focus {
+    outline: none; // Убираем стандартный фокус
+    border-color: #4a90e2;
+  }
+
+  &::placeholder {
+    color: @text-secondary;
+  }
+}
+
+.overlay {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  z-index: @overlay;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5); // Затемнение
+}
+
+// Авторизация-регистрация
+.form-container {
+  padding: @step * 5;
+  margin: @step * 5 auto;
+  max-width: @step * 180;
+  border-radius: @step * 5;
+  background-color: #232527;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+  form>*:not(:last-child) {
+    margin-bottom: @step * 4;
+  }
+
+  // Адаптивные стили для контейнера
+  @media (max-width: @medium-screen) {
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    height: calc(100vh - 53px);
+  }
+}
+
+.mat-mdc-dialog-content {
+  padding: var(--mat-dialog-with-actions-content-padding, 20px 24px 0) !important;
+}
+
+.center {
+  text-align: center;
+}
+
+.link {
+  color: #00b3ff;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.profile-container {
+  padding: @step * 5;
+
+  h1 {
+    font-size: @font-size-large;
+    margin-bottom: @spacing * 2;
+  }
+
+  .loading {
+    text-align: center;
+    color: @primary-color;
+    font-size: @font-size-medium;
+  }
+
+  .profile-grid {
+    width: 100%;
+    gap: @spacing;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    mat-card {
+      width: 100%;
+      padding: @spacing;
+      position: relative;
+      border-radius: @border-radius;
+      background-color: @background-color;
+      box-shadow: 0 @step * 0.5 @step rgba(0, 0, 0, 0.1);
+
+      h2 {
+        color: @accent;
+        margin-bottom: @spacing;
+        padding-right: @step * 10;
+      }
+    }
+  }
+
+  .user-info {
+    gap: @spacing;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+
+  .avatar-container {
+    width: @step * 50;
+    height: @step * 50;
+    margin: 0 auto @spacing;
+    border: @step * 0.25 solid @online;
+    background: linear-gradient(to bottom, #41778f 5%, #3d697b 95%);
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      object-fit: cover;
+      aspect-ratio: 1 / 1;
+    }
+
+    .hidden {
+      display: none;
+    }
+  }
+
+  // Общие стили для карточек с информацией
+  .social-card,
+  .education-item,
+  .work-item {
+    padding: @spacing;
+    position: relative;
+    margin-bottom: @spacing;
+    border-radius: @border-radius;
+    border: @step * 0.25 solid @border-color;
+
+    >a {
+      width: 100%;
+      display: flex;
+      gap: @step * 4;
+      align-items: center;
+      flex-direction: row;
+
+      >div {
+        flex: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+
+    >div:not(:last-child) {
+      padding-right: @step * 10;
+      margin-bottom: @spacing * 0.5;
+    }
+  }
+
+  // Специфичные стили для социальных сетей
+  .cards {
+    margin-top: @spacing;
+
+    .social-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      img {
+        width: @step * 8;
+        height: @step * 8;
+      }
+    }
+  }
+
+  .save-button {
+    width: 100%;
+    margin-top: @spacing;
+  }
+}
+
+// Медиа-запрос для адаптивности
+@media (max-width: @medium-screen) {
+  .profile-container {
+    .profile-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .user-info {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Урок
+.md-container {
+  margin: 0 auto;
+  color: #e0e0e0;
+  line-height: 1.6;
+  padding: @step * 2;
+  max-width: @step * 200;
+  font-family: 'JetBrains Mono', monospace;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: white;
+    margin-top: 1.5em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+  }
+
+  h1 {
+    font-size: 2.2em;
+    padding-bottom: 0.3em;
+    border-bottom: @step * 0.5 solid #444;
+  }
+
+  h2 {
+    font-size: 1.8em;
+    padding-bottom: 0.2em;
+    border-bottom: @step * 0.25 solid #444;
+  }
+
+  h3 {
+    font-size: 1.6em;
+  }
+
+  h4 {
+    font-size: 1.4em;
+  }
+
+  h5 {
+    font-size: 1.3em;
+  }
+
+  h6 {
+    font-size: 1.2em;
+  }
+
+  p {
+    margin: 1em 0;
+  }
+
+  ul,
+  ol {
+    margin: 1em 0;
+    padding-left: 2em;
+  }
+
+  li {
+    margin: 0.5em 0;
+  }
+
+  p {
+    code {
+      margin: @step;
+      font-size: 0.9em;
+      padding: 0.2em 0.4em;
+      border-radius: @step;
+      color: hsla(0, 0%, 100%, 0.8);
+      border: @step * 0.25 solid #555;
+      font-family: 'JetBrains Mono', monospace;
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  pre {
+    overflow-x: auto;
+    border-radius: @step * 2;
+    background-color: rgba(255, 255, 255, 0.05);
+
+    code {
+      background-color: transparent;
+      padding: 0;
+      color: inherit;
+    }
+  }
+
+  blockquote {
+    margin: 1em 0;
+    color: #888;
+    padding: 0 1em;
+    border-left: @step solid #666;
+  }
+
+  a {
+    color: #569cd6;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  table {
+    width: 100%;
+    margin: 1em 0;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: 0.5em;
+      border: @step * 0.25 solid #444;
+    }
+
+    th {
+      color: white;
+      font-weight: bold;
+      background-color: #3c3c3c;
+    }
+
+    td {
+      color: #e0e0e0;
+      background-color: #2b2b2b;
+    }
+  }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}

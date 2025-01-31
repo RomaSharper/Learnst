@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>{{ data.infoCard ? 'Редактировать инфокарту' : 'Добавить инфокарту' }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="infoCardForm">
+    <!-- Поле "Текст инфокарты" -->
+    <mat-form-field appearance="outline">
+      <mat-label>Текст инфокарты</mat-label>
+      <input matInput formControlName="text" (keydown.enter)="onSave()" required maxlength="2048">
+      @if (infoCardForm.get('text')?.invalid && infoCardForm.get('text')?.touched) {
+        <mat-error>Текст обязателен для заполнения</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Поле для выбора файла -->
+    <div class="file-input-section">
+      <button type="button" mat-flat-button (click)="openFilePicker()">
+        Выбрать иконку
+      </button>
+      <input type="file" id="iconInput" accept="image/*" (change)="onFileSelected($event)" class="hidden">
+      @if (previewIconUrl) {
+        <img [src]="previewIconUrl" alt="Превью иконки" class="icon-preview">
+      }
+      @if (infoCardForm.get('iconUrl')?.invalid && infoCardForm.get('iconUrl')?.touched) {
+        <mat-error>Иконка обязательна для добавления</mat-error>
+      }
+    </div>
+
+    <!-- Поле "Тип инфокарты" -->
+    <mat-form-field appearance="outline">
+      <mat-label>Тип инфокарты</mat-label>
+      <mat-select formControlName="infoType" required>
+        @for (type of infoTypes; track type) {
+          <mat-option [value]="type.value">{{ type.label }}</mat-option>
+        }
+      </mat-select>
+      @if (infoCardForm.get('infoType')?.invalid && infoCardForm.get('infoType')?.touched) {
+        <mat-error>Тип инфокарты обязателен для выбора</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button type="button" mat-button (click)="onCancel()">Отмена</button>
+  <button type="button" mat-button [disabled]="infoCardForm.invalid" (click)="onSave()">Сохранить</button>
+</mat-dialog-actions>

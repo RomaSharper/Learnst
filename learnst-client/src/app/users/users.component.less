@@ -1,0 +1,100 @@
+@import url(../../styles/vars.less);
+
+.users-container {
+  display: grid;
+  gap: @step * 5;
+  margin-top: @step * 5;
+  grid-template-columns: repeat(2, 1fr);
+
+  @media (max-width: @medium-screen) {
+    grid-template-columns: 1fr;
+  }
+
+  mat-card {
+    width: 100%;
+
+    .user-card {
+      display: flex;
+      cursor: pointer;
+      padding: @step * 3;
+      position: relative;
+      align-items: center;
+      border-radius: @step * 5;
+      border: @step * 0.25 solid @border-color;
+      transition: background-color @transition-time, transform @transition-time;
+
+      .avatar {
+        border-radius: 50%;
+        width: @avatar-size;
+        aspect-ratio: 1 / 1;
+        margin-right: @step * 3;
+        border: @step * 0.5 solid @primary-color;
+        transition: border-color @transition-time;
+
+        @media (max-width: @small-screen) {
+          width: @avatar-size * 0.5;
+        }
+      }
+
+      .user-info {
+        flex: 1;
+        display: flex;
+        align-items: center;
+
+        p {
+          margin: 0;
+          display: flex;
+          gap: @step * 1.5; // Отступ между текстом и иконкой
+          color: @text-color;
+          align-items: center;
+          font-size: @font-size-medium;
+
+          .role-icon {
+            width: @font-size-medium;
+            height: @font-size-medium;
+            font-size: @font-size-medium; // Размер иконки
+          }
+
+          .backup-icon {
+            color: @online;
+          }
+
+          .specialist-icon {
+            color: #eff7f6;
+          }
+
+          .admin-icon {
+            color: #f7ee7f;
+          }
+        }
+      }
+
+      .more-button {
+        position: absolute;
+        top: @step * 2;
+        right: @step * 2;
+      }
+
+      &:hover {
+        background-color: @card-hover-color;
+
+        .avatar {
+          border-color: @secondary-color;
+        }
+      }
+
+      &:active {
+        background-color: @card-active-color;
+      }
+
+      @media (max-width: @medium-screen) {
+        gap: @step * 4;
+
+        h3,
+        p {
+          font-size: @font-size-large;
+        }
+      }
+    }
+  }
+}

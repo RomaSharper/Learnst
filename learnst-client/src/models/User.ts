@@ -1,0 +1,32 @@
+import { Role } from "../enums/Role";
+import { Education } from "./Education";
+import { SocialMediaProfile } from "./SocialMediaProfile";
+import { UserActivity } from "./UserActivity";
+import { UserLesson } from "./UserLesson";
+import { WorkExperience } from "./WorkExperience";
+import { UserAnswer } from "./UserAnswer";
+import { Ticket } from "./Ticket";
+import { TicketAnswer } from "./TicketAnswer";
+
+export interface User {
+  id?: string;
+  fullName?: string;
+  avatarUrl?: string;
+  dateOfBirth: string;
+  phone: string;
+  emailAddress: string;
+  passwordHash: string;
+  city?: string;
+  role: Role;
+  educations: Education[];
+  workExperiences: WorkExperience[];
+  resumeText?: string;
+  aboutMe?: string;
+  socialMediaProfiles: SocialMediaProfile[];
+  userActivities: UserActivity[];
+  userAnswers: UserAnswer[];
+  userLessons: UserLesson[];
+  tickets: Ticket[];
+  ticketAnswers: TicketAnswer[];
+  username: string;
+}

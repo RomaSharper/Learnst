@@ -1,0 +1,138 @@
+<mat-card class="form-container">
+  <mat-card-header class="center-control">
+    <mat-card-title>
+      <h2>Регистрация</h2>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Имя пользователя</mat-label>
+        <input matInput id="username" formControlName="username" placeholder="Придумайте логин" autocomplete="username"
+          maxlength="20">
+        @if (form.get('username')?.hasError('invalidLength')) {
+        <mat-error>Имя должно быть от 3 до 20 символов.</mat-error>
+        }
+        @else if (form.get('username')?.hasError('invalidCharacters')) {
+        <mat-error>Используйте только латиницу, цифры и подчёркивание.</mat-error>
+        }
+        @else if (form.get('username')?.hasError('invalidStartOrEnd')) {
+        <mat-error>Имя не может начинаться или заканчиваться подчёркиванием или цифрой.</mat-error>
+        }
+        @else if (form.get('username')?.hasError('tooMuchUnderscores')) {
+        <mat-error>Имя не может иметь более одного подчёркивания.</mat-error>
+        }
+        @else if (form.get('username')?.hasError('forbiddenWord')) {
+        <mat-error>Имя содержит запрещённые слова.</mat-error>
+        }
+        @else if (form.get('username')?.hasError('serverError')) {
+        <mat-error>{{ form.get('username')?.getError('serverError') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Дата рождения</mat-label>
+        <input matInput [matDatepicker]="picker" id="dateOfBirth" formControlName="dateOfBirth"
+          placeholder="Выберите день рождения" readonly>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker [touchUi]="isMediumScreen"></mat-datepicker>
+        <mat-hint>dd.mm.yyyy</mat-hint>
+        @if (form.get('dateOfBirth')?.invalid && form.get('dateOfBirth')?.touched) {
+        <mat-error>
+          Пожалуйста, выберите дату рождения.
+        </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Телефон</mat-label>
+        <input matInput type="tel" id="phone" formControlName="phone" placeholder="Введите номер телефона"
+          maxlength="11">
+        @if (form.get('phone')?.hasError('serverError')) {
+        <mat-error>
+          {{ form.get('phone')?.getError('serverError') }}
+        </mat-error>
+        }
+        @else if (form.get('phone')?.invalid && form.get('phone')?.touched) {
+        <mat-error>
+          Пожалуйста, введите корректный номер телефона.
+        </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Адрес электронной почты</mat-label>
+        <input matInput id="email" formControlName="email" placeholder="Введите электронную почту" autocomplete="email"
+          maxlength="100">
+        @if (form.get('email')?.hasError('invalidDomain') && form.get('email')?.touched) {
+        <mat-error>
+          Пожалуйста, используйте один из предложенных доменов: mail.ru, xmail.ru, gmail.com, vk.com, yandex.ru,
+          icloud.com
+        </mat-error>
+        }
+        @else if (form.get('email')?.hasError('serverError')) {
+        <mat-error>
+          {{ form.get('email')?.getError('serverError') }}
+        </mat-error>
+        }
+        @else if (form.get('email')?.invalid && form.get('email')?.touched) {
+        <mat-error>
+          Пожалуйста, введите корректный адрес электронной почты.
+        </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Пароль</mat-label>
+        <input matInput id="password" maxlength="50" formControlName="password" autocomplete="new-password"
+          placeholder="Введите ваш пароль" [type]="hidePassword ? 'password' : 'text'">
+
+        <!-- Иконка "глазика" -->
+        <button matSuffix type="button" mat-icon-button class="input-button" (click)="hidePassword = !hidePassword"
+          [attr.aria-label]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+
+        @if (form.get('password')?.invalid && form.get('password')?.touched) {
+        <mat-error>
+          Пароль должен быть длиннее 8-и символов, содержать цифру, заглавную и строчную буквы.
+        </mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Повторите пароль</mat-label>
+        <input matInput maxlength="50" id="repeat-password" autocomplete="new-password" placeholder="Введите ваш пароль"
+          formControlName="repeatPassword" [type]="hidePassword ? 'password' : 'text'">
+
+        <!-- Иконка "глазика" -->
+        <button matSuffix type="button" mat-icon-button class="input-button" (click)="hidePassword = !hidePassword"
+          [attr.aria-label]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+
+        @if (form.hasError('passwordsDontMatch') && form.get('repeatPassword')?.touched) {
+        <mat-error>
+          Пароли не совпадают.
+        </mat-error>
+        }
+        @else if (form.get('password')?.invalid && form.get('password')?.touched) {
+        <mat-error>
+          Пожалуйста, повторите пароль
+        </mat-error>
+        }
+      </mat-form-field>
+
+      <button mat-raised-button [disabled]="form.invalid || loading" color="primary" type="submit" class="full-width">
+        @if (loading) {
+        <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+        Создать аккаунт
+        }
+      </button>
+    </form>
+  </mat-card-content>
+  <mat-card-actions class="center-control">
+    <p>Уже есть аккаунт? <a mat-button routerLink="/login">Войти</a></p>
+  </mat-card-actions>
+</mat-card>

@@ -1,0 +1,58 @@
+{
+  "extends": [
+    "development"
+  ],
+  "hints": {
+    "typescript-config/consistent-casing": "off",
+    "axe/forms": [
+      "default",
+      {
+        "label": "off",
+        "autocomplete-valid": "off"
+      }
+    ],
+    "axe/structure": "off",
+    "axe/name-role-value": [
+      "default",
+      {
+        "button-name": "off"
+      }
+    ],
+    "compat-api/css": [
+      "default",
+      {
+        "ignore": [
+          "text-wrap: pretty"
+        ]
+      }
+    ],
+    "apple-touch-icons": "off",
+    "compat-api/html": [
+      "default",
+      {
+        "ignore": [
+          "meta[name=theme-color]"
+        ]
+      }
+    ],
+    "manifest-is-valid": "off",
+    "no-inline-styles": "off",
+    "axe/text-alternatives": [
+      "default",
+      {
+        "image-alt": "off"
+      }
+    ],
+    "detect-css-reflows/composite": "off"
+  },
+  "browserslist": [
+    "defaults",
+    "not ie 11",
+    "not and_ff <= 122",
+    "not firefox <= 123",
+    "not chrome <= 109",
+    "not ios_saf <= 17.3",
+    "not safari <= 17.3",
+    "not samsung <= 22"
+  ]
+}

@@ -1,0 +1,51 @@
+<h2 mat-dialog-title>{{ educationForm.value.id ? 'Редактировать образование' : 'Добавить образование' }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="educationForm">
+    <mat-form-field appearance="outline">
+      <mat-label>Вуз</mat-label>
+      <input matInput formControlName="institutionName" placeholder="Название вуза" (keydown.enter)="save()" required>
+      @if (educationForm.get('institutionName')?.hasError('required')) {
+        <mat-error>
+          Поле обязательно для заполнения.
+        </mat-error>
+      }
+      @if (educationForm.get('institutionName')?.hasError('maxlength')) {
+        <mat-error>
+          Максимальная длина — 100 символов.
+        </mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Факультет</mat-label>
+      <input matInput formControlName="degree" placeholder="Факультет" (keydown.enter)="save()" required>
+      @if (educationForm.get('degree')?.hasError('required')) {
+        <mat-error>
+          Поле обязательно для заполнения.
+        </mat-error>
+      }
+      @if (educationForm.get('degree')?.hasError('maxlength')) {
+        <mat-error>
+          Максимальная длина — 100 символов.
+        </mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Год выпуска</mat-label>
+      <input matInput type="number" formControlName="graduationYear" placeholder="Год выпуска" (keydown.enter)="save()" required>
+      @if (educationForm.get('graduationYear')?.hasError('required')) {
+        <mat-error>
+          Поле обязательно для заполнения.
+        </mat-error>
+      }
+      @if (educationForm.get('graduationYear')?.hasError('min') || educationForm.get('graduationYear')?.hasError('max')) {
+        <mat-error>
+          Год должен быть между 1900 и {{ currentYear }}.
+        </mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button type="button" mat-button (click)="onNoClick()">Закрыть</button>
+  <button type="button" mat-button [disabled]="educationForm.invalid" (click)="save()">Сохранить</button>
+</mat-dialog-actions>

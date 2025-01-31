@@ -1,0 +1,68 @@
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: dark;
+  @include mat.theme((
+    color: mat.$azure-palette,
+    typography: Roboto,
+    density: 0
+  ));
+}
+
+
+body {
+  color: var(--mat-sys-on-surface);
+  background: var(--mat-sys-surface);
+}
+
+:root {
+  @include mat.snack-bar-overrides((
+    button-color: var(--mat-accent),
+    supporting-text-color: var(--mat-sys-on-surface),
+    container-color: var(--mat-sys-surface-container-high)
+  ));
+
+  @include mat.tooltip-overrides((
+    supporting-text-color: var(--mat-sys-on-surface),
+    container-color: var(--mat-sys-surface-container-high)
+  ));
+
+  :root {
+    --plyr-color-main: #1976d2;
+  }
+}
+
+.mdc-evolution-chip-set__chips {
+  max-width: 100% !important;
+}
+
+.mat-mdc-standard-chip .mdc-evolution-chip__cell--primary,
+.mat-mdc-standard-chip .mdc-evolution-chip__action--primary,
+.mat-mdc-standard-chip .mat-mdc-chip-action-label {
+  overflow: hidden !important;
+}
+
+mat-list-item {
+  height: 100% !important;
+}
+
+// Не работает максимальная ширина, но можно оставить для красивого многоточия
+mat-chip-row {
+  cursor: pointer;
+  overflow: hidden;
+  max-width: 120px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mat-mdc-standard-chip .mat-mdc-chip-action-label {
+  overflow: hidden;
+}
+
+mdc-label {
+  width: 100%;
+}
+
+mat-datepicker-toggle button {
+  right: 8px;
+}

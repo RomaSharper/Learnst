@@ -1,0 +1,90 @@
+<div class="container">
+  <a class="mb" mat-button color="primary" routerLink="/">Назад</a>
+
+  <!-- Поле поиска с автозаполнением -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Поиск пользователей</mat-label>
+    <input matInput [(ngModel)]="searchInput" [matAutocomplete]="auto" (input)="onInputChange()" maxlength="2048"
+      (keydown.enter)="onSearch()" placeholder="Начните вводить имя или роль (например, #админ)..." />
+    <button type="button" mat-icon-button matSuffix (click)="onSearch()">
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <!-- Автозаполнение -->
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelected($event)">
+    @for (user of hintUsers; track user) {
+      <mat-option [value]="user.username">
+        {{ user.username }}
+      </mat-option>
+    }
+  </mat-autocomplete>
+
+  <div class="users-container">
+    @for (user of displayedUsers; track user) {
+      <mat-card [routerLink]="['/user', user.id]">
+        <mat-card-content class="user-card">
+          <img [src]="user.avatarUrl" alt="Avatar" class="avatar" placeholder="/images/user.png" noDownloading>
+          <div class="user-info">
+            <p [matTooltip]="RoleHelper.getName(user.role)" [matTooltipDisabled]="user.role === Role.User">
+              {{ user.username }}
+              @switch (user.role) {
+                @case (Role.Backup) {
+                  <mat-icon class="role-icon backup-icon">support_agent</mat-icon>
+                }
+                @case (Role.Specialist) {
+                  <mat-icon class="role-icon specialist-icon">build</mat-icon>
+                }
+                @case (Role.Admin) {
+                  <mat-icon class="role-icon admin-icon">star</mat-icon>
+                }
+              }
+            </p>
+          </div>
+          @if (currentUser?.role === Role.Admin && user.role !== Role.Admin && user.id !== currentUser?.id) {
+            <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              @if (![Role.Specialist, Role.Admin].includes(user.role)) {
+                <button type="button" mat-menu-item (click)="upRole(user)">
+                  @switch (user.role) {
+                    @case (Role.User) {
+                      Повысить до связного
+                    }
+                    @case (Role.Backup) {
+                      Повысить до специалиста
+                    }
+                  }
+                </button>
+              }
+              @if (user.role !== Role.User) {
+                <button type="button" mat-menu-item (click)="downRole(user)">
+                  @switch (user.role) {
+                    @case (Role.Specialist) {
+                      Понизить до связного
+                    }
+                    @case (Role.Backup) {
+                      Понизить до пользователя
+                    }
+                  }
+                </button>
+              }
+              <button type="button" mat-menu-item (click)="deleteUser(user)" class="delete">Удалить</button>
+            </mat-menu>
+          }
+        </mat-card-content>
+      </mat-card>
+    } @empty {
+      @if (loading) {
+        <mat-spinner></mat-spinner>
+      } @else {
+        <div>Ничего не найдено...</div>
+      }
+    }
+  </div>
+
+  <mat-paginator [length]="displayedUsers.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+    (page)="onPageChange($event)" showFirstLastButtons>
+  </mat-paginator>
+</div>

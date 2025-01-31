@@ -1,0 +1,99 @@
+@import url(../../styles/vars.less);
+
+.container {
+  display: flex;
+  padding: @step * 5;
+  align-items: center;
+  flex-direction: column;
+
+  @media (max-width: @medium-screen) {
+    padding: @step * 3;
+  }
+
+  .question-card {
+    width: 100%;
+    padding: @step * 5;
+    margin: @step * 3 0;
+    max-width: @step * 150;
+    border-radius: @step * 2;
+    background-color: #292929;
+    transition: transform @transition-time;
+    box-shadow: 0 @step * 0.5 @step * 2 rgba(0, 0, 0, 0.5);
+
+    &.correct {
+      border-left: @step solid #4caf50; // Зелёная рамка для правильных ответов
+    }
+
+    &.incorrect {
+      border-left: @step solid #f44336; // Красная рамка для неправильных ответов
+    }
+
+    mat-card-header {
+      margin-bottom: @step * 4;
+
+      mat-card-title {
+        color: white;
+        font-size: @font-size-large;
+      }
+    }
+
+    mat-card-content {
+      margin-top: @step * 3;
+
+      mat-radio-group {
+        margin-top: @step * 2;
+
+        mat-radio-button {
+          display: block;
+          color: white;
+          padding: @step * 2;
+          border-radius: @step;
+          background-color: #3a3a3a;
+          transition: background-color @short-transition-time;
+
+          &:hover {
+            background-color: #444;
+          }
+
+          &.correct-answer {
+            color: white;
+            background-color: #4caf50; // Зелёный фон для правильных ответов
+          }
+
+          &.incorrect-answer {
+            color: white;
+            background-color: #f44336; // Красный фон для неправильных ответов
+          }
+        }
+      }
+
+      mat-checkbox {
+        display: block;
+        color: white;
+        padding: @step * 2;
+        border-radius: @step * 2;
+        background-color: #3a3a3a;
+        transition: background-color @short-transition-time;
+
+        &:hover {
+          background-color: #444;
+        }
+
+        &.correct-answer {
+          color: white;
+          background-color: #4caf50; // Зелёный фон для правильных ответов
+        }
+
+        &.incorrect-answer {
+          color: white;
+          background-color: #f44336; // Красный фон для неправильных ответов
+        }
+      }
+    }
+  }
+
+  p {
+    color: #a0a0a0;
+    font-style: italic;
+  }
+}

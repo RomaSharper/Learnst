@@ -1,0 +1,33 @@
+<h2 mat-dialog-title>{{ socialMediaForm.value.id ? 'Редактировать социальную сеть' : 'Добавить социальную сеть' }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="socialMediaForm">
+    <mat-form-field appearance="outline">
+      <mat-label>Ссылка</mat-label>
+      <input matInput type="url" formControlName="url" placeholder="Ссылка на профиль" (keydown.enter)="save()" required>
+      @if (socialMediaForm.get('url')?.hasError('required')) {
+      <mat-error>
+        Поле обязательно для заполнения.
+      </mat-error>
+      }
+      @if (socialMediaForm.get('url')?.hasError('maxlength')) {
+      <mat-error>
+        Максимальная длина — 2048 символов.
+      </mat-error>
+      }
+      @if (socialMediaForm.get('url')?.hasError('invalidUrl')) {
+      <mat-error>
+        Введите корректную ссылку.
+      </mat-error>
+      }
+      @if (socialMediaForm.get('url')?.hasError('unsupportedPlatform')) {
+      <mat-error>
+        Ссылка должна вести на поддерживаемую социальную сеть.
+      </mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button type="button" mat-button (click)="onNoClick()">Закрыть</button>
+  <button type="button" mat-button [disabled]="socialMediaForm.invalid" (click)="save()">Сохранить</button>
+</mat-dialog-actions>

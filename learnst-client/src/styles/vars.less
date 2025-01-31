@@ -1,0 +1,106 @@
+/** Типография **/
+@font-family-primary: "Motiva Sans", 'Roboto', system-ui, 'Helvetica Neue', 'Builder Sans', 'Consolas', sans-serif;
+@font-size-small: 14px;
+@font-size-medium: 18px;
+@font-size-large: 24px;
+@font-size-extra-large: 32px;
+@line-height-base: 1.5;
+@transition-time: 0.3s;
+@short-transition-time: 0.2s;
+@large-screen: 992px;
+@medium-screen: 767px;
+@more-than-medium-screen: 768px;
+@more-than-small-screen: 501px;
+@small-screen: 500px;
+@avatar-size: 160px;
+@rotation: 180deg;
+@step: 4px;
+
+/** Индексы **/
+@under: -1;
+@zero: 0;
+@content: 1;
+@overlay: 2;
+@menu: 3;
+@modal: 4;
+@context-menu: 5;
+
+/** Цвета **/
+// Основные
+@primary-bg: #171d25; // Основной фон
+@alter-bg: #181921; // Дополнительный фон
+@secondary-bg: #0d131b; // Фон для элементов
+@accent: #66c0f4; // Акцентный цвет
+@online: #57cbde; // Цвет онлайна
+@highlight: #00B5E2; // Цвет выделения
+@secondary-highlight: #87c75f; // Вторичный цвет выделения
+@secondary-highlight-hover: #6d9f4e; // Вторичный цвет выделения при наведении
+@text-primary: #c7d5e0; // Основной цвет текста
+@text-secondary: #a1b4c4; // Вторичный цвет текста
+@text-on-accent: #bdbdbd; // Акцентный цвет текста
+@text-on-accent-lighter: #e4e4e4; // Более светлый акцентный цвет текста
+@danger: #ff4d4d; // Цвет для опасных действий
+@alter-danger: #dc3545;
+@success: #4caf50; // Цвет для успешных состояний
+@warning: #ffa726; // Цвет для предупреждений
+@gray: #999; // Серый цвет
+@muted: #4a6679; // Тоновый оттенок для менее активных элементов
+@active: #1a9fff; // Цвет активного элемента
+@border-color: #2a323c; // Цвет рамки
+@info: #0d99ff; // Цвет информации
+@light-bg: #222b34; // Светлый фон для выделенных элементов
+@dark-bg: #101215; // Темный фон для тёмной темы
+@active-bg: #2f3b45; // Фон для активных элементов
+@hover-bg: #2b353e; // Фон при наведении
+@light-blue: rgba(69, 128, 151, 1);
+@lighter-blue: rgba(83, 164, 196, 1);
+// Дополнительные цвета
+@accent-light: lighten(@accent, 15%); // Светлая версия акцентного цвета
+@accent-dark: darken(@accent, 15%); // Темная версия акцентного цвета
+@text-high-emphasis: #ffffff; // Текст с высоким акцентом (для светлых элементов)
+@text-low-emphasis: #7a8a96; // Текст с низким акцентом
+@text-low-emphasis-hover: #5b5b5b; // Текст с низким акцентом при наведении
+// Цвета для кнопок
+@button-bg: @accent; // Цвет фона для кнопок
+@button-bg-hover: @accent-light; // Цвет фона для кнопок при наведении
+@button-border: @accent-dark; // Цвет границы для кнопок
+// Цвета для теней
+@shadow: #303038;
+@dark-shadow: #2f3138;
+// Фоновый цвет для карточек
+@card-bg: @light-bg; // Фон для карточек/панелей
+@card-shadow: rgba(0, 0, 0, 0.15); // Цвет тени для карточек
+// Цвета для меню
+@menu-item-bg: #171a21; // Фон для элементов меню
+@menu-item-border: #2f3138; // Цвет границы меню
+// Цвета для контекстного меню
+@context-bg: #2c2c2c;
+@context-border: #444;
+@context-hover: #3a3a3a;
+// Дополнительные цвета 2
+@primary-color: #3498db;
+@secondary-color: #2ecc71;
+@text-color: #ecf0f1;
+@border-color: #444;
+@card-hover-color: #252525;
+@card-active-color: #303030;
+// Цвета для полей ввода
+@input-color: white;
+@input-bg: rgba(0, 0, 0, 0.7);
+@input-border: hsla(0, 0%, 100%, .2);
+// Не найдено
+@not-found-text: #c7d5e0;
+@not-found-error: #ff6b6b;
+@not-found-accent: #e4e4e4;
+@not-found-background: #191919;
+// Создание активности
+@background-color-dark: #1e1e1e;
+@background-color-dark-secondary: #2d2d2d;
+@text-color-dark: #e0e0e0;
+@border-color-dark: #444;
+@primary-color: #3f51b5;
+// Новые переменные
+@background-color: #232527;
+@delete-color: #ef4444;
+@border-radius: @step * 2;
+@spacing: @step * 4;

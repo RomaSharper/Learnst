@@ -1,0 +1,68 @@
+@import url(../../styles/vars.less);
+
+.activities-container {
+  display: grid;
+  margin: 0 auto;
+  gap: @step * 3;
+  padding: @step * 4;
+  max-width: @step * 300;
+  grid-template-columns: repeat(2, 1fr);
+
+  @media (max-width: @medium-screen) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.activity-card {
+  overflow: hidden;
+  padding: @step * 2;
+  background: @primary-bg;
+  border-radius: @step * 5;
+  border: @step * 0.25 solid @muted;
+  box-shadow: 0 @step @step * 3 @shadow;
+
+  // Применяем эффекты только к карточкам, которые НЕ имеют класса .closed-activity
+  &:not(.closed-activity) {
+    cursor: pointer;
+    transition: transform @transition-time ease-in-out, box-shadow @transition-time ease-in-out, background @transition-time ease-in-out;
+
+    &:hover {
+      background: @secondary-bg;
+      box-shadow: 0 @step @step * 6 @dark-shadow;
+    }
+
+    &:hover img {
+      transform: scale(0.9);
+    }
+  }
+
+  img {
+    width: 80%;
+    height: 100%;
+    object-fit: cover; // Изображение заполняет отведённое пространство
+    margin: @step * 2 auto;
+    max-width: @step * 100;
+    transition: transform @transition-time ease-in-out;
+  }
+
+  .mat-card-header {
+    .mat-card-title {
+      font-weight: bold;
+      font-size: @font-size-large;
+    }
+  }
+
+  .mat-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: @step;
+
+    button {
+      margin-left: @step;
+    }
+  }
+}
+
+.closed-activity {
+  opacity: 0.5;
+}

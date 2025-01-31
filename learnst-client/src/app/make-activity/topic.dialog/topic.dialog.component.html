@@ -1,0 +1,37 @@
+<h2 mat-dialog-title>{{ data.topic ? 'Редактировать тему' : 'Добавить тему' }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="topicForm">
+    <mat-form-field appearance="outline">
+      <mat-label>Название темы</mat-label>
+      <input matInput formControlName="title" (keydown.enter)="onSave()" required maxlength="50">
+      @if (topicForm.get('title')?.invalid && topicForm.get('title')?.touched) {
+        <mat-error>Название темы обязательно</mat-error>
+      }
+    </mat-form-field>
+  </form>
+  @if (data.topic) {
+    <div class="topic">
+      <div class="topic-content">
+        <p><strong>{{ data.topic.title }}</strong></p>
+        @for (lesson of data.topic.lessons; track lesson; let i = $index) {
+          <div class="lesson">
+            <p>{{ lesson.title }} ({{ LessonTypeHelper.getName(lesson.lessonType) }})</p>
+            <div class="button-container">
+              <button type="button" mat-icon-button matTooltip="Изменить" (click)="editLesson(data.topic, i)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button type="button" mat-icon-button matTooltip="Удалить" (click)="removeLesson(data.topic, i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        }
+        <button type="button" mat-button (click)="addLesson(data.topic)">Добавить урок</button>
+      </div>
+    </div>
+  }
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button type="button" mat-button (click)="onCancel()">Отмена</button>
+  <button type="button" mat-button [disabled]="topicForm.invalid" (click)="onSave()">Сохранить</button>
+</mat-dialog-actions>

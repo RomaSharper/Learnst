@@ -1,0 +1,48 @@
+<div class="container">
+  <a mat-button color="primary" routerLink="" (click)="goBack()">Назад</a>
+
+  @if (isMediumScreen) {
+    <a type="button" mat-fab class="main-button" aria-label="Добавить" routerLink="" (click)="openCreateTicketDialog()">
+      <mat-icon>add</mat-icon>
+    </a>
+  } @else {
+    <a type="button" mat-button color="primary" routerLink="" (click)="openCreateTicketDialog()">
+      Добавить
+    </a>
+  }
+
+  <div class="ticket-list mt">
+    @if (loading) {
+      <mat-spinner></mat-spinner>
+    } @else {
+      @for (ticket of tickets; track ticket.id) {
+        <mat-card (click)="navigateToTicketDetails(ticket.id!)">
+          <mat-card-title>{{ ticket.title }}</mat-card-title>
+          <mat-card-content>
+            <p>{{ ticket.description }}</p>
+            <div class="ticket-info">
+              <div class="author-info">
+                <img [src]="ticket.author?.avatarUrl || '/images/user.png'" alt="Аватар" class="avatar">
+                <span>{{ ticket.author?.username }}</span>
+              </div>
+              @switch (ticket.status) {
+                @case (TicketStatus.Open) {
+                  <mat-icon matTooltip="Тема открыта">lock_open</mat-icon>
+                }
+                @case (TicketStatus.InProgress) {
+                  <mat-icon matTooltip="Тема в процессе">pending</mat-icon>
+                }
+                @case (TicketStatus.Closed) {
+                  <mat-icon matTooltip="Тема закрыта">lock</mat-icon>
+                }
+              }
+            </div>
+            <p class="created-at">{{ ticket.createdAt | ruDateTime: 'relative' }}</p>
+          </mat-card-content>
+        </mat-card>
+      } @empty {
+        <div class="empty-state">Тикетов нет</div>
+      }
+    }
+  </div>
+</div>

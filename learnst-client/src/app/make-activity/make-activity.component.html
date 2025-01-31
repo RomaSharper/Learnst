@@ -1,0 +1,209 @@
+<div class="activity-form-container">
+  <a mat-button routerLink="/activities" class="mb">Назад</a>
+  <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" (keydown.enter)="$event.preventDefault()" class="activity-form">
+    <!-- Основные поля -->
+    <mat-form-field appearance="outline">
+      <mat-label>Название</mat-label>
+      <input matInput formControlName="title" required maxlength="50">
+      @if (activityForm.get('title')?.hasError('required')) {
+      <mat-error>
+        Название обязательно
+      </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Описание</mat-label>
+      <textarea matInput formControlName="description" maxlength="500"></textarea>
+    </mat-form-field>
+
+    <!-- Поле для выбора файла -->
+    <div class="avatar-section">
+      <div class="avatar-preview-container">
+        @if (previewAvatarUrl) {
+        <img [src]="previewAvatarUrl" alt="Аватар активности" class="avatar-preview" noDownloading>
+        }
+      </div>
+      <button type="button" mat-flat-button class="choose-preview-button" (click)="openFilePicker()"
+        [ngClass]="{ 'full-width': isMediumScreen }">
+        Выбрать превью</button>
+      <input type="file" id="avatarInput" accept="image/*" (change)="onFileSelected($event)" class="hidden">
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Уровень</mat-label>
+      <mat-select formControlName="level">
+        @for (level of levels; track level) {
+        <mat-option [value]="level.value">
+          {{ level.label }}
+        </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Минимальное кол-во баллов для сертификата</mat-label>
+      <input
+        min="0"
+        step="1"
+        matInput
+        type="number"
+        formControlName="minimalScore"
+        [max]="getTotalQuestionsCount()"
+      >
+      <mat-hint>Максимум: {{ getTotalQuestionsCount() }}</mat-hint>
+      @if (activityForm.get('minimalScore')?.hasError('maxScore')) {
+        <mat-error>Значение не должно превышать максимум.</mat-error>
+      } @else if (activityForm.get('minimalScore')?.hasError('min')) {
+        <mat-error>Значение должно быть не меньше 0.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Дата закрытия</mat-label>
+      <input matInput [matDatepicker]="picker" readonly formControlName="endAt">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker [touchUi]="isMediumScreen"></mat-datepicker>
+    </mat-form-field>
+
+    <mat-slide-toggle formControlName="isClosed" class="mb">Сделать активность закрытой</mat-slide-toggle>
+
+    <!-- Тэги -->
+    <div class="form-section">
+      <h3>Тэги</h3>
+      <mat-form-field appearance="outline">
+        <mat-label>Добавить тэг</mat-label>
+        <mat-chip-grid #tagGrid aria-label="Выбор тэгов">
+          @for (tag of tags; track $index) {
+            <mat-chip-row [matTooltip]="tag" (removed)="removeTag(tag)">
+              {{ tag }}
+              <button type="button" matChipRemove [attr.aria-label]="'Удалить ' + tag">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+          }
+        </mat-chip-grid>
+        <input
+          #tagInput
+          maxlength="50"
+          name="currentTag"
+          [matChipInputFor]="tagGrid"
+          [matAutocomplete]="tagAuto"
+          (input)="filterTags(tagInput.value)"
+          placeholder="Начинайте вводить тэг..."
+          (matChipInputTokenEnd)="addTagFromInput($event)"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+        >
+        <mat-autocomplete #tagAuto="matAutocomplete" (optionSelected)="addTagFromAutocomplete($event)">
+          @for (tag of filteredTags; track tag) {
+            <mat-option [value]="tag">{{ tag }}</mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <!-- Целевая аудитория -->
+    <div class="form-section">
+      <h3>Кому подойдёт этот курс</h3>
+      <mat-form-field appearance="outline">
+        <mat-label>Добавить аудиторию</mat-label>
+        <mat-chip-grid #audienceGrid aria-label="Выбор аудитории">
+          @for (audience of targetAudience; track $index) {
+            <mat-chip-row [matTooltip]="audience" (removed)="removeAudience(audience)">
+              {{ audience }}
+              <button type="button" matChipRemove [attr.aria-label]="'Удалить ' + audience">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+          }
+        </mat-chip-grid>
+        <input
+          matInput
+          maxlength="50"
+          #audienceInput
+          placeholder="Новая аудитория..."
+          [matChipInputFor]="audienceGrid"
+          (matChipInputTokenEnd)="addAudience($event)"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+        >
+      </mat-form-field>
+    </div>
+
+    <!-- Чек-лист -->
+    <div class="form-section">
+      <h3>Чек-лист</h3>
+      <mat-form-field appearance="outline">
+        <mat-label>Добавить пункт чек-листа</mat-label>
+        <mat-chip-grid #checklistGrid aria-label="Выбор пунктов чек-листа">
+          @for (item of checkList; track $index) {
+            <mat-chip-row [matTooltip]="item" (removed)="removeChecklistItem(item)">
+              {{ item }}
+              <button type="button" matChipRemove [attr.aria-label]="'Удалить ' + item">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+          }
+        </mat-chip-grid>
+        <input
+          matInput
+          maxlength="100"
+          #checklistInput
+          placeholder="Новый пункт..."
+          [matChipInputFor]="checklistGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          (matChipInputTokenEnd)="addChecklistItem($event)"
+        >
+      </mat-form-field>
+    </div>
+
+    <!-- Справочные карты -->
+    <div class="form-section">
+      <h3>Справочные карты</h3>
+      @for (infoCard of infoCards; track infoCard; let i = $index) {
+        <div class="info-card">
+          <div class="info-card-content">
+            <div class="preview-container">
+              <img [src]="infoCard.iconUrl" alt="">
+            </div>
+            <p><strong>{{ InfoTypeHelper.getName(infoCard.infoType) }}</strong></p>
+            <p>{{ infoCard.text }}</p>
+          </div>
+          <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button type="button" mat-menu-item (click)="editInfoCard(i)">Изменить</button>
+            <button type="button" mat-menu-item (click)="removeInfoCard(i)">Удалить</button>
+          </mat-menu>
+        </div>
+      }
+      <button type="button" mat-button (click)="addInfoCard()">Добавить инфокарту</button>
+    </div>
+
+    <!-- Темы -->
+  <div class="form-section">
+    <h3>Темы</h3>
+    @for (topic of topics; track topic; let i = $index) {
+      <div class="topic">
+        <div class="topic-content">
+          <p><strong>{{ topic.title }}</strong></p>
+        </div>
+        <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="topicMenu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #topicMenu="matMenu">
+          <button type="button" mat-menu-item (click)="editTopic(i)">Изменить</button>
+          <button type="button" mat-menu-item (click)="removeTopic(i)">Удалить</button>
+        </mat-menu>
+      </div>
+    }
+    <button type="button" mat-button (click)="addTopic()">Добавить тему</button>
+  </div>
+
+    <!-- Кнопка сохранения -->
+    <button mat-raised-button color="primary" class="mt" type="submit" [ngClass]="{ 'full-width': isMediumScreen }"
+      [disabled]="activityForm.invalid">
+      {{ activityId ? 'Обновить' : 'Создать' }}
+    </button>
+  </form>
+</div>

@@ -1,0 +1,88 @@
+{
+  "name": "Learnst",
+  "short_name": "Learnst",
+  "theme_color": "#1976d2",
+  "background_color": "#1B2838",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/assets/icons/favicon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/assets/icons/favicon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Курсы",
+      "short_name": "Курсы",
+      "description": "Исследуйте все доступные курсы",
+      "url": "/activities",
+      "icons": [
+        {
+          "src": "/assets/icons/coding-192x192.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Пользователи",
+      "short_name": "Пользователи",
+      "description": "Просмотр списка пользователей",
+      "url": "/users",
+      "icons": [
+        {
+          "src": "/assets/icons/users-192x192.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Профиль",
+      "short_name": "Профиль",
+      "description": "Перейти в свой профиль",
+      "url": "/me",
+      "icons": [
+        {
+          "src": "/assets/icons/user-192x192.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/screenshots/home-wide.png",
+      "type": "image/png",
+      "sizes": "1280x720",
+      "form-factor": "wide"
+    },
+    {
+      "src": "/assets/screenshots/activity-wide.png",
+      "type": "image/png",
+      "sizes": "1280x720",
+      "form-factor": "wide"
+    },
+    {
+      "src": "/assets/screenshots/home-mobile.png",
+      "type": "image/png",
+      "sizes": "720x1280",
+      "form-factor": "narrow"
+    },
+    {
+      "src": "/assets/screenshots/activity-mobile.png",
+      "type": "image/png",
+      "sizes": "720x1280",
+      "form-factor": "narrow"
+    }
+  ]
+}

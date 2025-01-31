@@ -1,0 +1,120 @@
+<div class="profile-container">
+  <a mat-button color="primary" class="mb" (click)="goBack()">Назад</a>
+
+  @if (!user) {
+  <mat-spinner></mat-spinner>
+  } @else {
+  <div class="profile-grid">
+    <!-- Личные данные -->
+    <div class="full-width">
+      <mat-card>
+        <h3>Личные данные</h3>
+        <div class="avatar-container">
+          <img [src]="user.avatarUrl" alt="{{ user.username }}" class="avatar" placeholder="/images/user.png" noDownloading>
+        </div>
+        <div class="user-info">
+          @if (user.fullName && user.fullName !== '') {
+          <mat-form-field appearance="outline">
+            <mat-label>ФИО</mat-label>
+            <input matInput id="fullname" [(ngModel)]="user.fullName" placeholder="Не указано" maxlength="100" readonly>
+          </mat-form-field>
+          }
+          <mat-form-field appearance="outline">
+            <mat-label>Имя пользователя</mat-label>
+            <input matInput id="username" [(ngModel)]="user.username" maxlength="20" minlength="3" required readonly>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Дата рождения</mat-label>
+            <input matInput id="date" type="date" [(ngModel)]="user.dateOfBirth" required readonly>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Телефон</mat-label>
+            <input matInput id="tel" type="tel" [(ngModel)]="user.phone" required readonly>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Электронная почта</mat-label>
+            <input matInput id="email" type="email" [(ngModel)]="user.emailAddress" required maxlength="255" readonly>
+          </mat-form-field>
+          @if (user.city && user.city !== '') {
+          <mat-form-field appearance="outline">
+            <mat-label>Город</mat-label>
+            <input matInput id="city" [(ngModel)]="user.city" placeholder="Не указан" maxlength="50" readonly>
+          </mat-form-field>
+          }
+          @if (user.resumeText && user.resumeText !== '') {
+          <mat-form-field appearance="outline">
+            <mat-label>Резюме</mat-label>
+            <textarea matInput id="resume" [(ngModel)]="user.resumeText" maxlength="500" placeholder="Не указано"
+              rows="4" readonly></textarea>
+          </mat-form-field>
+          }
+          @if (user.aboutMe && user.aboutMe !== '') {
+          <mat-form-field appearance="outline">
+            <mat-label>Обо мне</mat-label>
+            <textarea matInput id="aboutMe" [(ngModel)]="user.aboutMe" maxlength="500" placeholder="Изменить статус"
+              rows="4" readonly></textarea>
+          </mat-form-field>
+          }
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Социальные сети -->
+    @if (user.socialMediaProfiles.length > 0) {
+    <div>
+      <mat-card>
+        <h3>Социальные сети</h3>
+        <div class="cards">
+          @for (socialMediaProfile of user.socialMediaProfiles; track socialMediaProfile) {
+          <div class="social-card">
+            <a [href]="socialMediaProfile.url" target="_blank">
+              <img [src]="SocialMediaPlatformHelper.getImagePath(socialMediaProfile.platform)" alt=""
+                [title]="socialMediaProfile.url" noDownloading>
+              <div>{{ SocialMediaPlatformHelper.getName(socialMediaProfile.platform) }}</div>
+            </a>
+          </div>
+          }
+        </div>
+      </mat-card>
+    </div>
+    }
+
+    <!-- Образование -->
+    @if (user.educations.length > 0) {
+    <div>
+      <mat-card>
+        <h3>Образование</h3>
+        <div class="cards">
+          @for (education of user.educations; track education) {
+          <div class="education-item">
+            <div><strong>Вуз:</strong> {{ education.institutionName }}</div>
+            <div><strong>Факультет:</strong> {{ education.degree }}</div>
+            <div><strong>Год выпуска:</strong> {{ education.graduationYear }}</div>
+          </div>
+          }
+        </div>
+      </mat-card>
+    </div>
+    }
+
+    <!-- Опыт работы -->
+    @if (user.workExperiences.length > 0) {
+    <div class="full-width">
+      <mat-card>
+        <h3>Опыт работы</h3>
+        <div class="cards">
+          @for (job of user.workExperiences; track job) {
+          <div class="work-item">
+            <div><strong>Компания:</strong> {{ job.companyName }}</div>
+            <div><strong>Должность:</strong> {{ job.position }}</div>
+            <div><strong>Период работы:</strong> {{ job.startDate | dateRange: job.endDate }}</div>
+            <div><strong>Описание:</strong> {{ job.description || 'Отсутствует' }}</div>
+          </div>
+          }
+        </div>
+      </mat-card>
+    </div>
+    }
+  </div>
+  }
+</div>
