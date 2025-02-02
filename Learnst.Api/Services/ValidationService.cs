@@ -8,8 +8,75 @@ namespace Learnst.Api.Services;
 
 public partial class ValidationService(ApplicationDbContext context) : IValidationService
 {
-    private readonly string[] ForbiddenWords = [
-        "bitch", "ass", "nigger", "nigga", "fuck", "fucker", "motherfucker", "mfer", "killyourself", "kys"
+    private readonly string[] ForbiddenWords =
+    [
+        // Основные оскорбления (английские)
+        "bitch", "asshole", "nigger", "nigga", "fuck", "fucker", "motherfucker",
+        "shit", "cunt", "whore", "slut", "dick", "pussy", "bastard", "retard",
+        "douche", "wanker", "twat", "pedo", "rapist", "scum", "jizz", "cum",
+
+        // Русские оскорбления
+        "сука", "сучка", "блядь", "блять", "хуй", "хуё", "пидор", "пидарас",
+        "мудак", "говно", "долбоёб", "шлюха", "дебил", "кретин", "еблан", "жопа",
+        "залупа", "мразь", "падла", "сволочь", "урод", "чмо", "гандон", "козёл",
+        "лох", "пердун", "пизда", "ебучка", "выёбок", "манда", "ссанина",
+
+        // Украинские оскорбления
+        "бля", "хуйло", "курва", "гівно", "пізда", "мусор", "хамло", "тупий",
+        "виродок", "срака", "падлюка", "свиня", "чорт", "дідько", "перець",
+        "халява", "шльондра", "москаль", "кацап", "свидомый",
+
+        // Расистские термины
+        "чурка", "хач", "жид", "нигер", "расист", "фашист", "нацист",
+        "белый мусор", "чёрный", "yellowface", "spic", "wetback", "kike", "gook",
+        "chink", "raghead", "coon", "porchmonkey", "beaner", "towelhead",
+
+        // Сексуальные термины
+        "секс", "порно", "голый", "нагота", "мастурбация", "проститутка",
+        "изнасилование", "педофил", "вуайерист", "инцест", "зоофил", "садо",
+        "мазо", "оргия", "эрекция", "сперма", "вагина", "член", "соси", "трахни",
+        "ебать", "кончил", "оргазм",
+
+        // Термины насилия
+        "убийца", "убивать", "резать", "стрелять", "террорист", "бомба",
+        "самоубийство", "пытка", "избиение", "кровь", "расчленить", "захват",
+        "заложник", "маньяк", "покушение",
+
+        // Современный сленг и интернет-термины
+        "simp", "incel", "thot", "karen", "neckbeard", "cuck", "soyboy", "cuntface",
+        "dickhead", "asshat", "buttface", "cocknose", "douchecanoe", "fuckwit",
+        "shitbag", "twatwaffle",
+
+        // Альтернативные написания и символы
+        "f4ck", "b1tch", "n1gg3r", "5uk4", "bl9d", "xyй", "h\\/\\i", "p!zda",
+        "bl**t", "mud@k", "d0lbaeb", "pi3or", "govn0", "3жopa", "cyka", "blyat",
+        "6лядь", "xуесос", "ъуъ", "и$пать", "ёб@ный", "п@дон", "чм0", "г0вно",
+
+        // Запрещенные исторические термины
+        "фашист", "наци", "свастика", "1488", "88", "14words", "aryan", "supremacy",
+        "white-power", "kkk", "nsdap", "reich", "holocaust", "nazi", "gas-chamber",
+
+        // Гендерные оскорбления
+        "трансгендер", "гомик", "лесбиянка", "педик", "гей", "феменистка", "содомит",
+        "гермафродит", "андрогин", "квир", "nonbinary", "tranny", "shemale", "faggot",
+        "dyke", "homo",
+
+        // Религиозные оскорбления
+        "еретик", "сатана", "дьявол", "ислам", "жид", "мусульманин", "иудей",
+        "язычник", "безбожник", "коран", "библия", "аллах", "богомол", "секта",
+
+        // Дискриминация по возрасту
+        "старый", "дряхлый", "старуха", "младенец", "подросток", "пенсионер",
+        "динозавр", "малолетка", "недоросль",
+
+        // Дискриминация по здоровью
+        "инвалид", "даун", "аутист", "дебил", "калека", "псих", "шизофреник",
+        "олигофрен", "эпилептик", "алкаш", "наркоман", "идиот",
+
+        // Дополнительные фильтры
+        "scat", "coprophilia", "necrophilia", "zoophilia", "pedo", "lolita",
+        "underage", "childporn", "cp", "loli", "shota", "drugs", "meth", "heroin",
+        "cocaine", "weed", "lsd", "overdose", "suicide", "kill"
     ];
 
     // Допустимые домены для email
@@ -24,13 +91,13 @@ public partial class ValidationService(ApplicationDbContext context) : IValidati
         if (username.Length < 3 || username.Length > 20)
             return new UpdatedResponse { Succeed = false, Message = "Имя пользователя должно быть от 3 до 20 символов" };
 
-        if (NumbersAndUnderscoreInStartRegex().IsMatch(username) || NumbersAndUnderscoreInEndRegex().IsMatch(username))
-            return new UpdatedResponse { Succeed = false, Message = "Имя пользователя не может начинаться или заканчиваться на подчёркивание или цифру" };
+        if (UnderscoreInStartRegex().IsMatch(username) || UnderscoreInEndRegex().IsMatch(username))
+            return new UpdatedResponse { Succeed = false, Message = "Имя пользователя не может начинаться или заканчиваться на подчёркивание" };
 
         if (!UsernameRegex().IsMatch(username))
             return new UpdatedResponse { Succeed = false, Message = "Имя пользователя может содержать только латинские буквы, цифры и одно подчёркивание" };
 
-        if (username.Count(c => c == '_') > 1)
+        if (username.Count(c => c is '_') > 1)
             return new UpdatedResponse { Succeed = false, Message = "Имя пользователя может содержать только одно подчёркивание" };
 
         if (ForbiddenWords.Any(word => username.Contains(word, StringComparison.CurrentCultureIgnoreCase)))
@@ -46,10 +113,13 @@ public partial class ValidationService(ApplicationDbContext context) : IValidati
     }
 
     // Валидация пароля
-    public UpdatedResponse ValidatePassword(string password)
+    public UpdatedResponse ValidatePassword(string? password, string? googleId)
     {
+        if (!string.IsNullOrEmpty(googleId))
+            return new UpdatedResponse { Succeed = true, Message = "Успех" };
+
         if (string.IsNullOrEmpty(password))
-            return new UpdatedResponse { Succeed = false, Message = "Пароль не может быть пустым" };
+            return new UpdatedResponse { Succeed = false, Message = "Пароль не может быть пустым, если аккаунт не зарегистирован через OAuth2" };
 
         if (!PasswordRegex().IsMatch(password))
             return new UpdatedResponse { Succeed = false, Message = "Пароль должен содержать минимум 8 символов, одну заглавную букву, одну строчную букву и одну цифру" };
@@ -66,21 +136,9 @@ public partial class ValidationService(ApplicationDbContext context) : IValidati
         if (!EmailRegex().IsMatch(email))
             return new UpdatedResponse { Succeed = false, Message = "Некорректный формат email" };
 
-        var emailParts = email.Split('@');
+        var emailParts = email.Split("@");
         if (emailParts.Length != 2 || !EmailDomains.Contains(emailParts[1]))
             return new UpdatedResponse { Succeed = false, Message = "Недопустимый домен email" };
-
-        return new UpdatedResponse { Succeed = true, Message = "Успех" };
-    }
-
-    // Валидация телефона
-    public UpdatedResponse ValidatePhone(string phone)
-    {
-        if (string.IsNullOrEmpty(phone))
-            return new UpdatedResponse { Succeed = false, Message = "Телефон не может быть пустым" };
-
-        if (!PhoneRegex().IsMatch(phone))
-            return new UpdatedResponse { Succeed = false, Message = "Некорректный формат телефона" };
 
         return new UpdatedResponse { Succeed = true, Message = "Успех" };
     }
@@ -101,17 +159,14 @@ public partial class ValidationService(ApplicationDbContext context) : IValidati
     [GeneratedRegex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$")]
     private partial Regex PasswordRegex();
 
-    [GeneratedRegex(@"^(?!_)(?!\d)[a-z0-9]+(_[a-z0-9]+)*(?<!_)(?<!\d)$")]
+    [GeneratedRegex(@"^(?!_)[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*(?<!_)$")]
     private partial Regex UsernameRegex();
 
-    [GeneratedRegex(@"^[_0-9]")]
-    private static partial Regex NumbersAndUnderscoreInStartRegex();
+    [GeneratedRegex(@"^_")]
+    private static partial Regex UnderscoreInStartRegex();
 
-    [GeneratedRegex(@"[_0-9]$")]
-    private static partial Regex NumbersAndUnderscoreInEndRegex();
-
-    [GeneratedRegex(@"^\+?[0-9]{11}$")]
-    private static partial Regex PhoneRegex();
+    [GeneratedRegex(@"_$")]
+    private static partial Regex UnderscoreInEndRegex();
 
     [GeneratedRegex(@"^[^\s@]+@[^\s@]+\.[^\s@]+$")]
     private static partial Regex EmailRegex();

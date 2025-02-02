@@ -108,38 +108,6 @@ public class UsersController(
         return user;
     }
 
-    // GET: api/Users/Phone/5
-    [HttpGet("Phone/{phone}")]
-    [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(
-        Summary = "Get a user by phone",
-        Description = "Returns a single user by its phone",
-        OperationId = "GetUserByPhone",
-        Tags = ["Users"]
-    )]
-    public async Task<ActionResult<User>> GetUserByPhone(string phone)
-    {
-        var user = await context.Users
-            .AsNoTracking()
-            .Include(u => u.Educations)
-            .Include(u => u.SocialMediaProfiles)
-            .Include(u => u.WorkExperiences)
-            .Include(u => u.UserActivities)
-            .Include(u => u.UserLessons)
-            .Include(u => u.UserAnswers)
-            .Include(u => u.Tickets)
-            .Include(u => u.TicketAnswers)
-            .FirstOrDefaultAsync(u => u.Phone == phone);
-
-        if (user is null)
-            return NotFound();
-
-        return user;
-    }
-
     // GET: api/Users/Username/5
     [HttpGet("Username/{username}")]
     [Produces("application/json")]
@@ -171,8 +139,6 @@ public class UsersController(
 
         return user;
     }
-
-    public record LoginRequest(string Login, string Password);
 
     // POST: api/Users/Auth
     [HttpPost("Auth")]
@@ -223,7 +189,25 @@ public class UsersController(
         var id = user.Id;
         var userFound = await UserExists(user);
         if (userFound.IsFound)
-            return BadRequest(userFound.Message);
+            return BadRequest(userFound);
+
+        if (user.Role is not Role.User)
+            return BadRequest(new UpdateUserResponse { Message = "Запрещено создание пользователя с любой ролью кроме User" });
+
+        // Валидация имени пользователя
+        var usernameValidation = await validationService.ValidateUsername(user.Username, user.Id);
+        if (!usernameValidation.Succeed)
+            return BadRequest(usernameValidation);
+
+        // Валидация пароля
+        var passwordValidation = validationService.ValidatePassword(user.PasswordHash, user.GoogleId);
+        if (!passwordValidation.Succeed)
+            return BadRequest(passwordValidation);
+
+        // Валидация email
+        var emailValidation = validationService.ValidateEmail(user.EmailAddress);
+        if (!emailValidation.Succeed)
+            return BadRequest(emailValidation);
         
         user.PasswordHash = bcrypt.HashPassword(user.PasswordHash);
         await context.Users.AddAsync(user);
@@ -268,7 +252,7 @@ public class UsersController(
             return BadRequest(usernameValidation);
 
         // Валидация пароля
-        var passwordValidation = validationService.ValidatePassword(user.PasswordHash);
+        var passwordValidation = validationService.ValidatePassword(user.PasswordHash, user.GoogleId);
         if (!passwordValidation.Succeed)
             return BadRequest(passwordValidation);
 
@@ -276,11 +260,6 @@ public class UsersController(
         var emailValidation = validationService.ValidateEmail(user.EmailAddress);
         if (!emailValidation.Succeed)
             return BadRequest(emailValidation);
-
-        // Валидация телефона
-        var phoneValidation = validationService.ValidatePhone(user.Phone);
-        if (!phoneValidation.Succeed)
-            return BadRequest(phoneValidation);
 
         // Обновляем основные свойства
         existingUser.AvatarUrl = user.AvatarUrl;
@@ -290,7 +269,6 @@ public class UsersController(
         existingUser.DateOfBirth = user.DateOfBirth;
         existingUser.Username = user.Username;
         existingUser.City = user.City;
-        existingUser.Phone = user.Phone;
         existingUser.ResumeText = user.ResumeText;
         existingUser.AboutMe = user.AboutMe;
 
@@ -393,7 +371,7 @@ public class UsersController(
     )]
     public async Task<ActionResult<UpdateUserResponse>> PutUserPassword([FromBody] UpdatePasswordRequest request)
     {
-        var validatePassword = validationService.ValidatePassword(request.Password);
+        var validatePassword = validationService.ValidatePassword(request.Password, null);
         if (!validatePassword.Succeed)
             return BadRequest(new
             {
@@ -435,7 +413,7 @@ public class UsersController(
     }
 
     // DELETE: api/Users/5
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -448,7 +426,15 @@ public class UsersController(
     )]
     public async Task<IActionResult> DeleteUser(Guid id)
     {
-        var user = await context.Users.FindAsync(id);
+        var user = await context.Users
+            .Include(u => u.UserActivities)
+            .Include(u => u.UserLessons)
+            .Include(u => u.UserAnswers)
+            .Include(u => u.Educations)
+            .Include(u => u.WorkExperiences)
+            .Include(u => u.SocialMediaProfiles)
+            .FirstOrDefaultAsync(u => u.Id == id);
+
         if (user is null)
             return NotFound();
 
@@ -474,8 +460,6 @@ public class UsersController(
             return new FoundResult($"Пользователь с ID \"{user.Id}\" уже существует.");
         if (await context.Users.AnyAsync(u => u.Username == user.Username))
             return new FoundResult("Пользователь с таким именем уже существует.");
-        if (await context.Users.AnyAsync(u => u.Phone == user.Phone))
-            return new FoundResult("Пользователь с таким телефоном уже существует.");
         if (await context.Users.AnyAsync(u => u.EmailAddress == user.EmailAddress))
             return new FoundResult("Пользователь с такой почтой уже существует.");
 

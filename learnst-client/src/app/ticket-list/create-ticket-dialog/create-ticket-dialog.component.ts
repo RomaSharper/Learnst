@@ -8,6 +8,7 @@ import { AuthService } from '../../../services/auth.service';
 import { Ticket } from '../../../models/Ticket';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import { TicketStatus } from '../../../enums/TicketStatus';
 
 @Component({
   selector: 'app-create-ticket-dialog',
@@ -38,16 +39,23 @@ export class CreateTicketDialogComponent implements OnInit {
 
   onSubmit(): void {
     if (this.ticketForm.valid) {
-      const newTicket: Partial<Ticket> = {
+      const newTicket: Ticket = {
+        ticketAnswers: [],
+        statusHistories: [],
+        authorId: this.userId,
+        createdAt: new Date(),
+        status: TicketStatus.Open,
         title: this.ticketForm.value.title,
         description: this.ticketForm.value.description,
-        authorId: this.userId
       };
 
       this.ticketService.createTicket(newTicket).subscribe({
         next: (createdTicket) => {
           this.alertService.showSnackBar('Тикет успешно создан');
-          this.dialogRef.close(createdTicket); // Возвращаем созданный тикет
+          this.dialogRef.close({
+            ...createdTicket,
+            createdAt: 'Только что'
+          }); // Возвращаем созданный тикет
         },
         error: () => {
           this.alertService.showSnackBar('Ошибка при создании тикета');

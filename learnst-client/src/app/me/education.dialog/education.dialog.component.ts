@@ -28,8 +28,8 @@ export class EducationDialogComponent {
     private fb: FormBuilder
   ) {
     this.educationForm = this.fb.group({
-      institutionName: [data.education.institutionName, [Validators.required, Validators.maxLength(100)]],
-      degree: [data.education.degree, [Validators.required, Validators.maxLength(100)]],
+      institutionName: [data.education.institutionName, [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+      degree: [data.education.degree, [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       graduationYear: [data.education.graduationYear, [Validators.required, Validators.min(1900), Validators.max(this.currentYear)]]
     });
   }

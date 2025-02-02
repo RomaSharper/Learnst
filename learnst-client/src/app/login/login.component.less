@@ -1,0 +1,70 @@
+@import url(../../styles/vars.less);
+
+.full-width {
+  width: 100%;
+}
+
+.separator {
+  display: flex;
+  position: relative;
+  align-items: center;
+  margin: @step * 4 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: @step * 0.25;
+    background-color: #dadce0;
+  }
+
+  .or-text {
+    padding: 0 @step * 2;
+    font-size: @font-size-medium;
+  }
+}
+
+.social-grid {
+  display: grid;
+  gap: @step * 3;
+  justify-items: center;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); // Динамическое количество столбцов
+}
+
+.social-btn {
+  display: flex;
+  cursor: pointer;
+  padding: @step * 8;
+  align-items: center;
+  aspect-ratio: 3 / 2;
+  justify-content: center;
+  border-radius: @step * 2;
+  transition: all @transition-time ease;
+
+  @media (max-width: @small-screen) {
+    width: 100%;
+    padding: @step * 5;
+    border-radius: @step * 5;
+  }
+
+  .social-icon {
+    display: block;
+    width: @step * 8;
+    object-fit: contain;
+    aspect-ratio: 1 / 1;
+  }
+
+  &.google-btn {
+    background: white;
+    border: @step * 0.25 solid #dadce0;
+
+    &:hover {
+      background: #f0f0f0;
+      box-shadow: 0 @step * 0.5 @step rgba(0, 0, 0, 0.1);
+    }
+
+    &:active {
+      background: #e6e6e6;
+    }
+  }
+}

@@ -94,7 +94,7 @@ public class CertificateService(ApplicationDbContext context) : ICertificateServ
 
         // Информация о пользователе
         gfx.DrawString($"Выдан: {user.FullName}", bodyFont, XBrushes.Black, new XPoint(50, 290));
-        gfx.DrawString($"Дата выдачи: {DateTime.Now:dd.MM.yyyy}", bodyFont, XBrushes.Black, new XPoint(50, 320));
+        gfx.DrawString($"Дата выдачи: {DateTime.UtcNow:dd.MM.yyyy}", bodyFont, XBrushes.Black, new XPoint(50, 320));
 
         // Поздравление
         gfx.DrawString("Поздравляем с успешным завершением курса!", headerFont, XBrushes.DarkGreen, new XPoint(50, 460));

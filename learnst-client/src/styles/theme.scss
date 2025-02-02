@@ -26,10 +26,6 @@ body {
     supporting-text-color: var(--mat-sys-on-surface),
     container-color: var(--mat-sys-surface-container-high)
   ));
-
-  :root {
-    --plyr-color-main: #1976d2;
-  }
 }
 
 .mdc-evolution-chip-set__chips {
@@ -41,6 +37,13 @@ body {
 .mat-mdc-standard-chip .mat-mdc-chip-action-label {
   overflow: hidden !important;
 }
+
+// .mat-mdc-card-actions.center-control {
+//   gap: 20px;
+//   padding: 8px;
+//   margin-top: 20px;
+//   flex-direction: column !important;
+// }
 
 mat-list-item {
   height: 100% !important;

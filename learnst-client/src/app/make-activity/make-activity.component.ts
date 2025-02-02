@@ -494,18 +494,19 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
     const formValue = this.activityForm.value;
     const activity: Activity = {
       ...formValue,
-      authorId: this.userId,
-      endAt: formValue.endAt ? DateService.formatDate(formValue.endAt) : null,
       tags: this.tags,
-      targetAudience: this.targetAudience,
+      topics: this.topics,
+      authorId: this.userId,
       checkList: this.checkList,
       infoCards: this.infoCards,
-      topics: this.topics,
-      minimalScore: formValue.minimalScore || 0
+      targetAudience: this.targetAudience,
+      minimalScore: formValue.minimalScore || 0,
+      id: this.activityId || ValidationService.emptyGuid,
+      endAt: formValue.endAt ? DateService.formatDate(formValue.endAt) : null
     };
 
-    if (this.activityId)
-      activity.id = this.activityId;
+    for (let i = 0; i < this.topics.length; i++)
+      this.topics[i].activityId = activity.topics[i].activityId = activity.id;
 
     const saveObservable = this.activityId
       ? this.activitiesService.updateActivity(this.activityId, activity)

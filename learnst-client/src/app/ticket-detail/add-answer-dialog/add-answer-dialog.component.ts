@@ -4,7 +4,6 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TicketService } from '../../../services/tickets.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { User } from '../../../models/User';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,9 +38,9 @@ export class AddAnswerDialogComponent implements OnInit {
   onSubmit(): void {
     if (this.answerForm.valid) {
       this.ticketService.addAnswer({
+        authorId: this.user.id!,
         ticketId: this.data.ticketId,
         content: this.answerForm.value.content,
-        authorId: this.user.id!
       }).subscribe({
         next: response => {
           this.alertService.showSnackBar('Ответ успешно добавлен');

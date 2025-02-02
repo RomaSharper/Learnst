@@ -4,6 +4,7 @@ using Learnst.Dao;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Learnst.Api.Services;
+using Learnst.Dao.Models;
 
 namespace Learnst.Api.Controllers;
 
@@ -48,10 +49,4 @@ public class SessionsController(ApplicationDbContext context, IConfiguration con
 
         return Ok(new { userId, username, role });
     }
-}
-
-public class LoginRequest
-{
-    public string Login { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
 }

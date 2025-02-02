@@ -1,16 +1,17 @@
 <nav class="main-navigation">
-  @if (isMenuOpen) {
-    <div class="background-overlay" (click)="toggleMenu($event)"></div>
-  }
+  <div class="background-overlay" [class.active]="isMenuOpen" [style.opacity]="overlayOpacity"
+    (click)="toggleMenu($event)"></div>
+
   <button type="button" class="hamburger" mat-icon-button (click)="toggleMenu($event)">
     <mat-icon>menu</mat-icon>
   </button>
-  <ul [ngClass]="{'active': isMenuOpen}">
+
+  <ul [style.transform]="'translateX(' + menuTranslateX + '%)'" [class.swiping]="isSwiping">
     @if (user) {
       <li class="user-area">
         <div class="user-avatar">
           <a class="user-img" routerLink="/me" routerLinkActive="active">
-            <img alt="{{ user.username }}" src="{{ user.avatarUrl ?? '/images/user.img' }}" placeholder="/images/user.png" noDownloading>
+            <img [alt]="user.username" [src]="user.avatarUrl" placeholder="/images/user.png" noDownloading>
           </a>
           <a class="user-name" routerLink="/me" routerLinkActive="active">{{ user.username }}</a>
         </div>
@@ -19,10 +20,12 @@
       <li><a routerLink="/activities" routerLinkActive="active">Обучение</a></li>
       <li><a routerLink="/users" routerLinkActive="active">Пользователи</a></li>
       <li><a routerLink="/tickets" routerLinkActive="active">Поддержка</a></li>
+      <li class="mobile-only"><a routerLink="/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
       <li><a routerLink="/logout">Выйти</a></li>
     } @else {
-      <li><a routerLink="/login" routerLinkActive="active">Войти</a></li>
       <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
+      <li><a routerLink="/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
+      <li><a routerLink="/login" routerLinkActive="active">Войти</a></li>
     }
   </ul>
 </nav>

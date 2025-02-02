@@ -14,23 +14,22 @@ public class User
 
     [StringLength(2048)] public string? AvatarUrl { get; set; }
 
-    [Required] public DateOnly DateOfBirth { get; set; }
+    public DateOnly? DateOfBirth { get; set; }
 
     [StringLength(20, ErrorMessage = "Имя пользователя должно быть не длиннее 20 символов")]
     [RegularExpression(@"^(?!_)[a-z0-9]+(_[a-z0-9]+)*(?<!_)$", ErrorMessage = "Имя пользователя должно содержать только строчные латинские буквы, цифры и максимум одно нижнее подчёркивание (не в начале и не в конце)")]
     public string Username { get; set; } = string.Empty;
 
-    [Required, Phone, StringLength(15)]
-    public string Phone { get; set; } = string.Empty;
-
     [Required, EmailAddress, StringLength(255)]
     public string EmailAddress { get; set; } = string.Empty;
 
-    [Required, MaxLength(60)] public string PasswordHash { get; set; } = string.Empty;
+    [MaxLength(60)] public string? PasswordHash { get; set; }
 
     [StringLength(50)] public string? City { get; set; }
 
     [Required] public Role Role { get; set; } = Role.User;
+
+    [StringLength(255)] public string? GoogleId { get; set; }
 
     #endregion
 

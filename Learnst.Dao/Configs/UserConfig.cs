@@ -12,9 +12,6 @@ public class UserConfig : IEntityTypeConfiguration<User>
         builder.HasIndex(u => u.Username, "IX_Users_Username")
             .IsUnique();
 
-        builder.HasIndex(u => u.Phone, "IX_Users_Phone")
-            .IsUnique();
-
         builder.HasIndex(u => u.EmailAddress, "IX_Users_EmailAddress")
             .IsUnique();
         

@@ -24,7 +24,7 @@ public static class JwtService
             issuer: configuration["Jwt:Issuer"],
             audience: configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.Now.AddDays(1), // Время жизни токена
+            expires: DateTime.UtcNow.AddDays(1), // Время жизни токена
             signingCredentials: credentials
         );
 

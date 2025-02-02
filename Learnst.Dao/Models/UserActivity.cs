@@ -12,5 +12,5 @@ public class UserActivity
     
     [JsonIgnore] public Activity? Activity { get; set; }
 
-    public DateTime AssignedAt { get; set; } = DateTime.Now;
+    public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
 }

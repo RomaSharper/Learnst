@@ -10,8 +10,6 @@ export class SocialMediaPlatformHelper {
         return 'Facebook';
       case SocialMediaPlatform.GitHub:
         return 'GitHub';
-      case SocialMediaPlatform.Gmail:
-        return 'Gmail';
       case SocialMediaPlatform.Instagram:
         return 'Instagram';
       case SocialMediaPlatform.LinkedIn:
@@ -23,74 +21,120 @@ export class SocialMediaPlatformHelper {
       case SocialMediaPlatform.Telegram:
         return 'Telegram';
       case SocialMediaPlatform.Twitter:
-        return 'X';
+        return 'X'; // Twitter переименован в X
       case SocialMediaPlatform.VK:
         return 'VK';
       case SocialMediaPlatform.Youtube:
         return 'YouTube';
+      case SocialMediaPlatform.Steam:
+        return 'Steam';
+      case SocialMediaPlatform.Twitch:
+        return 'Twitch';
+      case SocialMediaPlatform.EpicGames:
+        return 'Epic Games';
+      case SocialMediaPlatform.Reddit:
+        return 'Reddit';
+      case SocialMediaPlatform.Pinterest:
+        return 'Pinterest';
+      case SocialMediaPlatform.Snapchat:
+        return 'Snapchat';
+      case SocialMediaPlatform.TikTok:
+        return 'TikTok';
+      default:
+        return 'unknown';
     }
-    return 'unknown';
   }
 
   static getImagePath(platform: SocialMediaPlatform): string {
     switch (platform) {
       case SocialMediaPlatform.Bluesky:
-        return '/images/bluesky.png';
+        return '/assets/icons/socials/bluesky.png';
       case SocialMediaPlatform.Discord:
-        return '/images/discord.png';
+        return '/assets/icons/socials/discord.png';
       case SocialMediaPlatform.Facebook:
-        return '/images/facebook.png';
+        return '/assets/icons/socials/facebook.png';
       case SocialMediaPlatform.GitHub:
-        return '/images/github.png';
-      case SocialMediaPlatform.Gmail:
-        return '/images/gmail.png';
+        return '/assets/icons/socials/github.png';
       case SocialMediaPlatform.Instagram:
-        return '/images/instagram.png';
+        return '/assets/icons/socials/instagram.png';
       case SocialMediaPlatform.LinkedIn:
-        return '/images/linked-in.png';
+        return '/assets/icons/socials/linked-in.png';
       case SocialMediaPlatform.Tumblr:
-        return '/images/tumblr.png';
+        return '/assets/icons/socials/tumblr.png';
       case SocialMediaPlatform.Roblox:
-        return '/images/roblox.png';
+        return '/assets/icons/socials/roblox.png';
       case SocialMediaPlatform.Telegram:
-        return '/images/telegram.png';
+        return '/assets/icons/socials/telegram.png';
       case SocialMediaPlatform.Twitter:
-        return '/images/x.png';
+        return '/assets/icons/socials/x.png';
       case SocialMediaPlatform.VK:
-        return '/images/vk.png';
+        return '/assets/icons/socials/vk.png';
       case SocialMediaPlatform.Youtube:
-        return '/images/youtube.png';
+        return '/assets/icons/socials/youtube.png';
+      case SocialMediaPlatform.Steam:
+        return '/assets/icons/socials/steam.png';
+      case SocialMediaPlatform.Twitch:
+        return '/assets/icons/socials/twitch.png';
+      case SocialMediaPlatform.EpicGames:
+        return '/assets/icons/socials/epic-games.png';
+      case SocialMediaPlatform.Reddit:
+        return '/assets/icons/socials/reddit.png';
+      case SocialMediaPlatform.Pinterest:
+        return '/assets/icons/socials/pinterest.png';
+      case SocialMediaPlatform.Snapchat:
+        return '/assets/icons/socials/snapchat.png';
+      case SocialMediaPlatform.TikTok:
+        return '/assets/icons/socials/tiktok.png';
+      default:
+        return '/assets/icons/question.png';
     }
-    return '/images/question.png';
   }
 
   static getSocialMediaPlatform(url: string): SocialMediaPlatform {
-    if (url.includes('bluesky.com') || url.includes('bsky.app'))
+    if (!url) return SocialMediaPlatform.Unknown;
+
+    const lowerUrl = url.toLowerCase(); // Преобразуем URL в нижний регистр для удобства сравнения
+
+    if (lowerUrl.includes('bluesky.com') || lowerUrl.includes('bsky.app')) {
       return SocialMediaPlatform.Bluesky;
-    else if (url.includes('discord.com'))
+    } else if (lowerUrl.includes('discord.com')) {
       return SocialMediaPlatform.Discord;
-    else if (url.includes('facebook.com'))
+    } else if (lowerUrl.includes('facebook.com')) {
       return SocialMediaPlatform.Facebook;
-    else if (url.includes('github.com'))
+    } else if (lowerUrl.includes('github.com')) {
       return SocialMediaPlatform.GitHub;
-    else if (url.includes('gmail.com'))
-      return SocialMediaPlatform.Gmail;
-    else if (url.includes('instagram.com'))
+    } else if (lowerUrl.includes('instagram.com')) {
       return SocialMediaPlatform.Instagram;
-    else if (url.includes('linkedin.com'))
+    } else if (lowerUrl.includes('linkedin.com')) {
       return SocialMediaPlatform.LinkedIn;
-    else if (url.includes('tumblr.com'))
+    } else if (lowerUrl.includes('tumblr.com')) {
       return SocialMediaPlatform.Tumblr;
-    else if (url.includes('roblox.com'))
+    } else if (lowerUrl.includes('roblox.com')) {
       return SocialMediaPlatform.Roblox;
-    else if (url.includes('telegram.org') || url.includes('t.me'))
+    } else if (lowerUrl.includes('telegram.org') || lowerUrl.includes('t.me')) {
       return SocialMediaPlatform.Telegram;
-    else if (url.includes('twitter.com') || url.includes('x.com'))
+    } else if (lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com')) {
       return SocialMediaPlatform.Twitter;
-    else if (url.includes('vk.com'))
+    } else if (lowerUrl.includes('vk.com') || lowerUrl.includes('vk.ru')) {
       return SocialMediaPlatform.VK;
-    else if (url.includes('youtube.com'))
+    } else if (lowerUrl.includes('youtube.com') || lowerUrl.includes('yt.be')) {
       return SocialMediaPlatform.Youtube;
+    } else if (lowerUrl.includes('steamcommunity.com')) {
+      return SocialMediaPlatform.Steam;
+    } else if (lowerUrl.includes('twitch.tv')) {
+      return SocialMediaPlatform.Twitch;
+    } else if (lowerUrl.includes('epicgames.com')) {
+      return SocialMediaPlatform.EpicGames;
+    } else if (lowerUrl.includes('reddit.com')) {
+      return SocialMediaPlatform.Reddit;
+    } else if (lowerUrl.includes('pinterest.com')) {
+      return SocialMediaPlatform.Pinterest;
+    } else if (lowerUrl.includes('snapchat.com')) {
+      return SocialMediaPlatform.Snapchat;
+    } else if (lowerUrl.includes('tiktok.com')) {
+      return SocialMediaPlatform.TikTok;
+    }
+
     return SocialMediaPlatform.Unknown;
   }
 }

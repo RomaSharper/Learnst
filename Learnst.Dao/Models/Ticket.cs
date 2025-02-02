@@ -14,5 +14,5 @@ public class Ticket
     [JsonIgnore] public User? Author { get; set; }
     public ICollection<TicketAnswer> TicketAnswers { get; set; } = [];
     public ICollection<StatusHistory> StatusHistories { get; set; } = [];
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

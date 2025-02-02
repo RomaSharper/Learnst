@@ -73,18 +73,20 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   changesSaving = false;
   unsavedChanges = false;
   passwordChanging = false;
+  readonly maxDate = new Date();
+  readonly minDate = new Date(1900, 0, 1);
 
   SocialMediaPlatformHelper = SocialMediaPlatformHelper;
 
   constructor(
+    public router: Router,
+    public location: Location,
     private dialog: MatDialog,
-    private usersService: UsersService,
     private authService: AuthService,
     private fileService: FileService,
     private alertService: AlertService,
     private emailService: EmailService,
-    public location: Location,
-    public router: Router
+    private usersService: UsersService,
   ) {
     super();
   }
@@ -142,18 +144,29 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   changePassword(): void {
     if (!this.user) return;
 
-    if (!this.oldPassword || !this.newPassword) {
-      this.alertService.showSnackBar('Пожалуйста, заполните все поля');
+    // Проверка данных пользователя перед обновлением пароля
+    if (!this.newPassword) {
+      // Если новый пароль не указан
+      this.alertService.showSnackBar('Пожалуйста, введите новый пароль');
+      return;
+    }
+
+    if (!this.oldPassword && this.user.passwordHash) {
+      // Если пользователь авторизован по паролю, но старый пароль не указан
+      this.alertService.showSnackBar('Пожалуйста, введите старый пароль');
       return;
     }
 
     if (this.oldPassword === this.newPassword) {
-      this.alertService.showSnackBar('Старый и новый пароль одинаковы');
+      // Если старый и новый пароли одинаковы
+      this.alertService.showSnackBar('Старый и новый пароль не должны совпадать');
       return;
     }
 
-    // Проверяем, совпадает ли старый пароль
-    if (!bcrypt.compareSync(this.oldPassword, this.user.passwordHash || '')) {
+    if (
+      this.user.passwordHash && // У пользователя уже есть сохраненный пароль
+      !bcrypt.compareSync(this.oldPassword, this.user.passwordHash || '') // Старый пароль не совпадает с хэшем
+    ) {
       this.alertService.showSnackBar('Старый пароль введен неверно');
       return;
     }
@@ -315,15 +328,9 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
     this.changesSaving = true;
 
-    this.checkDuplicates(this.user!).subscribe(({ emailTaken, phoneTaken, usernameTaken }) => {
+    this.checkDuplicates(this.user!).subscribe(({ emailTaken, usernameTaken }) => {
       if (emailTaken) {
         this.alertService.showSnackBar('Эта почта уже занята');
-        this.changesSaving = false;
-        return;
-      }
-
-      if (phoneTaken) {
-        this.alertService.showSnackBar('Этот телефон уже занят');
         this.changesSaving = false;
         return;
       }
@@ -364,17 +371,13 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   }
 
   // Метод для проверки дубликатов
-  private checkDuplicates(user: User): Observable<{ emailTaken: boolean, phoneTaken: boolean, usernameTaken: boolean }> {
+  private checkDuplicates(user: User): Observable<{ emailTaken: boolean, usernameTaken: boolean }> {
     return forkJoin({
       emailTaken: this.usersService.getUserByEmail(user.emailAddress).pipe(
         map(user => !!user && user.id !== this.userId),
         catchError(() => of(false))
       ),
       usernameTaken: this.usersService.getUserByName(user.username).pipe(
-        map(user => !!user && user.id !== this.userId),
-        catchError(() => of(false))
-      ),
-      phoneTaken: this.usersService.getUserByPhone(user.phone).pipe(
         map(user => !!user && user.id !== this.userId),
         catchError(() => of(false))
       )
@@ -390,7 +393,6 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       this.user.username !== this.originalUser.username ||
       this.user.fullName !== this.originalUser.fullName ||
       DateService.formatDate(this.user.dateOfBirth) !== DateService.formatDate(this.originalUser.dateOfBirth) ||
-      this.user.phone !== this.originalUser.phone ||
       this.user.city !== this.originalUser.city ||
       this.user.resumeText !== this.originalUser.resumeText ||
       this.user.aboutMe !== this.originalUser.aboutMe;
@@ -481,7 +483,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   private updateUserData(): void {
     if (!this.user) return;
     this.unsavedChanges = false;
-    this.user.dateOfBirth = DateService.formatDate(this.user.dateOfBirth);
+    this.user.dateOfBirth = DateService.formatDate(this.user.dateOfBirth)!;
 
     this.usersService.updateUser(this.userId, this.user).pipe(
       catchError(err => {

@@ -1,21 +1,5 @@
 @import url(../../styles/vars.less);
 
-.main-button {
-  z-index: @modal;
-  position: fixed;
-  right: @step * 4;
-  bottom: @step * 4;
-  color: white;
-  box-shadow: 0 @step @step * 3 rgba(0, 0, 0, 0.2);
-  transition: transform @transition-time, box-shadow @transition-time;
-  background: linear-gradient(135deg, @primary-color, darken(@primary-color, 10%));
-
-  &:hover {
-    transform: scale(1.1);
-    box-shadow: 0 @step * 1.5 @step * 4 rgba(0, 0, 0, 0.3);
-  }
-}
-
 .ticket-list {
   display: flex;
   gap: @step * 4;

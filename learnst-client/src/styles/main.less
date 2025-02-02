@@ -128,6 +128,10 @@ mat-date-range-input {
   font-size: @font-size-large;
 }
 
+.question-button {
+  margin-right: @step * 3.5;
+}
+
 .m {
   margin: @step * 3 !important;
 }
@@ -409,7 +413,7 @@ textarea {
 .form-container {
   padding: @step * 5;
   margin: @step * 5 auto;
-  max-width: @step * 180;
+  max-width: @step * 140;
   border-radius: @step * 5;
   background-color: #232527;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -435,6 +439,13 @@ textarea {
   text-align: center;
 }
 
+.form-actions {
+  gap: @step * 5;
+  padding: @step * 2;
+  margin-top: @step * 5;
+  flex-direction: column !important;
+}
+
 .link {
   color: #00b3ff;
   text-decoration: none;
@@ -446,6 +457,12 @@ textarea {
 
 .profile-container {
   padding: @step * 5;
+
+  @media (max-width: @medium-screen) {
+    .container {
+        margin: @step * 3;
+    }
+  }
 
   h1 {
     font-size: @font-size-large;

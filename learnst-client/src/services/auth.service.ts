@@ -14,6 +14,7 @@ import { UsersService } from './users.service';
 })
 export class AuthService {
   private apiUrl = `${environment.apiBaseUrl}/sessions`;
+  private oauth2Url = `${environment.apiBaseUrl}/oauth2`;
   private currentUserSubject: BehaviorSubject<UserDao | null> = new BehaviorSubject<UserDao | null>(null);
   public currentUser$: Observable<UserDao | null> = this.currentUserSubject.asObservable();
 
@@ -23,6 +24,7 @@ export class AuthService {
     private usersService: UsersService
   ) {
     this.checkSession();
+    this.handleOAuthCallback();
   }
 
   login(login: string, password: string): Observable<{ token: string }> {
@@ -37,6 +39,23 @@ export class AuthService {
           throw error;
         })
       );
+  }
+
+  loginWithGoogle() {
+    window.location.href = `${this.oauth2Url}/google/init`;
+  }
+
+  loginWithMicrosoft() {
+    const clientId = 'YOUR_MICROSOFT_CLIENT_ID';
+    const redirectUri = 'YOUR_REDIRECT_URI';
+    const scope = 'openid email profile';
+
+    window.location.href = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?` +
+      `client_id=${clientId}` +
+      `&response_type=code` +
+      `&redirect_uri=${redirectUri}` +
+      `&scope=${scope}` +
+      `&response_mode=query`;
   }
 
   logout(): void {
@@ -106,6 +125,19 @@ export class AuthService {
     return this.currentUser$.pipe(
       map(user => user?.role === Role.Admin)
     );
+  }
+
+  private handleOAuthCallback(): void {
+    const token = this.getTokenFromUrl();
+    if (!token) return;
+    localStorage.setItem('token', token);
+    this.decodeToken(token);
+    this.router.navigate(['/']); // Перенаправляем на главную после успешной авторизации
+  }
+
+  private getTokenFromUrl(): string | null {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('token');
   }
 
   private decodeToken(token: string): void {

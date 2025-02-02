@@ -6,5 +6,5 @@ export interface UserActivity {
   user?: User;
   activityId: string; // Guid
   activity?: Activity;
-  assignedAt: Date;
+  assignedAt?: string;
 }

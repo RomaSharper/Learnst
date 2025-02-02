@@ -6,7 +6,6 @@ public enum SocialMediaPlatform
     Discord,
     Facebook,
     GitHub,
-    Gmail,
     Instagram,
     LinkedIn,
     Tumblr,
@@ -15,5 +14,12 @@ public enum SocialMediaPlatform
     Twitter,
     VK,
     Youtube,
+    Steam,
+    Twitch,
+    EpicGames,
+    Reddit,
+    Pinterest,
+    Snapchat,
+    TikTok,
     Unknown
 }

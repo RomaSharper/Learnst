@@ -97,7 +97,7 @@ public class TicketsController(ApplicationDbContext context) : ControllerBase
         {
             TicketId = id,
             Status = newStatus,
-            ChangedAt = DateTime.Now
+            ChangedAt = DateTime.UtcNow
         };
 
         ticket.Status = newStatus;

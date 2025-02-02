@@ -10,53 +10,21 @@
         <mat-label>Имя пользователя</mat-label>
         <input matInput id="username" formControlName="username" placeholder="Придумайте логин" autocomplete="username"
           maxlength="20">
+        <span class="question-button" matSuffix matTooltip="Имя пользователя должно быть от 3 до 20 символов, содержать только латиницу, цифры и подчёркивание, не начинаться или заканчиваться на подчёркивание и не содержать бранных слов">
+          <mat-icon>help</mat-icon>
+        </span>
         @if (form.get('username')?.hasError('invalidLength')) {
-        <mat-error>Имя должно быть от 3 до 20 символов.</mat-error>
-        }
-        @else if (form.get('username')?.hasError('invalidCharacters')) {
-        <mat-error>Используйте только латиницу, цифры и подчёркивание.</mat-error>
-        }
-        @else if (form.get('username')?.hasError('invalidStartOrEnd')) {
-        <mat-error>Имя не может начинаться или заканчиваться подчёркиванием или цифрой.</mat-error>
-        }
-        @else if (form.get('username')?.hasError('tooMuchUnderscores')) {
-        <mat-error>Имя не может иметь более одного подчёркивания.</mat-error>
-        }
-        @else if (form.get('username')?.hasError('forbiddenWord')) {
-        <mat-error>Имя содержит запрещённые слова.</mat-error>
-        }
-        @else if (form.get('username')?.hasError('serverError')) {
-        <mat-error>{{ form.get('username')?.getError('serverError') }}</mat-error>
-        }
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Дата рождения</mat-label>
-        <input matInput [matDatepicker]="picker" id="dateOfBirth" formControlName="dateOfBirth"
-          placeholder="Выберите день рождения" readonly>
-        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker [touchUi]="isMediumScreen"></mat-datepicker>
-        <mat-hint>dd.mm.yyyy</mat-hint>
-        @if (form.get('dateOfBirth')?.invalid && form.get('dateOfBirth')?.touched) {
-        <mat-error>
-          Пожалуйста, выберите дату рождения.
-        </mat-error>
-        }
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Телефон</mat-label>
-        <input matInput type="tel" id="phone" formControlName="phone" placeholder="Введите номер телефона"
-          maxlength="11">
-        @if (form.get('phone')?.hasError('serverError')) {
-        <mat-error>
-          {{ form.get('phone')?.getError('serverError') }}
-        </mat-error>
-        }
-        @else if (form.get('phone')?.invalid && form.get('phone')?.touched) {
-        <mat-error>
-          Пожалуйста, введите корректный номер телефона.
-        </mat-error>
+          <mat-error>Имя должно быть от 3 до 20 символов.</mat-error>
+        } @else if (form.get('username')?.hasError('invalidStartOrEnd')) {
+          <mat-error>Имя не может начинаться или заканчиваться подчёркиванием.</mat-error>
+        } @else if (form.get('username')?.hasError('invalidCharacters')) {
+          <mat-error>Используйте только латиницу, цифры и подчёркивание.</mat-error>
+        } @else if (form.get('username')?.hasError('tooMuchUnderscores')) {
+          <mat-error>Имя не может иметь более одного подчёркивания.</mat-error>
+        } @else if (form.get('username')?.hasError('forbiddenWord')) {
+          <mat-error>Имя содержит запрещённые слова.</mat-error>
+        } @else if (form.get('username')?.hasError('serverError')) {
+          <mat-error>{{ form.get('username')?.getError('serverError') }}</mat-error>
         }
       </mat-form-field>
 
@@ -64,21 +32,17 @@
         <mat-label>Адрес электронной почты</mat-label>
         <input matInput id="email" formControlName="email" placeholder="Введите электронную почту" autocomplete="email"
           maxlength="100">
+        <span class="question-button" matSuffix matTooltip="Поддерживаемые домены: mail.ru, xmail.ru, gmail.com, vk.com, yandex.ru, icloud.com">
+          <mat-icon>help</mat-icon>
+        </span>
         @if (form.get('email')?.hasError('invalidDomain') && form.get('email')?.touched) {
-        <mat-error>
-          Пожалуйста, используйте один из предложенных доменов: mail.ru, xmail.ru, gmail.com, vk.com, yandex.ru,
-          icloud.com
-        </mat-error>
+          <mat-error>Домен не поддерживается, см. справку</mat-error>
         }
         @else if (form.get('email')?.hasError('serverError')) {
-        <mat-error>
-          {{ form.get('email')?.getError('serverError') }}
-        </mat-error>
+          <mat-error>{{ form.get('email')?.getError('serverError') }}</mat-error>
         }
         @else if (form.get('email')?.invalid && form.get('email')?.touched) {
-        <mat-error>
-          Пожалуйста, введите корректный адрес электронной почты.
-        </mat-error>
+          <mat-error>Пожалуйста, введите корректный адрес электронной почты.</mat-error>
         }
       </mat-form-field>
 
@@ -94,9 +58,7 @@
         </button>
 
         @if (form.get('password')?.invalid && form.get('password')?.touched) {
-        <mat-error>
-          Пароль должен быть длиннее 8-и символов, содержать цифру, заглавную и строчную буквы.
-        </mat-error>
+          <mat-error>Пароль должен быть длиннее 8-и символов, содержать цифру, заглавную и строчную буквы.</mat-error>
         }
       </mat-form-field>
 
@@ -112,22 +74,17 @@
         </button>
 
         @if (form.hasError('passwordsDontMatch') && form.get('repeatPassword')?.touched) {
-        <mat-error>
-          Пароли не совпадают.
-        </mat-error>
-        }
-        @else if (form.get('password')?.invalid && form.get('password')?.touched) {
-        <mat-error>
-          Пожалуйста, повторите пароль
-        </mat-error>
+          <mat-error>Пароли не совпадают.</mat-error>
+        } @else if (form.get('password')?.invalid && form.get('password')?.touched) {
+          <mat-error>Пожалуйста, повторите пароль</mat-error>
         }
       </mat-form-field>
 
       <button mat-raised-button [disabled]="form.invalid || loading" color="primary" type="submit" class="full-width">
         @if (loading) {
-        <mat-spinner diameter="20"></mat-spinner>
+          <mat-spinner diameter="20"></mat-spinner>
         } @else {
-        Создать аккаунт
+          Создать аккаунт
         }
       </button>
     </form>

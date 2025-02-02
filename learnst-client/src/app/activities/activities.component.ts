@@ -216,7 +216,10 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
 
   // Подписка на курс
   enroll(userId: string, activityId: string): void {
-    this.activitiesService.createUserActivity({ userId: userId, activityId: activityId, assignedAt: new Date() }).pipe(
+    this.activitiesService.createUserActivity({
+      userId: userId,
+      activityId: activityId
+    }).pipe(
       catchError(err => {
         this.alertService.showSnackBar('Не удалось записаться на курс');
         console.error('Ошибка записи на курс:', err);

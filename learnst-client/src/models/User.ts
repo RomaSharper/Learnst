@@ -12,10 +12,9 @@ export interface User {
   id?: string;
   fullName?: string;
   avatarUrl?: string;
-  dateOfBirth: string;
-  phone: string;
+  dateOfBirth?: string;
   emailAddress: string;
-  passwordHash: string;
+  passwordHash?: string;
   city?: string;
   role: Role;
   educations: Education[];
@@ -29,4 +28,5 @@ export interface User {
   tickets: Ticket[];
   ticketAnswers: TicketAnswer[];
   username: string;
+  googleId?: string;
 }

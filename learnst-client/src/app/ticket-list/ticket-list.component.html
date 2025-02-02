@@ -2,9 +2,9 @@
   <a mat-button color="primary" routerLink="" (click)="goBack()">Назад</a>
 
   @if (isMediumScreen) {
-    <a type="button" mat-fab class="main-button" aria-label="Добавить" routerLink="" (click)="openCreateTicketDialog()">
+    <button type="button" mat-fab class="main-button" aria-label="Добавить" (click)="openCreateTicketDialog()">
       <mat-icon>add</mat-icon>
-    </a>
+    </button>
   } @else {
     <a type="button" mat-button color="primary" routerLink="" (click)="openCreateTicketDialog()">
       Добавить

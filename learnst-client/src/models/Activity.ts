@@ -10,7 +10,7 @@ export interface Activity {
   title: string;
   description?: string;
   avatarUrl?: string;
-  createdAt: Date;
+  createdAt: string;
   level: Level;
   authorId: string; // Guid
   author?: User;

@@ -25,6 +25,7 @@ import { RuDateTimePipe } from '../../pipes/ru.date.time.pipe';
 import log from 'video.js/dist/types/utils/log';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
+import { DateService } from '../../services/date.service';
 
 @Return()
 @Component({
@@ -46,11 +47,11 @@ import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
   ]
 })
 export class TicketDetailComponent extends MediumScreenSupport implements OnInit {
+  user!: User;
   ticket!: Ticket;
-  userId!: string;
   ticketId!: string;
   canAnswer = false;
-  canDelete = false;
+  canAnswerOrDelete = false;
   goBack!: () => void;
   canChangeStatus = false;
 
@@ -77,40 +78,35 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
         this.ticketService.getTicket(this.ticketId).subscribe({
           next: ticket => {
             this.ticket = ticket;
-            this.ticket.ticketAnswers = this.ticket.ticketAnswers.sort(
-              (a, b) => new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime());
 
-            this.ticket.statusHistories = this.ticket.statusHistories.sort(
-              (a, b) => new Date(a.changedAt!).getTime() - new Date(b.changedAt!).getTime());
-
-            for (const answer of this.ticket.ticketAnswers)
-              this.usersService.getUserById(answer.authorId).pipe(TimeoutHandler.retryOnCodes([500, 504])).subscribe({
-                next: data => answer.author = data as User,
-                error: err => {
-                  this.alertService.showSnackBar('Не удалось загрузить автора ответа');
-                  console.error(err);
-                }
-              });
-
-            // Загружаем автора тикета
-            if (ticket.authorId)
-              this.usersService.getUserById(ticket.authorId).pipe(TimeoutHandler.retryOnCodes([500, 504])).subscribe({
-                next: data => {
-                  this.ticket.author = data as User;
-                },
-                error: err => {
-                  this.alertService.showSnackBar('Не удалось загрузить автора тикета');
-                  console.error(err);
-                }
-              });
-
-            // Загружаем текущего пользователя
             this.authService.getUser().subscribe({
               next: data => {
+                this.user = data as User;
+                this.canChangeStatus = this.user.role !== Role.User;
+                this.canAnswerOrDelete = this.canChangeStatus || this.user.id === this.ticket.authorId;
+              }
+            })
+
+            // Загружаем текущего пользователя
+            this.usersService.getUserById(ticket.authorId).subscribe({
+              next: data => {
                 const currentUser = data as User;
-                this.canChangeStatus = [Role.Admin, Role.Backup].includes(currentUser.role);
-                this.canAnswer = this.canChangeStatus;
-                this.canDelete = this.canChangeStatus || currentUser?.id === this.ticket.authorId;
+                this.ticket.author = currentUser;
+
+                this.ticket.ticketAnswers = this.ticket.ticketAnswers.sort(
+                  (a, b) => new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime());
+
+                this.ticket.statusHistories = this.ticket.statusHistories.sort(
+                  (a, b) => new Date(a.changedAt!).getTime() - new Date(b.changedAt!).getTime());
+
+                for (const answer of this.ticket.ticketAnswers)
+                  this.usersService.getUserById(answer.authorId).pipe(TimeoutHandler.retryOnCodes([500, 504])).subscribe({
+                    next: data => answer.author = data as User,
+                    error: err => {
+                      this.alertService.showSnackBar('Не удалось загрузить автора ответа');
+                      console.error(err);
+                    }
+                  });
               },
               error: err => {
                 this.alertService.showSnackBar('Не удалось загрузить текущего пользователя');
@@ -133,8 +129,8 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
         this.ticket.status = newStatus;
         this.ticket.statusHistories.push({
           status: newStatus,
-          changedAt: new Date().toISOString(),
-          ticketId: this.ticketId
+          ticketId: this.ticketId,
+          changedAt: 'Только что'
         });
         this.alertService.showSnackBar('Статус успешно обновлен');
       },
@@ -151,8 +147,8 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
     });
 
     dialogRef.afterClosed().subscribe((newAnswer: TicketAnswer) => {
-      if (newAnswer)
-        this.ticket.ticketAnswers.push(newAnswer);
+      newAnswer.author = this.user;
+      this.ticket.ticketAnswers.push(newAnswer);
     });
   }
 

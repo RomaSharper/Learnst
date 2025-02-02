@@ -20,39 +20,46 @@
             <input matInput id="fullname" [(ngModel)]="user.fullName" placeholder="Иванов Иван Иванович" maxlength="48"
               (input)="onUserInfoChange()">
           </mat-form-field>
+
           <mat-form-field appearance="outline">
             <mat-label>Имя пользователя</mat-label>
             <input matInput id="username" [(ngModel)]="user.username" placeholder="Имя пользователя" maxlength="20"
               minlength="3" (input)="onUserInfoChange()" required>
+            <span class="question-button" matSuffix matTooltip="Имя пользователя должно быть от 3 до 20 символов, содержать только латиницу, цифры и подчёркивание, не начинаться или заканчиваться на подчёркивание и не содержать бранных слов">
+              <mat-icon>help</mat-icon>
+            </span>
           </mat-form-field>
+
           <mat-form-field appearance="outline">
             <mat-label>Дата рождения</mat-label>
             <input matInput id="date" [(ngModel)]="user.dateOfBirth" placeholder="Выберите день рождения" readonly
-              required (dateChange)="onUserInfoChange()" [matDatepicker]="picker">
+              (dateChange)="onUserInfoChange()" [matDatepicker]="picker" [min]="minDate" [max]="maxDate">
             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker [touchUi]="isMediumScreen"></mat-datepicker>
             <mat-hint>dd.mm.yyyy</mat-hint>
           </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Телефон</mat-label>
-            <input matInput id="tel" type="tel" [(ngModel)]="user.phone" placeholder="Телефон" required maxlength="11"
-              (input)="onUserInfoChange()">
-          </mat-form-field>
+
           <mat-form-field appearance="outline">
             <mat-label>Электронная почта</mat-label>
             <input matInput id="email" type="email" [(ngModel)]="user.emailAddress" placeholder="Электронная почта"
               required maxlength="255" (input)="onUserInfoChange()">
+            <span class="question-button" matSuffix matTooltip="Поддерживаемые домены: mail.ru, xmail.ru, gmail.com, vk.com, yandex.ru, icloud.com">
+              <mat-icon>help</mat-icon>
+            </span>
           </mat-form-field>
+
           <mat-form-field appearance="outline">
             <mat-label>Город</mat-label>
             <input matInput id="city" type="text" [(ngModel)]="user.city" placeholder="Город" maxlength="50"
               (input)="onUserInfoChange()">
           </mat-form-field>
+
           <mat-form-field appearance="outline">
             <mat-label>Резюме</mat-label>
             <textarea matInput id="resume" [(ngModel)]="user.resumeText" maxlength="500"
               placeholder="Введите ваше резюме" rows="4" (input)="onUserInfoChange()"></textarea>
           </mat-form-field>
+
           <mat-form-field appearance="outline">
             <mat-label>Обо мне</mat-label>
             <textarea matInput id="aboutMe" [(ngModel)]="user.aboutMe" maxlength="500" placeholder="Расскажите о себе"
@@ -62,7 +69,7 @@
       </mat-card>
 
       <!-- Изменить пароль -->
-      <mat-card class="full-height">
+      <mat-card class="full-width">
         <h3>Изменить пароль</h3>
         <mat-form-field appearance="outline">
           <mat-label>Старый пароль</mat-label>

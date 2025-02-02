@@ -1,0 +1,128 @@
+@import url(../../styles/vars.less);
+
+@steam-dark: #1B2838;
+@steam-blue: #1999ff;
+@steam-gray: #2A475E;
+@steam-light: #E9EAEC;
+@steam-text: #C6D4DF;
+@steam-border: #67c1f5;
+
+body {
+  margin: 0;
+  line-height: 1.5;
+  padding: @step * 5;
+  color: @steam-text;
+  background: @steam-dark;
+  font-family: "Motiva Sans", Arial, sans-serif;
+}
+
+.privacy-container {
+  margin: 0 auto;
+  border-radius: @step;
+  max-width: 9@step * 10;
+  padding: @step * 8 @step * 10;
+  background: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 @step * 2.5 rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+  font-weight: 500;
+  color: @steam-blue;
+  font-size: @font-size-large;
+  padding-bottom: @step * 2.5;
+  margin: @step * 7 0 @step * 6;
+  border-bottom: @step * 0.25 solid @steam-border;
+}
+
+h2 {
+  font-weight: 500;
+  color: @steam-blue;
+  font-size: @step * 5;
+  padding-left: @step * 2.5;
+  margin: @step * 6 0 @step * 4;
+  border-left: @step solid @steam-gray;
+}
+
+.toc {
+  padding: @step * 5;
+  margin: @step * 7 0;
+  border-radius: @step;
+  background: @steam-gray;
+}
+
+.toc ul {
+  margin: 0;
+  padding: 0;
+  columns: 2;
+  list-style: none;
+}
+
+.toc li {
+  position: relative;
+  margin: @step * 2 0;
+  padding-left: @step * 4;
+}
+
+.toc li:before {
+  left: 0;
+  content: "▹";
+  color: @steam-blue;
+  position: absolute;
+}
+
+a {
+  color: @steam-blue;
+  text-decoration: none;
+  transition: color @short-transition-time;
+}
+
+a:hover {
+  color: @steam-light;
+}
+
+ul {
+  margin: @step * 2.5 0;
+  padding-left: @step * 6;
+}
+
+li {
+  position: relative;
+  margin: @step * 2.5 0;
+}
+
+li:before {
+  content: "•";
+  left: -@step * 4;
+  color: @steam-blue;
+  position: absolute;
+}
+
+.highlight {
+  padding: @step * 5;
+  margin: @step * 5 0;
+  border-radius: @step;
+  background: @steam-gray;
+  border: @step * 0.25 solid rgba(25, 153, 255, 0.1);
+}
+
+footer {
+  color: #6B8BA4;
+  margin-top: @step * 8;
+  padding-top: @step * 5;
+  font-size: @font-size-small;
+  border-top: @step * 0.25 solid @border-color;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: @step * 2.5;
+  }
+
+  .privacy-container {
+    padding: @step * 5;
+  }
+
+  .toc ul {
+    columns: 1;
+  }
+}

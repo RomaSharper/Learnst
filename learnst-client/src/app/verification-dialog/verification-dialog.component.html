@@ -11,9 +11,6 @@
         placeholder="Введите код"
         (keydown.enter)="confirm()">
       <mat-hint align="end">{{ form.value.code ? form.value.code.length : 0 }} / 6</mat-hint>
-      @if (form.get('code')?.invalid && form.get('code')?.touched) {
-        <mat-error>Пожалуйста, введите корректный код</mat-error>
-      }
     </mat-form-field>
   </form>
 </mat-dialog-content>

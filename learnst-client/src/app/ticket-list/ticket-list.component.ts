@@ -74,6 +74,7 @@ export class TicketListComponent extends MediumScreenSupport implements OnInit {
 
     dialogRef.afterClosed().subscribe((newTicket: Ticket) => {
       if (newTicket) {
+        this.usersService.getUserById(newTicket.authorId).subscribe(user => newTicket.author = user);
         this.tickets.unshift(newTicket); // Добавляем новый тикет в начало списка
       }
     });

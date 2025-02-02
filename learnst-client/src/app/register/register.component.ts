@@ -22,6 +22,8 @@ import { Location } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { UsersService } from '../../services/users.service';
+import { NgxMaskDirective } from 'ngx-mask';
+import { User } from '../../models/User';
 
 @Return()
 @Component({
@@ -48,6 +50,8 @@ export class RegisterComponent extends MediumScreenSupport {
   form: FormGroup;
   loading = false;
   hidePassword = true;
+  readonly maxDate = new Date();
+  readonly minDate = new Date(1900, 0, 1);
   emailDomains = ValidationService.emailDomains;
 
   constructor(
@@ -61,9 +65,7 @@ export class RegisterComponent extends MediumScreenSupport {
     super();
     this.form = new FormGroup({
       username: new FormControl('', [Validators.required, Validators.minLength(3), ValidationService.usernameValidator]),
-      dateOfBirth: new FormControl('', Validators.required),
       email: new FormControl('', [Validators.required, Validators.email, ValidationService.domainValidator]),
-      phone: new FormControl('', [Validators.required, Validators.pattern('^\\d{11}$')]),
       password: new FormControl('', [Validators.required, Validators.minLength(8), ValidationService.passwordValidator]),
       repeatPassword: new FormControl('', [Validators.required]),
     }, {
@@ -78,21 +80,21 @@ export class RegisterComponent extends MediumScreenSupport {
 
     const formValue = this.form.value;
     const dateOfBirth = DateService.formatDate(formValue.dateOfBirth);
-    const user = {
-      username: formValue.username,
-      dateOfBirth: dateOfBirth,
-      phone: formValue.phone,
-      emailAddress: formValue.email,
-      passwordHash: formValue.password,
-      role: Role.User,
+
+    const user: User = {
+      tickets: [],
       educations: [],
+      userLessons: [],
+      userAnswers: [],
+      role: Role.User,
+      ticketAnswers: [],
+      userActivities: [],
       workExperiences: [],
       socialMediaProfiles: [],
-      userActivities: [],
-      userAnswers: [],
-      userLessons: [],
-      tickets: [],
-      ticketAnswers: []
+      dateOfBirth: dateOfBirth!,
+      username: formValue.username,
+      emailAddress: formValue.email,
+      passwordHash: formValue.password
     };
 
     // Шаг 1: Отправляем код подтверждения
@@ -122,7 +124,7 @@ export class RegisterComponent extends MediumScreenSupport {
           // Если код введен правильно, продолжаем создание пользователя
           this.usersService.createUser(user).pipe(
             catchError(errorObj => {
-              const error: string = errorObj?.error ?? 'Произошла ошибка при регистрации. Попробуйте еще раз.';
+              const error: string = errorObj?.error?.message ?? 'Произошла ошибка при регистрации. Попробуйте еще раз.';
               this.alertService.showSnackBar(error);
               this.loading = false; // Выключаем состояние загрузки при ошибке
               return of(null);
@@ -131,7 +133,7 @@ export class RegisterComponent extends MediumScreenSupport {
             this.loading = false; // Выключаем состояние загрузки
 
             if (registeredUser) {
-              this.authService.login(user.emailAddress, user.passwordHash);
+              this.authService.login(user.username, user.passwordHash!).subscribe();
               this.alertService.showSnackBar(`Добро пожаловать, ${user.username}!`);
               this.router.navigate(['/']);
             }

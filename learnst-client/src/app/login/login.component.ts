@@ -1,6 +1,6 @@
 import { catchError, of } from 'rxjs';
-import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
@@ -10,6 +10,7 @@ import { AlertService } from '../../services/alert.service';
 import { ValidationService } from '../../services/validation.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-login',
@@ -22,24 +23,45 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
     MatIconModule,
     MatInputModule,
     MatButtonModule,
+    MatTooltipModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule
   ]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   form: FormGroup;
   loading = false;
   hidePassword = true;
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private alertService: AlertService
   ) {
     this.form = new FormGroup({
-      username: new FormControl('', [Validators.required, ValidationService.usernameValidator]),
+      username: new FormControl('', [Validators.required, ValidationService.loginValidator]),
       password: new FormControl('', [Validators.required])
     });
+  }
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      const token = params['token'];
+      if (token) {
+        localStorage.setItem('token', token);
+        this.authService.checkSession();
+        this.router.navigate(['/']);
+      }
+    });
+  }
+
+  loginWithGoogle() {
+    this.authService.loginWithGoogle();
+  }
+
+  loginWithMicrosoft() {
+    this.authService.loginWithMicrosoft();
   }
 
   onSubmit() {

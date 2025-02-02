@@ -11,5 +11,5 @@ public class TicketAnswer
     [JsonIgnore] public Ticket? Ticket { get; set; }
     public Guid AuthorId { get; set; }
     [JsonIgnore] public User? Author{ get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -19,7 +19,7 @@ public class Lesson
 
     public int DurationInMinutes { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public Guid TopicId { get; set; }
     

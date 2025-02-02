@@ -20,6 +20,7 @@ import { FileService } from '../../../services/file.service';
 import { ValidationService } from '../../../services/validation.service';
 import { AnswerType } from './../../../enums/AnswerType';
 import { LessonType } from './../../../enums/LessonType';
+import { format } from 'date-fns';
 
 @Component({
   selector: 'app-lesson-dialog',
@@ -228,8 +229,6 @@ export class LessonDialogComponent {
               this.lessonForm.get('longReadUrl')?.setValue(fileUrl);
             else if (this.lessonForm.get('lessonType')?.value === LessonType.Video)
               this.lessonForm.get('videoUrl')?.setValue(fileUrl);
-
-            console.log(this.lessonForm.value);
 
             // Закрываем диалог и возвращаем данные
             this.dialogRef.close({

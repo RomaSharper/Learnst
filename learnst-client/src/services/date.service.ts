@@ -4,8 +4,8 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class DateService {
-  static formatDate(dateValue?: Date | string | number | null): string {
-    if (!dateValue) return '';
+  static formatDate(dateValue?: Date | string | number | null): string | null {
+    if (!dateValue) return null;
     const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
     if (isNaN(date.getTime())) return '';
     const year = date.getFullYear();

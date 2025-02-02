@@ -13,5 +13,5 @@ export interface Ticket
     authorId: string;
     ticketAnswers: TicketAnswer[];
     statusHistories: StatusHistory[];
-    createdAt?: string;
+    createdAt?: Date;
 }

@@ -2,8 +2,11 @@
 
 // Отступ для контента только на маленьких экранах
 .bounds {
+  overflow-x: hidden;
+
   @media (max-width: @medium-screen) {
-    padding-top: 53px; // Отступ, равный высоте меню
+    padding-top: 53px;
+    transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
@@ -13,7 +16,6 @@
   box-shadow: 0 0 @step * 2.5 rgba(0, 0, 0, 0.5);
   background: linear-gradient(@primary-bg, @secondary-bg);
 
-  // Hamburger styles
   .hamburger {
     display: none;
     cursor: pointer;
@@ -26,7 +28,6 @@
     }
   }
 
-  // Main navigation container
   @media (max-width: @medium-screen) {
     top: 0;
     left: 0;
@@ -37,31 +38,46 @@
     box-shadow: 0 0 @step * 2 0 rgba(0, 0, 0, 0.75);
   }
 
-  // Background overlay
   .background-overlay {
     @media (max-width: @medium-screen) {
       top: 0;
       left: 0;
+      opacity: 0;
       width: 100vw;
       height: 100vh;
+      display: block;
       position: fixed;
       z-index: @overlay;
+      will-change: opacity;
+      pointer-events: none;
       background: rgba(0, 0, 0, 0.6);
+      transition: opacity @transition-time cubic-bezier(0.4, 0, 0.2, 1);
+
+      &.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
     }
   }
 
-  // Navigation list
   ul {
+    left: 0;
     margin: 0;
     padding: 0;
     width: 100%;
     display: flex;
     list-style: none;
     justify-content: center;
-    transition: transform @transition-time ease-in-out left @transition-time;
+    transform: translateX(-100%);
+    transition: transform @transition-time cubic-bezier(0.4, 0, 0.2, 1);
 
     &.active {
       transform: translateX(0);
+    }
+
+    // Добавляем класс для анимации свайпа
+    &.swiping {
+      transition: none !important;
     }
 
     @media (max-width: @medium-screen) {
@@ -69,15 +85,20 @@
       height: 100vh;
       z-index: @menu;
       position: fixed;
-      left: @step * -70;
       width: @step * 70;
       background: @alter-bg;
       flex-direction: column;
       justify-content: flex-start;
-      transition: left @transition-time ease-in-out;
+      transform: translateX(-100%);
+      transition: transform @transition-time cubic-bezier(0.4, 0, 0.2, 1);
 
       &.active {
-        left: 0;
+        transform: translateX(0);
+      }
+
+      // Обновляем анимацию для свайпа
+      &.swiping {
+        transition: none;
       }
     }
 
@@ -209,9 +230,11 @@
         text-overflow: ellipsis;
 
         a {
+          transition: all @transition-time cubic-bezier(0.4, 0, 0.2, 1);
+
           &:hover {
             color: @text-high-emphasis;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            box-shadow: inset 0 0 @step * 1.25 rgba(0, 0, 0, 0.2);
           }
 
           &.active {

@@ -9,11 +9,15 @@
   flex-direction: column;
   justify-content: center;
 
+  @media (max-width: @medium-screen) {
+    height: calc(100vh - 53px);
+  }
+
   h1 {
+    margin: 0;
     font-weight: 500;
     color: #66c0f4;
     font-size: @step * 8;
-    margin-bottom: @step * 4;
 
     p {
       color: #8f98a0;

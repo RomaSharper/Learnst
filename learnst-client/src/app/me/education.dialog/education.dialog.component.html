@@ -3,44 +3,34 @@
   <form [formGroup]="educationForm">
     <mat-form-field appearance="outline">
       <mat-label>Вуз</mat-label>
-      <input matInput formControlName="institutionName" placeholder="Название вуза" (keydown.enter)="save()" required>
+      <input matInput formControlName="institutionName" placeholder="Название вуза" (keydown.enter)="save()" required minlength="3" maxlength="100">
       @if (educationForm.get('institutionName')?.hasError('required')) {
-        <mat-error>
-          Поле обязательно для заполнения.
-        </mat-error>
-      }
-      @if (educationForm.get('institutionName')?.hasError('maxlength')) {
-        <mat-error>
-          Максимальная длина — 100 символов.
-        </mat-error>
+        <mat-error>Поле обязательно для заполнения.</mat-error>
+      } @else if (educationForm.get('institutionName')?.hasError('minlength')) {
+        <mat-error>Минимальная длина - 3 символа.</mat-error>
+      } @else if (educationForm.get('institutionName')?.hasError('maxlength')) {
+        <mat-error>Максимальная длина — 100 символов.</mat-error>
       }
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Факультет</mat-label>
-      <input matInput formControlName="degree" placeholder="Факультет" (keydown.enter)="save()" required>
+      <input matInput formControlName="degree" placeholder="Факультет" (keydown.enter)="save()" required minlength="3" maxlength="100">
       @if (educationForm.get('degree')?.hasError('required')) {
-        <mat-error>
-          Поле обязательно для заполнения.
-        </mat-error>
-      }
-      @if (educationForm.get('degree')?.hasError('maxlength')) {
-        <mat-error>
-          Максимальная длина — 100 символов.
-        </mat-error>
+        <mat-error>Поле обязательно для заполнения.</mat-error>
+      } @else if (educationForm.get('institutionName')?.hasError('minlength')) {
+        <mat-error>Минимальная длина - 3 символа.</mat-error>
+      } @else if (educationForm.get('degree')?.hasError('maxlength')) {
+        <mat-error>Максимальная длина — 100 символов.</mat-error>
       }
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Год выпуска</mat-label>
       <input matInput type="number" formControlName="graduationYear" placeholder="Год выпуска" (keydown.enter)="save()" required>
       @if (educationForm.get('graduationYear')?.hasError('required')) {
-        <mat-error>
-          Поле обязательно для заполнения.
-        </mat-error>
+        <mat-error>Поле обязательно для заполнения.</mat-error>
       }
       @if (educationForm.get('graduationYear')?.hasError('min') || educationForm.get('graduationYear')?.hasError('max')) {
-        <mat-error>
-          Год должен быть между 1900 и {{ currentYear }}.
-        </mat-error>
+        <mat-error>Год должен быть между 1900 и {{ currentYear }}.</mat-error>
       }
     </mat-form-field>
   </form>

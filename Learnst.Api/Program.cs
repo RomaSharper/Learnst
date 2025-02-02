@@ -66,28 +66,28 @@ app.UseRouting();
 app.UseCors(policyName);
 app.UseSession();
 
-app.UseSwagger()
-   .UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", apiName));
+//if (app.Environment.IsDevelopment())
+    app.UseSwagger()
+       .UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", apiName));
 
 app.Use(async (context, next) =>
 {
-    context.Response.Headers.Append("Access-Control-Allow-Origin", trustedOrigins[0]);
-    context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
     var path = context.Request.Path.Value ?? string.Empty;
     var origin = context.Request.Headers.Origin.ToString();
 
-    if (!path.StartsWith("/error") && !trustedOrigins.Any(trustedOrigin => origin.StartsWith(trustedOrigin)))
-    {
-        await File.AppendAllTextAsync("events.log", $"""
-        ** Запрещен доступ источнику "{(string.IsNullOrEmpty(origin) ? "Пустой" : origin)}", так как он не является доверенным. **
-
-        """);
-        context.Response.Redirect("/error");
-        await context.Response.CompleteAsync();
-        return;
+    /*if (path.StartsWith("/error") || path.StartsWith("/api/oauth2")
+        || trustedOrigins.Any(trustedOrigin => origin.StartsWith(trustedOrigin)))
+    {*/
+        await next();
+        return;/*
     }
 
-    await next();
+    await File.AppendAllTextAsync("events.log", $"""
+    ** Запрещен доступ источнику "{(string.IsNullOrEmpty(origin) ? "Пустой" : origin)}", так как он не является доверенным. **
+
+    """);
+    context.Response.Redirect("/error");
+    await context.Response.CompleteAsync();*/
 });
 
 app.MapGet("/error", () => Results.Content(

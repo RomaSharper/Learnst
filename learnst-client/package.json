@@ -25,6 +25,7 @@
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.3",
+    "date-fns-tz": "^3.2.0",
     "highlight.js": "^11.11.1",
     "jest-editor-support": "^32.0.0-beta.1",
     "mammoth": "^1.9.0",
@@ -35,6 +36,9 @@
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "video.js": "^8.21.0",
+    "videojs-contrib-dash": "^5.1.1",
+    "videojs-contrib-hls": "^5.15.0",
+    "videojs-http-source-selector": "^1.1.6",
     "zone.js": "^0.15.0"
   },
   "devDependencies": {

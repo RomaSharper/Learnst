@@ -17,10 +17,12 @@ import { UserComponent } from './user/user.component';
 import { UsersComponent } from './users/users.component';
 import { TicketListComponent } from './ticket-list/ticket-list.component';
 import { TicketDetailComponent } from './ticket-detail/ticket-detail.component';
+import { PolicyComponent } from './policy/policy.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'not-found', component: NotFoundComponent },
+  { path: 'privacypolicy', component: PolicyComponent },
   { path: 'login', component: LoginComponent, canActivate: [AuthGuard], data: { auth: false } },
   { path: 'register', component: RegisterComponent, canActivate: [AuthGuard], data: { auth: false } },
   { path: 'logout', component: LogoutComponent, canActivate: [AuthGuard] },
