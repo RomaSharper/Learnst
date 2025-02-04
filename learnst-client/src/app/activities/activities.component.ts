@@ -86,9 +86,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
       this.loadActivities();
     });
 
-    setInterval(() => {
-      this.now = new Date()
-    }, 60000);
+    setInterval(() => this.now = new Date(), 60000);
   }
 
   // Обработка поиска
@@ -159,18 +157,16 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
     const queryParams: any = {};
 
     // Добавляем search_query, только если он не пустой
-    if (this.searchQuery) {
+    if (this.searchQuery)
       queryParams.search_query = this.searchQuery;
-    } else {
+    else
       queryParams.search_query = null; // Удаляем search_query из URL, если он пустой
-    }
 
     // Добавляем теги, только если они есть
-    if (this.tags.length > 0) {
+    if (this.tags.length > 0)
       queryParams.tags = this.tags.join(','); // Теги уже в URL-формате
-    } else {
+    else
       queryParams.tags = null; // Удаляем теги из URL, если их нет
-    }
 
     // Обновляем URL с новыми параметрами
     this.router.navigate([], {
@@ -209,11 +205,10 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
     if (!this.user || !this.user.id) return;
 
     this.loading = true; // Начало загрузки
-    if (activity.isEnrolled) {
+    if (activity.isEnrolled)
       this.unroll(this.user.id, activity.id);
-    } else {
+    else
       this.enroll(this.user.id, activity.id);
-    }
   }
 
   // Подписка на курс
@@ -282,9 +277,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (!result) return;
       activity.isClosed = !activity.isClosed;
-      this.activitiesService.updateActivity(activity.id, activity).subscribe(() => {
-
-      });
+      this.activitiesService.updateActivity(activity.id, activity).subscribe(() => this.alertService.showSnackBar(`Активность ${activity.isClosed ? 'открыта' : 'закрыта'}`));
     })
   }
 

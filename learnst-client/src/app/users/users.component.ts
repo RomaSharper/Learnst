@@ -104,9 +104,9 @@ export class UsersComponent implements OnInit {
   // Загрузка пользователей
   loadUsers(): void {
     this.loading = true; // Начало загрузки
+    this.hintUsers = []; // Инициализация подсказок
     this.usersService.getUsers().subscribe(data => {
       this.users = data;
-      this.hintUsers = []; // Инициализация подсказок
       this.filterUsers();
       this.loading = false; // Завершение загрузки
     });
@@ -151,24 +151,15 @@ export class UsersComponent implements OnInit {
 
   // Обновление URL с новыми параметрами
   updateUrl(): void {
-    const queryParams: any = {};
-
     // Добавляем search_query, только если он не пустой
-    if (this.searchQuery)
-      queryParams.search_query = this.searchQuery;
-    else
-      queryParams.search_query = null; // Удаляем search_query из URL, если он пустой
-
+    const search_query = this.searchQuery ? this.searchQuery : null;
     // Добавляем теги, только если они есть
-    if (this.tags.length > 0)
-      queryParams.tags = this.tags.join(','); // Теги уже в URL-формате
-    else
-      queryParams.tags = null; // Удаляем теги из URL, если их нет
+    const tags = this.tags.length > 0 ? this.tags.join(',') : null; // Распознаем тэги уже в URL-формате или удаляем их из URL, если их нет
 
     // Обновляем URL с новыми параметрами
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams,
+      queryParams: { search_query: search_query, tags: tags },
       queryParamsHandling: 'merge', // Объединяем с существующими параметрами
     });
   }
