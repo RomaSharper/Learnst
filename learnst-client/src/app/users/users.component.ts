@@ -71,7 +71,9 @@ export class UsersComponent implements OnInit {
       this.authService.getUser().subscribe(user => this.currentUser = user);
       this.searchQuery = params['search_query'] || '';
       this.tags = params['tags'] ? params['tags'].split(',').map((tag: string) => tag.trim()) : [];
-      this.searchInput = (this.searchQuery + ' ' + (this.tags.length ? ' #' + this.tags.join(' #') : '')).trim(); // Обновляем searchInput
+      this.searchInput = this.searchQuery.trim() + (
+        this.searchInput.length && this.tags.length ? ' ' : ''
+      ) + (this.tags.length ? '#' : '') + this.tags.join(' #').trim();
       this.loadUsers();
     });
   }
@@ -83,13 +85,7 @@ export class UsersComponent implements OnInit {
 
   // Обновление подсказок при вводе текста
   onInputChange(): void {
-    if (this.searchInput.trim() === '') {
-      this.hintUsers = [];
-    } else {
-      this.hintUsers = this.users.filter(user =>
-        user.username.toLowerCase().includes(this.searchInput.toLowerCase())
-      );
-    }
+    this.hintUsers = this.searchInput.trim() === '' ? [] : this.users.filter(user => user.username.toLowerCase().includes(this.searchInput.toLowerCase()));
   }
 
   // Поиск при нажатии Enter или клике на иконку
@@ -158,18 +154,16 @@ export class UsersComponent implements OnInit {
     const queryParams: any = {};
 
     // Добавляем search_query, только если он не пустой
-    if (this.searchQuery) {
+    if (this.searchQuery)
       queryParams.search_query = this.searchQuery;
-    } else {
+    else
       queryParams.search_query = null; // Удаляем search_query из URL, если он пустой
-    }
 
     // Добавляем теги, только если они есть
-    if (this.tags.length > 0) {
+    if (this.tags.length > 0)
       queryParams.tags = this.tags.join(','); // Теги уже в URL-формате
-    } else {
+    else
       queryParams.tags = null; // Удаляем теги из URL, если их нет
-    }
 
     // Обновляем URL с новыми параметрами
     this.router.navigate([], {

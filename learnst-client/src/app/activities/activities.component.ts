@@ -75,7 +75,9 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.searchQuery = params['search_query'] || '';
       this.tags = params['tags'] ? params['tags'].split(',').map((tag: string) => TagHelper.toDisplayFormat(tag)) : [];
-      this.searchInput = this.searchQuery + (this.tags.length ? ' #' + this.tags.join(' #') : '').trim();
+      this.searchInput = this.searchQuery.trim() + (
+        this.searchInput.length && this.tags.length ? ' ' : ''
+      ) + (this.tags.length ? '#' : '') + this.tags.join(' #').trim();
       this.filterActivities();
     });
 
