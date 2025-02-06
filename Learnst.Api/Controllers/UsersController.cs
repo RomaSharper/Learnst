@@ -1,6 +1,7 @@
 ﻿#pragma warning disable CS8981
 using bcrypt = BCrypt.Net.BCrypt;
 #pragma warning restore CS8981
+using Learnst.Api.Models;
 using Learnst.Dao.Models;
 using Learnst.Dao;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ using Learnst.Dao.Abstraction;
 
 namespace Learnst.Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 public class UsersController(
     ApplicationDbContext context,
@@ -200,7 +201,7 @@ public class UsersController(
             return BadRequest(usernameValidation);
 
         // Валидация пароля
-        var passwordValidation = validationService.ValidatePassword(user.PasswordHash, user.GoogleId);
+        var passwordValidation = validationService.ValidatePassword(user);
         if (!passwordValidation.Succeed)
             return BadRequest(passwordValidation);
 
@@ -252,7 +253,7 @@ public class UsersController(
             return BadRequest(usernameValidation);
 
         // Валидация пароля
-        var passwordValidation = validationService.ValidatePassword(user.PasswordHash, user.GoogleId);
+        var passwordValidation = validationService.ValidatePassword(user);
         if (!passwordValidation.Succeed)
             return BadRequest(passwordValidation);
 
@@ -371,7 +372,7 @@ public class UsersController(
     )]
     public async Task<ActionResult<UpdateUserResponse>> PutUserPassword([FromBody] UpdatePasswordRequest request)
     {
-        var validatePassword = validationService.ValidatePassword(request.Password, null);
+        var validatePassword = validationService.ValidatePassword(new User { PasswordHash = request.Password });
         if (!validatePassword.Succeed)
             return BadRequest(new
             {

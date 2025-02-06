@@ -1,5 +1,15 @@
 @import url(../../styles/vars.less);
 
+@keyframes iconBounce {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  50% {
+    transform: scale(1.1) rotate(-10deg);
+  }
+}
+
 .full-width {
   width: 100%;
 }
@@ -28,43 +38,153 @@
   display: grid;
   gap: @step * 3;
   justify-items: center;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); // Динамическое количество столбцов
+  transition: all @transition-time ease;
+  grid-template-columns: repeat(auto-fit, minmax(@step * 40, 1fr)); // Динамическое количество столбцов
+
+  @media (max-width: @medium-screen) {
+    gap: @step * 2;
+    grid-template-columns: repeat(auto-fit, minmax(@step * 25, 1fr)); // Динамическое количество столбцов
+  }
 }
 
+// Основные стили для всех кнопок
 .social-btn {
-  display: flex;
-  cursor: pointer;
-  padding: @step * 8;
-  align-items: center;
-  aspect-ratio: 3 / 2;
-  justify-content: center;
-  border-radius: @step * 2;
-  transition: all @transition-time ease;
+  width: 100%;
+  border: none;
+  overflow: hidden;
+  position: relative;
+  transform: translateY(0);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  @media (max-width: @small-screen) {
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    &::after {
+      opacity: 0.1;
+    }
+  }
+
+  &:active {
+    transition: all 0.1s;
+    transform: translateY(4px);
+  }
+
+  &::after {
+    top: 0;
+    left: 0;
+    opacity: 0;
     width: 100%;
-    padding: @step * 5;
-    border-radius: @step * 5;
+    content: '';
+    height: 100%;
+    position: absolute;
+    transition: opacity 0.3s;
+    background: radial-gradient(circle at center, white 0%, transparent 100%);
+  }
+}
+
+// Специфические стили для Google
+.google-btn {
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+
+  &:hover {
+    background: linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%);
+    box-shadow: 0 4px 16px rgba(66, 133, 244, 0.2);
   }
 
   .social-icon {
-    display: block;
-    width: @step * 8;
-    object-fit: contain;
-    aspect-ratio: 1 / 1;
+    filter: drop-shadow(0 2px 4px rgba(66, 133, 244, 0.3));
+    transition: transform 0.3s ease;
+  }
+}
+
+// Специфические стили для VK
+.vk-btn {
+  background: linear-gradient(145deg, #0077FF 0%, #004BFF 100%);
+  position: relative;
+
+  &:hover {
+    background: linear-gradient(145deg, #0066DD 0%, #003BCC 100%);
+
+    &::before {
+      transform: translateX(100%);
+    }
   }
 
-  &.google-btn {
-    background: white;
-    border: @step * 0.25 solid #dadce0;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0) 100%);
+    transition: transform 0.6s ease;
+  }
+
+  .social-icon {
+    filter: drop-shadow(0 2px 4px rgba(0, 119, 255, 0.3));
+  }
+}
+
+// Общие улучшения для других кнопок
+.yandex-btn {
+  background: linear-gradient(145deg, #292933 0%, #1A1A22 100%);
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(255, 204, 0, 0.2);
+  }
+}
+
+.mailru-btn {
+  background: linear-gradient(145deg, #005FFF 0%, #003FCC 100%);
+}
+
+.telegram-btn {
+  background: linear-gradient(145deg, #2AABEE 0%, #229ED9 100%);
+}
+
+.github-btn {
+  background: linear-gradient(145deg, #333 0%, #000 100%);
+}
+
+.discord-btn {
+  background: linear-gradient(145deg, #5865F2 0%, #4752C4 100%);
+}
+
+.steam-btn {
+  background: linear-gradient(145deg, #1B2838 0%, #2A475E 100%);
+}
+
+// Анимация иконок
+.social-icon {
+  height: @step * 16;
+  vertical-align: middle;
+  transform-origin: center;
+  transition: transform 0.3s ease, filter 0.3s ease;
+
+  .social-btn:hover & {
+    animation: iconBounce 0.6s ease both;
+  }
+}
+
+// Адаптивность
+@media (max-width: @medium-screen) {
+  .social-btn {
+    padding: @step * 12;
+    border-radius: @step * 5;
 
     &:hover {
-      background: #f0f0f0;
-      box-shadow: 0 @step * 0.5 @step rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
     }
 
-    &:active {
-      background: #e6e6e6;
+    .social-icon {
+      .social-btn:hover & {
+        animation: iconBounce 0.4s ease-in-out both;
+      }
     }
   }
 }

@@ -54,16 +54,123 @@
 
     <!-- Грид с социальными сетями -->
     <div class="social-grid">
-      <button
+      <a
         mat-raised-button
-        (click)="loginWithGoogle()"
-        matTooltip="Войти с Google"
         matTooltipPosition="below"
+        matTooltip="Войти с Google"
         class="social-btn google-btn"
+        href="https://api-learnst.runasp.net/oauth2/google/init"
       >
-        <img src="assets/icons/socials/google.png" alt="Google" class="social-icon">
-      </button>
-      <!-- Добавьте другие кнопки здесь -->
+        <img src="assets/icons/socials/google.png" alt="Google" class="social-icon" noDownloading>
+      </a>
+
+      <a
+        mat-raised-button
+        matTooltipPosition="below"
+        matTooltip="Войти с Яндекс"
+        class="social-btn yandex-btn"
+        href="https://api-learnst.runasp.net/oauth2/yandex/init"
+      >
+        <img src="assets/icons/socials/yandex.png" alt="Yandex" class="social-icon" noDownloading>
+      </a>
+
+      <!-- <a
+        mat-raised-button
+        matTooltipPosition="below"
+        matTooltip="Войти с Microsoft"
+        class="social-btn microsoft-btn"
+        href="https://api-learnst.runasp.net/oauth2/microsoft/init"
+      >
+        <img src="assets/icons/socials/microsoft.png" alt="Microsoft" class="social-icon">
+      </a> -->
+
+      <a
+        mat-raised-button
+        class="social-btn vk-btn"
+        matTooltipPosition="below"
+        matTooltip="Войти через ВКонтакте"
+        href="https://api-learnst.runasp.net/oauth2/vk/init"
+      >
+        <img src="assets/icons/socials/vk.png" alt="VK" class="social-icon" noDownloading>
+      </a>
+
+      <a
+        mat-raised-button
+        matTooltipPosition="below"
+        class="social-btn mailru-btn"
+        matTooltip="Войти через Mail.ru"
+        href="https://api-learnst.runasp.net/oauth2/mailru/init"
+      >
+        <img src="assets/icons/socials/mail-ru.png" alt="mail.ru" class="social-icon" noDownloading>
+      </a>
+
+      <!-- <a
+        mat-raised-button
+        class="social-btn ok-btn"
+        href="https://api-learnst.runasp.net/oauth2/ok/init"
+        matTooltip="Войти через Одноклассники"
+      >
+        <img src="assets/icons/socials/ok.png" alt="Одноклассники" class="social-icon">
+      </a> -->
+
+      <!-- <a
+        mat-raised-button
+        class="social-btn apple-btn"
+        matTooltip="Войти через Apple"
+        href="https://api-learnst.runasp.net/oauth2/apple/init"
+      >
+        <img src="assets/icons/socials/apple.png" alt="Apple">
+      </a> -->
+
+      <!-- <a
+        mat-raised-button
+        matTooltipPosition="below"
+        class="social-btn telegram-btn"
+        matTooltip="Войти через Telegram"
+        href="https://api-learnst.runasp.net/oauth2/telegram/init"
+      >
+        <img src="assets/icons/socials/telegram.png" alt="Telegram" class="social-icon">
+      </a> -->
+
+      <a
+        mat-raised-button
+        matTooltipPosition="below"
+        matTooltip="Войти через Github"
+        class="social-btn github-btn"
+        href="https://api-learnst.runasp.net/oauth2/github/init"
+      >
+        <img src="assets/icons/socials/github.png" alt="GitHub" class="social-icon" noDownloading>
+      </a>
+
+      <a
+        mat-raised-button
+        matTooltipPosition="below"
+        class="social-btn discord-btn"
+        matTooltip="Войти через Discord"
+        href="https://api-learnst.runasp.net/oauth2/discord/init"
+      >
+        <img src="assets/icons/socials/discord.png" alt="Discord" class="social-icon" noDownloading>
+      </a>
+
+      <a
+        mat-raised-button
+        matTooltipPosition="below"
+        class="social-btn steam-btn"
+        matTooltip="Войти через Steam"
+        href="https://api-learnst.runasp.net/oauth2/steam/init"
+      >
+        <img src="assets/icons/socials/steam.png" alt="Steam" class="social-icon" noDownloading>
+      </a>
+
+      <a
+        mat-raised-button
+        matTooltipPosition="below"
+        class="social-btn twitch-btn"
+        matTooltip="Войти через Twitch"
+        href="https://api-learnst.runasp.net/oauth2/twitch/init"
+      >
+        <img src="assets/icons/socials/twitch.png" alt="Twitch" class="social-icon" noDownloading>
+      </a>
     </div>
   </mat-card-content>
   <mat-card-actions class="center-control form-actions">

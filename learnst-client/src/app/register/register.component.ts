@@ -98,7 +98,7 @@ export class RegisterComponent extends MediumScreenSupport {
     };
 
     // Шаг 1: Отправляем код подтверждения
-    this.emailService.sendVerificationCode(user.emailAddress).pipe(
+    this.emailService.sendVerificationCode(user.emailAddress!).pipe(
       catchError(errorObj => {
         this.alertService.showSnackBar('Ошибка при отправке кода подтверждения.');
         console.error(errorObj);
@@ -112,7 +112,7 @@ export class RegisterComponent extends MediumScreenSupport {
       }
 
       // Шаг 2: Открываем диалог для ввода кода
-      this.alertService.openVerificationCodeDialog(user.emailAddress).afterClosed().subscribe(result => {
+      this.alertService.openVerificationCodeDialog(user.emailAddress!).afterClosed().subscribe(result => {
         if (result === 0) {
           this.alertService.showSnackBar("Вы отказались от подтверждения почты.");
           this.loading = false; // Выключаем состояние загрузки

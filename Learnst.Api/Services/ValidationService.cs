@@ -2,7 +2,7 @@
 using Learnst.Dao;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
-using Learnst.Dao.Abstraction;
+using Learnst.Api.Models;
 
 namespace Learnst.Api.Services;
 
@@ -88,7 +88,7 @@ public partial class ValidationService(ApplicationDbContext context) : IValidati
         if (string.IsNullOrEmpty(username))
             return new UpdatedResponse { Succeed = false, Message = "Имя пользователя не может быть пустым" };
 
-        if (username.Length < 3 || username.Length > 20)
+        if (username.Length is < 3 or > 20)
             return new UpdatedResponse { Succeed = false, Message = "Имя пользователя должно быть от 3 до 20 символов" };
 
         if (UnderscoreInStartRegex().IsMatch(username) || UnderscoreInEndRegex().IsMatch(username))
@@ -106,32 +106,30 @@ public partial class ValidationService(ApplicationDbContext context) : IValidati
         var existingUser = await context.Users
             .FirstOrDefaultAsync(u => u.Username == username && u.Id != userId);
 
-        if (existingUser is not null)
-            return new UpdatedResponse { Succeed = false, Message = "Имя пользователя уже занято" };
-
-        return new UpdatedResponse { Succeed = true, Message = "Успех" };
+        return existingUser is not null
+            ? new UpdatedResponse { Succeed = false, Message = "Имя пользователя уже занято" }
+            : new UpdatedResponse { Succeed = true, Message = "Успех" };
     }
 
     // Валидация пароля
-    public UpdatedResponse ValidatePassword(string? password, string? googleId)
+    public UpdatedResponse ValidatePassword(User user)
     {
-        if (!string.IsNullOrEmpty(googleId))
+        if (!string.IsNullOrEmpty(user.ExternalLoginId))
             return new UpdatedResponse { Succeed = true, Message = "Успех" };
 
-        if (string.IsNullOrEmpty(password))
+        if (string.IsNullOrEmpty(user.PasswordHash))
             return new UpdatedResponse { Succeed = false, Message = "Пароль не может быть пустым, если аккаунт не зарегистирован через OAuth2" };
 
-        if (!PasswordRegex().IsMatch(password))
-            return new UpdatedResponse { Succeed = false, Message = "Пароль должен содержать минимум 8 символов, одну заглавную букву, одну строчную букву и одну цифру" };
-
-        return new UpdatedResponse { Succeed = true, Message = "Успех" };
+        return !PasswordRegex().IsMatch(user.PasswordHash)
+            ? new UpdatedResponse { Succeed = false, Message = "Пароль должен содержать минимум 8 символов, одну заглавную букву, одну строчную букву и одну цифру" }
+            : new UpdatedResponse { Succeed = true, Message = "Успех" };
     }
 
     // Валидация email
     public UpdatedResponse ValidateEmail(string email)
     {
         if (string.IsNullOrEmpty(email))
-            return new UpdatedResponse { Succeed = false, Message = "Email не может быть пустым" };
+            return new UpdatedResponse { Succeed = true, Message = "Email пуст" };
 
         if (!EmailRegex().IsMatch(email))
             return new UpdatedResponse { Succeed = false, Message = "Некорректный формат email" };
@@ -149,10 +147,9 @@ public partial class ValidationService(ApplicationDbContext context) : IValidati
         if (string.IsNullOrEmpty(url))
             return new UpdatedResponse { Succeed = false, Message = "URL не может быть пустым" };
 
-        if (!UrlRegex().IsMatch(url))
-            return new UpdatedResponse { Succeed = false, Message = "Некорректный формат URL" };
-
-        return new UpdatedResponse { Succeed = true, Message = "Успех" };
+        return !UrlRegex().IsMatch(url)
+            ? new UpdatedResponse { Succeed = false, Message = "Некорректный формат URL" }
+            : new UpdatedResponse { Succeed = true, Message = "Успех" };
     }
 
     // Генерация регулярных выражений

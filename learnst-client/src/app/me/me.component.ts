@@ -341,7 +341,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
         return;
       }
 
-      if (this.user?.emailAddress !== this.originalUser?.emailAddress)
+      if (this.user?.emailAddress && this.user?.emailAddress !== this.originalUser?.emailAddress)
         this.verifyEmail();
       else
         this.proceedWithSave();
@@ -373,10 +373,10 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   // Метод для проверки дубликатов
   private checkDuplicates(user: User): Observable<{ emailTaken: boolean, usernameTaken: boolean }> {
     return forkJoin({
-      emailTaken: this.usersService.getUserByEmail(user.emailAddress).pipe(
+      emailTaken: user.emailAddress ? this.usersService.getUserByEmail(user.emailAddress).pipe(
         map(user => !!user && user.id !== this.userId),
         catchError(() => of(false))
-      ),
+      ) : of(false),
       usernameTaken: this.usersService.getUserByName(user.username).pipe(
         map(user => !!user && user.id !== this.userId),
         catchError(() => of(false))
@@ -417,7 +417,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
   private verifyEmail() {
     // Шаг 1: Отправляем код подтверждения
-    return this.user && this.emailService.sendVerificationCode(this.user.emailAddress).pipe(
+    return this.user && this.emailService.sendVerificationCode(this.user.emailAddress!).pipe(
       catchError(errorObj => {
         this.alertService.showSnackBar('Ошибка при отправке кода подтверждения.');
         console.error(errorObj);
@@ -427,7 +427,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       if (!codeResponse) return; // Если ошибка, выходим
 
       // Шаг 2: Открываем диалог для ввода кода
-      this.alertService.openVerificationCodeDialog(this.user!.emailAddress).afterClosed().subscribe(result => {
+      this.alertService.openVerificationCodeDialog(this.user!.emailAddress!).afterClosed().subscribe(result => {
         if (result === 0) {
           this.alertService.showSnackBar('Почта не была подтверждена. Изменения не сохранены.');
           return; // Пользователь закрыл диалог

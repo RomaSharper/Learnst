@@ -1,4 +1,6 @@
-﻿namespace Learnst.Dao.Models;
+﻿using Learnst.Dao.Models;
+
+namespace Learnst.Api.Models;
 
 public class UpdatedResponse
 {

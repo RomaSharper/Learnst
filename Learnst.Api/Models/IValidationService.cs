@@ -1,11 +1,11 @@
 ﻿using Learnst.Dao.Models;
 
-namespace Learnst.Dao.Abstraction;
+namespace Learnst.Api.Models;
 
 public interface IValidationService
 {
     UpdatedResponse ValidateEmail(string email);
-    UpdatedResponse ValidatePassword(string? password, string? googleId);
+    UpdatedResponse ValidatePassword(User user);
     UpdatedResponse ValidateUrl(string url);
     Task<UpdatedResponse> ValidateUsername(string username, Guid userId);
 }

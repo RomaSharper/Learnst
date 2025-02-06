@@ -29,10 +29,12 @@
                 <input matInput id="date" type="date" [(ngModel)]="user.dateOfBirth" required readonly>
               </mat-form-field>
             }
-            <mat-form-field appearance="outline">
-              <mat-label>Электронная почта</mat-label>
-              <input matInput id="email" type="email" [(ngModel)]="user.emailAddress" required maxlength="255" readonly>
-            </mat-form-field>
+            @if (user.emailAddress) {
+              <mat-form-field appearance="outline">
+                <mat-label>Электронная почта</mat-label>
+                <input matInput id="email" type="email" [(ngModel)]="user.emailAddress" required maxlength="255" readonly>
+              </mat-form-field>
+            }
             @if (user.city && user.city !== '') {
             <mat-form-field appearance="outline">
               <mat-label>Город</mat-label>

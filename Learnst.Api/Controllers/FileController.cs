@@ -1,23 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Learnst.Api.Models;
+using Learnst.Api.Services;
+using Learnst.Dao.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Renci.SshNet;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Learnst.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class FileController : ControllerBase
+[Route("[controller]")]
+public class FileController(IOptions<SftpSettings> settings) : ControllerBase
 {
-    private const int _sftpPort = 22;
     private const string _baseDir = @"\wwwroot";
-    private const string _sftpUsername = "site15763";
-    private const string _sftpPassword = "4a_KB%9d5Zq!";
-    private const string _sftpHost = "site15763.siteasp.net";
 
-    public class UploadFileModel
-    {
-        public IFormFile? File { get; set; }
-    }
+    private readonly string _sftpHost = settings.Value.Host;
+    private readonly int _sftpPort = settings.Value.Port;
+    private readonly string _sftpUsername = settings.Value.Username;
+    private readonly string _sftpPassword = settings.Value.Password;
 
     [HttpPost]
     [Produces("application/json")]
@@ -31,28 +31,15 @@ public class FileController : ControllerBase
     )]
     public async Task<IActionResult> Upload([FromForm] UploadFileModel model)
     {
-        if (model.File is null || model.File.Length is 0)
-            return BadRequest(new { message = "No file uploaded" });
-
-        using MemoryStream memoryStream = new();
-        await model.File.CopyToAsync(memoryStream);
-        var fileBytes = memoryStream.ToArray();
-
-        var path = Path.Combine(GetPathFromContentType(model.File.ContentType), $"{DateTimeOffset.Now.ToUnixTimeSeconds()}_{model.File.FileName}");
-        var fullPath = Path.Combine(_baseDir, path);
-        using SftpClient sftp = new(_sftpHost, _sftpPort, _sftpUsername, _sftpPassword);
         try
         {
-            sftp.Connect();
-            using MemoryStream fileStream = new(fileBytes);
-            sftp.UploadFile(fileStream, fullPath);
-            sftp.Disconnect();
+            var path = await FileService.Upload(model, settings.Value);
+            return Ok(new { message = "Файл добавлен успешно", fileUrl = $@"\{path}" });
         }
         catch (Exception ex)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "File upload failed", error = ex.Message });
+            return BadRequest(new { message = ex.Message });
         }
-        return Ok(new { message = "File uploaded successfully", fileUrl = $@"\{path}" });
     }
 
 
@@ -68,33 +55,14 @@ public class FileController : ControllerBase
     )]
     public IActionResult Delete([FromQuery] string path)
     {
-        using SftpClient sftp = new(_sftpHost, _sftpPort, _sftpUsername, _sftpPassword);
-        path = path.Replace(@"\\", @"\");
-
         try
         {
-            sftp.Connect();
-            if (!sftp.Exists(path))
-                return NotFound(new { message = $"File not found: {path}" });
-
-            sftp.DeleteFile(path);
-            return Ok(new { message = "File deleted successfully" });
+            FileService.Delete(path, settings.Value);
+            return Ok(new { message=  "Файл удален успешно" });
         }
         catch (Exception ex)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "File deletion failed", error = ex.Message });
-        }
-        finally
-        {
-            sftp.Disconnect();
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Не удалось удалить файл", error = ex.Message });
         }
     }
-
-
-    private static string GetPathFromContentType(string contentType) => contentType switch
-    {
-        "image/jpeg" or "image/png" => "images",
-        "video/mp4" => "videos",
-        _ => "docs"
-    };
 }

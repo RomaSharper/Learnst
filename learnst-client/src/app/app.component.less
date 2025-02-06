@@ -271,3 +271,27 @@
     }
   }
 }
+
+@media (max-width: @large-screen) and (min-width: @more-than-medium-screen) {
+  .main-navigation {
+    padding: @step * 2;
+
+    li:not(.user-area) {
+      margin: @step * 0.5;
+
+      a {
+        padding: @step;
+        font-size: @font-size-large - 1;
+      }
+    }
+
+    .user-avatar {
+      gap: @step !important;
+
+      img {
+        width: @step * 6 !important;
+        height: @step * 6 !important;
+      }
+    }
+  }
+}

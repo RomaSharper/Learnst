@@ -1,12 +1,12 @@
 <nav class="main-navigation">
   <div class="background-overlay" [class.active]="isMenuOpen" [style.opacity]="overlayOpacity"
-    (click)="toggleMenu($event)"></div>
+    (click)="closeMenu($event)"></div>
 
   <button type="button" class="hamburger" mat-icon-button (click)="toggleMenu($event)">
     <mat-icon>menu</mat-icon>
   </button>
 
-  <ul [style.transform]="'translateX(' + menuTranslateX + '%)'" [class.swiping]="isSwiping">
+  <ul [style.transform]="'translateX(' + (isMediumScreen ? menuTranslateX : 0) + '%)'" [class.swiping]="isSwiping">
     @if (user) {
       <li class="user-area">
         <div class="user-avatar">

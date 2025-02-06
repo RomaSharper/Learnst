@@ -3,14 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using Learnst.Dao;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Learnst.Api.Models;
 using Learnst.Api.Services;
-using Learnst.Dao.Models;
+using Microsoft.Extensions.Options;
 
 namespace Learnst.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class SessionsController(ApplicationDbContext context, IConfiguration configuration) : ControllerBase
+[Route("[controller]")]
+public class SessionsController(ApplicationDbContext context, IOptions<JwtSettings> jwtSettings) : ControllerBase
 {
     [HttpPost("auth")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
@@ -19,11 +20,9 @@ public class SessionsController(ApplicationDbContext context, IConfiguration con
             .FirstOrDefaultAsync(u => u.Username == request.Login || u.EmailAddress == request.Login);
 
         if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-        {
             return Unauthorized(new { message = "Неверный логин или пароль" });
-        }
 
-        var token = JwtService.GenerateToken(user, configuration);
+        var token = JwtService.GenerateToken(user, jwtSettings.Value);
 
         return Ok(new { token });
     }

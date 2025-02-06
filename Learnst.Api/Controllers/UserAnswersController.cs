@@ -8,7 +8,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Learnst.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class UserAnswersController(ApplicationDbContext context) : ControllerBase
 {
     // GET: api/UserAnswers

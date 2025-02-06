@@ -1,11 +1,11 @@
-﻿using Learnst.Dao.Models;
+﻿using Learnst.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Learnst.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class ClientController(
     IHttpClientFactory httpClientFactory
 ) : ControllerBase

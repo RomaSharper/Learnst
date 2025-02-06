@@ -382,17 +382,19 @@ namespace Learnst.Dao.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("EmailAddress")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("ExternalLoginId")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("ExternalLoginType")
+                        .HasColumnType("int");
 
                     b.Property<string>("FullName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("GoogleId")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(60)
@@ -414,7 +416,8 @@ namespace Learnst.Dao.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex(new[] { "EmailAddress" }, "IX_Users_EmailAddress")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[EmailAddress] IS NOT NULL");
 
                     b.HasIndex(new[] { "Username" }, "IX_Users_Username")
                         .IsUnique();

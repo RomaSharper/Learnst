@@ -7,13 +7,14 @@ import { WorkExperience } from "./WorkExperience";
 import { UserAnswer } from "./UserAnswer";
 import { Ticket } from "./Ticket";
 import { TicketAnswer } from "./TicketAnswer";
+import { ExternalLoginType } from "../enums/ExternalLoginType";
 
 export interface User {
   id?: string;
   fullName?: string;
   avatarUrl?: string;
   dateOfBirth?: string;
-  emailAddress: string;
+  emailAddress?: string;
   passwordHash?: string;
   city?: string;
   role: Role;
@@ -28,5 +29,6 @@ export interface User {
   tickets: Ticket[];
   ticketAnswers: TicketAnswer[];
   username: string;
-  googleId?: string;
+  externalLoginId?: string;
+  externalLoginType?: ExternalLoginType
 }

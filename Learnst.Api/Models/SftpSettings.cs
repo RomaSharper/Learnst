@@ -1,6 +1,6 @@
-﻿namespace Learnst.Dao.Models;
+﻿namespace Learnst.Api.Models;
 
-public class SmtpSettings
+public class SftpSettings
 {
     public string Host { get; set; } = string.Empty;
     public int Port { get; set; }

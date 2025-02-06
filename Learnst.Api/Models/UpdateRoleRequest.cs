@@ -1,6 +1,6 @@
 ﻿using Learnst.Dao.Enums;
 
-namespace Learnst.Dao.Models;
+namespace Learnst.Api.Models;
 
 public class UpdateRoleRequest
 {

@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Learnst.Api.Models;
 using Learnst.Dao.Models;
 using Microsoft.IdentityModel.Tokens;
 
@@ -8,9 +9,9 @@ namespace Learnst.Api.Services;
 
 public static class JwtService
 {
-    public static string GenerateToken(User user, IConfiguration configuration)
+    public static string GenerateToken(User user, JwtSettings jwtSettings)
     {
-        SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
+        SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(jwtSettings.Key));
         SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
 
         Claim[] claims =
@@ -21,11 +22,11 @@ public static class JwtService
         ];
 
         JwtSecurityToken token = new(
-            issuer: configuration["Jwt:Issuer"],
-            audience: configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddDays(1), // Время жизни токена
-            signingCredentials: credentials
+            issuer: jwtSettings.Issuer,
+            audience: jwtSettings.Audience,
+            signingCredentials: credentials,
+            expires: DateTime.UtcNow.AddDays(1)
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);

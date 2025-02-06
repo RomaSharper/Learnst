@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
 using System.Text;
+using Learnst.Api.Models;
 
 namespace Learnst.Api.Services;
 

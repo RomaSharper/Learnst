@@ -45,9 +45,13 @@ export class AppComponent extends MediumScreenSupport {
   }
 
   ngOnInit(): void {
-    this.authService.getUser().subscribe(user => {
-      this.user = user;
-    });
+    this.authService.getUser().subscribe(user => this.user = user);
+  }
+
+  closeMenu(event: Event) {
+    event.stopPropagation();
+    if (this.isMenuOpen)
+      this.updateMenuState(false);
   }
 
   toggleMenu(event: Event) {
@@ -93,8 +97,11 @@ export class AppComponent extends MediumScreenSupport {
 
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {
-    if (this.isMenuOpen &&
-        !(event.target as HTMLElement).closest('.main-navigation')) {
+    const clickedInsideMenu = (event.target as HTMLElement).closest('.main-navigation');
+    const isOverlay = (event.target as HTMLElement).classList.contains('background-overlay');
+
+    if (this.isMenuOpen && !clickedInsideMenu && !isOverlay) {
+      event.stopPropagation();
       this.updateMenuState(false);
     }
   }

@@ -42,7 +42,7 @@
           <mat-form-field appearance="outline">
             <mat-label>Электронная почта</mat-label>
             <input matInput id="email" type="email" [(ngModel)]="user.emailAddress" placeholder="Электронная почта"
-              required maxlength="255" (input)="onUserInfoChange()">
+              maxlength="255" (input)="onUserInfoChange()">
             <span class="question-button" matSuffix matTooltip="Поддерживаемые домены: mail.ru, xmail.ru, gmail.com, vk.com, yandex.ru, icloud.com">
               <mat-icon>help</mat-icon>
             </span>

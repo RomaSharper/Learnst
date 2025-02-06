@@ -11,6 +11,7 @@ import { ValidationService } from '../../services/validation.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
 
 @Component({
   selector: 'app-login',
@@ -25,6 +26,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatButtonModule,
     MatTooltipModule,
     ReactiveFormsModule,
+    NoDownloadingDirective,
     MatProgressSpinnerModule
   ]
 })
@@ -54,14 +56,6 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/']);
       }
     });
-  }
-
-  loginWithGoogle() {
-    this.authService.loginWithGoogle();
-  }
-
-  loginWithMicrosoft() {
-    this.authService.loginWithMicrosoft();
   }
 
   onSubmit() {

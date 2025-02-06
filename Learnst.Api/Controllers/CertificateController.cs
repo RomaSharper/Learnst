@@ -1,12 +1,12 @@
-﻿using Learnst.Dao;
+﻿using Learnst.Api.Models;
+using Learnst.Dao;
 using Learnst.Dao.Abstraction;
-using Learnst.Dao.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Learnst.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class CertificateController(
     ApplicationDbContext context,
     ICertificateService certificateService,

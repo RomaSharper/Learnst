@@ -1,11 +1,12 @@
-﻿using Learnst.Dao.Abstraction;
+﻿using Learnst.Api.Models;
+using Learnst.Dao.Abstraction;
 using Learnst.Dao.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Learnst.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class EmailController(IEmailSender emailSender) : ControllerBase
 {
     private readonly Lazy<Random> _random = new(() => new Random());

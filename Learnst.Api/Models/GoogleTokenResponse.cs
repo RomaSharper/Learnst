@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Learnst.Dao.Models;
+namespace Learnst.Api.Models;
 
 public class GoogleTokenResponse
 {

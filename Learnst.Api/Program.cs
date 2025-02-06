@@ -1,8 +1,8 @@
 using System.Text;
+using Learnst.Api.Models;
 using Learnst.Api.Services;
 using Learnst.Dao;
 using Learnst.Dao.Abstraction;
-using Learnst.Dao.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.EntityFrameworkCore;
@@ -11,15 +11,27 @@ using Microsoft.IdentityModel.Tokens;
 const string policyName = "CORS";
 const string apiName = "Learnst API v.1";
 const string connectionStringName = "DefaultConnection";
-string[] trustedOrigins = ["https://learnst.runasp.net"];
+string[] trustedOrigins = ["", "https://learnst.runasp.net"];
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRequestTimeouts(options => options.DefaultPolicy = new RequestTimeoutPolicy { Timeout = TimeSpan.FromMinutes(5) });
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString(connectionStringName)));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
+    builder.Configuration.GetConnectionString(connectionStringName)));
 
-builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+builder.Services.Configure<VkSettings>(builder.Configuration.GetSection("Vk"))
+                .Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"))
+                .Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"))
+                .Configure<SftpSettings>(builder.Configuration.GetSection("Sftp"))
+                .Configure<SteamSettings>(builder.Configuration.GetSection("Steam"))
+                .Configure<GithubSettings>(builder.Configuration.GetSection("Github"))
+                .Configure<MailRuSettings>(builder.Configuration.GetSection("MailRu"))
+                .Configure<GoogleSettings>(builder.Configuration.GetSection("Google"))
+                .Configure<YandexSettings>(builder.Configuration.GetSection("Yandex"))
+                .Configure<DiscordSettings>(builder.Configuration.GetSection("Discord"))
+                .Configure<TelegramSettings>(builder.Configuration.GetSection("Telegram"))
+                .Configure<MicrosoftSettings>(builder.Configuration.GetSection("Microsoft"));
 
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>()
                 .AddScoped<IValidationService, ValidationService>()
@@ -27,9 +39,9 @@ builder.Services.AddScoped<IEmailSender, SmtpEmailSender>()
 
 builder.Services.AddCors(options => options.AddPolicy(policyName,
     policyBuilder => policyBuilder.WithOrigins(trustedOrigins)
-                      .AllowAnyHeader()
-                      .AllowAnyMethod()
-                      .AllowCredentials()));
+                                  .AllowAnyHeader()
+                                  .AllowAnyMethod()
+                                  .AllowCredentials()));
 
 builder.Services.AddAuthentication(options =>
 {
@@ -75,19 +87,17 @@ app.Use(async (context, next) =>
     var path = context.Request.Path.Value ?? string.Empty;
     var origin = context.Request.Headers.Origin.ToString();
 
-    /*if (path.StartsWith("/error") || path.StartsWith("/api/oauth2")
-        || trustedOrigins.Any(trustedOrigin => origin.StartsWith(trustedOrigin)))
-    {*/
+    if (path.StartsWith("/error") || path.StartsWith("/oauth2") || trustedOrigins.Any(trustedOrigin => origin.StartsWith(trustedOrigin)))
+    {
         await next();
-        return;/*
+        return;
     }
 
-    await File.AppendAllTextAsync("events.log", $"""
-    ** Запрещен доступ источнику "{(string.IsNullOrEmpty(origin) ? "Пустой" : origin)}", так как он не является доверенным. **
-
-    """);
+    await LogService.WriteLine(
+        $"** Запрещен доступ источнику \"{(string.IsNullOrEmpty(origin) ? "Пустой" : origin)}\", так как он не является доверенным. **");
     context.Response.Redirect("/error");
-    await context.Response.CompleteAsync();*/
+    await context.Response.CompleteAsync();
+    return;
 });
 
 app.MapGet("/error", () => Results.Content(

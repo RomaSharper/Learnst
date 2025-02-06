@@ -7,7 +7,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Learnst.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class LessonsController(ApplicationDbContext context) : ControllerBase
 {
     // GET: api/Topics/5/Lessons

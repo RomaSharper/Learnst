@@ -234,7 +234,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
         return activity;
       });
       this.filterActivities();
-      this.alertService.showSnackBar('Вы успешно подписались на курс');
+      this.alertService.showSnackBar('Вы успешно записались на курс');
       this.loading = false; // Завершение загрузки
     });
   }

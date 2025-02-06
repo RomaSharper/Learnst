@@ -1,4 +1,4 @@
-﻿namespace Learnst.Dao.Models;
+﻿namespace Learnst.Api.Models;
 
 public class BrowserInfo
 {

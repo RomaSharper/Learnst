@@ -8,7 +8,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Learnst.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 [SwaggerTag("Управление тикетами (вопросами) и их статусами")]
 public class TicketsController(ApplicationDbContext context) : ControllerBase
 {

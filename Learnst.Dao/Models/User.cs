@@ -17,11 +17,11 @@ public class User
     public DateOnly? DateOfBirth { get; set; }
 
     [StringLength(20, ErrorMessage = "Имя пользователя должно быть не длиннее 20 символов")]
-    [RegularExpression(@"^(?!_)[a-z0-9]+(_[a-z0-9]+)*(?<!_)$", ErrorMessage = "Имя пользователя должно содержать только строчные латинские буквы, цифры и максимум одно нижнее подчёркивание (не в начале и не в конце)")]
+    [RegularExpression("^(?!_)[a-z0-9]+(_[a-z0-9]+)*(?<!_)$", ErrorMessage = "Имя пользователя должно содержать только строчные латинские буквы, цифры и максимум одно нижнее подчёркивание (не в начале и не в конце)")]
     public string Username { get; set; } = string.Empty;
 
-    [Required, EmailAddress, StringLength(255)]
-    public string EmailAddress { get; set; } = string.Empty;
+    [EmailAddress, StringLength(255)]
+    public string? EmailAddress { get; set; }
 
     [MaxLength(60)] public string? PasswordHash { get; set; }
 
@@ -29,7 +29,9 @@ public class User
 
     [Required] public Role Role { get; set; } = Role.User;
 
-    [StringLength(255)] public string? GoogleId { get; set; }
+    [StringLength(255)] public string? ExternalLoginId { get; set; }
+    
+    public ExternalLoginType? ExternalLoginType { get; set; }
 
     #endregion
 
