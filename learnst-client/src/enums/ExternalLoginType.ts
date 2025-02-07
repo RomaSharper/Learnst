@@ -6,5 +6,12 @@ export enum ExternalLoginType {
   MailRu,
   Ok,
   Apple,
-  Facebook
+  Telegram,
+  Github,
+  Discord,
+  Steam,
+  Twitch,
+  EpicGames,
+  Facebook,
+  TikTok
 }

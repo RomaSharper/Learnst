@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 using Learnst.Dao.Enums;
-using Learnst.Dao.Abstraction;
 
 namespace Learnst.Api.Controllers;
 
@@ -206,9 +205,12 @@ public class UsersController(
             return BadRequest(passwordValidation);
 
         // Валидация email
-        var emailValidation = validationService.ValidateEmail(user.EmailAddress);
-        if (!emailValidation.Succeed)
-            return BadRequest(emailValidation);
+        if (!string.IsNullOrEmpty(user.EmailAddress))
+        {
+            var emailValidation = validationService.ValidateEmail(user.EmailAddress);
+            if (!emailValidation.Succeed)
+                return BadRequest(emailValidation);
+        }
         
         user.PasswordHash = bcrypt.HashPassword(user.PasswordHash);
         await context.Users.AddAsync(user);
@@ -258,7 +260,7 @@ public class UsersController(
             return BadRequest(passwordValidation);
 
         // Валидация email
-        var emailValidation = validationService.ValidateEmail(user.EmailAddress);
+        var emailValidation = validationService.ValidateEmail(user.EmailAddress ?? string.Empty);
         if (!emailValidation.Succeed)
             return BadRequest(emailValidation);
 
@@ -428,6 +430,8 @@ public class UsersController(
     public async Task<IActionResult> DeleteUser(Guid id)
     {
         var user = await context.Users
+            .Include(u => u.Tickets)
+            .Include(u => u.TicketAnswers)
             .Include(u => u.UserActivities)
             .Include(u => u.UserLessons)
             .Include(u => u.UserAnswers)

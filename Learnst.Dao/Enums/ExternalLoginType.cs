@@ -12,5 +12,9 @@ public enum ExternalLoginType
     Telegram,
     Github,
     Discord,
-    Steam
+    Steam,
+    Twitch,
+    EpicGames,
+    Facebook,
+    TikTok
 }

@@ -83,7 +83,18 @@
   }
 }
 
-// Специфические стили для Google
+// Анимация иконок
+.social-icon {
+  height: @step * 16;
+  vertical-align: middle;
+  transform-origin: center;
+  transition: transform 0.3s ease, filter 0.3s ease;
+
+  .social-btn:hover & {
+    animation: iconBounce 0.6s ease both;
+  }
+}
+
 .google-btn {
   background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
 
@@ -98,77 +109,48 @@
   }
 }
 
-// Специфические стили для VK
 .vk-btn {
-  background: linear-gradient(145deg, #0077FF 0%, #004BFF 100%);
-  position: relative;
-
-  &:hover {
-    background: linear-gradient(145deg, #0066DD 0%, #003BCC 100%);
-
-    &::before {
-      transform: translateX(100%);
-    }
-  }
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(to right,
-        rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.15) 50%,
-        rgba(255, 255, 255, 0) 100%);
-    transition: transform 0.6s ease;
-  }
-
-  .social-icon {
-    filter: drop-shadow(0 2px 4px rgba(0, 119, 255, 0.3));
-  }
+  background: linear-gradient(145deg, #07f 0%, #08a 100%);
 }
 
-// Общие улучшения для других кнопок
 .yandex-btn {
-  background: linear-gradient(145deg, #292933 0%, #1A1A22 100%);
-
-  &:hover {
-    box-shadow: 0 4px 16px rgba(255, 204, 0, 0.2);
-  }
+  background: linear-gradient(145deg, #292933 0%, #1a1a22 100%);
 }
 
 .mailru-btn {
-  background: linear-gradient(145deg, #005FFF 0%, #003FCC 100%);
+  background: linear-gradient(145deg, #005fff 0%, #0020bb 100%);
 }
 
 .telegram-btn {
-  background: linear-gradient(145deg, #2AABEE 0%, #229ED9 100%);
+  background: linear-gradient(145deg, #2aabee 0%, #229ed9 100%);
 }
 
 .github-btn {
-  background: linear-gradient(145deg, #333 0%, #000 100%);
+  background: linear-gradient(145deg, #3a3a3a, #0f0f0f);
 }
 
 .discord-btn {
-  background: linear-gradient(145deg, #5865F2 0%, #4752C4 100%);
+  background: linear-gradient(145deg, #9594ff 0%, #654efc 100%);
 }
 
 .steam-btn {
-  background: linear-gradient(145deg, #1B2838 0%, #2A475E 100%);
+  background: linear-gradient(145deg, #1B2838 0%, rgb(20, 92, 143) 100%);
 }
 
-// Анимация иконок
-.social-icon {
-  height: @step * 16;
-  vertical-align: middle;
-  transform-origin: center;
-  transition: transform 0.3s ease, filter 0.3s ease;
+.twitch-btn {
+  background: linear-gradient(145deg, #fff, #9051ef 100%);
+}
 
-  .social-btn:hover & {
-    animation: iconBounce 0.6s ease both;
-  }
+.epicgames-btn {
+  background: linear-gradient(145deg, #2a2a2a, black 100%);
+}
+
+.facebook-btn {
+  background: linear-gradient(145deg, #4e78f2, #476ef2 100%);
+}
+
+.tiktok-btn {
+  background: linear-gradient(145deg, #4b4b4b, #353535 100%);
 }
 
 // Адаптивность

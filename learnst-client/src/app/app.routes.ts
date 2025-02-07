@@ -12,17 +12,19 @@ import { LogoutComponent } from './logout/logout.component';
 import { MakeActivityComponent } from './make-activity/make-activity.component';
 import { MeComponent } from './me/me.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { RegisterComponent } from './register/register.component';
+import { TicketDetailComponent } from './ticket-detail/ticket-detail.component';
+import { TicketListComponent } from './ticket-list/ticket-list.component';
 import { UserComponent } from './user/user.component';
 import { UsersComponent } from './users/users.component';
-import { TicketListComponent } from './ticket-list/ticket-list.component';
-import { TicketDetailComponent } from './ticket-detail/ticket-detail.component';
-import { PolicyComponent } from './policy/policy.component';
+import { TermsOfUseComponent } from './terms-of-use/terms-of-use.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'not-found', component: NotFoundComponent },
-  { path: 'privacypolicy', component: PolicyComponent },
+  { path: 'termsofuse', component: TermsOfUseComponent },
+  { path: 'privacypolicy', component: PrivacyPolicyComponent },
   { path: 'login', component: LoginComponent, canActivate: [AuthGuard], data: { auth: false } },
   { path: 'register', component: RegisterComponent, canActivate: [AuthGuard], data: { auth: false } },
   { path: 'logout', component: LogoutComponent, canActivate: [AuthGuard] },

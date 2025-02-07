@@ -95,6 +95,11 @@ mat-date-range-input {
   border-radius: @step * 5;
 }
 
+.disabled-btn {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 .container {
   margin: @step * 5;
 
@@ -725,8 +730,115 @@ textarea {
   }
 }
 
+// Правила
+.terms-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #1b1b1b;
+  color: #e1e1e1;
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.6;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+
+  h1 {
+    color: #00b4d8;
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  h2 {
+    color: #4ecdc4;
+    font-size: 1.8rem;
+    margin: 2rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #2a2a2a;
+  }
+
+  .toc {
+    background: #2a2a2a;
+    padding: 1.5rem;
+    border-radius: 4px;
+    margin: 2rem 0;
+
+    ul {
+      list-style: none;
+      padding: 0;
+
+      li {
+        margin: 0.8rem 0;
+        
+        a {
+          color: #00b4d8;
+          text-decoration: none;
+          transition: color 0.3s;
+
+          &:hover {
+            color: #4ecdc4;
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  ul {
+    padding-left: 2rem;
+    
+    li {
+      margin: 0.8rem 0;
+      position: relative;
+
+      &::before {
+        content: "•";
+        color: #4ecdc4;
+        display: inline-block;
+        width: 1em;
+        margin-left: -1em;
+      }
+    }
+  }
+
+  .highlight {
+    background: #2a2a2a;
+    padding: 1.5rem;
+    border-left: 4px solid #00b4d8;
+    margin: 1.5rem 0;
+  }
+
+  .footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #2a2a2a;
+    text-align: center;
+    color: #888;
+
+    a {
+      color: #4ecdc4;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  /*a[mat-button] {
+    display: inline-flex;
+    align-items: center;
+    color: #00b4d8;
+    margin-bottom: 2rem;
+    
+    &:hover {
+      color: #4ecdc4;
+    }
+  }*/
+}
+
 @keyframes pulse {
-  0% { opacity: 0.6; }
+  0% { opacity: 0.5; }
   50% { opacity: 1; }
-  100% { opacity: 0.6; }
+  100% { opacity: 0.5; }
 }

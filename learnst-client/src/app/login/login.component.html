@@ -38,7 +38,7 @@
           <mat-error>Пожалуйста, введите пароль.</mat-error>
         }
       </mat-form-field>
-      <button mat-raised-button [disabled]="form.invalid || loading" class="full-width" color="primary" type="submit">
+      <button mat-flat-button [disabled]="form.invalid || loading" class="full-width" color="primary" type="submit">
         @if (loading) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else {
@@ -171,10 +171,41 @@
       >
         <img src="assets/icons/socials/twitch.png" alt="Twitch" class="social-icon" noDownloading>
       </a>
+
+      <a
+        mat-raised-button
+        matTooltipPosition="below"
+        class="social-btn epicgames-btn"
+        matTooltip="Войти через Epic Games"
+        href="https://api-learnst.runasp.net/oauth2/epicgames/init"
+      >
+        <img src="assets/icons/socials/epic-games.png" alt="Epic Games" class="social-icon" noDownloading>
+      </a>
+
+      <!-- <a
+        mat-raised-button
+        matTooltipPosition="below"
+        class="social-btn facebook-btn"
+        matTooltip="Войти через Facebook"
+        href="https://api-learnst.runasp.net/oauth2/facebook/init"
+      >
+        <img src="assets/icons/socials/facebook.png" alt="Facebook" class="social-icon" noDownloading>
+      </a> -->
+
+      <a
+        mat-raised-button
+        matTooltipPosition="below"
+        class="social-btn tiktok-btn"
+        matTooltip="Войти через TikTok"
+        href="https://api-learnst.runasp.net/oauth2/tiktok/init"
+      >
+        <img src="assets/icons/socials/tiktok.png" alt="Tik Tok" class="social-icon" noDownloading>
+      </a>
     </div>
   </mat-card-content>
   <mat-card-actions class="center-control form-actions">
-    <a mat-button routerLink="/register">Создать учетную запись</a>
+    <a mat-raised-button routerLink="/register">Создать учетную запись</a>
     <a mat-button routerLink="/privacypolicy">Политика конфиденциальности</a>
+    <a mat-button routerLink="/termsofuse">Условия использования</a>
   </mat-card-actions>
 </mat-card>

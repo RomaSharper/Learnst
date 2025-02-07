@@ -21,27 +21,31 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
     builder.Configuration.GetConnectionString(connectionStringName)));
 
 builder.Services.Configure<VkSettings>(builder.Configuration.GetSection("Vk"))
-                .Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"))
-                .Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"))
-                .Configure<SftpSettings>(builder.Configuration.GetSection("Sftp"))
-                .Configure<SteamSettings>(builder.Configuration.GetSection("Steam"))
-                .Configure<GithubSettings>(builder.Configuration.GetSection("Github"))
-                .Configure<MailRuSettings>(builder.Configuration.GetSection("MailRu"))
-                .Configure<GoogleSettings>(builder.Configuration.GetSection("Google"))
-                .Configure<YandexSettings>(builder.Configuration.GetSection("Yandex"))
-                .Configure<DiscordSettings>(builder.Configuration.GetSection("Discord"))
-                .Configure<TelegramSettings>(builder.Configuration.GetSection("Telegram"))
-                .Configure<MicrosoftSettings>(builder.Configuration.GetSection("Microsoft"));
+    .Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"))
+    .Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"))
+    .Configure<SftpSettings>(builder.Configuration.GetSection("Sftp"))
+    .Configure<SteamSettings>(builder.Configuration.GetSection("Steam"))
+    .Configure<GithubSettings>(builder.Configuration.GetSection("Github"))
+    .Configure<MailRuSettings>(builder.Configuration.GetSection("MailRu"))
+    .Configure<TikTokSettings>(builder.Configuration.GetSection("TikTok"))
+    .Configure<TwitchSettings>(builder.Configuration.GetSection("Twitch"))
+    .Configure<GoogleSettings>(builder.Configuration.GetSection("Google"))
+    .Configure<YandexSettings>(builder.Configuration.GetSection("Yandex"))
+    .Configure<DiscordSettings>(builder.Configuration.GetSection("Discord"))
+    .Configure<TelegramSettings>(builder.Configuration.GetSection("Telegram"))
+    .Configure<FacebookSettings>(builder.Configuration.GetSection("Facebook"))
+    .Configure<MicrosoftSettings>(builder.Configuration.GetSection("Microsoft"))
+    .Configure<EpicGamesSettings>(builder.Configuration.GetSection("EpicGames"));
 
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>()
-                .AddScoped<IValidationService, ValidationService>()
-                .AddScoped<ICertificateService, CertificateService>();
+    .AddScoped<IValidationService, ValidationService>()
+    .AddScoped<ICertificateService, CertificateService>();
 
 builder.Services.AddCors(options => options.AddPolicy(policyName,
     policyBuilder => policyBuilder.WithOrigins(trustedOrigins)
-                                  .AllowAnyHeader()
-                                  .AllowAnyMethod()
-                                  .AllowCredentials()));
+          .AllowAnyHeader()
+          .AllowAnyMethod()
+          .AllowCredentials()));
 
 builder.Services.AddAuthentication(options =>
 {
@@ -63,10 +67,10 @@ builder.Services.AddAuthorization();
 builder.Services.AddHttpClient(apiName, client => client.Timeout = TimeSpan.FromMinutes(5));
 
 builder.Services.AddOpenApi()
-                .AddSwaggerGen()
-                .AddDistributedMemoryCache()
-                .AddSession()
-                .AddControllers();
+    .AddSwaggerGen()
+    .AddDistributedMemoryCache()
+    .AddSession()
+    .AddControllers();
 
 var app = builder.Build();
 
@@ -97,7 +101,6 @@ app.Use(async (context, next) =>
         $"** Запрещен доступ источнику \"{(string.IsNullOrEmpty(origin) ? "Пустой" : origin)}\", так как он не является доверенным. **");
     context.Response.Redirect("/error");
     await context.Response.CompleteAsync();
-    return;
 });
 
 app.MapGet("/error", () => Results.Content(

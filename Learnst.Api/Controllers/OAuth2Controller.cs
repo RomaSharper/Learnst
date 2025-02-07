@@ -1,7 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using Learnst.Api.Models;
 using Learnst.Api.Services;
@@ -28,9 +27,13 @@ public partial class OAuth2Controller(
     IOptions<YandexSettings> yandexSettings,
     IOptions<MailRuSettings> mailRuSettings,
     IOptions<GithubSettings> githubSettings,
+    IOptions<TwitchSettings> twitchSettings,
+    IOptions<TikTokSettings> tiktokSettings,
     IOptions<DiscordSettings> discordSettings,
-    IOptions<TelegramSettings> telegramSettings,
-    IOptions<MicrosoftSettings> microsoftSettings
+    IOptions<FacebookSettings> facebookSettings,
+    // IOptions<TelegramSettings> telegramSettings,
+    IOptions<MicrosoftSettings> microsoftSettings,
+    IOptions<EpicGamesSettings> epicGamesSettings
 ) : ControllerBase
 {
     private readonly VkSettings _vkSettings = vkSettings.Value;
@@ -39,12 +42,16 @@ public partial class OAuth2Controller(
     // private readonly AppleSettings _appleSettings = appleSettings.Value;
     private readonly SteamSettings _steamSettings = steamSettings.Value;
     private readonly GithubSettings _githubSettings = githubSettings.Value;
+    private readonly TwitchSettings _twitchSettings = twitchSettings.Value;
+    private readonly TikTokSettings _tiktokSettings = tiktokSettings.Value;
     private readonly GoogleSettings _googleSettings = googleSettings.Value;
     private readonly YandexSettings _yandexSettings = yandexSettings.Value;
     private readonly MailRuSettings _mailRuSettings = mailRuSettings.Value;
     private readonly DiscordSettings _discordSettings = discordSettings.Value;
-    private readonly TelegramSettings _telegramSettings = telegramSettings.Value;
+    private readonly FacebookSettings _facebookSettings = facebookSettings.Value;
+    // private readonly TelegramSettings _telegramSettings = telegramSettings.Value;
     private readonly MicrosoftSettings _microsoftSettings = microsoftSettings.Value;
+    private readonly EpicGamesSettings _epicGamesSettings = epicGamesSettings.Value;
 
     #region Helpers
 
@@ -1014,7 +1021,7 @@ public partial class OAuth2Controller(
                 externalLoginId: userInfo.Id.ToString(),
                 externalLoginType: ExternalLoginType.Github,
                 avatar: userInfo.AvatarUrl,
-                fullName: userInfo.Name ?? userInfo.Login);
+                fullName: userInfo.Name);
 
             return RedirectWithToken(user);
         }
@@ -1121,9 +1128,9 @@ public partial class OAuth2Controller(
                 throw new Exception("Invalid user data received");
 
             // 7. Обработка дискриминатора
-            var discriminator = int.TryParse(userInfo.Discriminator, out int disc)
+            var discriminator = int.TryParse(userInfo.Discriminator, out var disc)
                 ? disc % 5
-                : userInfo.Discriminator?.Sum(c => c) % 5 ?? 0;
+                : userInfo.Discriminator.Sum(c => c) % 5;
 
             var avatarUrl = !string.IsNullOrEmpty(userInfo.Avatar)
                 ? $"https://cdn.discordapp.com/avatars/{userInfo.Id}/{userInfo.Avatar}.png"
@@ -1131,7 +1138,7 @@ public partial class OAuth2Controller(
 
             // 8. Создание пользователя
             var user = await FindOrCreateUser(
-                email: userInfo.Email ?? $"{userInfo.Id}@discord.app",
+                email: userInfo.Email,
                 externalLoginId: userInfo.Id,
                 externalLoginType: ExternalLoginType.Discord,
                 avatar: avatarUrl,
@@ -1190,12 +1197,8 @@ public partial class OAuth2Controller(
             };
 
             foreach (var param in requiredParams)
-            {
                 if (!query.ContainsKey(param))
-                {
                     return BadRequest($"Missing required parameter: {param}");
-                }
-            }
 
             // Создаем словарь с учетом регистра
             var queryDict = query.Keys.ToDictionary(
@@ -1211,9 +1214,7 @@ public partial class OAuth2Controller(
                 queryDict);
 
             if (!await assertion.ValidateAsync())
-            {
                 return BadRequest("Неверная подпись Steam");
-            }
 
             // Извлечение SteamID
             var claimedId = queryDict["openid.claimed_id"];
@@ -1222,9 +1223,7 @@ public partial class OAuth2Controller(
                 ?.Trim();
 
             if (string.IsNullOrEmpty(steamId) || !ulong.TryParse(steamId, out _))
-            {
                 return BadRequest("Неверный формат SteamID");
-            }
 
             // Получение данных пользователя
             var userInfo = await GetSteamUserInfo(steamId);
@@ -1278,5 +1277,345 @@ public partial class OAuth2Controller(
 
     #endregion
 
+    #region Twitch
 
+    [HttpGet("twitch/init")]
+    public IActionResult InitTwitchAuth()
+    {
+        var state = Guid.NewGuid().ToString("N");
+        Response.Cookies.Append("oauth_state", state, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTimeOffset.UtcNow.AddMinutes(5)
+        });
+
+        var authUrl = "https://id.twitch.tv/oauth2/authorize?" +
+            $"client_id={_twitchSettings.ClientId}" +
+            $"&redirect_uri={Uri.EscapeDataString(_twitchSettings.RedirectUri)}" +
+            "&response_type=code" +
+            "&scope=openid%20user:read:email" +
+            $"&state={state}";
+
+        return Redirect(authUrl);
+    }
+
+    [HttpGet("twitch/callback")]
+    public async Task<IActionResult> HandleTwitchCallback(
+        [FromQuery] string? code,
+        [FromQuery] string state)
+    {
+        // Проверка наличия кода
+        if (string.IsNullOrEmpty(code))
+            return BadRequest("Authorization code is missing");
+
+        // Проверка state
+        var expectedState = Request.Cookies["oauth_state"];
+        if (state != expectedState)
+            return BadRequest("Invalid state");
+
+        using var client = httpClientFactory.CreateClient();
+
+        try
+        {
+            // 1. Обмен кода на токен
+            var tokenResponse = await client.PostAsync(
+                "https://id.twitch.tv/oauth2/token",
+                new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    {"client_id", _twitchSettings.ClientId},
+                    {"client_secret", _twitchSettings.ClientSecret},
+                    {"code", code},
+                    {"grant_type", "authorization_code"},
+                    {"redirect_uri", _twitchSettings.RedirectUri}
+                }));
+
+            if (!tokenResponse.IsSuccessStatusCode)
+            {
+                var errorContent = await tokenResponse.Content.ReadAsStringAsync();
+                return StatusCode(500, $"Twitch token error: {errorContent}");
+            }
+
+            var tokenData = await tokenResponse.Content.ReadFromJsonAsync<TwitchTokenResponse>();
+            if (tokenData?.AccessToken is null)
+                return BadRequest("Invalid token response");
+
+            // 2. Получение информации о пользователе
+            var userRequest = new HttpRequestMessage(HttpMethod.Get, "https://api.twitch.tv/helix/users");
+            userRequest.Headers.Add("Client-Id", _twitchSettings.ClientId);
+            userRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenData.AccessToken);
+
+            var userResponse = await client.SendAsync(userRequest);
+            if (!userResponse.IsSuccessStatusCode)
+                return BadRequest("Failed to get user info");
+
+            var userInfo = await userResponse.Content.ReadFromJsonAsync<TwitchUserResponse>();
+            var userData = userInfo?.Data.FirstOrDefault();
+            if (userData == null)
+                return BadRequest("User data not found");
+
+            // 3. Создание/обновление пользователя
+            var user = await FindOrCreateUser(
+                email: userData.Email,
+                externalLoginId: userData.Id,
+                externalLoginType: ExternalLoginType.Twitch,
+                avatar: userData.ProfileImageUrl,
+                fullName: userData.DisplayName,
+                usernameBase: userData.Login);
+
+            return RedirectWithToken(user);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                message = "Twitch authentication failed",
+                error = ex.Message
+            });
+        }
+    }
+
+    #endregion
+
+    #region EpicGames
+
+    [HttpGet("epicgames/init")]
+    public IActionResult InitEpicGamesAuth()
+    {
+        var state = Guid.NewGuid().ToString("N");
+        Response.Cookies.Append("oauth_state", state, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax
+        });
+
+        var authUrl = "https://www.epicgames.com/id/authorize?" +
+            $"client_id={_epicGamesSettings.ClientId}" +
+            $"&redirect_uri={Uri.EscapeDataString(_epicGamesSettings.RedirectUri)}" +
+            "&response_type=code" +
+            "&scope=basic_profile" +
+            $"&state={state}";
+
+        return Redirect(authUrl);
+    }
+
+    [HttpGet("epicgames/callback")]
+    public async Task<IActionResult> HandleEpicGamesCallback(
+        [FromQuery] string code,
+        [FromQuery] string state)
+    {
+        try
+        {
+            var expectedState = Request.Cookies["oauth_state"];
+            if (state != expectedState)
+                return BadRequest("Invalid state");
+
+            using var client = httpClientFactory.CreateClient();
+
+            var tokenRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.epicgames.dev/epic/oauth/v1/token");
+            var authHeader = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_epicGamesSettings.ClientId}:{_epicGamesSettings.ClientSecret}"));
+            tokenRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", authHeader);
+            tokenRequest.Content = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                {"grant_type", "authorization_code"},
+                {"code", code},
+                {"redirect_uri", _epicGamesSettings.RedirectUri}
+            });
+            tokenRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+
+            var tokenResponse = await client.SendAsync(tokenRequest);
+            if (!tokenResponse.IsSuccessStatusCode)
+                return BadRequest("Failed to get token from Epic Games");
+
+            var tokenData = await tokenResponse.Content.ReadFromJsonAsync<OAuthTokenResponse>();
+            if (tokenData?.AccessToken is null)
+                return BadRequest("Invalid token response");
+
+            var userInfoRequest = new HttpRequestMessage(HttpMethod.Get, "https://api.epicgames.dev/epic/oauth/v1/userInfo");
+            userInfoRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenData.AccessToken);
+
+            var userInfoResponse = await client.SendAsync(userInfoRequest);
+            if (!userInfoResponse.IsSuccessStatusCode)
+                return BadRequest("Failed to get user info from Epic Games");
+
+            var userInfo = await userInfoResponse.Content.ReadFromJsonAsync<EpicGamesUserInfo>();
+            if (userInfo?.AccountId is null)
+                return BadRequest("No user data found");
+
+            // Create/update user
+            var user = await FindOrCreateUser(
+                email: userInfo.Email,
+                externalLoginId: userInfo.AccountId,
+                externalLoginType: ExternalLoginType.EpicGames,
+                fullName: userInfo.DisplayName,
+                usernameBase: userInfo.PreferredUsername);
+
+            return RedirectWithToken(user);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region Facebook
+
+    [HttpGet("facebook/init")]
+    public IActionResult InitFacebookAuth()
+    {
+        var state = Guid.NewGuid().ToString("N");
+        Response.Cookies.Append("oauth_state", state, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax
+        });
+
+        var authUrl = "https://www.facebook.com/v12.0/dialog/oauth?" +
+            $"client_id={_facebookSettings.ClientId}" +
+            $"&redirect_uri={Uri.EscapeDataString(_facebookSettings.RedirectUri)}" +
+            "&response_type=code" +
+            "&scope=email,public_profile" +
+            $"&state={state}";
+
+        return Redirect(authUrl);
+    }
+
+    [HttpGet("facebook/callback")]
+    public async Task<IActionResult> HandleFacebookCallback(
+        [FromQuery] string code,
+        [FromQuery] string state)
+    {
+        var expectedState = Request.Cookies["oauth_state"];
+        if (state != expectedState)
+            return BadRequest("Invalid state");
+
+        // Exchange code for token
+        var tokenResponse = await httpClientFactory.CreateClient().PostAsync(
+            "https://graph.facebook.com/v12.0/oauth/access_token",
+            new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                {"client_id", _facebookSettings.ClientId},
+                {"client_secret", _facebookSettings.ClientSecret},
+                {"code", code},
+                {"redirect_uri", _facebookSettings.RedirectUri}
+            }));
+
+        if (!tokenResponse.IsSuccessStatusCode)
+            return BadRequest("Failed to get token from Facebook");
+
+        var tokenData = await tokenResponse.Content.ReadFromJsonAsync<OAuthTokenResponse>();
+        if (tokenData?.AccessToken == null)
+            return BadRequest("Invalid token response");
+
+        // Get user info
+        var userInfoResponse = await httpClientFactory.CreateClient().GetAsync(
+            $"https://graph.facebook.com/v12.0/me?fields=id,name,email,picture&access_token={tokenData.AccessToken}");
+
+        if (!userInfoResponse.IsSuccessStatusCode)
+            return BadRequest("Failed to get user info from Facebook");
+
+        var userInfo = await userInfoResponse.Content.ReadFromJsonAsync<FacebookUserInfo>();
+        if (userInfo?.Id == null)
+            return BadRequest("No user data found");
+
+        // Create/update user
+        var user = await FindOrCreateUser(
+            email: userInfo.Email,
+            externalLoginId: userInfo.Id,
+            externalLoginType: ExternalLoginType.Facebook,
+            avatar: userInfo.Picture.Data.Url,
+            fullName: userInfo.Name);
+
+        return RedirectWithToken(user);
+    }
+
+    #endregion
+
+    #region TikTok
+
+    [HttpGet("tiktok/init")]
+    public IActionResult InitTikTokAuth()
+    {
+        var state = Guid.NewGuid().ToString("N");
+        Response.Cookies.Append("oauth_state", state, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax
+        });
+
+        var authUrl = "https://www.tiktok.com/v2/auth/authorize/" +
+            $"client_key={_tiktokSettings.ClientKey}" +
+            $"&redirect_uri={Uri.EscapeDataString(_tiktokSettings.RedirectUri)}" +
+            "&response_type=code" +
+            "&scope=user.info.basic" +
+            $"&state={state}";
+
+        return Redirect(authUrl);
+    }
+
+    [HttpGet("tiktok/callback")]
+    public async Task<IActionResult> HandleTikTokCallback(
+        [FromQuery] string code,
+        [FromQuery] string state)
+    {
+        var expectedState = Request.Cookies["oauth_state"];
+        if (state != expectedState)
+            return BadRequest("Invalid state");
+
+        using var client = httpClientFactory.CreateClient();
+
+        // Exchange code for token
+        var tokenResponse = await client.PostAsync(
+            "https://open.tiktokapis.com/v2/oauth/token/",
+            new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                {"client_key", _tiktokSettings.ClientKey},
+                {"client_secret", _tiktokSettings.ClientSecret},
+                {"code", code},
+                {"grant_type", "authorization_code"},
+                {"redirect_uri", _tiktokSettings.RedirectUri}
+            }));
+
+        if (!tokenResponse.IsSuccessStatusCode)
+            return BadRequest("Failed to get token from TikTok");
+
+        var tokenData = await tokenResponse.Content.ReadFromJsonAsync<OAuthTokenResponse>();
+        if (tokenData?.AccessToken == null)
+            return BadRequest("Invalid token response");
+
+        // Get user info
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://open.tiktokapis.com/v2/user/info/");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenData.AccessToken);
+        request.Content = new StringContent(
+            "{\"fields\": [\"open_id\", \"display_name\", \"avatar_url\"]}",
+            Encoding.UTF8,
+            "application/json");
+
+        var userInfoResponse = await client.SendAsync(request);
+
+        if (!userInfoResponse.IsSuccessStatusCode)
+            return BadRequest("Failed to get user info from TikTok");
+
+        var userInfo = await userInfoResponse.Content.ReadFromJsonAsync<TikTokUserResponse>();
+        if (userInfo?.Data.User is null)
+            return BadRequest("No user data found");
+
+        // Create/update user
+        var user = await FindOrCreateUser(
+            email: null, // TikTok не предоставляет email
+            externalLoginId: userInfo.Data.User.OpenId,
+            externalLoginType: ExternalLoginType.TikTok,
+            avatar: userInfo.Data.User.AvatarUrl,
+            fullName: userInfo.Data.User.DisplayName);
+
+        return RedirectWithToken(user);
+    }
+
+    #endregion
 }
