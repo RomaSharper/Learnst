@@ -164,7 +164,7 @@ public class UsersController(
             .Include(u => u.UserAnswers)
             .Include(u => u.Tickets)
             .Include(u => u.TicketAnswers)
-            .FirstOrDefaultAsync(u => u.Username == request.Login || u.EmailAddress == request.Login);
+            .FirstOrDefaultAsync(u => u.Username == request.Username || u.EmailAddress == request.Username);
 
         if (user is null || !bcrypt.Verify(request.Password, user.PasswordHash))
             return NotFound();

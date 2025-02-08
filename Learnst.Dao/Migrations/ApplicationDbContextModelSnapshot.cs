@@ -76,7 +76,7 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Activities");
+                    b.ToTable("Activities", (string)null);
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.Answer", b =>
@@ -102,7 +102,79 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("Answers");
+                    b.ToTable("Answers", (string)null);
+                });
+
+            modelBuilder.Entity("Learnst.Dao.Models.Application", b =>
+                {
+                    b.Property<string>("ClientId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.PrimitiveCollection<string>("AllowedScopes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClientSecret")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RedirectUri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ClientId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ClientId", "ClientSecret")
+                        .IsUnique();
+
+                    b.ToTable("Applications", (string)null);
+                });
+
+            modelBuilder.Entity("Learnst.Dao.Models.AuthCode", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RedirectUri")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.PrimitiveCollection<string>("Scopes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Code");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AuthCodes", (string)null);
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.Education", b =>
@@ -133,7 +205,7 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Educations", t =>
+                    b.ToTable("Educations", null, t =>
                         {
                             t.HasCheckConstraint("CK_Education_GraduationYear_NotMoreThanCurrentYear", "[GraduationYear] <= YEAR(GETDATE())");
                         });
@@ -167,7 +239,7 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("InfoCards");
+                    b.ToTable("InfoCards", (string)null);
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.Lesson", b =>
@@ -202,7 +274,7 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("Lessons");
+                    b.ToTable("Lessons", (string)null);
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.Question", b =>
@@ -227,7 +299,7 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("LessonId");
 
-                    b.ToTable("Questions");
+                    b.ToTable("Questions", (string)null);
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.SocialMediaProfile", b =>
@@ -254,7 +326,7 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SocialMediaProfiles");
+                    b.ToTable("SocialMediaProfiles", (string)null);
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.StatusHistory", b =>
@@ -276,7 +348,7 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("StatusHistories");
+                    b.ToTable("StatusHistories", (string)null);
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.Ticket", b =>
@@ -307,7 +379,7 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Tickets");
+                    b.ToTable("Tickets", (string)null);
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.TicketAnswer", b =>
@@ -336,7 +408,7 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("TicketAnswers");
+                    b.ToTable("TicketAnswers", (string)null);
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.Topic", b =>
@@ -357,7 +429,7 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("Topics");
+                    b.ToTable("Topics", (string)null);
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.User", b =>
@@ -422,7 +494,7 @@ namespace Learnst.Dao.Migrations
                     b.HasIndex(new[] { "Username" }, "IX_Users_Username")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.UserActivity", b =>
@@ -440,7 +512,7 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("UserActivities");
+                    b.ToTable("UserActivities", (string)null);
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.UserAnswer", b =>
@@ -460,7 +532,7 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("UserAnswers");
+                    b.ToTable("UserAnswers", (string)null);
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.UserLesson", b =>
@@ -475,7 +547,7 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("LessonId");
 
-                    b.ToTable("UserLessons");
+                    b.ToTable("UserLessons", (string)null);
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.WorkExperience", b =>
@@ -513,7 +585,7 @@ namespace Learnst.Dao.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("WorkExperiences", t =>
+                    b.ToTable("WorkExperiences", null, t =>
                         {
                             t.HasTrigger("TRG_WorkExperiences_CheckEndDateGreaterStartDate");
                         });
@@ -541,6 +613,36 @@ namespace Learnst.Dao.Migrations
                         .IsRequired();
 
                     b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("Learnst.Dao.Models.Application", b =>
+                {
+                    b.HasOne("Learnst.Dao.Models.User", "User")
+                        .WithMany("Applications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Learnst.Dao.Models.AuthCode", b =>
+                {
+                    b.HasOne("Learnst.Dao.Models.Application", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Learnst.Dao.Models.User", "User")
+                        .WithMany("AuthCodes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Learnst.Dao.Models.Education", b =>
@@ -759,6 +861,10 @@ namespace Learnst.Dao.Migrations
 
             modelBuilder.Entity("Learnst.Dao.Models.User", b =>
                 {
+                    b.Navigation("Applications");
+
+                    b.Navigation("AuthCodes");
+
                     b.Navigation("Educations");
 
                     b.Navigation("SocialMediaProfiles");

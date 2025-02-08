@@ -11,7 +11,7 @@
         <h3>Личные данные</h3>
         <div class="avatar-container">
           <input type="file" id="avatarInput" (change)="onFileSelected($event)" class="hidden" accept="image/*">
-          <img [src]="user.avatarUrl" alt="{{ user.username }}" class="avatar" (click)="openFilePicker()"
+          <img [src]="user.avatarUrl" [alt]="user.username" class="avatar" (click)="openFilePicker()"
             placeholder="/images/user.png" matTooltip="Изменить аватар" matTooltipPosition="below">
         </div>
         <div class="user-info">

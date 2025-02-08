@@ -19,6 +19,9 @@ import { TicketListComponent } from './ticket-list/ticket-list.component';
 import { UserComponent } from './user/user.component';
 import { UsersComponent } from './users/users.component';
 import { TermsOfUseComponent } from './terms-of-use/terms-of-use.component';
+import { OAuth2Component } from './apps/oauth2/oauth2.component';
+import { CreateClientComponent } from './apps/create/create.component';
+import { AppsComponent } from './apps/apps.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -39,6 +42,9 @@ export const routes: Routes = [
   { path: 'lesson/:lessonId', component: LessonComponent, canActivate: [AuthGuard] },
   { path: 'tickets', component: TicketListComponent, canActivate: [AuthGuard] },
   { path: 'ticket/:ticketId', component: TicketDetailComponent, canActivate: [AuthGuard] },
+  { path: 'apps', component: AppsComponent, canActivate: [AuthGuard] },
+  { path: 'apps/oauth2', component: OAuth2Component, canActivate: [AuthGuard] },
+  { path: 'apps/create', component: CreateClientComponent, canActivate: [AuthGuard] },
 
   { path: '**', redirectTo: '/not-found' }
 ];

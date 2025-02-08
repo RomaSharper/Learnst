@@ -1,5 +1,4 @@
 ﻿using Learnst.Dao.Abstraction;
-using Learnst.Dao.Models;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;

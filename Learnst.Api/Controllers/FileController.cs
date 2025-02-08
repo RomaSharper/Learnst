@@ -1,9 +1,7 @@
 ﻿using Learnst.Api.Models;
 using Learnst.Api.Services;
-using Learnst.Dao.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Renci.SshNet;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Learnst.Api.Controllers;
@@ -12,13 +10,6 @@ namespace Learnst.Api.Controllers;
 [Route("[controller]")]
 public class FileController(IOptions<SftpSettings> settings) : ControllerBase
 {
-    private const string _baseDir = @"\wwwroot";
-
-    private readonly string _sftpHost = settings.Value.Host;
-    private readonly int _sftpPort = settings.Value.Port;
-    private readonly string _sftpUsername = settings.Value.Username;
-    private readonly string _sftpPassword = settings.Value.Password;
-
     [HttpPost]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -48,7 +39,7 @@ public class FileController(IOptions<SftpSettings> settings) : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [SwaggerOperation(
-        Summary = "Delete file from FTP Server",
+        Summary = "Deletes file from FTP Server",
         Description = "Deletes file and returns response",
         OperationId = "Delete",
         Tags = ["FTP"]

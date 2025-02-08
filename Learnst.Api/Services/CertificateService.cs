@@ -27,7 +27,7 @@ public class CertificateService(ApplicationDbContext context) : ICertificateServ
         var activity = await context.Activities
             .FirstOrDefaultAsync(a => a.Id == activityId);
 
-        if (activity == null)
+        if (activity is null)
             return false;
 
         var userPoints = await context.UserAnswers

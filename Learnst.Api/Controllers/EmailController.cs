@@ -1,6 +1,5 @@
 ﻿using Learnst.Api.Models;
 using Learnst.Dao.Abstraction;
-using Learnst.Dao.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Learnst.Api.Controllers;

@@ -77,4 +77,8 @@ public class User
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public ICollection<UserLesson> UserLessons { get; set; } = [];
+
+    public ICollection<Application> Applications { get; set; } = [];
+    
+    public ICollection<AuthCode> AuthCodes { get; set; } = [];
 }

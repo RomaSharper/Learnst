@@ -13,10 +13,7 @@ export class AuthGuard implements CanActivate {
   canActivate(next: ActivatedRouteSnapshot, _state: RouterStateSnapshot): Observable<boolean> {
     const auth: boolean = next.data.auth ?? true;
     return this.authService.isUserAuthorized().pipe(
-      tap(isUserAuthorized => {
-        if (isUserAuthorized != auth)
-          this.router.navigate([auth ? '/login' : '/']);
-      }),
+      tap(isUserAuthorized => { if (isUserAuthorized != auth) this.router.navigate([auth ? '/login' : '/']); }),
       map(isUserAuthorized => isUserAuthorized == auth)
     );
   }

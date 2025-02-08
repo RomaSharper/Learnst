@@ -26,11 +26,11 @@ export class AuthService {
     this.handleOAuthCallback();
   }
 
-  login(login: string, password: string): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(`${this.apiUrl}/auth`, { login, password })
+  login(username: string, password: string): Observable<{ token: string }> {
+    return this.http.post<{ token: string }>(`${this.apiUrl}/auth`, { username, password })
       .pipe(
         tap(response => {
-          localStorage.setItem('token', response.token); // Сохраняем токен в localStorage
+          localStorage.setItem('token', response.token);
           this.decodeToken(response.token); // Декодируем токен и сохраняем данные пользователя
         }),
         catchError(error => {
@@ -43,19 +43,15 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('token'); // Удаляем токен
     this.currentUserSubject.next(null); // Очищаем состояние пользователя
-    this.router.navigate(['/login']);
+    this.router.navigate(['/username']);
   }
 
   checkSession(): void {
     const token = localStorage.getItem('token');
-    console.log('Токен из localStorage:', token); // Логируем токен
-
     if (token) {
       this.decodeToken(token);
       return;
     }
-
-    console.warn('Токен отсутствует в localStorage');
     this.currentUserSubject.next(null);
   }
 
@@ -124,7 +120,6 @@ export class AuthService {
 
   private decodeToken(token: string): void {
     if (!token) {
-      console.error('Токен отсутствует');
       this.currentUserSubject.next(null);
       return;
     }

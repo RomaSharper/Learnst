@@ -16,9 +16,9 @@ namespace Learnst.Api.Controllers;
 [ApiController]
 [Route("[controller]")]
 public partial class OAuth2Controller(
+    JwtService jwtService,
     ApplicationDbContext context,
     IOptions<VkSettings> vkSettings,
-    IOptions<JwtSettings> jwtSettings,
     IOptions<SftpSettings> sftpSettings,
     IHttpClientFactory httpClientFactory,
     // IOptions<AppleSettings> appleSettings,
@@ -37,7 +37,6 @@ public partial class OAuth2Controller(
 ) : ControllerBase
 {
     private readonly VkSettings _vkSettings = vkSettings.Value;
-    private readonly JwtSettings _jwtSettings = jwtSettings.Value;
     private readonly SftpSettings _sftpSettings = sftpSettings.Value;
     // private readonly AppleSettings _appleSettings = appleSettings.Value;
     private readonly SteamSettings _steamSettings = steamSettings.Value;
@@ -100,7 +99,7 @@ public partial class OAuth2Controller(
 
     private RedirectResult RedirectWithToken(User user)
     {
-        var token = JwtService.GenerateToken(user, _jwtSettings);
+        var token = jwtService.GenerateToken(user);
         return Redirect($"https://learnst.runasp.net/auth/callback?token={token}");
     }
 
@@ -535,7 +534,7 @@ public partial class OAuth2Controller(
             $"&redirect_uri={Uri.EscapeDataString(_vkSettings.RedirectUri)}");
 
         var tokenData = await tokenResponse.Content.ReadFromJsonAsync<VkTokenResponse>();
-        if (tokenData?.AccessToken == null) return BadRequest("VK auth failed");
+        if (tokenData?.AccessToken is null) return BadRequest("VK auth failed");
 
         // Получение данных пользователя
         var userInfoResponse = await httpClientFactory.CreateClient().GetAsync(
@@ -612,7 +611,7 @@ public partial class OAuth2Controller(
             }));
 
         var tokenData = await tokenResponse.Content.ReadFromJsonAsync<MailRuTokenResponse>();
-        if (tokenData?.AccessToken == null) return BadRequest("Mail.ru auth failed");
+        if (tokenData?.AccessToken is null) return BadRequest("Mail.ru auth failed");
 
         // Получение данных пользователя
         var userInfo = await httpClientFactory.CreateClient().GetFromJsonAsync<MailRuUserInfo>(
@@ -683,7 +682,7 @@ public partial class OAuth2Controller(
             $"&sig={sig}");
 
         var tokenData = await tokenResponse.Content.ReadFromJsonAsync<OkTokenResponse>();
-        if (tokenData?.AccessToken == null) return BadRequest("OK auth failed");
+        if (tokenData?.AccessToken is null) return BadRequest("OK auth failed");
 
         // Получение данных пользователя
         var userInfo = await GetOkUserInfo(tokenData.AccessToken, _vkSettings);
@@ -786,7 +785,7 @@ public partial class OAuth2Controller(
             }));
 
         var tokenData = await tokenResponse.Content.ReadFromJsonAsync<AppleTokenResponse>();
-        if (tokenData?.IdToken == null) return BadRequest("Apple auth failed");
+        if (tokenData?.IdToken is null) return BadRequest("Apple auth failed");
 
         // Декодирование JWT
         var handler = new JwtSecurityTokenHandler();
@@ -1124,7 +1123,7 @@ public partial class OAuth2Controller(
             var userInfo = await userResponse.Content.ReadFromJsonAsync<DiscordUserInfo>();
 
             // 6. Валидация данных
-            if (userInfo == null || string.IsNullOrEmpty(userInfo.Id))
+            if (userInfo is null || string.IsNullOrEmpty(userInfo.Id))
                 throw new Exception("Invalid user data received");
 
             // 7. Обработка дискриминатора
@@ -1352,7 +1351,7 @@ public partial class OAuth2Controller(
 
             var userInfo = await userResponse.Content.ReadFromJsonAsync<TwitchUserResponse>();
             var userData = userInfo?.Data.FirstOrDefault();
-            if (userData == null)
+            if (userData is null)
                 return BadRequest("User data not found");
 
             // 3. Создание/обновление пользователя
@@ -1395,7 +1394,7 @@ public partial class OAuth2Controller(
             $"client_id={_epicGamesSettings.ClientId}" +
             $"&redirect_uri={Uri.EscapeDataString(_epicGamesSettings.RedirectUri)}" +
             "&response_type=code" +
-            "&scope=basic_profile" +
+            "&scope=basic_profile+friends_list+openid" +
             $"&state={state}";
 
         return Redirect(authUrl);
@@ -1403,8 +1402,8 @@ public partial class OAuth2Controller(
 
     [HttpGet("epicgames/callback")]
     public async Task<IActionResult> HandleEpicGamesCallback(
-        [FromQuery] string code,
-        [FromQuery] string state)
+    [FromQuery] string code,
+    [FromQuery] string state)
     {
         try
         {
@@ -1414,43 +1413,64 @@ public partial class OAuth2Controller(
 
             using var client = httpClientFactory.CreateClient();
 
-            var tokenRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.epicgames.dev/epic/oauth/v1/token");
-            var authHeader = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_epicGamesSettings.ClientId}:{_epicGamesSettings.ClientSecret}"));
-            tokenRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", authHeader);
+            // 1. Запрос токена
+            var tokenRequest = new HttpRequestMessage(
+                HttpMethod.Post,
+                "https://api.epicgames.dev/epic/oauth/v2/token");
+
+            var authHeader = Convert.ToBase64String(Encoding.UTF8.GetBytes(
+                $"{_epicGamesSettings.ClientId}:{_epicGamesSettings.ClientSecret}"));
+
             tokenRequest.Content = new FormUrlEncodedContent(new Dictionary<string, string>
-            {
-                {"grant_type", "authorization_code"},
-                {"code", code},
-                {"redirect_uri", _epicGamesSettings.RedirectUri}
-            });
-            tokenRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+        {
+            {"grant_type", "authorization_code"},
+            {"code", code},
+            {"redirect_uri", _epicGamesSettings.RedirectUri},
+            {"deployment_id", _epicGamesSettings.DeploymentId}
+        });
+
+            tokenRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", authHeader);
 
             var tokenResponse = await client.SendAsync(tokenRequest);
-            if (!tokenResponse.IsSuccessStatusCode)
-                return BadRequest("Failed to get token from Epic Games");
 
-            var tokenData = await tokenResponse.Content.ReadFromJsonAsync<OAuthTokenResponse>();
-            if (tokenData?.AccessToken is null)
+            // 2. Расширенная обработка ошибок
+            if (!tokenResponse.IsSuccessStatusCode)
+            {
+                var errorContent = await tokenResponse.Content.ReadAsStringAsync();
+                return BadRequest($"Epic Games error: {errorContent}");
+            }
+
+            var tokenData = await tokenResponse.Content.ReadFromJsonAsync<EpicGamesTokenResponse>();
+
+            // 3. Проверка обязательных полей
+            if (string.IsNullOrEmpty(tokenData?.AccessToken) || string.IsNullOrEmpty(tokenData.AccountId))
                 return BadRequest("Invalid token response");
 
-            var userInfoRequest = new HttpRequestMessage(HttpMethod.Get, "https://api.epicgames.dev/epic/oauth/v1/userInfo");
+            // 4. Запрос информации о пользователе
+            var userInfoRequest = new HttpRequestMessage(
+                HttpMethod.Get,
+                $"https://api.epicgames.dev/epic/id/v2/accounts?accountId={tokenData.AccountId}");
+
             userInfoRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenData.AccessToken);
 
             var userInfoResponse = await client.SendAsync(userInfoRequest);
-            if (!userInfoResponse.IsSuccessStatusCode)
-                return BadRequest("Failed to get user info from Epic Games");
 
-            var userInfo = await userInfoResponse.Content.ReadFromJsonAsync<EpicGamesUserInfo>();
-            if (userInfo?.AccountId is null)
+            if (!userInfoResponse.IsSuccessStatusCode)
+                return BadRequest("Failed to get user info");
+
+            var users = await userInfoResponse.Content.ReadFromJsonAsync<List<EpicGamesUserInfo>>();
+            var userInfo = users?.FirstOrDefault();
+
+            if (userInfo is null)
                 return BadRequest("No user data found");
 
-            // Create/update user
+            // 5. Создание/обновление пользователя
             var user = await FindOrCreateUser(
                 email: userInfo.Email,
                 externalLoginId: userInfo.AccountId,
                 externalLoginType: ExternalLoginType.EpicGames,
                 fullName: userInfo.DisplayName,
-                usernameBase: userInfo.PreferredUsername);
+                usernameBase: userInfo.DisplayName);
 
             return RedirectWithToken(user);
         }
@@ -1462,7 +1482,7 @@ public partial class OAuth2Controller(
 
     #endregion
 
-    #region Facebook
+    #region Facebook (Нет учётной записи)
 
     [HttpGet("facebook/init")]
     public IActionResult InitFacebookAuth()
@@ -1509,7 +1529,7 @@ public partial class OAuth2Controller(
             return BadRequest("Failed to get token from Facebook");
 
         var tokenData = await tokenResponse.Content.ReadFromJsonAsync<OAuthTokenResponse>();
-        if (tokenData?.AccessToken == null)
+        if (tokenData?.AccessToken is null)
             return BadRequest("Invalid token response");
 
         // Get user info
@@ -1520,7 +1540,7 @@ public partial class OAuth2Controller(
             return BadRequest("Failed to get user info from Facebook");
 
         var userInfo = await userInfoResponse.Content.ReadFromJsonAsync<FacebookUserInfo>();
-        if (userInfo?.Id == null)
+        if (userInfo?.Id is null)
             return BadRequest("No user data found");
 
         // Create/update user
@@ -1536,7 +1556,7 @@ public partial class OAuth2Controller(
 
     #endregion
 
-    #region TikTok
+    #region TikTok (Проверяет приложение)
 
     [HttpGet("tiktok/init")]
     public IActionResult InitTikTokAuth()
@@ -1586,7 +1606,7 @@ public partial class OAuth2Controller(
             return BadRequest("Failed to get token from TikTok");
 
         var tokenData = await tokenResponse.Content.ReadFromJsonAsync<OAuthTokenResponse>();
-        if (tokenData?.AccessToken == null)
+        if (tokenData?.AccessToken is null)
             return BadRequest("Invalid token response");
 
         // Get user info

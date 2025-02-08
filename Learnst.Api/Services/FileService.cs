@@ -1,10 +1,9 @@
 ﻿using Learnst.Api.Models;
-using Learnst.Dao.Models;
 using Renci.SshNet;
 
 namespace Learnst.Api.Services;
 
-public class FileService
+public static class FileService
 {
     public static async Task<string> Upload(UploadFileModel model, SftpSettings settings)
     {

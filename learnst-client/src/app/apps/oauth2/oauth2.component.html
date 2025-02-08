@@ -1,0 +1,18 @@
+<div class="container">
+  <h1>Подтверждение авторизации</h1>
+  @if (errorMessage) {
+    <div class="danger">{{ errorMessage }}</div>
+  } @else {
+    <p>Приложение <strong>{{ clientName }}</strong> запрашивает доступ к вашим данным:</p>
+    <ul>
+      @for (scope of requestedScopes; track scope) {
+        <li>{{ scope }}</li>
+      }
+    </ul>
+    <div class="buttons">
+      <button type="button" mat-raised-button color="primary" (click)="authorize(true)">Разрешить</button>
+      <button type="button" mat-raised-button color="warn" (click)="authorize(false)">Отклонить</button>
+    </div>
+  }
+  .form
+</div>
