@@ -1,5 +1,5 @@
 import { ReactiveFormsModule } from '@angular/forms';
-import { AppsService } from '../../../services/apps.service';
+import { AppsService } from '../../../../services/apps.service';
 import { Component, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';

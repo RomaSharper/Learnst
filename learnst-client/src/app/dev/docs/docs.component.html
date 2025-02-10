@@ -1,0 +1,104 @@
+<div class="md-container">
+  <a mat-button (click)="goBack()">Назад</a>
+  <h1>Документация OAuth2 Learnst</h1>
+  <p><em>Последнее обновление: 2025-02-09</em></p>
+
+  <section class="toc">
+    <h2>Содержание</h2>
+    <ul>
+      <li><a href="dev/docs#authorization">1. Авторизация</a></li>
+      <li><a href="dev/docs#api-examples">2. API-запросы</a></li>
+    </ul>
+  </section>
+
+  <section id="authorization">
+    <h2>1. Авторизация</h2>
+    <p>Для авторизации пользователей используется JWT-токен. Пользователь получает токен после успешной аутентификации,
+      который затем используется для доступа к защищенным ресурсам.</p>
+    <h3>Вход в систему</h3>
+    <pre><code class="hljs language-bash">POST /account/login HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+username=ivan&
+password=securepassword
+
+// Ответ:
+&#123;
+  "message": "Авторизация успешна"
+&#125;</code></pre>
+    <h3>Выход из системы</h3>
+    <pre><code class="hljs language-bash">POST /account/logout HTTP/1.1
+
+// Ответ:
+&#123;
+  "message": "Выход выполнен"
+&#125;</code></pre>
+  </section>
+
+  <section id="api-examples">
+    <h2>2. Примеры API-запросов</h2>
+
+    <h3>Регистрация приложения (форма доступна по <a routerLink="/dev/apps/create">этой ссылке</a>)</h3>
+    <pre><code class="hljs language-bash">POST /apps/create HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer &#123;access_token&#125;
+
+&#123;
+  "name": "Мое приложение",
+  "redirectUri": "https://example.com/callback",
+  "allowedScopes": ["openid", "profile"]
+&#125;
+
+// Ответ:
+&#123;
+  "clientId": "abc123xyz",
+  "clientSecret": "sec_987zyx",
+  "redirectUri": "https://example.com/callback"
+&#125;</code></pre>
+
+    <h3>Авторизация через OAuth2</h3>
+    <pre><code class="hljs language-bash">GET /apps/authorize?client_id=abc123xyz&
+redirect_uri=https://example.com/callback&
+response_type=code&
+scope=openid%20profile HTTP/1.1
+
+// Ответ:
+&#123;
+  "code": "AUTH_123456",
+  "state": "optional_state_value"
+&#125;</code></pre>
+
+    <h3>Получение токена</h3>
+    <pre><code class="hljs language-bash">POST /apps/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+code=123456&
+grant_type=authorization_code&
+client_id=abc123xyz&
+client_secret=sec_987zyx
+
+// Ответ:
+&#123;
+  "access_token": "eyJhbGci...",
+  "expires_in": 3600,
+  "token_type": "Bearer"
+&#125;</code></pre>
+
+    <h3>Получение данных пользователя</h3>
+    <pre><code class="hljs language-bash">GET /apps/userinfo HTTP/1.1
+Authorization: Bearer eyJhbGci...
+
+// Ответ:
+&#123;
+  "sub": "user_123",
+  "name": "Иван Иванов",
+  "email": "user&#64;example.com",
+  "picture": "https://.../avatar.jpg"
+&#125;</code></pre>
+  </section>
+
+  <footer class="footer">
+    <p>© 2025 Learnst. Все права защищены.</p>
+    <p>Контакты: <a href="mailto:oraclehub-tech@mail.ru">oraclehub-tech&#64;mail.ru</a></p>
+  </footer>
+</div>

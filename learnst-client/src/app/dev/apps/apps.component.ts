@@ -1,4 +1,3 @@
-import { AuthService } from './../../services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -12,12 +11,12 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
-import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
-import { Return } from '../../helpers/Return';
-import { Application } from '../../models/ClientApplication';
-import { AlertService } from '../../services/alert.service';
-import { AppsService } from './../../services/apps.service';
+import { Return } from '../../../helpers/Return';
+import { Application } from '../../../models/Application';
+import { AlertService } from '../../../services/alert.service';
+import { AppsService } from './../../../services/apps.service';
+import { AuthService } from './../../../services/auth.service';
+import { Location } from '@angular/common';
 
 @Return()
 @Component({
@@ -41,22 +40,19 @@ import { AppsService } from './../../services/apps.service';
     // PlaceholderImageDirective
   ],
 })
-export class AppsComponent implements OnInit {
-  pageSize = 20;
+export class DevAppsComponent implements OnInit {
   loading = true;
   userId!: string;
-  currentPage = 0;
   goBack!: () => void;
   apps: Application[] = [];
-  pageSizeOptions = [20, 50, 100];
-  displayedApps: Application[] = [];
 
   constructor(
     private alertService: AlertService,
     private authService: AuthService,
     private appsService: AppsService,
-    private route: ActivatedRoute,
-    private router: Router
+    public route: ActivatedRoute,
+    public location: Location,
+    public router: Router
   ) { }
 
   ngOnInit(): void {
@@ -72,21 +68,6 @@ export class AppsComponent implements OnInit {
       this.apps = data;
       this.loading = false; // Завершение загрузки
     });
-  }
-
-  updateDisplayedApps(): void {
-    const startIndex = this.currentPage * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.displayedApps = this.apps.slice(startIndex, endIndex);
-    this.loading = false; // Завершение загрузки
-  }
-
-  onPageChange(event: any): void {
-    this.loading = true; // Начало загрузки
-    this.currentPage = event.pageIndex;
-    this.pageSize = event.pageSize;
-    this.updateDisplayedApps();
-    this.loading = false; // Завершение загрузки
   }
 
   deleteApp(appId: string): void {

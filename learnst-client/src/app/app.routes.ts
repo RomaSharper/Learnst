@@ -5,6 +5,11 @@ import { ConfirmGuard } from '../guards/confirm.guard.guard';
 import { RoleGuard } from '../guards/role.guard';
 import { ActivitiesComponent } from './activities/activities.component';
 import { ActivityComponent } from './activity/activity.component';
+import { DevAppComponent } from './dev/app/app.component';
+import { DevAppsComponent } from './dev/apps/apps.component';
+import { CreateClientComponent } from './dev/apps/create/create.component';
+import { OAuth2Component } from './dev/apps/oauth2/oauth2.component';
+import { DevComponent } from './dev/dev.component';
 import { HomeComponent } from './home/home.component';
 import { LessonComponent } from './lesson/lesson.component';
 import { LoginComponent } from './login/login.component';
@@ -14,14 +19,12 @@ import { MeComponent } from './me/me.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { RegisterComponent } from './register/register.component';
+import { TermsOfUseComponent } from './terms-of-use/terms-of-use.component';
 import { TicketDetailComponent } from './ticket-detail/ticket-detail.component';
 import { TicketListComponent } from './ticket-list/ticket-list.component';
 import { UserComponent } from './user/user.component';
 import { UsersComponent } from './users/users.component';
-import { TermsOfUseComponent } from './terms-of-use/terms-of-use.component';
-import { OAuth2Component } from './apps/oauth2/oauth2.component';
-import { CreateClientComponent } from './apps/create/create.component';
-import { AppsComponent } from './apps/apps.component';
+import { DocsComponent } from './dev/docs/docs.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -42,9 +45,12 @@ export const routes: Routes = [
   { path: 'lesson/:lessonId', component: LessonComponent, canActivate: [AuthGuard] },
   { path: 'tickets', component: TicketListComponent, canActivate: [AuthGuard] },
   { path: 'ticket/:ticketId', component: TicketDetailComponent, canActivate: [AuthGuard] },
-  { path: 'apps', component: AppsComponent, canActivate: [AuthGuard] },
-  { path: 'apps/oauth2', component: OAuth2Component, canActivate: [AuthGuard] },
-  { path: 'apps/create', component: CreateClientComponent, canActivate: [AuthGuard] },
+  { path: 'app/:clientId', component: DevAppComponent, canActivate: [AuthGuard] },
+  { path: 'dev/apps/oauth2', component: OAuth2Component, canActivate: [AuthGuard] },
+  { path: 'dev/apps/create', component: CreateClientComponent, canActivate: [AuthGuard] },
+  { path: 'dev/apps', component: DevAppsComponent, canActivate: [AuthGuard] },
+  { path: 'dev/docs', component: DocsComponent, canActivate: [AuthGuard] },
+  { path: 'dev', component: DevComponent, canActivate: [AuthGuard] },
 
   { path: '**', redirectTo: '/not-found' }
 ];

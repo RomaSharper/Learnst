@@ -94,15 +94,11 @@ export class AuthService {
   }
 
   isUserAuthorized(): Observable<boolean> {
-    return this.currentUser$.pipe(
-      map(user => !!user)
-    );
+    return this.currentUser$.pipe(map(user => !!user));
   }
 
   isAdmin(): Observable<boolean> {
-    return this.currentUser$.pipe(
-      map(user => user?.role === Role.Admin)
-    );
+    return this.currentUser$.pipe(map(user => user?.role === Role.Admin));
   }
 
   private handleOAuthCallback(): void {
@@ -128,9 +124,9 @@ export class AuthService {
       const payload = JSON.parse(atob(token.split('.')[1])); // Декодируем payload токена
 
       // Извлекаем данные из токена
-      const userId = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
-      const username = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
-      const role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+      const userId = payload['openid'];
+      const username = payload['username'];
+      const role = payload['role'];
 
       if (!userId || !username || !role) {
         console.error('Токен не содержит необходимых данных');

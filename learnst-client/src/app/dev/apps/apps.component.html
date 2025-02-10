@@ -1,10 +1,10 @@
 <div class="container">
-  <a mat-button color="primary" routerLink="" (click)="goBack()">Назад</a>
-  <a mat-button color="primary" routerLink="/apps/create">Создать</a>
+  <a mat-button color="primary" (click)="goBack()">Назад</a>
+  <a mat-button color="primary" routerLink="/dev/apps/create">Создать</a>
 
   <div class="mt apps-container">
-    @for (app of displayedApps; track app) {
-      <mat-card [routerLink]="['/app', app.id]">
+    @for (app of apps; track app) {
+      <mat-card [routerLink]="['/app', app.clientId]">
         <mat-card-content class="app-card">
           <!-- <img [src]="app.avatarUrl" alt="Avatar" class="avatar" placeholder="/images/app.png" noDownloading> -->
           <div class="app-info">
@@ -14,7 +14,7 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button type="button" mat-menu-item (click)="deleteApp(app.id!)" class="delete">Удалить</button>
+            <button type="button" mat-menu-item (click)="deleteApp(app.clientId)" class="delete">Удалить</button>
           </mat-menu>
         </mat-card-content>
       </mat-card>
@@ -28,8 +28,4 @@
       </div>
     }
   </div>
-
-  <mat-paginator [length]="displayedApps.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
-    (page)="onPageChange($event)" showFirstLastButtons>
-  </mat-paginator>
 </div>

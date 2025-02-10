@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../environments/environment';
-import { Application } from '../models/ClientApplication';
+import { Application } from '../models/Application';
 import { ClientRegistrationRequest } from '../models/ClientRegistrationRequest';
 import { ClientRegistrationResponse } from '../models/ClientRegistrationResponse';
 import { UserDao } from '../models/UserDao';
@@ -28,6 +28,10 @@ export class AppsService {
 
   registerApplication(clientRegistrationRequest: ClientRegistrationRequest): Observable<ClientRegistrationResponse> {
     return this.http.post<ClientRegistrationResponse>(`${environment.apiBaseUrl}/apps/create`, clientRegistrationRequest);
+  }
+
+  putApp(clientId: string, application: Application): Observable<Application> {
+    return this.http.put<Application>(`${environment.apiBaseUrl}/apps/${clientId}`, application);
   }
 
   deleteApp(clientId: string): Observable<void> {

@@ -2,9 +2,11 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
-import { AppsService } from '../../../services/apps.service';
-import { AlertService } from './../../../services/alert.service';
-import { AuthService } from '../../../services/auth.service';
+import { AppsService } from '../../../../services/apps.service';
+import { AlertService } from './../../../../services/alert.service';
+import { AuthService } from '../../../../services/auth.service';
+import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-apps-create',
@@ -21,7 +23,9 @@ export class CreateClientComponent {
   constructor(
     private appsService: AppsService,
     private authService: AuthService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    public location: Location,
+    public router: Router
   ) {
     this.registerGroup = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.maxLength(100)]),
@@ -61,8 +65,8 @@ export class CreateClientComponent {
     }
 
     const applicationData = {
-      ...this.registerGroup.value,
       userId: this.userId,
+      ...this.registerGroup.value,
       allowedScopes: this.registerGroup.value.allowedScopes.split(' ')
     };
     console.log(applicationData);

@@ -1,0 +1,55 @@
+<div class="container" fxLayout="column" fxLayoutAlign="center center">
+  <a mat-button color="primary" (click)="goBack()">Назад</a>
+
+  <mat-card class="mt app-card">
+    <mat-card-header>
+      <mat-card-title><h2>{{ app?.name }}</h2></mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="appForm" (ngSubmit)="onSubmit()">
+        <div fxLayout="column" fxLayoutGap="16px">
+          <mat-form-field appearance="outline">
+            <mat-label>Client ID</mat-label>
+            <input matInput formControlName="clientId" readonly>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Client Secret</mat-label>
+            <input matInput formControlName="clientSecret" readonly>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Название</mat-label>
+            <input matInput formControlName="name" [readonly]="!isEditing">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Redirect URI</mat-label>
+            <input matInput formControlName="redirectUri" [readonly]="!isEditing">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Scopes</mat-label>
+            <input matInput formControlName="allowedScopes" [readonly]="!isEditing">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Создано</mat-label>
+            <input matInput formControlName="createdAt" readonly>
+          </mat-form-field>
+        </div>
+      </form>
+    </mat-card-content>
+    <mat-card-actions [ngClass]="{ 'form-actions': isMediumScreen }">
+      <button type="button" mat-button color="primary" (click)="toggleEdit()" [ngClass]="{ 'full-width': isMediumScreen }">
+        {{ isEditing ? 'Отмена' : 'Изменить' }}
+      </button>
+      <button type="button" mat-button color="accent" (click)="onSubmit()" [disabled]="!isEditing" [ngClass]="{ 'full-width': isMediumScreen }">
+        Сохранить
+      </button>
+      <button type="button" mat-button color="warn" (click)="deleteApp()" [disabled]="isEditing" [ngClass]="{ 'full-width': isMediumScreen }">
+        Удалить
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
