@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="e14453b8-0607-4ecc-9d35-9ff82142294b" name="Dev Learnst">
+        <fileTransfer accessType="SFTP" host="site17585.siteasp.net" port="22" sshConfigId="b5ee9786-9df2-4390-8493-e83471fb7f19" sshConfig="site17585@site17585.siteasp.net:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

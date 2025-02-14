@@ -1,6 +1,6 @@
-﻿using Learnst.Dao.Abstraction;
-using Learnst.Dao;
-using Learnst.Dao.Models;
+﻿using Learnst.Application.Interfaces;
+using Learnst.Domain.Models;
+using Learnst.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;

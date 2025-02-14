@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="MailKit" Version="4.10.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1" />
@@ -34,7 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Learnst.Dao\Learnst.Dao.csproj" />
+    <ProjectReference Include="..\Learnst.Application\Learnst.Application.csproj" />
+    <ProjectReference Include="..\Learnst.Domain\Learnst.Domain.csproj" />
+    <ProjectReference Include="..\Learnst.Infrastructure\Learnst.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

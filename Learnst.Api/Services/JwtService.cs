@@ -2,7 +2,8 @@
 using System.Security.Claims;
 using System.Text;
 using Learnst.Api.Models;
-using Learnst.Dao.Models;
+using Learnst.Domain.Enums;
+using Learnst.Domain.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -11,13 +12,6 @@ namespace Learnst.Api.Services;
 public class JwtService(IOptions<JwtSettings> jwtSettings)
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
-    public static readonly Dictionary<string, string> ScopeMappings = new()
-    {
-        { "openid", "sub" },
-        { "profile", "name" },
-        { "email", "email" },
-        { "picture", "picture" }
-    };
     
     public string GenerateToken(User user)
     {
@@ -26,9 +20,9 @@ public class JwtService(IOptions<JwtSettings> jwtSettings)
 
         Claim[] claims =
         [
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
+            new Claim("openid", user.Id.ToString()),
+            new Claim("username", user.Username),
+            new Claim("role", user.Role.ToString())
         ];
 
         JwtSecurityToken token = new(
@@ -44,41 +38,50 @@ public class JwtService(IOptions<JwtSettings> jwtSettings)
 
     public string GenerateToken(IEnumerable<Claim> claims)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Value.Key));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(jwtSettings.Value.Key));
+        SigningCredentials creds = new(key, SecurityAlgorithms.HmacSha256);
 
-        var token = new JwtSecurityToken(
-            issuer: jwtSettings.Value.Issuer,
-            audience: jwtSettings.Value.Audience,
+        JwtSecurityToken token = new(
             claims: claims,
+            signingCredentials: creds,
+            issuer: jwtSettings.Value.Issuer,
             expires: DateTime.UtcNow.AddDays(1),
-            signingCredentials: creds);
+            audience: jwtSettings.Value.Audience);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
     
     public string GenerateAccessToken(User user, List<string> scopes)
     {
-        var claims = new List<Claim>
-        {
-            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new("scope", string.Join(' ', scopes))
-        };
-
+        List<Claim> claims = [];
         foreach (var scope in scopes)
-            if (ScopeMappings.TryGetValue(scope, out var field))
-                switch (field)
-                {
-                    case "email":
-                        claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.EmailAddress ?? string.Empty));
-                        break;
-                    case "name":
-                        claims.Add(new Claim(ClaimTypes.Name, user.FullName ?? string.Empty));
-                        break;
-                    case "picture":
-                        claims.Add(new Claim("picture", user.AvatarUrl ?? string.Empty));
-                        break;
-                }
+            switch (scope)
+            {
+                case "openid":
+                    claims.Add(new Claim("openid", user.Id.ToString()));
+                    break;
+                case "email":
+                    claims.Add(new Claim("email", user.EmailAddress ?? string.Empty));
+                    break;
+                case "fullname":
+                    claims.Add(new Claim("fullname", user.FullName ?? string.Empty));
+                    break;
+                case "username":
+                    claims.Add(new Claim("username", user.Username));
+                    break;
+                case "picture":
+                    claims.Add(new Claim("picture", user.AvatarUrl ?? string.Empty));
+                    break;
+                case "role":
+                    claims.Add(new Claim("role", user.Role switch
+                    {
+                        Role.Admin => "admin",
+                        Role.Backup => "backup",
+                        Role.Specialist => "specialist",
+                        _ => "user"
+                    }));
+                    break;
+            }
 
         return GenerateToken(claims);
     }

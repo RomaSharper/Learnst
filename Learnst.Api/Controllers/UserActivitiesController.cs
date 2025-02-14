@@ -1,173 +1,126 @@
-﻿using Learnst.Dao.Models;
-using Learnst.Dao;
+﻿using System.Linq.Expressions;
+using Learnst.Api.Models;
+using Learnst.Application.Interfaces;
+using Learnst.Domain.Exceptions;
+using Learnst.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Swashbuckle.AspNetCore.Annotations;
+using Guid = System.Guid;
 
 namespace Learnst.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UserActivitiesController(ApplicationDbContext context) : ControllerBase
+public class UserActivitiesController(IAsyncRepository<UserActivity, (Guid, Guid)> repository) : ControllerBase
 {
+    private readonly Expression<Func<UserActivity, object?>>[] _includes =
+    [
+        ua => ua.User,
+        ua => ua.Activity
+    ];
+    
     // GET: api/UserActivities
     [HttpGet]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserActivity>))]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(
-        Summary = "Get all user activities",
-        Description = "Returns a list of all user activities",
-        OperationId = "GetUserActivities",
-        Tags = ["UserActivities"]
-    )]
-    public async Task<ActionResult<IEnumerable<UserActivity>>> GetUserActivities() => await context.UserActivities
-        .Include(ua => ua.User)
-        .Include(ua => ua.Activity)
-        .ToListAsync();
+    public async Task<ActionResult<IEnumerable<UserActivity>>> GetUserActivities()
+        => Ok(await repository.GetAsync(includes: _includes));
 
     // GET: api/UserActivities/5
-    [HttpGet("{userId}")]
+    [HttpGet("{userId:guid}")]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserActivity>))]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(
-        Summary = "Get all user activities by user id",
-        Description = "Returns a list of user activities by user id",
-        OperationId = "GetUserActivitiesByUserId",
-        Tags = ["UserActivities"]
-    )]
-    public async Task<ActionResult<IEnumerable<UserActivity>>> GetUserActivitiesByUserId(Guid userId) => await context.UserActivities
-        .Include(ua => ua.User)
-        .Include(ua => ua.Activity)
-        .Where(ua => ua.UserId == userId)
-        .ToListAsync();
+    public async Task<ActionResult<IEnumerable<UserActivity>>> GetUserActivitiesByUserId(Guid userId)
+        => Ok(await repository.GetAsync(where: ua => ua.UserId == userId, includes: _includes));
 
     // GET: api/UserActivities/5/2
     [Produces("application/json")]
-    [HttpGet("{userId}/{activityId}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserActivity))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(
-        Summary = "Get a user activity by user ID and activity ID",
-        Description = "Returns a single user activity by user ID and activity ID",
-        OperationId = "GetUserActivity",
-        Tags = ["UserActivities"]
-    )]
+    [HttpGet("{userId:guid}/{activityId:guid}")]
     public async Task<ActionResult<UserActivity>> GetUserActivity(Guid userId, Guid activityId)
     {
-        var userActivity = await context.UserActivities
-            .Include(ua => ua.User)
-            .Include(ua => ua.Activity)
-            .FirstOrDefaultAsync(ua => ua.UserId == userId && ua.ActivityId == activityId);
-
-        if (userActivity is null)
-            return NotFound();
-
-        return userActivity;
+        try
+        {
+            var userActivity = await repository.GetByIdAsync((userId, activityId), includes: _includes)
+                ?? throw new NotFoundException<UserActivity, (Guid, Guid)>((userId, activityId));
+            return Ok(userActivity);
+        }
+        catch (NotFoundException<UserActivity, (Guid, Guid)> nfe)
+        {
+            return NotFound(new ErrorResponse(nfe));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ErrorResponse(ex));
+        }
     }
 
     // GET: api/UserActivities/CheckUserActivity/5/2
     [Produces("application/json")]
-    [HttpGet("CheckUserActivity/{userId}/{activityId}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(bool))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(
-        Summary = "Check user activity by user ID and activity ID",
-        Description = "Returns true if user enrolled either false",
-        OperationId = "CheckUserActivity",
-        Tags = ["UserActivities"]
-    )]
-    public async Task<ActionResult<bool>> CheckUserActivity(Guid userId, Guid activityId) => await context.UserActivities
-        .Include(ua => ua.User)
-        .Include(ua => ua.Activity)
-        .AnyAsync(ua => ua.UserId == userId && ua.ActivityId == activityId);
+    [HttpGet("CheckUserActivity/{userId:guid}/{activityId:guid}")]
+    public async Task<ActionResult<bool>> CheckUserActivity(Guid userId, Guid activityId)
+        => await repository.ExistsAsync(ua => ua.UserId == userId && ua.ActivityId == activityId);
 
     // POST: api/UserActivities
     [HttpPost]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserActivity))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(
-        Summary = "Create a new user activity",
-        Description = "Creates a new user activity",
-        OperationId = "PostUserActivity",
-        Tags = ["UserActivities"]
-    )]
     public async Task<ActionResult<UserActivity>> PostUserActivity(UserActivity userActivity)
     {
-        (var userId, var activityId) = (userActivity.UserId, userActivity.ActivityId);
+        try
+        {
 
-        if (await UserActivityExists(userId, activityId))
-            return BadRequest($"Пользователь \"{userId}\" уже связан с активностью \"{activityId}\".");
-
-        context.UserActivities.Add(userActivity);
-        await context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetUserActivity), new { userId, activityId }, userActivity);
+            var (userId, activityId) = (userActivity.UserId, userActivity.ActivityId);
+            if (await repository.ExistsAsync(ua => ua.UserId == userId && ua.ActivityId == activityId))
+                throw new DuplicateException($"Пользователь \"{userId}\" уже записан на активность \"{activityId}\".");
+            await repository.AddAsync(userActivity);
+            await repository.SaveAsync();
+            return CreatedAtAction(nameof(GetUserActivity), new { userId, activityId }, userActivity);
+        }
+        catch (DuplicateException de)
+        {
+            return StatusCode(StatusCodes.Status422UnprocessableEntity, new ErrorResponse(de));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ErrorResponse(ex));
+        }
     }
 
     // PUT: api/UserActivities/5/2
     [Produces("application/json")]
-    [HttpPut("{userId}/{activityId}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(
-        Summary = "Update a user activity",
-        Description = "Updates an existing user activity",
-        OperationId = "PutUserActivity",
-        Tags = ["UserActivities"]
-    )]
+    [HttpPut("{userId:guid}/{activityId:guid}")]
     public async Task<IActionResult> PutUserActivity(Guid userId, Guid activityId, UserActivity userActivity)
     {
-        if (userId != userActivity.UserId || activityId != userActivity.ActivityId)
-            return BadRequest();
-
-        context.Entry(userActivity).State = EntityState.Modified;
-
         try
         {
-            await context.SaveChangesAsync();
+            NotEqualsException.ThrowIfNotEquals(userId, userActivity.UserId);
+            NotEqualsException.ThrowIfNotEquals(activityId, userActivity.ActivityId);
+            var existingUserActivity = await repository.GetByIdAsync((userId, activityId))
+                ?? throw new NotFoundException<UserActivity, (Guid, Guid)>((userId, activityId));
+            var result = repository.Update(existingUserActivity, userActivity);
+            await repository.SaveAsync();
+            return Ok(result);
         }
-        catch (DbUpdateConcurrencyException)
+        catch (Exception ex)
         {
-            if (!await UserActivityExists(userId, activityId))
-                return NotFound();
-            throw;
+            return BadRequest(new ErrorResponse(ex));
         }
-
-        return Ok(userActivity);
     }
 
     // DELETE: api/UserActivities/5/2
     [Produces("application/json")]
-    [HttpDelete("{userId}/{activityId}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(
-        Summary = "Delete a user activity",
-        Description = "Deletes a user activity by user ID and activity ID",
-        OperationId = "DeleteUserActivity",
-        Tags = ["UserActivities"]
-    )]
+    [HttpDelete("{userId:guid}/{activityId:guid}")]
     public async Task<IActionResult> DeleteUserActivity(Guid userId, Guid activityId)
     {
-        var userActivity = await context.UserActivities.FindAsync(userId, activityId);
-        if (userActivity is null)
-            return NotFound();
-
-        context.UserActivities.Remove(userActivity);
-        await context.SaveChangesAsync();
-
-        return NoContent();
+        try
+        {
+            await repository.DeleteAsync((userId, activityId));
+            await repository.SaveAsync();
+            return NoContent();
+        }
+        catch (NotFoundException<Answer, int> nfe)
+        {
+            return NotFound(new ErrorResponse(nfe));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ErrorResponse(ex));
+        }
     }
-
-    private async Task<bool> UserActivityExists(Guid userId, Guid activityId)
-        => await context.UserActivities.AnyAsync(e => e.UserId == userId && e.ActivityId == activityId);
 }

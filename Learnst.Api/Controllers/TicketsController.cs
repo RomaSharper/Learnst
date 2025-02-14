@@ -1,6 +1,7 @@
-﻿using Learnst.Dao;
-using Learnst.Dao.Enums;
-using Learnst.Dao.Models;
+﻿using Learnst.Domain;
+using Learnst.Domain.Enums;
+using Learnst.Domain.Models;
+using Learnst.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;

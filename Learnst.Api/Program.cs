@@ -1,32 +1,49 @@
-using System.Text;
+using Learnst.Api;
 using Learnst.Api.Models;
 using Learnst.Api.Services;
-using Learnst.Dao;
-using Learnst.Dao.Abstraction;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http.Timeouts;
+using Learnst.Application.Interfaces;
+using Learnst.Domain.Mappings;
+using Learnst.Domain.Models;
+using Learnst.Infrastructure;
+using Learnst.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Primitives;
-using Microsoft.IdentityModel.Tokens;
 
-const string policyName = "CORS";
+const string policy = "CORS";
 const string apiName = "Learnst API v.1";
+const string swaggerUrl = "/swagger/v1/swagger.json";
 const string connectionStringName = "DefaultConnection";
 string[] trustedOrigins = ["https://learnst.runasp.net"];
+string[] trustedPaths = ["/error", "/oauth2", "/apps", "/account", "/sessions"];
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options => options.AddPolicy(policyName,
-    policyBuilder => policyBuilder.WithOrigins(trustedOrigins)
-          .AllowAnyHeader()
-          .AllowAnyMethod()
-          .AllowCredentials()));
+// Настройка CORS
+builder.Services.AddCustomCors(trustedOrigins: null);
 
+// Настройка AutoMapper
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<FullUpdateProfile<Activity, Guid>>();
+    cfg.AddProfile<ApplicationUpdateProfile>();
+    cfg.AddProfile<FullUpdateProfile<InfoCard, int>>();
+    cfg.AddProfile<FullUpdateProfile<Lesson, Guid>>();
+    cfg.AddProfile<FullUpdateProfile<Question, Guid>>();
+    cfg.AddProfile<FullUpdateProfile<SocialMediaProfile, int>>();
+    cfg.AddProfile<FullUpdateProfile<Ticket, Guid>>();
+    cfg.AddProfile<FullUpdateProfile<User, Guid>>();
+}, typeof(Program));
+
+// Регистрация сервисов
 builder.Services.AddScoped<JwtService>()
     .AddScoped<IEmailSender, SmtpEmailSender>()
     .AddScoped<IValidationService, ValidationService>()
-    .AddScoped<ICertificateService, CertificateService>();
+    .AddScoped<ICertificateService, CertificateService>()
+    .AddScoped(typeof(IRepository<,>), typeof(Repository<,>))
+    .AddScoped(typeof(IBulkRepository<,>), typeof(BulkRepository<,>))
+    .AddScoped(typeof(IAsyncRepository<,>), typeof(AsyncRepository<,>))
+    .AddScoped(typeof(ISoftDeleteRepository<,>), typeof(SoftDeleteRepository<,>));
 
+// Конфигурация настроек из appsettings.json
 builder.Services.Configure<VkSettings>(builder.Configuration.GetSection("Vk"))
     .Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"))
     .Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"))
@@ -44,119 +61,39 @@ builder.Services.Configure<VkSettings>(builder.Configuration.GetSection("Vk"))
     .Configure<MicrosoftSettings>(builder.Configuration.GetSection("Microsoft"))
     .Configure<EpicGamesSettings>(builder.Configuration.GetSection("EpicGames"));
 
-builder.Services.AddRequestTimeouts(options => options.DefaultPolicy = new RequestTimeoutPolicy { Timeout = TimeSpan.FromMinutes(5) })
-    .AddDbContext<ApplicationDbContext>(
-        options => options.UseSqlServer(builder.Configuration.GetConnectionString(connectionStringName)),
-        ServiceLifetime.Transient)
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
-    });
-
-builder.Services.AddAuthorization()
+// Настройка базы данных и аутентификации
+builder.Services.AddRequestTimeout(TimeSpan.FromMinutes(5))
+    .AddDbContext<ApplicationDbContext>(options => options
+        .UseSqlServer(builder.Configuration.GetConnectionString(connectionStringName)), ServiceLifetime.Transient)
+    .AddJwtAuthentication(builder.Configuration)
+    .AddAuthorization()
     .AddHttpClient(apiName, client => client.Timeout = TimeSpan.FromMinutes(5));
 
+// Добавление остальных служб
 builder.Services.AddOpenApi()
-    .AddSwaggerGen(action => action.UseInlineDefinitionsForEnums())
-    .AddSwaggerGenNewtonsoftSupport()
+    .AddSwaggerGen()
     .AddDistributedMemoryCache()
     .AddSession()
     .AddControllers();
 
 var app = builder.Build();
 
+// Middleware
 app.UseRouting()
-    .Use(async (context, next) =>
-    {
-        var token = context.Request.Cookies["access_token"];
-        if (!string.IsNullOrEmpty(token))
-            context.Request.Headers.Authorization = new StringValues($"Bearer {token}");
-        await next();
-    }).UseAuthentication()
+    .UseCookieAccessToken()
+    .UseAuthentication()
     .UseAuthorization()
     .UseHttpsRedirection()
     .UseStaticFiles()
-    .UseCors(policyName)
-    .UseSession();
+    .UseCors(policy)
+    .UseSession()
+    .UseCustomSecurity(onError: async (context, _, origin) => // Middleware для безопасности
+     {
+         await LogService.WriteLine(
+             $"** Запрещен доступ источнику \"{(string.IsNullOrEmpty(origin) ? "Пустой" : origin)}\", так как он не является доверенным. **");
+         context.Response.Redirect("/error");
+     });
 
-// if (app.Environment.IsDevelopment())
-    app.UseSwagger()
-       .UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", apiName));
-
-/*app.Use(async (context, next) =>
-{
-    var path = context.Request.Path.Value ?? string.Empty;
-    var origin = context.Request.Headers.Origin.ToString();
-
-    if (path.StartsWith("/error") || path.StartsWith("/oauth2") || trustedOrigins.Any(trustedOrigin => origin.StartsWith(trustedOrigin)))
-    {
-        await next();
-        return;
-    }
-
-    await LogService.WriteLine(
-        $"** Запрещен доступ источнику \"{(string.IsNullOrEmpty(origin) ? "Пустой" : origin)}\", так как он не является доверенным. **");
-    context.Response.Redirect("/error");
-    await context.Response.CompleteAsync();
-});*/
-
-app.MapGet("/error", () => Results.Content(
-    """
-    <!DOCTYPE html>
-    <html lang="ru">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Блокировка</title>
-        <style>
-            body {
-                margin: 0;
-                padding: 0;
-                height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background-color: #f4f4f4;
-                font-family: Roboto, Helvetica-Neue, Consolas, system-ui, Arial, sans-serif;
-            }
-            .container {
-                padding: 20px;
-                text-align: center;
-                border-radius: 8px;
-                background-color: white;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            }
-            h1 {
-                color: #d9534f;
-            }
-            p {
-                color: #555;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Ошибка доступа</h1>
-            <p>Вы не имеете право доступа к этому сайту.</p>
-        </div>
-    </body>
-    </html>
-    """,
-    contentType: "text/html",
-    contentEncoding: Encoding.UTF8,
-    statusCode: 403)
-);
-
-app.UseAuthorization();
-
+app.UseCustomSwagger(apiName, swaggerUrl, willUse: true); // Используем метод для настройки Swagger
 app.MapControllers();
-
 app.Run();

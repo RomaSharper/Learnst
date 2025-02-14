@@ -1,139 +1,90 @@
-﻿using Learnst.Dao.Models;
-using Learnst.Dao;
+﻿using Learnst.Api.Models;
+using Learnst.Application.Interfaces;
+using Learnst.Domain.Exceptions;
+using Learnst.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace Learnst.Api.Controllers;
 
-[Route("[controller]")]
 [ApiController]
-public class AnswersController(ApplicationDbContext context) : ControllerBase
+[Route("[controller]")]
+public class AnswersController(IAsyncRepository<Answer, int> repository) : ControllerBase
 {
-    // GET: api/Questions/5/Answers
-    [Produces("application/json")]
-    [HttpGet("/api/Questions/{questionId:guid}/[controller]")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Answer>))]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(
-        Summary = "Get all answers for Question by Question ID",
-        Description = "Returns a list of all answers",
-        OperationId = "GetAnswersByQuestionId",
-        Tags = ["Answers"]
-    )]
-    public async Task<ActionResult<IEnumerable<Answer>>> GetAnswersByQuestionId(Guid questionId)
-    {
-        return await context.Answers
-            .Where(a => a.QuestionId == questionId)
-            .Include(a => a.Question)
-            .ToListAsync();
-    }
-
     // GET: api/Answers/5
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Answer))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(
-        Summary = "Get an answer by ID",
-        Description = "Returns a single answer by its ID",
-        OperationId = "GetAnswer",
-        Tags = ["Answers"]
-    )]
     public async Task<ActionResult<Answer>> GetAnswer(int id)
     {
-        var answer = await context.Answers
-            .Include(a => a.Question)
-            .FirstOrDefaultAsync(a => a.Id == id);
-
-        if (answer is null)
-            return NotFound();
-
-        return answer;
+        try
+        {
+            var answer = await repository.GetByIdAsync(id, includes: a => a.Question) 
+                ?? throw new NotFoundException<Answer, int>(id);
+            return Ok(answer);
+        }
+        catch (NotFoundException<Answer, int> nfe)
+        {
+            return NotFound(new ErrorResponse(nfe));
+        }
     }
 
     // POST: api/Answers
     [HttpPost]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Answer))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(
-        Summary = "Create a new answer",
-        Description = "Creates a new answer",
-        OperationId = "PostAnswer",
-        Tags = ["Answers"]
-    )]
     public async Task<ActionResult<Answer>> PostAnswer(Answer answer)
     {
-        var id = answer.Id;
-        if (await AnswerExists(id))
-            return BadRequest($"Ответ с ID \"{id}\" уже существует.");
-
-        context.Answers.Add(answer);
-        await context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetAnswer), new { id = answer.Id }, answer);
+        try
+        {
+            var id = answer.Id;
+            if (await repository.ExistsAsync(a => a.Id == id))
+                throw new DuplicateException<Answer>(id);
+            await repository.AddAsync(answer);
+            await repository.SaveAsync();
+            return CreatedAtAction(nameof(GetAnswer), new IdResponse<int>(id), answer);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ErrorResponse(ex));
+        }
     }
 
     // PUT: api/Answers/5
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(
-        Summary = "Update an answer",
-        Description = "Updates an existing answer",
-        OperationId = "PutAnswer",
-        Tags = ["Answers"]
-    )]
     public async Task<IActionResult> PutAnswer(int id, Answer answer)
     {
-        if (id != answer.Id)
-            return BadRequest();
-
-        context.Entry(answer).State = EntityState.Modified;
-
         try
         {
-            await context.SaveChangesAsync();
+            NotEqualsException.ThrowIfNotEquals(id, answer.Id);
+            var existingAnswer = await repository.GetByIdAsync(id)
+                ?? throw new NotFoundException<Answer, int>(id);
+            var result = repository.Update(existingAnswer, answer);
+            await repository.SaveAsync();
+            return Ok(result);
         }
-        catch (DbUpdateConcurrencyException)
+        catch (NotFoundException<Answer, int> nfe)
         {
-            if (!await AnswerExists(id))
-                return NotFound();
-            throw;
+            return NotFound(new ErrorResponse(nfe));
         }
-
-        return Ok(answer);
+        catch (Exception ex)
+        {
+            return BadRequest(new ErrorResponse(ex));
+        }
     }
 
     // DELETE: api/Answers/5
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [SwaggerOperation(
-        Summary = "Delete an answer",
-        Description = "Deletes an answer by its ID",
-        OperationId = "DeleteAnswer",
-        Tags = ["Answers"]
-    )]
     public async Task<IActionResult> DeleteAnswer(int id)
     {
-        var answer = await context.Answers.FindAsync(id);
-        if (answer is null)
-            return NotFound();
-
-        context.Answers.Remove(answer);
-        await context.SaveChangesAsync();
-
-        return NoContent();
+        try
+        {
+            await repository.DeleteAsync(id);
+            await repository.SaveAsync();
+            return NoContent();
+        }
+        catch (NotFoundException<Answer, int> nfe)
+        {
+            return NotFound(new ErrorResponse(nfe));
+        }
     }
-
-    private async Task<bool> AnswerExists(int id) => await context.Answers.AnyAsync(e => e.Id == id);
 }

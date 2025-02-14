@@ -1,8 +1,9 @@
-﻿using Learnst.Dao.Models;
-using Learnst.Dao;
+﻿using Learnst.Domain.Models;
+using Learnst.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using Learnst.Api.Models;
+using Learnst.Infrastructure;
 
 namespace Learnst.Api.Services;
 

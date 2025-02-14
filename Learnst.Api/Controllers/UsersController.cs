@@ -2,12 +2,13 @@
 using bcrypt = BCrypt.Net.BCrypt;
 #pragma warning restore CS8981
 using Learnst.Api.Models;
-using Learnst.Dao.Models;
-using Learnst.Dao;
+using Learnst.Domain.Models;
+using Learnst.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
-using Learnst.Dao.Enums;
+using Learnst.Domain.Enums;
+using Learnst.Infrastructure;
 
 namespace Learnst.Api.Controllers;
 

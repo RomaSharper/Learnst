@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Learnst.Dao;
+﻿using Microsoft.AspNetCore.Mvc;
+using Learnst.Domain;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using Learnst.Api.Models;
 using Learnst.Api.Services;
+using Learnst.Domain.Models;
+using Learnst.Infrastructure;
+using bcrypt = BCrypt.Net.BCrypt;
 
 namespace Learnst.Api.Controllers;
 
@@ -18,28 +19,54 @@ public class SessionsController(
     [HttpPost("auth")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var user = await context.Users.FirstOrDefaultAsync(
-            u => u.Username == request.Username || u.EmailAddress == request.Username);
+        User? user;
+        var userId = HttpContext.Request.Cookies["openid"];
 
-        if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-            return Unauthorized(new { message = "Неверный логин или пароль" });
+        if (!Guid.TryParse(userId, out var userGuid))
+        {
+            user = await context.Users.SingleOrDefaultAsync(
+                u => u.Username == request.Username || u.EmailAddress == request.Username);
 
-        var token = jwtService.GenerateToken(user);
+            if (user is null || !bcrypt.Verify(request.Password, user.PasswordHash))
+                return Unauthorized(new { message = "Неверный логин или пароль" });
 
-        return Ok(new { token });
+            return Ok(new { token = jwtService.GenerateToken(user) });
+        }
+
+        user = await context.Users.SingleOrDefaultAsync(u => u.Id == userGuid);
+        if (user is null)
+        {
+            HttpContext.Response.Cookies.Delete("openid");
+            return NotFound(new { message = "Пользователь с таким ID не найден" });
+        }
+
+        HttpContext.Response.Cookies.Append("openid", user.Id.ToString());
+        return Ok(jwtService.GenerateToken(user));
     }
 
-    [HttpGet("session")]
-    [Authorize] // Только для авторизованных пользователей
-    public IActionResult CheckSession()
+    [HttpGet("check")]
+    public async Task<IActionResult> CheckSession()
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var username = User.FindFirst(ClaimTypes.Name)?.Value;
-        var role = User.FindFirst(ClaimTypes.Role)?.Value;
-
+        var userId = HttpContext.Request.Cookies["openid"];
         if (string.IsNullOrEmpty(userId))
+        {
+            HttpContext.Response.Cookies.Delete("openid");
             return Unauthorized(new { message = "Ошибка авторизации" });
+        }
 
-        return Ok(new { userId, username, role });
+        if (!Guid.TryParse(userId, out var userGuid))
+        {
+            HttpContext.Response.Cookies.Delete("openid");
+            return BadRequest(new { message = "Неверный ID" });
+        }
+
+        var user = await context.Users.SingleOrDefaultAsync(u => u.Id == userGuid);
+        if (user is null)
+        {
+            HttpContext.Response.Cookies.Delete("openid");
+            return Unauthorized(new { message = "Ошибка авторизации" });
+        }
+
+        return Ok(new { userId = user.Id, username = user.Username, role = user.Role });
     }
 }

@@ -1,0 +1,15 @@
+﻿<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="learnst-client\learnst-client.esproj" Type="{54A90642-561A-4BB1-A94E-469ADEE60C69}">
+    <Configuration Solution="Debug|Any CPU" Project="Debug|Any CPU|NoBuild" />
+    <Configuration Solution="Release|Any CPU" Project="Release|Any CPU|Deploy" />
+  </Project>
+  <Project Path="Learnst.Api\Learnst.Api.csproj" Type="Classic C#">
+    <Configuration Solution="Debug|Any CPU" Project="Debug|Any CPU|Deploy" />
+  </Project>
+  <Project Path="Learnst.Application\Learnst.Application.csproj" Type="Classic C#" />
+  <Project Path="Learnst.Domain\Learnst.Domain.csproj" Type="Classic C#" />
+  <Project Path="Learnst.Infrastructure\Learnst.Infrastructure.csproj" Type="Classic C#" />
+</Solution>

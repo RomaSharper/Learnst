@@ -1,10 +1,10 @@
-﻿using Learnst.Dao.Abstraction;
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
 using System.Text;
 using Learnst.Api.Models;
+using Learnst.Application.Interfaces;
 
 namespace Learnst.Api.Services;
 

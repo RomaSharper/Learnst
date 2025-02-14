@@ -13,9 +13,9 @@ export class AnswersService {
 
   constructor(private http: HttpClient) { }
 
-  getAnswersByQuestionId(questionId: string): Observable<Answer[]> {
-    return this.http.get<Answer[]>(`${environment.apiBaseUrl}/questions/${questionId}/answers`);
-  }
+  // getAnswersByQuestionId(questionId: string): Observable<Answer[]> {
+  //   return this.http.get<Answer[]>(`${environment.apiBaseUrl}/questions/${questionId}/answers`);
+  // }
 
   getAnswerById(answerId: number): Observable<Answer> {
     return this.http.get<Answer>(`${this.apiUrl}/${answerId}`);

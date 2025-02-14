@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Learnst.Application\Learnst.Application.csproj" />
+      <ProjectReference Include="..\Learnst.Domain\Learnst.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="13.0.1" />
+      <PackageReference Include="EFCore.BulkExtensions" Version="9.0.0-rc.1" />
+      <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.0.1" />
+    </ItemGroup>
+
+</Project>
