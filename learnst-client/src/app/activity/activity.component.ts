@@ -119,7 +119,6 @@ export class ActivityComponent implements OnInit {
 
       // Проверяем доступ к активности
       this.activitiesService.getActivityById(activityId).pipe(
-        TimeoutHandler.retryOnCodes([500, 504]),
         catchError(err => {
           this.handleError('Ошибка при загрузке данных активности', err);
           return of(undefined);
@@ -179,9 +178,13 @@ export class ActivityComponent implements OnInit {
     if (!this.isCertificateAvailable || !this.user || this.isCertificateLoading)
       return;
 
-    // Проверяем, заполнено ли поле fullName
     if (!this.user.fullName) {
-      this.alertService.showSnackBar('Пожалуйста, заполните ваше полное имя в профиле.');
+      this.alertService.showSnackBar('Пожалуйста, заполните ваше полное имя в вашем аккаунте.');
+      return;
+    }
+
+    if (!this.user.emailAddress) {
+      this.alertService.showSnackBar('Пожалуйста, заполните электронную почту в вашем аккаунте.');
       return;
     }
 
@@ -211,14 +214,13 @@ export class ActivityComponent implements OnInit {
 
   private loadActivityData(activityId: string, userId: string): void {
     this.activitiesService.getActivityById(activityId).pipe(
-      TimeoutHandler.retryOnCodes([500, 504]),
       catchError(err => {
         this.handleError('Ошибка при загрузке данных', err);
         return of(null);
       }),
       map(activity => {
         if (activity) {
-          this.activity = (activity as Activity);
+          this.activity = activity;
           const { benefits, waysToLearn } = this.activity.infoCards.reduce<{
             benefits: InfoCard[],
             waysToLearn: InfoCard[]
@@ -249,7 +251,6 @@ export class ActivityComponent implements OnInit {
 
           // Проверяем доступность сертификата
           this.checkCertificateAvailability(userId);
-
           this.loading = false;
         }
         return activity;
@@ -263,36 +264,31 @@ export class ActivityComponent implements OnInit {
     // Получаем все уроки активности
     const allLessons = this.activity.topics.flatMap(topic => topic.lessons);
     this.totalLessonsCount = allLessons.length;
-
     // Получаем пройденные уроки
     this.lessonsService.getUserLessonsByUserId(userId).pipe(
-      TimeoutHandler.retryOnCodes([500, 504]),
       catchError(err => {
         this.handleError('Ошибка при загрузке пройденных уроков', err);
         return of([]);
       })
     ).subscribe(userLessons => {
       // Фильтруем уроки, которые относятся к текущей активности
-      const completedLessons = (userLessons as UserLesson[]).filter(ul =>
-        allLessons.some(lesson => lesson.id === ul.lessonId)
-      );
+      const completedLessons = userLessons.filter(ul => allLessons.some(lesson => lesson.id === ul.lessonId));
       this.completedLessonsCount = completedLessons.length;
 
       // Получаем количество набранных баллов
       this.answersService.getCorrectAnswersCountByActivity(this.activity!.id, userId).pipe(
-        TimeoutHandler.retryOnCodes([500, 504]),
         catchError(err => {
           this.handleError('Ошибка при загрузке баллов', err);
           return of(0);
         })
       ).subscribe(points => {
-        this.earnedPoints = points as number;
+        this.earnedPoints = points;
 
         // Проверяем, набрал ли пользователь минимальное количество баллов
-        const hasEnoughPoints = this.activity!.minimalScore ? (points as number) >= this.activity!.minimalScore : true;
+        const hasEnoughPoints = this.activity!.minimalScore ? points >= this.activity!.minimalScore : true;
 
         // Сертификат доступен, если пройдены все уроки и набраны баллы
-        this.isCertificateAvailable = completedLessons.length === allLessons.length && hasEnoughPoints;
+        this.isCertificateAvailable = allLessons.length > 0 && completedLessons.length === allLessons.length && hasEnoughPoints;
       });
     });
   }
@@ -300,7 +296,6 @@ export class ActivityComponent implements OnInit {
   private loadLessonProgress(activityId: string, userId: string): void {
     // Получаем все уроки активности
     this.activitiesService.getActivityById(activityId).pipe(
-      TimeoutHandler.retryOnCodes([500, 504]),
       catchError(err => {
         this.handleError('Ошибка при загрузке уроков', err);
         return of(null);
@@ -314,14 +309,13 @@ export class ActivityComponent implements OnInit {
 
       // Получаем пройденные уроки
       this.lessonsService.getUserLessonsByUserId(userId).pipe(
-        TimeoutHandler.retryOnCodes([500, 504]),
         catchError(err => {
           this.handleError('Ошибка при загрузке пройденных уроков', err);
           return of([]);
         })
       ).subscribe(userLessons => {
         // Фильтруем уроки, которые относятся к текущей активности
-        const completedLessons = (userLessons as UserLesson[]).filter(ul =>
+        const completedLessons = userLessons.filter(ul =>
           allLessons.some(lesson => lesson.id === ul.lessonId)
         );
         this.completedLessonsCount = completedLessons.length;
@@ -332,24 +326,22 @@ export class ActivityComponent implements OnInit {
   private loadPointsProgress(activityId: string, userId: string): void {
     // Получаем количество набранных баллов
     this.answersService.getCorrectAnswersCountByActivity(activityId, userId).pipe(
-      TimeoutHandler.retryOnCodes([500, 504]),
       catchError(err => {
         this.handleError('Ошибка при загрузке баллов', err);
         return of(0);
       })
     ).subscribe(points => {
-      this.earnedPoints = points as number;
+      this.earnedPoints = points;
     });
 
     // Получаем общее количество баллов
     this.answersService.getTotalQuestionsCountByActivity(activityId).pipe(
-      TimeoutHandler.retryOnCodes([500, 504]),
       catchError(err => {
         this.handleError('Ошибка при загрузке общего количества вопросов', err);
         return of(0);
       })
     ).subscribe(total => {
-      this.totalPoints = total as number;
+      this.totalPoints = total;
     });
   }
 
