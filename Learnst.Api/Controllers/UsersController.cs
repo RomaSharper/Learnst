@@ -2,13 +2,13 @@
 using bcrypt = BCrypt.Net.BCrypt;
 #pragma warning restore CS8981
 using Learnst.Api.Models;
-using Learnst.Domain.Models;
 using Learnst.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 using Learnst.Domain.Enums;
 using Learnst.Infrastructure;
+using Learnst.Infrastructure.Models;
 
 namespace Learnst.Api.Controllers;
 
@@ -165,7 +165,7 @@ public class UsersController(
             .Include(u => u.UserAnswers)
             .Include(u => u.Tickets)
             .Include(u => u.TicketAnswers)
-            .FirstOrDefaultAsync(u => u.Username == request.Username || u.EmailAddress == request.Username);
+            .FirstOrDefaultAsync(u => u.Username == request.Login || u.EmailAddress == request.Login);
 
         if (user is null || !bcrypt.Verify(request.Password, user.PasswordHash))
             return NotFound();

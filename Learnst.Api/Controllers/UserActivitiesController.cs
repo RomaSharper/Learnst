@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 using Learnst.Api.Models;
-using Learnst.Application.Interfaces;
-using Learnst.Domain.Exceptions;
-using Learnst.Domain.Models;
+using Learnst.Infrastructure.Exceptions;
+using Learnst.Infrastructure.Interfaces;
+using Learnst.Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 using Guid = System.Guid;
 

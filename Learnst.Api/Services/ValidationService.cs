@@ -1,9 +1,9 @@
-﻿using Learnst.Domain.Models;
-using Learnst.Domain;
+﻿using Learnst.Domain;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using Learnst.Api.Models;
 using Learnst.Infrastructure;
+using Learnst.Infrastructure.Models;
 
 namespace Learnst.Api.Services;
 

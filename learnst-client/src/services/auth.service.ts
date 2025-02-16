@@ -26,8 +26,8 @@ export class AuthService {
     this.handleOAuthCallback();
   }
 
-  login(username: string, password: string): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(`${this.apiUrl}/auth`, { username, password })
+  login(login: string, password: string): Observable<{ token: string }> {
+    return this.http.post<{ token: string }>(`${this.apiUrl}/auth`, { login, password })
       .pipe(
         tap(response => {
           localStorage.setItem('token', response.token);
@@ -43,7 +43,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('token'); // Удаляем токен
     this.currentUserSubject.next(null); // Очищаем состояние пользователя
-    this.router.navigate(['/username']);
+    this.router.navigate(['/login']);
   }
 
   checkSession(): void {
@@ -62,11 +62,11 @@ export class AuthService {
   getUser(): Observable<User | null> {
     return this.currentUser$.pipe(
       switchMap(userDao => {
-        if (!userDao || !userDao.userId) {
-          console.error('Пользователь не авторизован или userId отсутствует');
+        if (!userDao || !userDao.openid) {
+          console.error('Пользователь не авторизован или openid отсутствует');
           return of(null);
         }
-        return this.usersService.getUserById(userDao.userId);
+        return this.usersService.getUserById(userDao.openid);
       }),
       catchError(error => {
         console.error('Не удалось обработать данные:', error);
@@ -87,7 +87,7 @@ export class AuthService {
 
     // Обновляем данные в BehaviorSubject
     this.currentUserSubject.next({
-      userId: user.id!,
+      openid: user.id!,
       username: user.username,
       role: user.role
     });
@@ -124,11 +124,11 @@ export class AuthService {
       const payload = JSON.parse(atob(token.split('.')[1])); // Декодируем payload токена
 
       // Извлекаем данные из токена
-      const userId = payload['openid'];
+      const openid = payload['openid'];
       const username = payload['username'];
       const role = payload['role'];
 
-      if (!userId || !username || !role) {
+      if (!openid || !username || !role) {
         console.error('Токен не содержит необходимых данных');
         this.currentUserSubject.next(null);
         return;
@@ -136,7 +136,7 @@ export class AuthService {
 
       // Обновляем данные в BehaviorSubject
       this.currentUserSubject.next({
-        userId: userId,
+        openid: openid,
         username: username,
         role: role
       });

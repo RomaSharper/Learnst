@@ -1,6 +1,6 @@
 ﻿using Learnst.Api.Models;
-using Learnst.Application.Interfaces;
 using Learnst.Infrastructure;
+using Learnst.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Learnst.Api.Controllers;

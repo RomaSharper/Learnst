@@ -38,6 +38,7 @@ import { FileService } from '../../services/file.service';
 import { ValidationService } from '../../services/validation.service';
 import { InfoCardDialogComponent } from './info.card.dialog/info.card.dialog.component';
 import { TopicDialogComponent } from './topic.dialog/topic.dialog.component';
+import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
 
 @Return()
 @Component({
@@ -63,7 +64,8 @@ import { TopicDialogComponent } from './topic.dialog/topic.dialog.component';
     MatSlideToggleModule,
     MatAutocompleteModule,
     NoDownloadingDirective,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    PlaceholderImageDirective
   ]
 })
 export class MakeActivityComponent extends MediumScreenSupport implements OnInit {
@@ -156,7 +158,7 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
   ) {
     super();
     this.activityForm = this.fb.group({
-      title: ['', Validators.required],
+      title: ['', [Validators.required, Validators.minLength(3)]],
       description: [''],
       avatarUrl: [''],
       level: [Level.Easy, Validators.required],

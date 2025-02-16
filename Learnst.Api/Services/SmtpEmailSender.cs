@@ -4,7 +4,7 @@ using MimeKit;
 using MimeKit.Text;
 using System.Text;
 using Learnst.Api.Models;
-using Learnst.Application.Interfaces;
+using Learnst.Infrastructure.Interfaces;
 
 namespace Learnst.Api.Services;
 

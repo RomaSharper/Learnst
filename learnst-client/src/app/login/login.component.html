@@ -7,8 +7,8 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Имя пользователя</mat-label>
-        <input matInput id="username" autocomplete="username" formControlName="username" maxlength="100" placeholder="Введите имя пользователя или email">
-        @if (form.get('username')?.invalid && form.get('username')?.touched) {
+        <input matInput id="login" autocomplete="login" formControlName="login" maxlength="100" placeholder="Введите имя пользователя или email">
+        @if (form.get('login')?.invalid && form.get('login')?.touched) {
           <mat-error>Пожалуйста, введите имя пользователя.</mat-error>
         }
       </mat-form-field>
@@ -172,7 +172,7 @@
         <img src="assets/icons/socials/twitch.png" alt="Twitch" class="social-icon" noDownloading>
       </a>
 
-      <!-- <a
+      <a
         mat-raised-button
         matTooltipPosition="below"
         class="social-btn epicgames-btn"
@@ -180,7 +180,7 @@
         href="https://api-learnst.runasp.net/oauth2/epicgames/init"
       >
         <img src="assets/icons/socials/epic-games.png" alt="Epic Games" class="social-icon" noDownloading>
-      </a> -->
+      </a>
 
       <!-- <a
         mat-raised-button

@@ -1,6 +1,6 @@
-﻿using Learnst.Domain.Models;
+﻿using Learnst.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
-using App = Learnst.Domain.Models.Application;
+using App = Learnst.Infrastructure.Models.Application;
 
 namespace Learnst.Infrastructure;
 

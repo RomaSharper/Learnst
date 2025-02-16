@@ -1,6 +1,6 @@
-﻿using Learnst.Application.Interfaces;
-using Learnst.Domain.Models;
-using Learnst.Infrastructure;
+﻿using Learnst.Infrastructure;
+using Learnst.Infrastructure.Interfaces;
+using Learnst.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;

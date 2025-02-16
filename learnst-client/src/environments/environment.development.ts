@@ -1,4 +1,4 @@
 export const environment = {
-  apiBaseUrl: 'http://localhost:5228',
+  apiBaseUrl: 'https://dev-learnst.runasp.net',
   officeBaseUrl: 'https://view.officeapps.live.com/op/view.aspx?',
 };

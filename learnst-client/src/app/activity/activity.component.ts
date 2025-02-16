@@ -31,6 +31,7 @@ import { CertificateService } from '../../services/certificate.service';
 import { LessonsService } from '../../services/lessons.service';
 import { TagHelper } from './../../helpers/TagHelper';
 import { InfoCard } from './../../models/InfoCard';
+import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
 
 interface ActivityNode {
   id: string;
@@ -56,7 +57,8 @@ interface ActivityNode {
     MatTooltipModule,
     MatProgressBarModule,
     NoDownloadingDirective,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    PlaceholderImageDirective
   ]
 })
 export class ActivityComponent implements OnInit {

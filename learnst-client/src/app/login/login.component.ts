@@ -42,12 +42,13 @@ export class LoginComponent implements OnInit {
     private alertService: AlertService
   ) {
     this.form = new FormGroup({
-      username: new FormControl('', [Validators.required, ValidationService.loginValidator]),
+      login: new FormControl('', [Validators.required, ValidationService.loginValidator]),
       password: new FormControl('', [Validators.required])
     });
   }
 
   ngOnInit(): void {
+    // Здесь нужно избавиться от localStorage, и читать токен из заголовков
     this.route.queryParams.subscribe(params => {
       const token = params['token'];
       if (token) {
@@ -65,10 +66,8 @@ export class LoginComponent implements OnInit {
     }
 
     this.loading = true; // Включаем состояние загрузки
-
     const formValue = this.form.value;
-
-    this.authService.login(formValue.username, formValue.password)
+    this.authService.login(formValue.login, formValue.password)
       .pipe(
         catchError(error => {
           console.error('Ошибка', error.message);

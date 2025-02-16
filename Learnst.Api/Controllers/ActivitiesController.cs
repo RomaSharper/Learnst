@@ -1,14 +1,15 @@
 ﻿using Learnst.Api.Models;
-using Learnst.Application.Interfaces;
-using Learnst.Domain.Exceptions;
-using Learnst.Domain.Models;
+using Learnst.Infrastructure.Exceptions;
+using Learnst.Infrastructure.Models;
+using Learnst.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Learnst.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ActivitiesController(IAsyncRepository<Activity, Guid> repository) : ControllerBase
+public class ActivitiesController(ActivitiesRepository repository) : ControllerBase
 {
     // GET: api/Activities
     [HttpGet]
@@ -22,13 +23,15 @@ public class ActivitiesController(IAsyncRepository<Activity, Guid> repository) :
     {
         try
         {
-            var activity = await repository.GetByIdAsync(id, includes: [
-                    a => a.Author,
-                    a => a.Topics,
-                    a => a.InfoCards,
-                    a => a.UserActivities
-                ]) ?? throw new NotFoundException<Activity>(id);
-            return Ok(activity);
+            return Ok(await repository.DbSet.AsNoTracking()
+                .Include(a => a.Author)
+                .Include(a => a.InfoCards)
+                .Include(a => a.UserActivities)
+                .Include(a => a.Topics)
+                .ThenInclude(t => t.Lessons)
+                .ThenInclude(l => l.Questions)
+                .ThenInclude(q => q.Answers)
+                .SingleOrDefaultAsync(a => a.Id == id) ?? throw new NotFoundException<Activity>(id));
         }
         catch (NotFoundException<Activity> nfe)
         {
@@ -69,12 +72,15 @@ public class ActivitiesController(IAsyncRepository<Activity, Guid> repository) :
         try
         {
             NotEqualsException.ThrowIfNotEquals(id, activity.Id);
-            var existingActivity = await repository.GetByIdAsync(id)
-                ?? throw new NotFoundException<Activity>(id);
-            var result = repository.Update(existingActivity, activity,
-                "Title", "Description", "AvatarUrl",
-                "Level", "IsClosed", "EndAt", "MinimalScore",
-                "Tags", "TargetAudience", "CheckList", "InfoCards", "Topics");
+            var existingActivity = await repository.DbSet.Include(a => a.Author)
+                .Include(a => a.InfoCards)
+                .Include(a => a.UserActivities)
+                .Include(a => a.Topics)
+                .ThenInclude(t => t.Lessons)
+                .ThenInclude(l => l.Questions)
+                .ThenInclude(q => q.Answers)
+                .SingleOrDefaultAsync(a => a.Id == id) ?? throw new NotFoundException<Activity>(id);
+            var result = repository.Update(existingActivity, activity);
             await repository.SaveAsync();
             return Ok(result);
         }

@@ -1,8 +1,7 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
-using Learnst.Application.Interfaces;
-using Learnst.Domain.Exceptions;
-using Learnst.Domain.Interfaces;
+using Learnst.Infrastructure.Exceptions;
+using Learnst.Infrastructure.Interfaces;
 
 namespace Learnst.Infrastructure.Repositories;
 

@@ -1,6 +1,5 @@
 ﻿using EFCore.BulkExtensions;
-using Learnst.Application.Interfaces;
-using Learnst.Domain.Interfaces;
+using Learnst.Infrastructure.Interfaces;
 
 namespace Learnst.Infrastructure.Repositories;
 

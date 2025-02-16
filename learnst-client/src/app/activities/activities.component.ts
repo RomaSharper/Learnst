@@ -22,6 +22,7 @@ import { ActivitiesService } from '../../services/activities.service';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
 import { TagHelper } from '../../helpers/TagHelper';
+import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
 
 @Return()
 @Component({
@@ -42,7 +43,8 @@ import { TagHelper } from '../../helpers/TagHelper';
     MatButtonModule,
     MatPaginatorModule,
     NoDownloadingDirective,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    PlaceholderImageDirective
   ]
 })
 export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
@@ -292,6 +294,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
       if (!result) return;
       this.activitiesService.deleteActivity(activity.id).subscribe(() => {
         this.activities = this.activities.filter(a => a.id !== activity.id);
+        this.alertService.showSnackBar('Активность успешно удалена!');
         this.filterActivities();
       });
     });

@@ -1,25 +1,31 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
-using Learnst.Application.Extensions;
-using Learnst.Application.Interfaces;
-using Learnst.Domain.Exceptions;
-using Learnst.Domain.Interfaces;
+using Learnst.Domain.Extensions;
+using Learnst.Infrastructure.Exceptions;
+using Learnst.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Learnst.Infrastructure.Repositories;
 
+/// <summary>
+/// Базовая реализация универсального репозитория
+/// </summary>
+/// <param name="context">Контекст БД</param>
+/// <param name="mapper">AutoMapper для классов</param>
+/// <typeparam name="T">Тип сущности</typeparam>
+/// <typeparam name="TKey">Тип первичного ключа</typeparam>
 public class Repository<T, TKey>(ApplicationDbContext context, IMapper mapper) : BaseRepository<T, TKey>
     (context, mapper), IRepository<T, TKey> where T : class, IBaseEntity<TKey> where TKey : IEquatable<TKey>
 {
     private readonly ApplicationDbContext _context = context;
         
-    public T Add(T entity) => DbSet.Add(entity).Entity;
+    public virtual T Add(T entity) => DbSet.Add(entity).Entity;
 
     public virtual void Delete(TKey id) => DbSet.Remove(GetById(id) ?? throw new NotFoundException<T, TKey>(id));
 
-    public void Save() => _context.SaveChanges();
+    public virtual void Save() => _context.SaveChanges();
     
-    public T? GetById(
+    public virtual T? GetById(
         TKey id,
         bool noTracking = true,
         params Expression<Func<T, object?>>[]? includes)
@@ -62,7 +68,7 @@ public class Repository<T, TKey>(ApplicationDbContext context, IMapper mapper) :
         else
         {
             // Для простых ключей
-            var keyProperty = GetKeyProperty(typeof(T));
+            var keyProperty = GetKeyProperty();
             if (keyProperty is null)
                 throw new NoKeyException<T>();
 
@@ -105,7 +111,7 @@ public class Repository<T, TKey>(ApplicationDbContext context, IMapper mapper) :
         return query.ToList();
     }
 
-    public T GetFirst(
+    public virtual T GetFirst(
         bool noTracking = true,
         Expression<Func<T, bool>>? where = null,
         Expression<Func<T, object?>>? orderBy = null,
@@ -120,7 +126,7 @@ public class Repository<T, TKey>(ApplicationDbContext context, IMapper mapper) :
         return query.FirstOrDefault() ?? throw new NotFoundException("Запрос оказался пустым.");
     }
 
-    public T GetLast(
+    public virtual T GetLast(
         bool noTracking = true,
         Expression<Func<T, bool>>? where = null,
         Expression<Func<T, object?>>? orderBy = null,
@@ -138,9 +144,9 @@ public class Repository<T, TKey>(ApplicationDbContext context, IMapper mapper) :
         return query.FirstOrDefault() ?? throw new NotFoundException("Запрос оказался пустым.");
     }
         
-    public bool Exists(Expression<Func<T, bool>> predicate) => DbSet.Any(predicate);
+    public virtual bool Exists(Expression<Func<T, bool>> predicate) => DbSet.Any(predicate);
     
-    public TResult? Aggregate<TResult>(
+    public virtual TResult? Aggregate<TResult>(
         EFHelper.AggregateFunction function,
         Expression<Func<T, bool>>? where = null,
         Expression<Func<T, TResult?>>? selector = null)

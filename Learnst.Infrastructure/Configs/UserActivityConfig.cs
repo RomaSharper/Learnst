@@ -1,4 +1,4 @@
-﻿using Learnst.Domain.Models;
+﻿using Learnst.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

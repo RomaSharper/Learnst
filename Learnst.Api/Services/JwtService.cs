@@ -3,26 +3,31 @@ using System.Security.Claims;
 using System.Text;
 using Learnst.Api.Models;
 using Learnst.Domain.Enums;
-using Learnst.Domain.Models;
+using Learnst.Infrastructure.Exceptions;
+using Learnst.Infrastructure.Interfaces;
+using Learnst.Infrastructure.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Learnst.Api.Services;
 
-public class JwtService(IOptions<JwtSettings> jwtSettings)
+public class JwtService(IOptions<JwtSettings> jwtSettings, IAsyncRepository<User, Guid> usersRepository)
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
     
     public string GenerateToken(User user)
     {
+        var now = DateTime.UtcNow;
+        var expirationTime = now.AddMinutes(15);
         SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(_jwtSettings.Key));
         SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
 
         Claim[] claims =
         [
-            new Claim("openid", user.Id.ToString()),
-            new Claim("username", user.Username),
-            new Claim("role", user.Role.ToString())
+            new("openid", user.Id.ToString()),
+            new("username", user.Username),
+            new("role", user.Role.ToString()),
+            new("exp", ((int)expirationTime.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds).ToString())
         ];
 
         JwtSecurityToken token = new(
@@ -35,6 +40,13 @@ public class JwtService(IOptions<JwtSettings> jwtSettings)
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+    
+    /// <summary>
+    /// Генерирует новый JWT-токен для пользователя с помощью Id.
+    /// </summary>
+    public async Task<string> GenerateTokenAsync(Guid userId) =>
+        GenerateToken(await usersRepository.GetByIdAsync(userId)
+                      ?? throw new NotFoundException<User>(userId));
 
     public string GenerateToken(IEnumerable<Claim> claims)
     {

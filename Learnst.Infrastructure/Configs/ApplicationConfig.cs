@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using App = Learnst.Domain.Models.Application;
+using App = Learnst.Infrastructure.Models.Application;
 
 namespace Learnst.Infrastructure.Configs;
 

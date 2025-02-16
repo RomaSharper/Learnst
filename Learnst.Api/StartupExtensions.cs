@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http.Timeouts;
-using Microsoft.Extensions.Primitives;
-
-namespace Learnst.Api;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+
+namespace Learnst.Api;
 
 public static class StartupExtensions
 {
@@ -20,14 +15,17 @@ public static class StartupExtensions
         const string corsPolicy = "CORS";
         services.AddCors(options => options.AddPolicy(corsPolicy, configBuilder =>
         {
-            if (trustedOrigins is null or { Length: > 0 })
-                configBuilder.AllowAnyOrigin();
-            else
+            if (trustedOrigins is { Length: > 0 })
                 configBuilder.WithOrigins(trustedOrigins)
-                    .AllowCredentials();
-            
-            configBuilder.AllowAnyHeader()
-                .AllowAnyMethod();
+                    .AllowCredentials()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .SetIsOriginAllowedToAllowWildcardSubdomains()
+                    .SetPreflightMaxAge(TimeSpan.FromSeconds(3600));
+            else
+                configBuilder.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
         }));
         return services;
     }
@@ -49,6 +47,14 @@ public static class StartupExtensions
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!))
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies["auth-token"];
+                        return Task.CompletedTask;
+                    }
                 };
             });
         return services;
@@ -95,16 +101,4 @@ public static class StartupExtensions
                .UseSwaggerUI(options => options.SwaggerEndpoint(swaggerUrl, apiName));
         return app;
     }
-
-    /// <summary>
-    /// Использовать куки-токен.
-    /// </summary>
-    /// <param name="app">Приложение.</param>
-    /// <returns>Приложение.</returns>
-    public static IApplicationBuilder UseCookieAccessToken(this IApplicationBuilder app) => app.Use(async (context, next) =>
-    {
-        var token = context.Request.Cookies["access_token"];
-        context.Request.Headers.Authorization = new StringValues(string.IsNullOrEmpty(token) ? null : $"Bearer {token}");
-        await next();
-    });
 }

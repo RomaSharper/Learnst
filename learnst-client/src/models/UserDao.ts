@@ -1,7 +1,7 @@
 import { Role } from "../enums/Role";
 
 export interface UserDao {
-  userId: string,
+  openid: string,
   username: string,
   role: Role
 }

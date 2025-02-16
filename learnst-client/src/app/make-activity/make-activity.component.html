@@ -6,9 +6,13 @@
       <mat-label>Название</mat-label>
       <input matInput formControlName="title" required maxlength="50">
       @if (activityForm.get('title')?.hasError('required')) {
-      <mat-error>
-        Название обязательно
-      </mat-error>
+        <mat-error>
+          Название обязательно
+        </mat-error>
+      } @else if (activityForm.get('title')?.hasError('minlength')) {
+        <mat-error>
+          Название должно быть не менее 3 символов
+        </mat-error>
       }
     </mat-form-field>
 
@@ -163,7 +167,7 @@
         <div class="info-card">
           <div class="info-card-content">
             <div class="preview-container">
-              <img [src]="infoCard.iconUrl" alt="">
+              <img [src]="infoCard.iconUrl" alt="" placeholder="/assets/icons/placeholder.png" noDownloading>
             </div>
             <p><strong>{{ InfoTypeHelper.getName(infoCard.infoType) }}</strong></p>
             <p>{{ infoCard.text }}</p>

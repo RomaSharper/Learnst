@@ -1,7 +1,7 @@
-﻿using Learnst.Domain.Models;
-using Learnst.Domain;
+﻿using Learnst.Domain;
 using Learnst.Domain.Enums;
 using Learnst.Infrastructure;
+using Learnst.Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;

@@ -1,26 +1,32 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
-using Learnst.Application.Extensions;
-using Learnst.Application.Interfaces;
-using Learnst.Domain.Exceptions;
-using Learnst.Domain.Interfaces;
+using Learnst.Domain.Extensions;
+using Learnst.Infrastructure.Exceptions;
+using Learnst.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Learnst.Infrastructure.Repositories;
 
+/// <summary>
+/// Базовая реализация асинхронного универсального репозитория
+/// </summary>
+/// <param name="context">Контекст БД</param>
+/// <param name="mapper">AutoMapper для классов</param>
+/// <typeparam name="T">Тип сущности</typeparam>
+/// <typeparam name="TKey">Тип первичного ключа</typeparam>
 public class AsyncRepository<T, TKey>(ApplicationDbContext context, IMapper mapper) : BaseRepository<T, TKey>
     (context, mapper), IAsyncRepository<T, TKey> where T : class, IBaseEntity<TKey> where TKey : IEquatable<TKey>
 {
     private readonly ApplicationDbContext _context = context;
 
-    public async Task<T> AddAsync(T entity) => (await DbSet.AddAsync(entity)).Entity;
+    public virtual async Task<T> AddAsync(T entity) => (await DbSet.AddAsync(entity)).Entity;
 
     public virtual async Task DeleteAsync(TKey id)
         => DbSet.Remove(await GetByIdAsync(id) ?? throw new NotFoundException<T, TKey>(id));
 
-    public async Task SaveAsync() => await _context.SaveChangesAsync();
+    public virtual async Task SaveAsync() => await _context.SaveChangesAsync();
 
-    public async Task<T?> GetByIdAsync(
+    public virtual async Task<T?> GetByIdAsync(
         TKey id,
         bool noTracking = true,
         params Expression<Func<T, object?>>[]? includes)
@@ -63,10 +69,7 @@ public class AsyncRepository<T, TKey>(ApplicationDbContext context, IMapper mapp
         else
         {
             // Для простых ключей
-            var keyProperty = GetKeyProperty(typeof(T));
-            if (keyProperty is null)
-                throw new NoKeyException<T>();
-
+            var keyProperty = GetKeyProperty() ?? throw new NoKeyException<T>();
             var parameter = Expression.Parameter(typeof(T), "e");
             var propertyAccess = Expression.MakeMemberAccess(parameter, keyProperty);
             var equality = Expression.Equal(propertyAccess, Expression.Constant(id, typeof(TKey)));
@@ -106,7 +109,7 @@ public class AsyncRepository<T, TKey>(ApplicationDbContext context, IMapper mapp
         return await query.ToListAsync();
     }
     
-    public async Task<T> GetFirstAsync(
+    public virtual async Task<T> GetFirstAsync(
         bool noTracking = true,
         Expression<Func<T, bool>>? where = null,
         Expression<Func<T, object?>>? orderBy = null,
@@ -125,7 +128,7 @@ public class AsyncRepository<T, TKey>(ApplicationDbContext context, IMapper mapp
             ?? throw new NotFoundException("Запрос оказался пустым.");
     }
 
-    public async Task<T> GetLastAsync(
+    public virtual async Task<T> GetLastAsync(
         bool noTracking = true,
         Expression<Func<T, bool>>? where = null,
         Expression<Func<T, object?>>? orderBy = null,
@@ -144,9 +147,9 @@ public class AsyncRepository<T, TKey>(ApplicationDbContext context, IMapper mapp
             ?? throw new NotFoundException("Запрос оказался пустым.");
     }
     
-    public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate) => await DbSet.AnyAsync(predicate);
+    public virtual async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate) => await DbSet.AnyAsync(predicate);
     
-    public async Task<TResult?> AggregateAsync<TResult>(
+    public virtual async Task<TResult?> AggregateAsync<TResult>(
         EFHelper.AggregateFunction function,
         Expression<Func<T, bool>>? where = null,
         Expression<Func<T, TResult?>>? selector = null)

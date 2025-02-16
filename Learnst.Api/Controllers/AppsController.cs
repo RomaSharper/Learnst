@@ -1,12 +1,11 @@
 ﻿using Learnst.Api.Models;
 using Learnst.Api.Services;
-using Learnst.Application.Extensions;
-using Learnst.Application.Interfaces;
-using Learnst.Domain.Exceptions;
-using Learnst.Domain.Models;
+using Learnst.Domain.Extensions;
 using Learnst.Domain.Services;
+using Learnst.Infrastructure.Exceptions;
+using Learnst.Infrastructure.Interfaces;
+using Learnst.Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
-using App = Learnst.Domain.Models.Application;
 
 namespace Learnst.Api.Controllers;
 
@@ -14,7 +13,7 @@ namespace Learnst.Api.Controllers;
 [Route("[controller]")]
 public class AppsController(
     JwtService jwtService,
-    IAsyncRepository<App, string> repository,
+    IAsyncRepository<Application, string> repository,
     IAsyncRepository<User, Guid> usersRepository,
     IAsyncRepository<AuthCode, string> codesRepository) : ControllerBase
 {
@@ -22,14 +21,14 @@ public class AppsController(
 
     #region OAuth2 Provider Endpoints
     [HttpGet("{clientId}")]
-    public async Task<ActionResult<App>> GetApplication(string clientId)
+    public async Task<ActionResult<Application>> GetApplication(string clientId)
     {
         try
         {
             return Ok(await repository.GetByIdAsync(clientId)
-                ?? throw new NotFoundException<App, string>(message: "Приложение с таким ID не найдено"));
+                ?? throw new NotFoundException<Application, string>(message: "Приложение с таким ID не найдено"));
         }
-        catch (NotFoundException<App, string> nfe)
+        catch (NotFoundException<Application, string> nfe)
         {
             return NotFound(new ErrorResponse(nfe));
         }
@@ -40,7 +39,7 @@ public class AppsController(
     }
 
     [HttpGet("/Users/{userId:guid}/[controller]")]
-    public async Task<ActionResult<App>> GetApplications(Guid userId)
+    public async Task<ActionResult<Application>> GetApplications(Guid userId)
     {
         try
         {
@@ -53,7 +52,7 @@ public class AppsController(
     }
 
     [HttpPost("Create")]
-    public async Task<ActionResult<App>> RegisterApplication([FromBody] ClientRegistrationRequest request)
+    public async Task<ActionResult<Application>> RegisterApplication([FromBody] ClientRegistrationRequest request)
     {
         try
         {
@@ -89,7 +88,7 @@ public class AppsController(
             }
 
             // Создание приложения
-            App client = new()
+            Application client = new()
             {
                 Name = request.Name,
                 UserId = request.UserId,
@@ -118,15 +117,13 @@ public class AppsController(
     }
 
     [HttpPut("{clientId}")]
-    public async Task<ActionResult<App>> UpdateApplication(string clientId, App application)
+    public async Task<ActionResult<Application>> UpdateApplication(string clientId, Application application)
     {
         try
         {
             NotEqualsException.ThrowIfNotEquals(clientId, application.ClientId);
-            var existingApplication = await repository.GetByIdAsync(clientId);
-
-            if (existingApplication is null)
-                throw new NotFoundException<App, string>(message: "Приложение с таким ClientId не найдено");
+            var existingApplication = await repository.GetByIdAsync(clientId)
+                ?? throw new NotFoundException<Application, string>(message: "Приложение с таким ClientId не найдено");
 
             if (await repository.ExistsAsync(a => a.Name == application.Name
                 && a.ClientId != application.ClientId))
@@ -158,7 +155,7 @@ public class AppsController(
 
             return Ok(existingApplication);
         }
-        catch (NotFoundException<App, string> nfe)
+        catch (NotFoundException<Application, string> nfe)
         {
             return NotFound(new { message = nfe.Message, exception = nfe.ToString() });
         }
@@ -169,7 +166,7 @@ public class AppsController(
     }
 
     [HttpDelete("{clientId}")]
-    public async Task<ActionResult<App>> DeleteApplication(string clientId)
+    public async Task<ActionResult<Application>> DeleteApplication(string clientId)
     {
         try
         {
@@ -199,7 +196,7 @@ public class AppsController(
         var app = await repository.GetByIdAsync(clientId);
 
         if (app is null)
-            throw new NotFoundException<App, string>(clientId);
+            throw new NotFoundException<Application, string>(clientId);
 
         // Validate redirect_uri
         if (!Uri.TryCreate(redirectUri, UriKind.Absolute, out _))

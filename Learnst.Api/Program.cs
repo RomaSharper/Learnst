@@ -1,10 +1,11 @@
 using Learnst.Api;
+using Learnst.Api.Middleware;
 using Learnst.Api.Models;
 using Learnst.Api.Services;
-using Learnst.Application.Interfaces;
-using Learnst.Domain.Mappings;
-using Learnst.Domain.Models;
 using Learnst.Infrastructure;
+using Learnst.Infrastructure.Interfaces;
+using Learnst.Infrastructure.Mappings;
+using Learnst.Infrastructure.Models;
 using Learnst.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +19,7 @@ string[] trustedPaths = ["/error", "/oauth2", "/apps", "/account", "/sessions"];
 var builder = WebApplication.CreateBuilder(args);
 
 // Настройка CORS
-builder.Services.AddCustomCors(trustedOrigins: null);
+builder.Services.AddCustomCors(trustedOrigins); //: null);
 
 // Настройка AutoMapper
 builder.Services.AddAutoMapper(cfg =>
@@ -35,13 +36,15 @@ builder.Services.AddAutoMapper(cfg =>
 
 // Регистрация сервисов
 builder.Services.AddScoped<JwtService>()
+    .AddScoped<ActivitiesRepository>()
     .AddScoped<IEmailSender, SmtpEmailSender>()
     .AddScoped<IValidationService, ValidationService>()
     .AddScoped<ICertificateService, CertificateService>()
     .AddScoped(typeof(IRepository<,>), typeof(Repository<,>))
     .AddScoped(typeof(IBulkRepository<,>), typeof(BulkRepository<,>))
     .AddScoped(typeof(IAsyncRepository<,>), typeof(AsyncRepository<,>))
-    .AddScoped(typeof(ISoftDeleteRepository<,>), typeof(SoftDeleteRepository<,>));
+    .AddScoped(typeof(ISoftDeleteRepository<,>), typeof(SoftDeleteRepository<,>))
+    .AddScoped<TokenRefreshMiddleware>();
 
 // Конфигурация настроек из appsettings.json
 builder.Services.Configure<VkSettings>(builder.Configuration.GetSection("Vk"))
@@ -79,13 +82,14 @@ builder.Services.AddOpenApi()
 var app = builder.Build();
 
 // Middleware
+app.UseMiddleware<TokenRefreshMiddleware>();
+
 app.UseRouting()
-    .UseCookieAccessToken()
+    .UseCors(policy)
     .UseAuthentication()
     .UseAuthorization()
     .UseHttpsRedirection()
     .UseStaticFiles()
-    .UseCors(policy)
     .UseSession()
     .UseCustomSecurity(onError: async (context, _, origin) => // Middleware для безопасности
      {

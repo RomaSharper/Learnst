@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learnst.Application", "Learnst.Application\Learnst.Application.csproj", "{F549566C-52DD-760A-4B8E-F452FDEDF814}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learnst.Infrastructure", "Learnst.Infrastructure\Learnst.Infrastructure.csproj", "{F12A5BA8-2073-6125-7D89-3A602B9DBB6F}"
 EndProject
 Global
@@ -34,10 +32,6 @@ Global
 		{952974E3-CDE7-AD5D-D5C1-B476F51A9C66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{952974E3-CDE7-AD5D-D5C1-B476F51A9C66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{952974E3-CDE7-AD5D-D5C1-B476F51A9C66}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F549566C-52DD-760A-4B8E-F452FDEDF814}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F549566C-52DD-760A-4B8E-F452FDEDF814}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F549566C-52DD-760A-4B8E-F452FDEDF814}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F549566C-52DD-760A-4B8E-F452FDEDF814}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F12A5BA8-2073-6125-7D89-3A602B9DBB6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F12A5BA8-2073-6125-7D89-3A602B9DBB6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F12A5BA8-2073-6125-7D89-3A602B9DBB6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
