@@ -20,7 +20,7 @@ import { UsersService } from '../../services/users.service';
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',
-  styleUrls: ['./user.component.less'],
+  styleUrls: ['./user.component.scss'],
   imports: [
     FormsModule,
     MatCardModule,

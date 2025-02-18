@@ -28,7 +28,7 @@ import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDire
 @Component({
   selector: 'app-activities',
   templateUrl: './activities.component.html',
-  styleUrls: ['./activities.component.less'],
+  styleUrls: ['./activities.component.scss'],
   providers: [{ provide: MatPaginatorIntl, useValue: getRussianPaginatorIntl() }],
   imports: [
     RuDatePipe,

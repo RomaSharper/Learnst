@@ -22,14 +22,13 @@ import { Location } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { UsersService } from '../../services/users.service';
-import { NgxMaskDirective } from 'ngx-mask';
 import { User } from '../../models/User';
 
 @Return()
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.less'],
+  styleUrls: ['./register.component.scss'],
   imports: [
     RouterLink,
     FormsModule,

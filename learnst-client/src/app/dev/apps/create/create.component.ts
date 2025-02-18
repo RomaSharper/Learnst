@@ -11,7 +11,7 @@ import { Location } from '@angular/common';
 @Component({
   selector: 'app-apps-create',
   templateUrl: './create.component.html',
-  styleUrls: ['./create.component.less'],
+  styleUrls: ['./create.component.scss'],
   imports: [MatInputModule, MatButtonModule, ReactiveFormsModule]
 })
 export class CreateClientComponent {

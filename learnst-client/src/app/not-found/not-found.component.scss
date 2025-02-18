@@ -1,31 +1,29 @@
-@import url(../../styles/vars.less);
-
 // @not-found-text: #c7d5e0;
 // @not-found-error: #ff6b6b;
 // @not-found-accent: #e4e4e4;
 
 .not-found-container {
   display: flex;
-  padding: @step * 5;
+  padding: 4px * 5;
   text-align: center;
   align-items: center;
   // color: @not-found-text;
   justify-content: center;
   height: calc(100vh - 87px);
 
-  @media (max-width: @medium-screen) {
-    margin: @step * 5;
+  @media (max-width: 767px) {
+    margin: 4px * 5;
   }
 
   .not-found-content {
     width: 100%;
     display: flex;
     align-items: center;
-    max-width: @step * 200;
+    max-width: 4px * 200;
     flex-direction: column;
 
-    @media (min-width: @more-than-medium-screen) {
-      gap: @step * 10; // Отступ между изображением и текстом
+    @media (min-width: 768px) {
+      gap: 4px * 10; // Отступ между изображением и текстом
       flex-direction: row;
       align-items: flex-start;
     }
@@ -34,20 +32,20 @@
       width: 100%;
       max-width: 100%;
 
-      @media (min-width: @more-than-medium-screen) {
+      @media (min-width: 768px) {
         width: 50%;
-        max-width: @step * 100; // Максимальная ширина изображения
+        max-width: 4px * 100; // Максимальная ширина изображения
       }
     }
 
     .not-found-info {
       width: 100%;
       display: flex;
-      margin: @step * 5;
+      margin: 4px * 5;
       align-items: center;
       flex-direction: column;
 
-      @media (min-width: @more-than-medium-screen) {
+      @media (min-width: 768px) {
         width: 100%;
         text-align: left;
         align-items: flex-start;
@@ -59,8 +57,8 @@
       font-size: 2.5rem;
       // color: @not-found-accent;
 
-      @media (min-width: @more-than-medium-screen) {
-        margin: 0 0 @step * 2 0;
+      @media (min-width: 768px) {
+        margin: 0 0 4px * 2 0;
       }
     }
 
@@ -71,8 +69,8 @@
 
     .not-found-button {
       font-size: 1rem;
-      padding: @step * 2 @step * 4;
-      transition: background-color @transition-time ease;
+      padding: 4px * 2 4px * 4;
+      transition: background-color 0.3s ease;
     }
   }
 }

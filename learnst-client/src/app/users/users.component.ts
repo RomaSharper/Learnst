@@ -25,7 +25,7 @@ import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
-  styleUrls: ['./users.component.less'],
+  styleUrls: ['./users.component.scss'],
   imports: [
     RouterLink,
     FormsModule,

@@ -25,7 +25,7 @@ import { format } from 'date-fns';
 @Component({
   selector: 'app-lesson-dialog',
   templateUrl: './lesson.dialog.component.html',
-  styleUrls: ['./lesson.dialog.component.less'],
+  styleUrls: ['./lesson.dialog.component.scss'],
   standalone: true,
   imports: [
     CommonModule,

@@ -42,7 +42,7 @@ import { WorkExperienceDialogComponent } from './work.experience.dialog/work.exp
 @Component({
   selector: 'app-me',
   templateUrl: './me.component.html',
-  styleUrls: ['./me.component.less'],
+  styleUrls: ['./me.component.scss'],
   imports: [
     FormsModule,
     MatFormField,

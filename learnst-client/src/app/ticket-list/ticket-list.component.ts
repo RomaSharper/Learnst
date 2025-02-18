@@ -22,7 +22,7 @@ import { RuDateTimePipe } from '../../pipes/ru.date.time.pipe';
 @Component({
   selector: 'app-ticket-list',
   templateUrl: './ticket-list.component.html',
-  styleUrls: ['./ticket-list.component.less'],
+  styleUrls: ['./ticket-list.component.scss'],
   imports: [
     CommonModule,
     MatIconModule,

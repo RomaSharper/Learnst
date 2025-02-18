@@ -1,13 +1,11 @@
-@import url(../../../styles/vars.less);
-
 .lesson {
   position: relative;
-  padding: @step * 0.5;
+  padding: 4px * 0.5;
 
   .button-container {
     top: 0;
     right: 0;
     position: absolute;
-    margin: @step * 1.5;
+    margin: 4px * 1.5;
   }
 }

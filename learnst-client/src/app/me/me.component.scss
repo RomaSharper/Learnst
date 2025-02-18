@@ -1,5 +1,3 @@
-@import url(../../styles/vars.less);
-
 .profile-container {
   .avatar {
     cursor: pointer;
@@ -11,10 +9,10 @@
     right: 0;
     bottom: 0;
     position: fixed;
-    z-index: @overlay;
-    padding: @step * 6 @step * 4;
-    -webkit-backdrop-filter: blur(@step);
-    backdrop-filter: blur(@step);
+    z-index: 2;
+    padding: 4px * 6 4px * 4;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
   }
 
   .save-button {
@@ -23,26 +21,26 @@
     cursor: pointer;
     // color: @text-high-emphasis;
     // background-color: #005cf4;
-    font-size: @font-size-medium;
-    padding: @step * 3 @step * 6;
-    transition: background-color @transition-time ease;
-    // box-shadow: 0 @step * 0.5 @step rgba(0, 0, 0, 0.2);
+    font-size: 18px;
+    padding: 4px * 3 4px * 6;
+    transition: background-color 0.3s ease;
+    // box-shadow: 0 4px * 0.5 4px rgba(0, 0, 0, 0.2);
 
     &:hover {
       // background-color: darken(#005cf4, 10%);
     }
 
-    @media (max-width: @medium-screen) {
-      padding: @step * 4 @step * 8;
+    @media (max-width: 767px) {
+      padding: 4px * 4 4px * 8;
     }
   }
 
   .delete-profile-wrapper {
     text-align: center;
-    margin-top: @step * 4;
+    margin-top: 4px * 4;
 
     button {
-      margin-bottom: @step;
+      margin-bottom: 4px;
     }
 
     .warning-text {

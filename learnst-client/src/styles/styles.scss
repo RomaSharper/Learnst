@@ -1,26 +1,79 @@
-@import url(./vars.less);
+@use '@angular/material' as mat;
+@use 'sass:map';
+@import 'themes.css';
 
 * {
   word-break: break-word;
   box-sizing: border-box;
-  font-family: @font-family-primary;
+  font-family: 'Motiva Sans', 'Roboto', system-ui, 'Helvetica Neue', 'Builder Sans', 'Consolas', sans-serif;
+}
+
+html, body {
+  height: 100%;
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-size: @font-size-medium;
-  line-height: @line-height-base;
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--mat-sys-on-background);
+  background: var(--background) no-repeat;
+}
+
+.mat-mdc-card {
+  box-shadow: var(--mat-sys-shadow);
+  background: var(--mat-sys-secondary);
+  border: 1px solid var(--border-color);
+}
+
+a, button {
+  color: var(--mat-sys-on-background);
+}
+
+// 6. Переопределение компонентов Material
+.mat-mdc-button {
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var(--hover-bg);
+  }
+
+  &:active {
+    background: var(--active-bg);
+  }
+}
+
+.mat-mdc-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+}
+
+.mat-mdc-standard-chip {
+
+  .mdc-evolution-chip__cell--primary,
+  .mdc-evolution-chip__action--primary,
+  .mat-mdc-chip-action-label {
+    overflow: hidden !important;
+  }
+}
+
+mat-chip-row {
+  cursor: pointer;
+  max-width: 120px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 input,
 textarea {
   width: 100%;
-  padding: @step * 2;
+  font-size: 18px;
+  padding: 4px * 2;
   // color: @text-primary;
-  border-radius: @step;
-  font-size: @font-size-medium;
-  // border: @step * 0.25 solid @muted;
+  border-radius: 4px;
+  // border: 4px * 0.25 solid @muted;
   // background-color: darken(@primary-bg, 10%);
 
   &:focus {
@@ -35,13 +88,13 @@ textarea {
 
 textarea {
   resize: vertical;
-  max-height: @step * 50;
+  max-height: 4px * 50;
   min-height: fit-content;
 }
 
 a, button {
   text-decoration: none;
-  font-size: @font-size-medium !important;
+  font-size: 18px !important;
 }
 
 p {
@@ -63,8 +116,8 @@ p {
 }
 
 .toc ul {
-  list-style-type: none;
   padding: 0;
+  list-style-type: none;
 }
 
 .toc li {
@@ -83,14 +136,14 @@ p {
 
 mat-paginator {
   // color: @text-color;
-  margin-top: @step * 5;
+  margin-top: 4px * 5;
   // background-color: @background-color;
 
   .mat-paginator-page-size {
     select {
       // color: @text-color;
       // background-color: @background-color;
-      // border: @step * 0.25 solid @border-color;
+      // border: 4px * 0.25 solid @border-color;
     }
   }
 
@@ -98,7 +151,7 @@ mat-paginator {
     button {
       // color: @text-color;
       // background-color: @background-color;
-      // border: @step * 0.25 solid @border-color;
+      // border: 4px * 0.25 solid @border-color;
 
       &:hover {
         // background-color: @card-hover-color;
@@ -110,14 +163,14 @@ mat-paginator {
     }
   }
 
-  @media (max-width: @medium-screen) {
-    margin: @step * 3;
+  @media (max-width: 767px) {
+    margin: 4px * 3;
   }
 }
 
 mat-form-field {
   width: 100%;
-  margin-bottom: @step * 4;
+  margin-bottom: 4px * 4;
 }
 
 mat-date-range-input {
@@ -125,7 +178,7 @@ mat-date-range-input {
 }
 
 .mat-calendar-body-cell {
-  border-radius: @step * 5;
+  border-radius: 4px * 5;
 }
 
 .disabled-btn {
@@ -134,40 +187,40 @@ mat-date-range-input {
 }
 
 .container {
-  margin: @step * 5;
+  margin: 4px * 5;
 
-  @media (max-width: @medium-screen) {
-    margin: @step * 3;
+  @media (max-width: 767px) {
+    margin: 4px * 3;
   }
 }
 
 .input-button {
-  right: @step * 2;
+  right: 4px * 2;
 }
 
 .more-button {
-  top: @step * 3;
-  right: @step * 3;
+  top: 4px * 3;
+  right: 4px * 3;
   position: absolute !important;
 }
 
 .upload-button {
   right: 0;
-  top: @step * 2;
+  top: 4px * 2;
   position: absolute !important;
 }
 
 .main-button {
   scale: 1.5;
-  left: @step * 6;
-  bottom: @step * 6;
-  z-index: @overlay;
+  left: 4px * 6;
+  bottom: 4px * 6;
+  z-index: 2;
   position: fixed !important;
-  font-size: @font-size-large;
+  font-size: 24px
 }
 
 .question-button {
-  margin-right: @step * 3.5;
+  margin-right: 4px * 3.5;
 }
 
 .flex-column {
@@ -176,67 +229,67 @@ mat-date-range-input {
 }
 
 .m {
-  margin: @step * 3 !important;
+  margin: 4px * 3 !important;
 }
 
 .mt {
-  margin-top: @step * 3 !important;
+  margin-top: 4px * 3 !important;
 }
 
 .mr {
-  margin-right: @step * 3 !important;
+  margin-right: 4px * 3 !important;
 }
 
 .mb {
-  margin-bottom: @step * 3 !important;
+  margin-bottom: 4px * 3 !important;
 }
 
 .ml {
-  margin-left: @step * 3 !important;
+  margin-left: 4px * 3 !important;
 }
 
 .mv {
-  margin-top: @step * 3 !important;
-  margin-bottom: @step * 3 !important;
+  margin-top: 4px * 3 !important;
+  margin-bottom: 4px * 3 !important;
 }
 
 .mh {
-  margin-left: @step * 3 !important;
-  margin-right: @step * 3 !important;
+  margin-left: 4px * 3 !important;
+  margin-right: 4px * 3 !important;
 }
 
 .m-2 {
-  margin: @step * 6 !important;
+  margin: 4px * 6 !important;
 }
 
 .mt-2 {
-  margin-top: @step * 6 !important;
+  margin-top: 4px * 6 !important;
 }
 
 .mr-2 {
-  margin-right: @step * 6 !important;
+  margin-right: 4px * 6 !important;
 }
 
 .mb-2 {
-  margin-bottom: @step * 6 !important;
+  margin-bottom: 4px * 6 !important;
 }
 
 .ml-2 {
-  margin-left: @step * 6 !important;
+  margin-left: 4px * 6 !important;
 }
 
 .mv-2 {
-  margin-top: @step * 6 !important;
-  margin-bottom: @step * 6 !important;
+  margin-top: 4px * 6 !important;
+  margin-bottom: 4px * 6 !important;
 }
 
 .mh-2 {
-  margin-left: @step * 6 !important;
-  margin-right: @step * 6 !important;
+  margin-left: 4px * 6 !important;
+  margin-right: 4px * 6 !important;
 }
 
 .mb-4 {
-  margin-bottom: @step * 25 !important;
+  margin-bottom: 4px * 25 !important;
 }
 
 .cursor-default {
@@ -252,7 +305,7 @@ mat-date-range-input {
 }
 
 .search-group {
-  margin: @step * 5 @step * 4;
+  margin: 4px * 5 4px * 4;
 }
 
 .hidden {
@@ -265,25 +318,25 @@ mat-date-range-input {
 
 .tabs {
   display: flex;
-  margin-bottom: @step * 5;
-  // border-bottom: @step * 0.5 solid @border-color;
+  margin-bottom: 4px * 5;
+  // border-bottom: 4px * 0.5 solid @border-color;
 }
 
 .tab-button {
   border: none;
   cursor: pointer;
-  border-radius: @step;
+  border-radius: 4px;
   // color: @text-secondary;
   // background: @primary-bg;
-  margin-right: @step * 2;
-  font-size: @font-size-medium;
-  padding: @step * 2 @step * 5;
-  transition: background @transition-time ease, color @transition-time ease;
+  margin-right: 4px * 2;
+  font-size: 18px;
+  padding: 4px * 2 4px * 5;
+  transition: background 0.3s ease, color 0.3s ease;
 
   &.active {
     // background: @highlight;
     // color: @text-high-emphasis;
-    // border-bottom: @step * 0.5 solid @accent;
+    // border-bottom: 4px * 0.5 solid @accent;
   }
 
   &:hover {
@@ -323,29 +376,29 @@ mat-date-range-input {
 .context-menu {
   display: block;
   position: fixed;
-  width: @step * 50;
-  padding: @step * 2;
-  border-radius: @step;
-  z-index: @context-menu;
+  width: 4px * 50;
+  padding: 4px * 2;
+  border-radius: 4px;
+  z-index: 3;
   // background-color: @context-bg;
-  // border: @step * 0.25 solid @context-border;
-  // box-shadow: 0 @step @step * 2 rgba(0, 0, 0, 0.5);
+  // border: 4px * 0.25 solid @context-border;
+  // box-shadow: 0 4px 4px * 2 rgba(0, 0, 0, 0.5);
 
   button {
     width: 100%;
     display: block;
     cursor: pointer;
     text-align: left;
-    border-radius: @step;
+    border-radius: 4px;
     // color: @text-high-emphasis;
-    padding: @step * 2 @step * 3;
+    padding: 4px * 2 4px * 3;
     background-color: transparent;
-    transition: background-color @short-transition-time;
+    transition: background-color 0.2s;
 
     /* Отступ между элементами */
     &:not(:last-child) {
-      margin-bottom: @step;
-      // border-bottom: @step * 0.25 solid @context-border;
+      margin-bottom: 4px;
+      // border-bottom: 4px * 0.25 solid @context-border;
     }
 
     &:hover {
@@ -355,7 +408,7 @@ mat-date-range-input {
 }
 
 .mobile-only {
-  @media(min-width: @more-than-medium-screen) {
+  @media(min-width: 768px) {
     display: none !important;
   }
 }
@@ -364,10 +417,10 @@ mat-date-range-input {
 .warning,
 .success {
   display: none;
-  padding: @step * 2;
-  font-size: @step * 3;
-  border-radius: @step;
-  margin: @step * 3 0 @step;
+  padding: 4px * 2;
+  font-size: 4px * 3;
+  border-radius: 4px;
+  margin: 4px * 3 0 4px;
 
   &:not(:empty) {
     display: block;
@@ -376,19 +429,19 @@ mat-date-range-input {
 
 .danger {
   // color: darken(@danger, 20%);
-  // border-left: @step solid @danger;
+  // border-left: 4px solid @danger;
   // background: lighten(@danger, 30%);
 }
 
 .warning {
   // color: darken(@warning, 20%);
-  // border-left: @step solid @warning;
+  // border-left: 4px solid @warning;
   // background: lighten(@warning, 30%);
 }
 
 .success {
   // color: darken(@success, 20%);
-  // border-left: @step solid @success;
+  // border-left: 4px solid @success;
   // background: lighten(@success, 30%);
 }
 
@@ -405,7 +458,7 @@ mat-date-range-input {
       content: '';
       width: 0.5em;
       height: 0.5em;
-      top: @step * 2;
+      top: 4px * 2;
       position: absolute;
       border-radius: 50%;
       // background-color: @info;
@@ -414,24 +467,24 @@ mat-date-range-input {
 }
 
 .chevron {
-  width: @step * 5;
-  right: @step * 3;
-  height: @step * 3;
+  width: 4px * 5;
+  right: 4px * 3;
+  height: 4px * 3;
   position: absolute;
-  top: 50% - (@step * 1.5);
+  top: calc(50% - 6px);
   background-size: 100% 100%;
-  transition: transform @short-transition-time;
+  transition: transform 0.2s;
 }
 
 // Components
 
 input,
 textarea {
-  padding: @step * 2.5;
-  border-radius: @step;
+  padding: 4px * 2.5;
+  border-radius: 4px;
   // color: @text-high-emphasis;
   // background-color: #2a4751;
-  // border: @step * 0.25 solid #66c0f4;
+  // border: 4px * 0.25 solid #66c0f4;
 
   &:focus {
     outline: none;
@@ -449,7 +502,7 @@ textarea {
   width: 100%;
   height: 100%;
   display: flex;
-  z-index: @overlay;
+  z-index: 2;
   position: absolute;
   align-items: center;
   justify-content: center;
@@ -458,19 +511,19 @@ textarea {
 
 // Авторизация-регистрация
 .form-container {
-  padding: @step * 5;
-  margin: @step * 5 auto;
-  max-width: @step * 140;
-  border-radius: @step * 5;
+  padding: 4px * 5;
+  margin: 4px * 5 auto;
+  max-width: 4px * 140;
+  border-radius: 4px * 5;
   // background-color: #232527;
   // box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 
   form>*:not(:last-child) {
-    margin-bottom: @step * 4;
+    margin-bottom: 4px * 4;
   }
 
   // Адаптивные стили для контейнера
-  @media (max-width: @medium-screen) {
+  @media (max-width: 767px) {
     margin: 0;
     width: 100%;
     max-width: 100%;
@@ -487,9 +540,9 @@ textarea {
 }
 
 .form-actions {
-  gap: @step * 5;
-  padding: @step * 2;
-  margin-top: @step * 5;
+  gap: 4px * 5;
+  padding: 4px * 2;
+  margin-top: 4px * 5;
   flex-direction: column !important;
 }
 
@@ -503,29 +556,29 @@ textarea {
 }
 
 .profile-container {
-  padding: @step * 5;
+  padding: 4px * 5;
 
-  @media (max-width: @medium-screen) {
+  @media (max-width: 767px) {
     .container {
-      margin: @step * 3;
+      margin: 4px * 3;
     }
   }
 
   h1 {
-    margin-bottom: @step * 4;
-    font-size: @font-size-large;
+    font-size: 24px;
+    margin-bottom: 4px * 4;
   }
 
   .loading {
+    font-size: 18px;
     text-align: center;
     // color: @primary-color;
-    font-size: @font-size-medium;
   }
 
   .profile-grid {
+    gap: 8px;
     width: 100%;
     display: grid;
-    gap: @step * 2;
     grid-template-columns: repeat(2, 1fr);
 
     .full-width {
@@ -534,23 +587,23 @@ textarea {
 
     mat-card {
       width: 100%;
-      padding: @step * 2;
+      padding: 8px;
       position: relative;
       // border-radius: @border-radius;
       // background-color: @background-color;
-      box-shadow: 0 @step * 0.5 @step rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
       h2 {
         // color: @accent;
-        margin-bottom: @step * 2;
-        padding-right: @step * 10;
+        margin-bottom: 8px;
+        padding-right: 40px;
       }
     }
   }
 
   .user-info {
+    gap: 8px;
     display: grid;
-    gap: @step * 2;
     grid-template-columns: repeat(2, 1fr);
 
     mat-form-field {
@@ -559,11 +612,11 @@ textarea {
   }
 
   .avatar-container {
-    width: @step * 50;
-    height: @step * 50;
-    margin: 0 auto @step * 2;
-    // border: @step * 0.25 solid @online;
-    background: linear-gradient(to bottom, #41778f 5%, #3d697b 95%);
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 8px;
+    // border: 4px * 0.25 solid @online;
+    // background: linear-gradient(to bottom, #41778f 5%, #3d697b 95%);
 
     .avatar {
       width: 100%;
@@ -582,16 +635,16 @@ textarea {
   .social-card,
   .education-item,
   .work-item {
-    padding: @step * 2;
+    padding: 8px;
     position: relative;
-    margin-bottom: @step * 2;
-    border-radius: @step * 5;
-    // border: @step * 0.25 solid @border-color;
+    margin-bottom: 8px;
+    border-radius: 20px;
+    // border: 4px * 0.25 solid @border-color;
 
     >a {
+      gap: 16px;
       width: 100%;
       display: flex;
-      gap: @step * 4;
       align-items: center;
       flex-direction: row;
 
@@ -604,14 +657,14 @@ textarea {
     }
 
     >div:not(:last-child) {
-      margin-bottom: @step;
-      padding-right: @step * 10;
+      margin-bottom: 4px;
+      padding-right: 40px;
     }
   }
 
   // Специфичные стили для социальных сетей
   .cards {
-    margin-top: @step * 2;
+    margin-top: 8px;
 
     .social-card {
       display: flex;
@@ -619,20 +672,20 @@ textarea {
       justify-content: space-between;
 
       img {
-        width: @step * 8;
-        height: @step * 8;
+        width: 32px;
+        height: 32px;
       }
     }
   }
 
   .save-button {
     width: 100%;
-    margin-top: @step * 2;
+    margin-top: 8px;
   }
 }
 
 // Медиа-запрос для адаптивности
-@media (max-width: @medium-screen) {
+@media (max-width: 767px) {
   .profile-container {
     .profile-grid {
       grid-template-columns: 1fr;
@@ -646,11 +699,11 @@ textarea {
 
 // Урок
 .md-container {
+  padding: 8px;
   margin: 0 auto;
   color: #e0e0e0;
+  max-width: 800px;
   line-height: 1.6;
-  padding: @step * 2;
-  max-width: @step * 200;
   font-family: 'JetBrains Mono', monospace;
 
   h1,
@@ -668,13 +721,13 @@ textarea {
   h1 {
     font-size: 2.2em;
     padding-bottom: 0.3em;
-    border-bottom: @step * 0.5 solid #444;
+    // border-bottom: 1px solid #444;
   }
 
   h2 {
     font-size: 1.8em;
     padding-bottom: 0.2em;
-    border-bottom: @step * 0.25 solid #444;
+    // border-bottom: 1px solid #444;
   }
 
   h3 {
@@ -709,20 +762,20 @@ textarea {
 
   p {
     code {
-      margin: @step;
+      margin: 4px;
       font-size: 0.9em;
+      border-radius: 4px;
       padding: 0.2em 0.4em;
-      border-radius: @step;
-      color: hsla(0, 0%, 100%, 0.8);
-      border: @step * 0.25 solid #555;
+      // border: 1px solid #555;
+      // color: hsla(0, 0%, 100%, 0.8);
       font-family: 'JetBrains Mono', monospace;
-      background-color: rgba(255, 255, 255, 0.05);
+      // background-color: rgba(255, 255, 255, 0.05);
     }
   }
 
   pre {
     overflow-x: auto;
-    border-radius: @step * 2;
+    border-radius: 8px;
     background-color: rgba(255, 255, 255, 0.05);
 
     code {
@@ -736,7 +789,7 @@ textarea {
     margin: 1em 0;
     color: #888;
     padding: 0 1em;
-    border-left: @step solid #666;
+    // border-left: 4px solid #666;
   }
 
   a {
@@ -756,18 +809,18 @@ textarea {
     th,
     td {
       padding: 0.5em;
-      border: @step * 0.25 solid #444;
+      // border: 1px solid #444;
     }
 
     th {
-      color: white;
+      // color: white;
       font-weight: bold;
-      background-color: #3c3c3c;
+      // background-color: #3c3c3c;
     }
 
     td {
-      color: #e0e0e0;
-      background-color: #2b2b2b;
+      // color: #e0e0e0;
+      // background-color: #2b2b2b;
     }
   }
 }
@@ -775,50 +828,50 @@ textarea {
 // Правила
 .terms-container {
   padding: 2rem;
-  color: #e1e1e1;
+  // color: #e1e1e1;
   line-height: 1.6;
   margin: 2rem auto;
   max-width: 1200px;
   border-radius: 4px;
-  background: #1b1b1b;
+  // background: #1b1b1b;
   font-family: 'Roboto', sans-serif;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  // box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 
   h1 {
     color: #00b4d8;
     font-size: 2.5rem;
-    margin-bottom: 1.5rem;
     text-align: center;
+    margin-bottom: 1.5rem;
   }
 
   h2 {
-    color: #4ecdc4;
+    // color: #4ecdc4;
     font-size: 1.8rem;
     margin: 2rem 0 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #2a2a2a;
+    // border-bottom: 2px solid #2a2a2a;
   }
 
   .toc {
-    background: #2a2a2a;
+    margin: 2rem 0;
     padding: 1.5rem;
     border-radius: 4px;
-    margin: 2rem 0;
+    // background: #2a2a2a;
 
     ul {
-      list-style: none;
       padding: 0;
+      list-style: none;
 
       li {
         margin: 0.8rem 0;
 
         a {
-          color: #00b4d8;
+          // color: #00b4d8;
           text-decoration: none;
           transition: color 0.3s;
 
           &:hover {
-            color: #4ecdc4;
+            // color: #4ecdc4;
             text-decoration: underline;
           }
         }
@@ -834,31 +887,31 @@ textarea {
       position: relative;
 
       &::before {
-        content: "•";
-        color: #4ecdc4;
-        display: inline-block;
         width: 1em;
+        content: "•";
+        // color: #4ecdc4;
         margin-left: -1em;
+        display: inline-block;
       }
     }
   }
 
   .highlight {
-    background: #2a2a2a;
     padding: 1.5rem;
-    border-left: 4px solid #00b4d8;
     margin: 1.5rem 0;
+    // background: #2a2a2a;
+    // border-left: 4px solid #00b4d8;
   }
 
   .footer {
+    // color: #888;
     margin-top: 3rem;
     padding-top: 2rem;
-    border-top: 1px solid #2a2a2a;
     text-align: center;
-    color: #888;
+    // border-top: 1px solid #2a2a2a;
 
     a {
-      color: #4ecdc4;
+      // color: #4ecdc4;
       text-decoration: none;
 
       &:hover {

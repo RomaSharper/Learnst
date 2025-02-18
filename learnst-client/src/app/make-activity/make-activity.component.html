@@ -1,5 +1,5 @@
 <div class="activity-form-container">
-  <a mat-button routerLink="/activities" class="mb">Назад</a>
+  <a mat-stroked-button routerLink="/activities" class="mb">Назад</a>
   <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" (keydown.enter)="$event.preventDefault()" class="activity-form">
     <!-- Основные поля -->
     <mat-form-field appearance="outline">
@@ -28,8 +28,8 @@
         <img [src]="previewAvatarUrl" alt="Аватар активности" class="avatar-preview" noDownloading>
         }
       </div>
-      <button type="button" mat-flat-button class="choose-preview-button" (click)="openFilePicker()"
-        [ngClass]="{ 'full-width': isMediumScreen }">
+      <button type="button" mat-stroked-button class="choose-preview-button" (click)="openFilePicker()"
+        class="full-width">
         Выбрать превью</button>
       <input type="file" id="avatarInput" accept="image/*" (change)="onFileSelected($event)" class="hidden">
     </div>
@@ -181,7 +181,7 @@
           </mat-menu>
         </div>
       }
-      <button type="button" mat-button (click)="addInfoCard()">Добавить инфокарту</button>
+      <button type="button" mat-stroked-button (click)="addInfoCard()">Добавить инфокарту</button>
     </div>
 
     <!-- Темы -->
@@ -201,11 +201,11 @@
         </mat-menu>
       </div>
     }
-    <button type="button" mat-button (click)="addTopic()">Добавить тему</button>
+    <button type="button" mat-stroked-button (click)="addTopic()">Добавить тему</button>
   </div>
 
     <!-- Кнопка сохранения -->
-    <button mat-raised-button color="primary" class="mt" type="submit" [ngClass]="{ 'full-width': isMediumScreen }"
+    <button mat-stroked-button color="primary" class="mt" type="submit" class="full-width"
       [disabled]="activityForm.invalid">
       {{ activityId ? 'Обновить' : 'Создать' }}
     </button>

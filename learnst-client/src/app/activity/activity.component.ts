@@ -16,12 +16,10 @@ import { catchError, map } from 'rxjs/operators';
 import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
 import { InfoType } from '../../enums/InfoType';
 import { Role } from '../../enums/Role';
-import { TimeoutHandler } from '../../handlers/TimeoutHandler';
 import { LevelHelper } from '../../helpers/LevelHelper';
 import { Return } from '../../helpers/Return';
 import { Activity } from '../../models/Activity';
 import { User } from '../../models/User';
-import { UserLesson } from '../../models/UserLesson';
 import { RuDatePipe } from '../../pipes/ru.date.pipe';
 import { ActivitiesService } from '../../services/activities.service';
 import { AlertService } from '../../services/alert.service';
@@ -43,7 +41,7 @@ interface ActivityNode {
 @Component({
   selector: 'app-activity',
   templateUrl: './activity.component.html',
-  styleUrls: ['./activity.component.less'],
+  styleUrls: ['./activity.component.scss'],
   imports: [
     RuDatePipe,
     RouterLink,

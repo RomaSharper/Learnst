@@ -1,19 +1,17 @@
-@import url(../../../../styles/vars.less);
-
 .container {
   // background-color: #1b2838;
   // color: #ffffff;
   margin: 0 auto;
-  padding: @step * 5;
-  max-width: @step * 100;
-  border-radius: @step * 2;
+  padding: 4px * 5;
+  max-width: 4px * 100;
+  border-radius: 4px * 2;
   // box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 h1 {
   font-weight: bold;
   text-align: center;
-  margin-bottom: @step * 5;
+  margin-bottom: 4px * 5;
 }
 
 form {
@@ -22,22 +20,21 @@ form {
 }
 
 mat-form-field {
-  margin-bottom: @step * 4;
+  margin-bottom: 4px * 4;
 }
 
 .buttons {
   display: flex;
-  margin-top: @step * 4;
+  margin-top: 4px * 4;
   justify-content: space-around;
 }
 
 button {
   border: none;
   cursor: pointer;
-  border-radius: @step * 5;
-  padding: @step * 2 @step * 5;
-  font-size: @font-size-medium;
-  font-family: 'Motiva Sans', Arial, sans-serif;
+  font-size: 18px;
+  border-radius: 4px * 5;
+  padding: 4px * 2 4px * 5;
 }
 
 button.mat-primary {

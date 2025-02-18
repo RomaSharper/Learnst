@@ -22,16 +22,14 @@ import { TicketAnswer } from '../../models/TicketAnswer';
 import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
 import { CommonModule, Location } from '@angular/common';
 import { RuDateTimePipe } from '../../pipes/ru.date.time.pipe';
-import log from 'video.js/dist/types/utils/log';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
-import { DateService } from '../../services/date.service';
 
 @Return()
 @Component({
   selector: 'app-ticket-detail',
   templateUrl: './ticket-detail.component.html',
-  styleUrls: ['./ticket-detail.component.less'],
+  styleUrls: ['./ticket-detail.component.scss'],
   imports: [
     RouterLink,
     CommonModule,

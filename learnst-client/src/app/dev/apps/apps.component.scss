@@ -1,12 +1,10 @@
-@import url(../../../styles/vars.less);
-
 .users-container {
   display: grid;
-  gap: @step * 5;
-  margin-top: @step * 5;
+  gap: 4px * 5;
+  margin-top: 4px * 5;
   grid-template-columns: repeat(2, 1fr);
 
-  @media (max-width: @medium-screen) {
+  @media (max-width: 767px) {
     grid-template-columns: 1fr;
   }
 
@@ -16,23 +14,23 @@
     .user-card {
       display: flex;
       cursor: pointer;
-      padding: @step * 3;
+      padding: 4px * 3;
       position: relative;
       align-items: center;
-      border-radius: @step * 5;
-      // border: @step * 0.25 solid @border-color;
-      transition: background-color @transition-time, transform @transition-time;
+      border-radius: 4px * 5;
+      // border: 4px * 0.25 solid @border-color;
+      transition: background-color 0.3s, transform 0.3s;
 
       .avatar {
+        width: 96px;
         border-radius: 50%;
-        width: @avatar-size;
         aspect-ratio: 1 / 1;
-        margin-right: @step * 3;
-        // border: @step * 0.5 solid @primary-color;
-        transition: border-color @transition-time;
+        margin-right: 4px * 3;
+        // border: 4px * 0.5 solid @primary-color;
+        transition: border-color 0.3s;
 
-        @media (max-width: @small-screen) {
-          width: @avatar-size * 0.5;
+        @media (max-width: 500px) {
+          width: 96px * 0.5;
         }
       }
 
@@ -44,15 +42,15 @@
         p {
           margin: 0;
           display: flex;
-          gap: @step * 1.5; // Отступ между текстом и иконкой
+          gap: 4px * 1.5; // Отступ между текстом и иконкой
           // color: @text-color;
           align-items: center;
-          font-size: @font-size-medium;
+          font-size: 18px;
 
           .role-icon {
-            width: @font-size-medium;
-            height: @font-size-medium;
-            font-size: @font-size-medium; // Размер иконки
+            width: 18px;
+            height: 18px;
+            font-size: 18px; // Размер иконки
           }
 
           .backup-icon {
@@ -70,8 +68,8 @@
       }
 
       .more-button {
-        top: @step * 2;
-        right: @step * 2;
+        top: 4px * 2;
+        right: 4px * 2;
         position: absolute;
       }
 
@@ -87,12 +85,12 @@
         // background-color: @card-active-color;
       }
 
-      @media (max-width: @medium-screen) {
-        gap: @step * 4;
+      @media (max-width: 767px) {
+        gap: 4px * 4;
 
         h3,
         p {
-          font-size: @font-size-large;
+          font-size: 24px;
         }
       }
     }

@@ -1,18 +1,16 @@
-@import url(../../styles/vars.less);
-
 .activity-form-container {
   width: 100%;
-  padding: @step * 5;
-  max-width: @step * 200;
-  margin: @step * 5 auto;
-  border-radius: @step * 5;
+  padding: 4px * 5;
+  max-width: 4px * 200;
+  margin: 4px * 5 auto;
+  border-radius: 4px * 5;
   // background-color: @background-color-dark;
 
-  @media (max-width: @medium-screen) {
+  @media (max-width: 767px) {
     margin: 0;
     max-width: 100%;
     border-radius: 0;
-    padding: @step * 3;
+    padding: 4px * 3;
   }
 
   .activity-form {
@@ -20,7 +18,7 @@
     flex-direction: column;
 
     mat-form-field {
-      margin-bottom: @step * 5;
+      margin-bottom: 4px * 5;
 
       .mat-form-field-label {
         // color: @text-color-dark;
@@ -46,15 +44,15 @@
     .topic,
     .info-card {
       position: relative;
-      padding: @step * 2;
-      margin-bottom: @step * 2;
-      border-radius: @step * 2;
-      // border: @step * 0.25 solid @border-color-dark;
+      padding: 4px * 2;
+      margin-bottom: 4px * 2;
+      border-radius: 4px * 2;
+      // border: 4px * 0.25 solid @border-color-dark;
       // background-color: @background-color-dark-secondary;
 
       .topic-content {
         p {
-          padding-left: @step * 3;
+          padding-left: 4px * 3;
         }
       }
 
@@ -62,26 +60,26 @@
         .preview-container {
           display: flex;
           overflow: hidden;
-          width: @step * 40;
-          height: @step * 40;
+          width: 4px * 40;
+          height: 4px * 40;
           align-items: center;
           justify-content: center;
-          margin-bottom: @step * 2;
-          border-radius: @step * 2;
+          margin-bottom: 4px * 2;
+          border-radius: 4px * 2;
           // background-color: #181818;
-          // border: @step * 0.5 dashed @border-color-dark;
+          // border: 4px * 0.5 dashed @border-color-dark;
 
           img {
             max-width: 100%;
             max-height: 100%;
             object-fit: cover;
-            border-radius: @step * 2;
+            border-radius: 4px * 2;
           }
         }
       }
 
       .more-button {
-        top: @step * 5 !important;
+        top: 4px * 5 !important;
       }
     }
 
@@ -89,30 +87,30 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      margin-bottom: @step * 5;
+      margin-bottom: 4px * 5;
 
       .avatar-preview-container {
         display: flex;
         overflow: hidden;
-        width: @step * 40;
-        height: @step * 40;
+        width: 4px * 40;
+        height: 4px * 40;
         align-items: center;
         justify-content: center;
-        margin-bottom: @step * 2;
-        border-radius: @step * 2;
-        // border: @step * 0.5 dashed @border-color-dark;
+        margin-bottom: 4px * 2;
+        border-radius: 4px * 2;
+        // border: 4px * 0.5 dashed @border-color-dark;
         // background-color: @background-color-dark-secondary;
 
         .avatar-preview {
           max-width: 100%;
           max-height: 100%;
           object-fit: cover;
-          border-radius: @step * 2;
+          border-radius: 4px * 2;
         }
       }
 
       .choose-preview-button {
-        margin-top: @step * 2;
+        margin-top: 4px * 2;
       }
     }
   }

@@ -9,7 +9,6 @@ import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-education-dialog',
   templateUrl: './education.dialog.component.html',
-  styleUrls: ['./education.dialog.component.less'],
   imports: [
     ReactiveFormsModule,
     MatInputModule,

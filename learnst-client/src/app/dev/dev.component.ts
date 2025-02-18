@@ -8,7 +8,7 @@ import { Location } from '@angular/common';
 @Component({
   selector: 'app-devs',
   templateUrl: './dev.component.html',
-  styleUrls: ['./dev.component.less'],
+  styleUrls: ['./dev.component.scss'],
   imports: [RouterLink, MatButtonModule]
 })
 export class DevComponent {

@@ -1,30 +1,26 @@
-@import url(../../styles/vars.less);
-
 .activities-container {
+  gap: 4px * 3;
   display: grid;
   margin: 0 auto;
-  gap: @step * 3;
-  padding: @step * 4;
-  max-width: @step * 300;
+  padding: 4px * 4;
+  max-width: 4px * 300;
   grid-template-columns: repeat(2, 1fr);
 
-  @media (max-width: @medium-screen) {
+  @media (max-width: 767px) {
     grid-template-columns: 1fr;
   }
 }
 
 .activity-card {
   overflow: hidden;
-  padding: @step * 2;
-  border-radius: @step * 5;
-  background: var(--card-bg);
+  padding: 4px * 2;
+  border-radius: 4px * 5;
   transition: all var(--transition-time) ease;
-  border: @step * 0.25 solid var(--border-color);
+  background: var(--mat-sys-surface-container);
+  border: 4px * 0.25 solid var(--border-color);
+  box-shadow: var(--mdc-fab-container-elevation-shadow, var(--mat-sys-level3));
 
   &:hover {
-    background: var(--card-hover-bg);
-    box-shadow: var(--button-hover-elevation);
-
     .activity-title {
       color: var(--hover-text-color);
     }
@@ -42,12 +38,7 @@
   // Применяем эффекты только к карточкам, которые НЕ имеют класса .closed-activity
   &:not(.closed-activity) {
     cursor: pointer;
-    transition: transform @transition-time ease-in-out, box-shadow @transition-time ease-in-out, background @transition-time ease-in-out;
-
-    &:hover {
-      background: var(--card-hover-bg);
-      box-shadow: var(--button-hover-elevation);
-    }
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background 0.3s ease-in-out;
 
     &:hover img {
       transform: scale(0.9);
@@ -58,24 +49,24 @@
     width: 80%;
     height: 100%;
     object-fit: cover; // Изображение заполняет отведённое пространство
-    margin: @step * 2 auto;
-    max-width: @step * 100;
-    transition: transform @transition-time ease-in-out;
+    margin: 4px * 2 auto;
+    max-width: 4px * 100;
+    transition: transform 0.3s ease-in-out;
   }
 
   .mat-card-header {
     .mat-card-title {
       font-weight: bold;
-      font-size: @font-size-large;
+      font-size: 24px;
     }
   }
 
   .mat-card-actions {
     display: flex;
-    margin-top: @step;
+    margin-top: 4px;
     justify-content: flex-end;
     button {
-      margin-left: @step;
+      margin-left: 4px;
 
       &:hover {
         background: var(--button-hover);
@@ -90,4 +81,12 @@
 
 .closed-activity {
   opacity: 0.5;
+}
+
+@media (max-width: 767px) {
+  .course-btn {
+    width: 100%;
+    margin: 8px 0;
+    padding: 24px;
+  }
 }

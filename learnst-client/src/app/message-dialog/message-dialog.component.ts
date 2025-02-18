@@ -5,7 +5,6 @@ import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-message-dialog',
   templateUrl: './message-dialog.component.html',
-  styleUrls: ['./message-dialog.component.less'],
   imports: [
     MatDialogModule,
     MatButtonModule,

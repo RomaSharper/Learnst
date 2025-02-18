@@ -54,7 +54,7 @@
             } @else if (toDate(activity.endAt) < now) {
               Курс был открыт до {{ activity.endAt | ruDate }}
             } @else {
-              <button type="button" mat-raised-button (click)="toggleActivity($event, activity)">
+              <button type="button" class="course-btn" mat-flat-button class="full-width" (click)="toggleActivity($event, activity)">
                 {{ activity.isEnrolled ? 'Отписаться от курса' : 'Записаться на курс' }}
               </button>
             }

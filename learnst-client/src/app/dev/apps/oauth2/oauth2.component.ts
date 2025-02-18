@@ -9,7 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-oauth2',
   templateUrl: './oauth2.component.html',
-  styleUrls: ['./oauth2.component.less'],
+  styleUrls: ['./oauth2.component.scss'],
   imports: [MatInputModule, MatButtonModule, MatFormFieldModule, ReactiveFormsModule]
 })
 export class OAuth2Component implements OnInit {

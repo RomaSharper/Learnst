@@ -16,7 +16,7 @@ import { AnswerType } from './../../enums/AnswerType';
 @Component({
   selector: 'app-questions',
   templateUrl: './questions.component.html',
-  styleUrls: ['./questions.component.less'],
+  styleUrls: ['./questions.component.scss'],
   imports: [
     CommonModule,
     MatCardModule,

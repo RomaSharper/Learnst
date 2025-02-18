@@ -11,7 +11,6 @@ import { ValidationService } from '../../../services/validation.service';
 @Component({
   selector: 'app-social-media-dialog',
   templateUrl: './social.media.dialog.component.html',
-  styleUrls: ['./social.media.dialog.component.less'],
   imports: [
     ReactiveFormsModule,
     MatInputModule,

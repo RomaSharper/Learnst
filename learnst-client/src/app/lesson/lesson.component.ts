@@ -20,7 +20,7 @@ import { AlertService } from './../../services/alert.service';
 @Component({
   selector: 'app-lesson',
   templateUrl: './lesson.component.html',
-  styleUrls: ['./lesson.component.less'],
+  styleUrls: ['./lesson.component.scss'],
   imports: [
     RouterLink,
     MatButtonModule,

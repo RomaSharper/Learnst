@@ -8,7 +8,6 @@ import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-verification-dialog',
   templateUrl: './verification-dialog.component.html',
-  styleUrls: ['./verification-dialog.component.less'],
   imports: [MatInputModule, MatDialogModule, MatButtonModule, MatFormFieldModule, ReactiveFormsModule]
 })
 export class VerificationDialogComponent {

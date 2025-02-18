@@ -17,7 +17,6 @@ import { Location } from '@angular/common';
 @Component({
   selector: 'app-work-experience-dialog',
   templateUrl: './work.experience.dialog.component.html',
-  styleUrls: ['./work.experience.dialog.component.less'],
   imports: [
     ReactiveFormsModule,
     MatInputModule,

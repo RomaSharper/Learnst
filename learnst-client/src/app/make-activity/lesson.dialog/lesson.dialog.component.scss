@@ -1,0 +1,88 @@
+// Основные стили для диалогового окна
+mat-dialog-content {
+  margin: 0 auto;
+  padding: 4px * 3;
+  max-width: 4px * 200;
+
+  form {
+    display: flex;
+    flex-direction: column;
+
+    mat-form-field {
+      margin-bottom: 4px * 3;
+    }
+
+    .question-card {
+      padding: 4px * 5;
+      margin-bottom: 4px * 3;
+      border-radius: 4px * 2;
+      // background-color: #181818;
+      transition: box-shadow 0.3s ease;
+      // border: 4px * 0.25 solid @border-color-dark;
+      // box-shadow: 0 4px 4px * 2 rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        // box-shadow: 0 4px * 1.5 4px * 3 rgba(0, 0, 0, 0.2);
+      }
+
+      @media (max-width: 767px) {
+        padding: 4px * 3;
+      }
+
+      .question-content {
+        margin-bottom: 4px * 2;
+
+        mat-form-field {
+          margin-bottom: 4px * 2;
+        }
+
+        .answers-list {
+          margin-left: 4px * 2;
+
+          .answer-item {
+            padding: 4px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            // background-color: #181818;
+            // border: 4px * 0.25 solid @border-color-dark;
+
+            mat-form-field {
+              margin-bottom: 4px;
+            }
+
+            mat-slide-toggle {
+              margin-right: 4px;
+            }
+
+            button {
+              margin-left: 4px;
+            }
+          }
+        }
+
+        .add-answer-button {
+          margin-top: 4px;
+        }
+      }
+
+      .remove-question-button {
+        margin-top: 4px;
+      }
+    }
+
+    .add-question-button {
+      margin-top: 4px * 2;
+    }
+  }
+}
+
+// Стили для кнопок в диалоговом окне
+mat-dialog-actions {
+  display: flex;
+  padding: 4px * 3;
+  justify-content: flex-end;
+
+  button {
+    margin-left: 4px * 2;
+  }
+}

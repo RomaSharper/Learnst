@@ -44,7 +44,7 @@ import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDire
 @Component({
   selector: 'app-make-activity',
   templateUrl: './make-activity.component.html',
-  styleUrls: ['./make-activity.component.less'],
+  styleUrls: ['./make-activity.component.scss'],
   imports: [
     RouterLink,
     FormsModule,

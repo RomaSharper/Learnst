@@ -13,7 +13,7 @@ import { ThemePickerComponent } from './theme-picker/theme-picker.component';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.less'],
+  styleUrls: ['./app.component.scss'],
   imports: [
     RouterLink,
     CommonModule,

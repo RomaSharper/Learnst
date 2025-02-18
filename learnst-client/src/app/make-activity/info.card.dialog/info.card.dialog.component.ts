@@ -15,7 +15,7 @@ import { FileService } from '../../../services/file.service';
 @Component({
   selector: 'app-info-card-dialog',
   templateUrl: './info.card.dialog.component.html',
-  styleUrls: ['./info.card.dialog.component.less'],
+  styleUrls: ['./info.card.dialog.component.scss'],
   imports: [
     MatInputModule,
     MatButtonModule,

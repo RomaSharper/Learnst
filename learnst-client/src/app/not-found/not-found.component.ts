@@ -6,7 +6,7 @@ import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective'
 @Component({
   selector: 'app-not-found',
   templateUrl: './not-found.component.html',
-  styleUrls: ['./not-found.component.less'],
+  styleUrls: ['./not-found.component.scss'],
   imports: [RouterLink, MatButtonModule, NoDownloadingDirective]
 })
 export class NotFoundComponent implements AfterViewInit, OnInit, OnDestroy {

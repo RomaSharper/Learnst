@@ -1,33 +1,31 @@
-@import url(../../styles/vars.less);
-
 .ticket-list {
   display: flex;
-  gap: @step * 4;
+  gap: 4px * 4;
   flex-direction: column;
 
   mat-card {
     cursor: pointer;
     overflow: hidden;
-    padding: @step * 2;
+    padding: 4px * 2;
     position: relative;
     // background: @card-bg;
-    border-radius: @step * 5;
-    transition: transform @transition-time, box-shadow @transition-time;
+    border-radius: 4px * 5;
+    transition: transform 0.3s, box-shadow 0.3s;
 
     &:hover {
-      transform: translateY(-@step);
-      // box-shadow: 0 @step * 2 @step * 6 rgba(0, 0, 0, 0.2);
+      transform: translateY(-4px);
+      // box-shadow: 0 4px * 2 4px * 6 rgba(0, 0, 0, 0.2);
     }
 
     mat-card-title {
       font-size: 1.5em;
       font-weight: bold;
       // color: @text-primary;
-      padding: @step * 2 @step * 2 0 @step * 2;
+      padding: 4px * 2 4px * 2 0 4px * 2;
     }
 
     mat-card-content {
-      padding: @step * 2;
+      padding: 4px * 2;
 
       p {
         margin: 0;
@@ -38,21 +36,21 @@
       .ticket-info {
         display: flex;
         align-items: center;
-        margin-top: @step * 2;
+        margin-top: 4px * 2;
         justify-content: space-between;
 
         .author-info {
-          gap: @step;
+          gap: 4px;
           display: flex;
           align-items: center;
 
           .avatar {
-            width: @step * 10;
+            width: 4px * 10;
             object-fit: cover;
-            height: @step * 10;
+            height: 4px * 10;
             border-radius: 50%;
-            transition: transform @transition-time;
-            // border: @step * 0.5 solid @primary-color;
+            transition: transform 0.3s;
+            // border: 4px * 0.5 solid @primary-color;
 
             &:hover {
               transform: scale(1.1);
@@ -68,19 +66,19 @@
         .status {
           // color: white;
           font-weight: bold;
-          padding: @step @step * 2;
-          border-radius: @step * 5;
+          padding: 4px 4px * 2;
+          border-radius: 4px * 5;
           text-transform: uppercase;
-          font-size: @font-size-medium;
-          // box-shadow: 0 @step * 0.5 @step * 2 rgba(0, 0, 0, 0.1);
+          font-size: 18px;
+          // box-shadow: 0 4px * 0.5 4px * 2 rgba(0, 0, 0, 0.1);
         }
       }
 
       .created-at {
         opacity: 0.8;
-        margin-top: @step * 2;
+        margin-top: 4px * 2;
         // color: @text-secondary;
-        font-size: @font-size-medium;
+        font-size: 18px;
       }
     }
 
@@ -90,9 +88,9 @@
       opacity: 0;
       width: 100%;
       content: '';
-      height: @step;
+      height: 4px;
       position: absolute;
-      transition: opacity @transition-time;
+      transition: opacity 0.3s;
       // background: linear-gradient(90deg, @primary-color, darken(@primary-color, 10%));
     }
 
@@ -105,6 +103,6 @@
 .empty-state {
   font-size: 1.2em;
   text-align: center;
-  margin-top: @step * 4;
+  margin-top: 4px * 4;
   // color: @text-secondary;
 }

@@ -22,7 +22,7 @@ import { Location } from '@angular/common';
 @Component({
   selector: 'app-apps',
   templateUrl: './apps.component.html',
-  styleUrls: ['./apps.component.less'],
+  styleUrls: ['./apps.component.scss'],
   imports: [
     RouterLink,
     FormsModule,

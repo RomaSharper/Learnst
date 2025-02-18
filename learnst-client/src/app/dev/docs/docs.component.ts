@@ -8,7 +8,7 @@ import { Location } from '@angular/common';
 @Component({
   selector: 'app-docs',
   templateUrl: './docs.component.html',
-  styleUrls: ['./docs.component.less'],
+  styleUrls: ['./docs.component.scss'],
   imports: [RouterLink, MatButtonModule]
 })
 export class DocsComponent {

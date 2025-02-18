@@ -15,7 +15,7 @@ import { AlertService } from './../../../services/alert.service';
 @Component({
   selector: 'app-topic-dialog',
   templateUrl: './topic.dialog.component.html',
-  styleUrls: ['./topic.dialog.component.less'],
+  styleUrls: ['./topic.dialog.component.scss'],
   imports: [
     MatIconModule,
     MatInputModule,

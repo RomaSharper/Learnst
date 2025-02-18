@@ -46,9 +46,9 @@
                 "input": "public"
               }
             ],
+
             "styles": [
-              "src/styles/main.less",
-              "src/styles/theme.scss",
+              "src/styles/styles.scss",
               "node_modules/highlight.js/styles/github-dark.css"
             ]
           },
@@ -116,8 +116,7 @@
               }
             ],
             "styles": [
-              "src/theme.scss",
-              "src/styles.less"
+              "src/styles/styles.scss"
             ],
             "scripts": [],
             "karmaConfig": "karma.conf.js"

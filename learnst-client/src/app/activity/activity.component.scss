@@ -1,16 +1,14 @@
-@import url(../../styles/vars.less);
-
 .activity-container {
   display: flex;
-  padding: @step * 5;
+  padding: 4px * 5;
   flex-direction: column;
 }
 
 .activity-info:not(:empty) {
-  padding: @step * 5;
+  padding: 4px * 5;
   // background: @dark-bg;
-  border-radius: @step;
-  // box-shadow: 0 @step * 0.5 @step @card-shadow;
+  border-radius: 4px;
+  // box-shadow: 0 4px * 0.5 4px @card-shadow;
 }
 
 .activity-details {
@@ -19,35 +17,35 @@
 
 .activity-left {
   flex: 2; // Левый столбец занимает больше пространства
-  padding: @step * 2;
+  padding: 4px * 2;
 }
 
 .activity-right {
   flex: 1;
   display: flex;
-  gap: @step * 2;
-  padding: @step * 2;
+  gap: 4px * 2;
+  padding: 4px * 2;
   flex-direction: column;
 }
 
 .card {
-  padding: @step * 2;
-  border-radius: @step;
+  padding: 4px * 2;
+  border-radius: 4px;
   // background: @light-bg;
-  // box-shadow: 0 @step * 0.5 @step @card-shadow;
+  // box-shadow: 0 4px * 0.5 4px @card-shadow;
 }
 
 .activity-avatar {
   display: flex;
   justify-content: center;
-  margin-bottom: @step * 2;
+  margin-bottom: 4px * 2;
 
   img {
     width: 100%;
     height: auto;
     max-width: 400px;
     object-fit: cover;
-    border-radius: @step;
+    border-radius: 4px;
   }
 }
 
@@ -60,19 +58,19 @@ ul {
 
 .info-cards {
   display: grid;
-  gap: @step * 2;
-  grid-template-columns: repeat(auto-fill, minmax(@step * 50), 1fr);
+  gap: 4px * 2;
+  grid-template-columns: repeat(auto-fill, minmax(4px * 50), 1fr);
 }
 
 .info-card {
   flex: 1;
-  padding: @step * 2;
+  padding: 4px * 2;
   text-align: center;
   // background: @card-bg;
-  border-radius: @step;
-  min-width: @step * 50;
-  transition: transform @transition-time ease;
-  // box-shadow: 0 @step * 0.25 @step * 0.5 @card-shadow;
+  border-radius: 4px;
+  min-width: 4px * 50;
+  transition: transform 0.3s ease;
+  // box-shadow: 0 4px * 0.25 4px * 0.5 @card-shadow;
 
   img {
     height: auto;
@@ -86,70 +84,70 @@ ul {
 
 .info-cards {
   display: flex;
-  gap: @step * 2;
+  gap: 4px * 2;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .loading {
   font-weight: bold;
-  padding: @step * 5;
+  padding: 4px * 5;
   text-align: center;
   // color: @text-primary;
-  font-size: @font-size-large;
+  font-size: 24px;
 }
 
 .topics-container {
-  padding: @step * 2 @step * 5;
+  padding: 4px * 2 4px * 5;
 }
 
 .topic-card {
-  padding: @step * 4;
+  padding: 4px * 4;
   // background: @card-bg;
-  border-radius: @step;
-  margin-bottom: @step * 4;
-  transition: box-shadow @transition-time ease;
-  // box-shadow: 0 @step * 0.25 @step * 0.5 @card-shadow;
+  border-radius: 4px;
+  margin-bottom: 4px * 4;
+  transition: box-shadow 0.3s ease;
+  // box-shadow: 0 4px * 0.25 4px * 0.5 @card-shadow;
 
   &:hover {
-    // box-shadow: 0 @step @step * 2 @card-shadow;
+    // box-shadow: 0 4px 4px * 2 @card-shadow;
   }
 }
 
 .tags-container {
   display: flex;
-  gap: @step * 2;
+  gap: 4px * 2;
   flex-wrap: wrap;
-  margin-bottom: @step * 4;
+  margin-bottom: 4px * 4;
 
   .tag-card {
     // background: @card-bg;
-    border-radius: @step * 4;
-    font-size: @font-size-medium;
-    padding: @step * 1.5 @step * 3;
-    transition: box-shadow @transition-time ease;
-    // box-shadow: 0 @step * 0.25 @step * 0.5 @card-shadow;
+    border-radius: 4px * 4;
+    font-size: 18px;
+    padding: 4px * 1.5 4px * 3;
+    transition: box-shadow 0.3s ease;
+    // box-shadow: 0 4px * 0.25 4px * 0.5 @card-shadow;
 
-    @media (max-width: @medium-screen) {
+    @media (max-width: 767px) {
       width: 100%;
       text-align: center;
     }
   }
 }
 
-@media (min-width: @large-screen) {
+@media (min-width: 768px) {
   .activity-details {
     display: flex;
   }
 
   .activity-right {
-    padding: @step * 2;
-    border-radius: @step;
-    // box-shadow: 0 @step * 0.5 @step @card-shadow;
+    padding: 4px * 2;
+    border-radius: 4px;
+    // box-shadow: 0 4px * 0.5 4px @card-shadow;
   }
 }
 
-@media (max-width: @medium-screen) {
+@media (max-width: 767px) {
   .activity-info {
     display: block;
   }
@@ -160,25 +158,25 @@ ul {
 }
 
 .topics-container {
-  padding: @step * 2 @step * 5;
+  padding: 4px * 2 4px * 5;
 
   mat-tree {
-    padding: @step * 2;
-    border-radius: @step;
+    padding: 4px * 2;
+    border-radius: 4px;
 
     .tree-node {
       display: flex;
-      padding: @step;
+      padding: 4px;
       cursor: pointer;
       align-items: center;
-      font-size: @font-size-large;
+      font-size: 24px;
 
       &:hover {
         // background: rgba(255, 255, 255, 0.1);
       }
 
       button {
-        margin-right: @step;
+        margin-right: 4px;
       }
     }
 

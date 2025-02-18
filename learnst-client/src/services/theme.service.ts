@@ -1,52 +1,51 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { effect, Injectable, signal } from '@angular/core';
+import { Theme } from '../models/Theme';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ThemeService {
-  private _isDarkTheme = new BehaviorSubject<boolean>(false);
-  isDarkTheme$ = this._isDarkTheme.asObservable();
+  private readonly themes: Theme[] = [
+    {
+      id: 'light',
+      premium: false,
+      primary: '#ffffff',
+      displayName: 'Светлая тема'
+    },
+    {
+      id: 'dark',
+      premium: false,
+      primary: '#313338',
+      displayName: 'Тёмная тема'
+    },
+    {
+      premium: true,
+      id: 'mint-apple',
+      primary: '#2b2d31',
+      displayName: 'Мятное яблоко',
+    },
+    {
+      premium: true,
+      primary: '#9eca67',
+      id: 'citrus-sherbet',
+      displayName: 'Цитрусовый щербет'
+    },
+  ];
 
-  private readonly THEME_KEY = 'theme';  //  Добавлено для хранения выбранной темы
-  private currentTheme: string = 'light-mode'; //  Добавлено для хранения текущей темы
+  currentTheme = signal<Theme>(this.themes[1]);
 
-  constructor() {
-    this.loadTheme();
+  getThemes(): Theme[] {
+    return this.themes;
   }
 
-  private loadTheme(): void {
-    const savedTheme = localStorage.getItem(this.THEME_KEY);
-    if (savedTheme) {
-      this.currentTheme = savedTheme;
-      this._isDarkTheme.next(savedTheme === 'dark-mode');
-      this.applyTheme(savedTheme);
-    } else {
-      this.setSystemTheme();
-    }
+  setTheme(themeId: string) {
+    const theme = this.themes.find(t => t.id === themeId);
+    if (theme) this.currentTheme.set(theme);
   }
 
-  setDarkTheme(isDark: boolean): void {
-    this._isDarkTheme.next(isDark);
-    this.currentTheme = isDark ? 'dark-mode' : 'light-mode';
-    localStorage.setItem(this.THEME_KEY, this.currentTheme);
-    this.applyTheme(this.currentTheme);
-  }
-
-  applyTheme(themeClass: string): void {
-    this.currentTheme = themeClass;  //  Обновляем текущую тему
-    document.documentElement.classList.remove('light-mode', 'dark-mode');
-    document.documentElement.classList.add(themeClass);
-    localStorage.setItem(this.THEME_KEY, themeClass);
-  }
-
-  setSystemTheme(): void {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    this.currentTheme = prefersDark ? 'dark-mode' : 'light-mode';
-    this.setDarkTheme(prefersDark);
-  }
-
-  getCurrentTheme(): string {
-    return this.currentTheme;
-  }
+  updateThemeClass = effect(() => {
+    const theme = this.currentTheme();
+    document.body.classList.remove(...this.themes.map(t => `${t.id}-theme`));
+    document.body.classList.add(`${theme.id}-theme`);
+  });
 }

@@ -16,7 +16,7 @@ import { Return } from '../../../helpers/Return';
 @Component({
   selector: 'app-app',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.less'],
+  styleUrls: ['./app.component.scss'],
   imports: [CommonModule, MatCardModule, MatInputModule, MatButtonModule, MatFormFieldModule, ReactiveFormsModule]
 })
 export class DevAppComponent extends MediumScreenSupport implements OnInit {
