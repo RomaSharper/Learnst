@@ -82,7 +82,7 @@ $dark-theme: mat.define-theme(
 $mint-theme: mat.define-theme(
   (
     color: (
-      theme-type: dark,
+      theme-type: light,
       primary: mint-theme-colors.$primary-palette,
       tertiary: mint-theme-colors.$tertiary-palette
     ),
@@ -96,18 +96,23 @@ $mint-theme: mat.define-theme(
 // 4. Применение базовых тем
 html {
   color-scheme: light;
+  --text-primary: var(--on-primary-color);
+
+  &.theme-mint {
+    color-scheme: light;
+    @include mat.all-component-themes($mint-theme);
+    --premium-gradient: linear-gradient(135deg, #d4fdae, #c4ff64);
+  }
 
   &:not([class*="theme-"]) {
     &.light-mode {
       color-scheme: light;
-      --text-primary: var(--on-primary-color);
       @include mat.all-component-themes($light-theme);
       --premium-gradient: linear-gradient(135deg, #ffffff, #f5f5f5);
     }
 
     &.dark-mode {
       color-scheme: dark;
-      --text-primary: var(--on-primary-color);
       @include mat.all-component-themes($dark-theme);
       --premium-gradient: linear-gradient(135deg, #212121, #424242);
     }
@@ -119,8 +124,8 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--text-color);
-  background: var(--user-gradient, var(--primary-bg));
   transition: background 0.5s ease, color 0.3s ease;
+  background: var(--user-gradient, var(--primary-bg));
 }
 
 button {

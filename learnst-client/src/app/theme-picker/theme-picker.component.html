@@ -8,10 +8,23 @@
   }
 </div> -->
 
-<div class="theme-grid">
-  @for (theme of availableThemes; track theme) {
-    <button (click)="applyTheme(theme)">
-      {{ theme }}
-    </button>
-  }
-</div>
+<mat-form-field appearance="outline">
+  <mat-select
+    placeholder="Тема"
+    [value]="selectedTheme"
+    (selectionChange)="onThemeChange($event)"
+  >
+    <mat-select-trigger>
+      <mat-icon>{{ getThemeIcon() }}</mat-icon>
+    </mat-select-trigger>
+    <mat-option value="light-mode">
+      <mat-icon>light_mode</mat-icon> Светлая
+    </mat-option>
+    <mat-option value="dark-mode">
+      <mat-icon>dark_mode</mat-icon> Темная
+    </mat-option>
+    <mat-option value="system">
+      <mat-icon>computer</mat-icon> Системная
+    </mat-option>
+  </mat-select>
+</mat-form-field>
