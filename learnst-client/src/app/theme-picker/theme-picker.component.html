@@ -1,0 +1,9 @@
+<div class="theme-grid">
+  @for (theme of availableThemes; track theme) {
+    <button (click)="applyTheme(theme.name)"
+            [disabled]="theme.premium && !isPremium">
+      <div [style.background]="theme.gradient"></div>
+      {{ theme.name }}
+    </button>
+  }
+</div>

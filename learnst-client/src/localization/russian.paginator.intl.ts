@@ -21,6 +21,8 @@ const russianRangeLabel = (page: number, pageSize: number, length: number) => {
 export function getRussianPaginatorIntl() {
   const paginatorIntl = new MatPaginatorIntl();
 
+  paginatorIntl.firstPageLabel = 'Первая страница';
+  paginatorIntl.lastPageLabel = 'Последняя страница';
   paginatorIntl.itemsPerPageLabel = 'Элементов на странице:';
   paginatorIntl.nextPageLabel = 'Следующая страница';
   paginatorIntl.previousPageLabel = 'Предыдущая страница';

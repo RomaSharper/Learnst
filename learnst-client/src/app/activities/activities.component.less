@@ -16,10 +16,28 @@
 .activity-card {
   overflow: hidden;
   padding: @step * 2;
-  background: @primary-bg;
   border-radius: @step * 5;
-  border: @step * 0.25 solid @muted;
-  box-shadow: 0 @step @step * 3 @shadow;
+  background: var(--card-bg);
+  transition: all var(--transition-time) ease;
+  border: @step * 0.25 solid var(--border-color);
+
+  &:hover {
+    background: var(--card-hover-bg);
+    box-shadow: var(--button-hover-elevation);
+
+    .activity-title {
+      color: var(--hover-text-color);
+    }
+  }
+
+  &:active {
+    background: var(--card-active-bg);
+    box-shadow: var(--active-shadow);
+  }
+
+  &:focus-within {
+    border-color: var(--focus-border);
+  }
 
   // Применяем эффекты только к карточкам, которые НЕ имеют класса .closed-activity
   &:not(.closed-activity) {
@@ -27,8 +45,8 @@
     transition: transform @transition-time ease-in-out, box-shadow @transition-time ease-in-out, background @transition-time ease-in-out;
 
     &:hover {
-      background: @secondary-bg;
-      box-shadow: 0 @step @step * 6 @dark-shadow;
+      background: var(--card-hover-bg);
+      box-shadow: var(--button-hover-elevation);
     }
 
     &:hover img {
@@ -54,11 +72,18 @@
 
   .mat-card-actions {
     display: flex;
-    justify-content: flex-end;
     margin-top: @step;
-
+    justify-content: flex-end;
     button {
       margin-left: @step;
+
+      &:hover {
+        background: var(--button-hover);
+      }
+
+      &:active {
+        background: var(--button-active);
+      }
     }
   }
 }

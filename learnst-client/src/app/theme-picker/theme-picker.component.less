@@ -1,0 +1,15 @@
+@import url(../../styles/vars.less);
+
+.theme-grid {
+  display: grid;
+  gap: @step * 4;
+  padding: @step * 4;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+}
+
+.theme-preview {
+  height: @step * 15;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  border: @step * 0.5 solid var(--border-color);
+}

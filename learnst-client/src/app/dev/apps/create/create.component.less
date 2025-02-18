@@ -1,18 +1,19 @@
+@import url(../../../../styles/vars.less);
+
 .container {
-  background-color: #1b2838;
-  color: #ffffff;
-  padding: 20px;
-  border-radius: 5px;
-  max-width: 500px;
+  // background-color: #1b2838;
+  // color: #ffffff;
   margin: 0 auto;
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  padding: @step * 5;
+  max-width: @step * 100;
+  border-radius: @step * 2;
+  // box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 h1 {
-  text-align: center;
-  font-family: 'Motiva Sans', Arial, sans-serif;
   font-weight: bold;
-  margin-bottom: 20px;
+  text-align: center;
+  margin-bottom: @step * 5;
 }
 
 form {
@@ -21,30 +22,30 @@ form {
 }
 
 mat-form-field {
-  margin-bottom: 15px;
+  margin-bottom: @step * 4;
 }
 
 .buttons {
   display: flex;
+  margin-top: @step * 4;
   justify-content: space-around;
-  margin-top: 20px;
 }
 
 button {
-  font-family: 'Motiva Sans', Arial, sans-serif;
-  font-size: 16px;
-  padding: 10px 20px;
   border: none;
-  border-radius: 3px;
   cursor: pointer;
+  border-radius: @step * 5;
+  padding: @step * 2 @step * 5;
+  font-size: @font-size-medium;
+  font-family: 'Motiva Sans', Arial, sans-serif;
 }
 
 button.mat-primary {
-  background-color: #5b9bd5;
-  color: #ffffff;
+  // color: #ffffff;
+  // background-color: #5b9bd5;
 }
 
 button.mat-warn {
-  background-color: #e74c3c;
-  color: #ffffff;
+  // color: #ffffff;
+  // background-color: #e74c3c;
 }

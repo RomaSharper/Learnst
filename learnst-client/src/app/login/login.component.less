@@ -22,8 +22,8 @@
 
   &::before,
   &::after {
-    content: '';
     flex: 1;
+    content: '';
     height: @step * 0.25;
     background-color: #dadce0;
   }
@@ -54,11 +54,11 @@
   overflow: hidden;
   position: relative;
   transform: translateY(0);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all @transition-time cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-@step * 0.5);
+    box-shadow: 0 @step @step * 3 rgba(0, 0, 0, 0.15);
 
     &::after {
       opacity: 0.1;
@@ -66,8 +66,8 @@
   }
 
   &:active {
-    transition: all 0.1s;
-    transform: translateY(4px);
+    transform: translateY(@step);
+    transition: all @short-transition-time * 0.5;
   }
 
   &::after {
@@ -78,7 +78,7 @@
     content: '';
     height: 100%;
     position: absolute;
-    transition: opacity 0.3s;
+    transition: opacity @transition-time;
     background: radial-gradient(circle at center, white 0%, transparent 100%);
   }
 }
@@ -88,10 +88,10 @@
   height: @step * 16;
   vertical-align: middle;
   transform-origin: center;
-  transition: transform 0.3s ease, filter 0.3s ease;
+  transition: transform @transition-time ease, filter @transition-time ease;
 
   .social-btn:hover & {
-    animation: iconBounce 0.6s ease both;
+    animation: iconBounce @transition-time * 2 ease both;
   }
 }
 
@@ -99,13 +99,13 @@
   background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
 
   &:hover {
+    box-shadow: 0 @step @step * 4 rgba(66, 133, 244, 0.2);
     background: linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%);
-    box-shadow: 0 4px 16px rgba(66, 133, 244, 0.2);
   }
 
   .social-icon {
-    filter: drop-shadow(0 2px 4px rgba(66, 133, 244, 0.3));
-    transition: transform 0.3s ease;
+    transition: transform @transition-time ease;
+    filter: drop-shadow(0 @step * 0.5 @step rgba(66, 133, 244, 0.3));
   }
 }
 
@@ -160,12 +160,12 @@
     border-radius: @step * 5;
 
     &:hover {
-      transform: translateY(-1px);
+      transform: translateY(-@step * 0.25);
     }
 
     .social-icon {
       .social-btn:hover & {
-        animation: iconBounce 0.4s ease-in-out both;
+        animation: iconBounce @transition-time ease-in-out both;
       }
     }
   }

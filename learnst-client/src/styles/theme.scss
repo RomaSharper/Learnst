@@ -1,71 +1,183 @@
 @use '@angular/material' as mat;
+@use 'sass:map';
 
-html {
-  color-scheme: dark;
-  @include mat.theme((
-    color: mat.$azure-palette,
-    typography: Roboto,
-    density: 0
-  ));
-}
-
-
-body {
-  color: var(--mat-sys-on-surface);
-  background: var(--mat-sys-surface);
-}
-
+// 1. Глобальные CSS-переменные
 :root {
-  @include mat.snack-bar-overrides((
-    button-color: var(--mat-accent),
-    supporting-text-color: var(--mat-sys-on-surface),
-    container-color: var(--mat-sys-surface-container-high)
-  ));
+  // Основные цвета
+  --primary-bg: var(--mat-sys-surface);
+  --secondary-bg: var(--mat-sys-surface-container);
+  --text-primary: var(--mat-sys-on-surface);
+  --text-secondary: var(--mat-sys-on-surface-variant);
+  --accent-color: var(--mat-sys-primary);
+  --warn-color: var(--mat-sys-error);
 
-  @include mat.tooltip-overrides((
-    supporting-text-color: var(--mat-sys-on-surface),
-    container-color: var(--mat-sys-surface-container-high)
-  ));
+  // Границы и тени
+  --border-color: var(--mat-sys-outline);
+  --shadow-color: rgba(0, 0, 0, 0.15);
+  --card-shadow: 0 2px 8px var(--shadow-color);
+
+  // Премиум переменные
+  --premium-gradient: linear-gradient(135deg, #ffffff, #f5f5f5);
+  --user-gradient: var(--user-custom-gradient, var(--premium-gradient));
+  --user-accent: var(--user-custom-accent, var(--accent-color));
+
+  // Состояния элементов
+  --hover-bg: var(--mat-sys-on-surface-variant-008);
+  --active-bg: var(--mat-sys-on-surface-variant-012);
+  --focus-border: var(--mat-sys-primary);
+  --hover-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  --active-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.mdc-evolution-chip-set__chips {
-  max-width: 100% !important;
+// 2. Базовые настройки
+$base-typography: (
+  plain-family: 'Motiva Sans',
+  brand-family: 'Motiva Sans',
+  bold-weight: 900,
+  medium-weight: 500,
+  regular-weight: 300,
+);
+
+// 3. Основные темы
+$light-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+    ),
+    typography: $base-typography,
+    density: 0
+  )
+);
+
+$dark-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$azure-palette,
+    ),
+    typography: $base-typography,
+    density: 0
+  )
+);
+
+// 4. Кастомные палитры
+@function create-palette($primary, $surface, $on-primary, $type) {
+  @return (
+    primary: $primary,
+    surface: $surface,
+    on-primary: $on-primary,
+    type: $type
+  );
 }
 
-.mat-mdc-standard-chip .mdc-evolution-chip__cell--primary,
-.mat-mdc-standard-chip .mdc-evolution-chip__action--primary,
-.mat-mdc-standard-chip .mat-mdc-chip-action-label {
-  overflow: hidden !important;
+$premium-palettes: (
+  'mint-apple': create-palette(#C6F6D5, #F0FFF4, #1A1A1A, light),
+  'citrus-sherbet': create-palette(#FFE0B2, #FFF3E0, #3E2723, light),
+  'retro-cloud': create-palette(#BBDEFB, #E3F2FD, #0D47A1, light),
+  'hanami': create-palette(#F8BBD0, #FFCDD2, #880E4F, light),
+  'sunrise': create-palette(#FFCC80, #FFE0B2, #311B92, light),
+  'cotton-candy': create-palette(#E1BEE7, #F3E5F5, #4A148C, light),
+  'lofi-atmosphere': create-palette(#B0BEC5, #CFD8DC, #263238, light),
+  'desert-khaki': create-palette(#D7CCC8, #F5F5F5, #3E2723, light),
+  'sunset': create-palette(#8D99AE, #2B2D42, #EDF2F4, dark),
+  'intense-glow': create-palette(#4A148C, #1A237E, #FFFFFF, dark),
+  'forest': create-palette(#40916C, #1B4332, #EDF2F4, dark),
+  'crimson-moon': create-palette(#9D0208, #4A0404, #FFFFFF, dark),
+  'midnight-blueviolet': create-palette(#5A189A, #240046, #FFFFFF, dark),
+  'mars': create-palette(#D00000, #6A040F, #FFFFFF, dark),
+  'twilight': create-palette(#370617, #03071E, #FFFFFF, dark),
+  'deep-sea': create-palette(#013A63, #012A4A, #FFFFFF, dark),
+  'retro-rose': create-palette(#800F2F, #590D22, #FFFFFF, dark),
+  'neon-nights': create-palette(#240046, #10002B, #FFFFFF, dark),
+  'strawberry-lemonade': create-palette(#A3320B, #6B0504, #FFFFFF, dark),
+  'aurora': create-palette(#005F73, #001219, #FFFFFF, dark),
+  'sepia': create-palette(#5D4037, #3E2723, #FFFFFF, dark),
+  'blue-summer-dusk': create-palette(#001D3D, #000814, #FFFFFF, dark)
+);
+
+// 5. Генерация тем
+@mixin generate-theme($name, $config) {
+  html.#{$name} {
+    $theme: mat.define-theme((
+      color: (
+        theme-type: map.get($config, type),
+        primary: (
+          main: map.get($config, primary),
+          on: map.get($config, on-primary)
+        ),
+        surface: map.get($config, surface)
+      ),
+      typography: $base-typography,
+      density: 0
+    ));
+
+    @include mat.all-component-themes($theme);
+
+    --user-custom-gradient: #{map.get($config, gradient)};
+    --mat-sys-primary: #{map.get($config, primary)};
+    --mat-sys-surface: #{map.get($config, surface)};
+    --mat-sys-on-primary: #{map.get($config, on-primary)};
+  }
 }
 
-// .mat-mdc-card-actions.center-control {
-//   gap: 20px;
-//   padding: 8px;
-//   margin-top: 20px;
-//   flex-direction: column !important;
-// }
+// 6. Применение базовых тем
+html {
+  color-scheme: light dark;
 
-mat-list-item {
-  height: 100% !important;
+  &:not([class*="theme-"]) {
+    &.light-mode {
+      @include mat.all-component-themes($light-theme);
+      --premium-gradient: linear-gradient(135deg, #ffffff, #f5f5f5);
+    }
+
+    &.dark-mode {
+      @include mat.all-component-themes($dark-theme);
+      --premium-gradient: linear-gradient(135deg, #212121, #424242);
+    }
+  }
 }
 
-// Не работает максимальная ширина, но можно оставить для красивого многоточия
-mat-chip-row {
-  cursor: pointer;
-  overflow: hidden;
-  max-width: 120px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+// 7. Генерация премиум тем
+@each $name, $config in $premium-palettes {
+  @include generate-theme($name, $config);
 }
 
-.mat-mdc-standard-chip .mat-mdc-chip-action-label {
-  overflow: hidden;
+// 8. Глобальные стили
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text-primary);
+  background: var(--user-gradient, var(--primary-bg));
+  transition: background 0.5s ease, color 0.3s ease;
 }
 
-mdc-label {
-  width: 100%;
+// 9. Переопределение компонентов Material
+.mat-mdc-card {
+  background: var(--mat-sys-surface-container-high);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
 }
 
-mat-datepicker-toggle button {
-  right: 8px;
+.mat-mdc-button {
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var(--hover-bg);
+  }
+
+  &:active {
+    background: var(--active-bg);
+  }
+}
+
+// 10. Миксины для кастомизации
+@mixin apply-custom-gradient($start, $end) {
+  --gradient-start: #{$start};
+  --gradient-end: #{$end};
+  --user-custom-gradient: linear-gradient(135deg, #{$start}, #{$end});
+}
+
+@mixin apply-custom-accent($color) {
+  --user-custom-accent: #{$color};
 }

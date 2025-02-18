@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" [class.mb-4]="isMediumScreen">
   <a class="mb" mat-button color="primary" routerLink="/">Назад</a>
 
   <!-- Поле поиска с автозаполнением -->
@@ -84,7 +84,7 @@
     }
   </div>
 
-  <mat-paginator [length]="displayedUsers.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+  <mat-paginator [length]="users.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
     (page)="onPageChange($event)" showFirstLastButtons>
   </mat-paginator>
 </div>

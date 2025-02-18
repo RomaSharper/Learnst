@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" [class.mb-4]="isMediumScreen">
   <a mat-button color="primary" routerLink="/">Назад</a>
 
   <!-- Кнопка "Добавить" -->
@@ -22,47 +22,45 @@
 
   <div class="activities-container">
     @for (activity of paginatedActivities; track activity) {
-      @if (!activity.isClosed || user?.role === Role.Specialist || user?.role === Role.Admin) {
-        <mat-card class="activity-card"
-                  [routerLink]="['/activity', activity.id]"
-                  [ngClass]="{'my-activity': activity.isEnrolled, 'closed-activity': activity.isClosed || toDate(activity.endAt) < now}">
-          <mat-card-header>
-            <mat-card-title class="mr-2">
-              @if (activity.isClosed || toDate(activity.endAt) < now) {
-                <mat-icon class="closed-icon">lock</mat-icon> <!-- Иконка для закрытых активностей -->
-              }
-              @else if (activity.isEnrolled) {
-                <mat-icon class="enrolled-icon">check_circle</mat-icon> <!-- Иконка для "моих" активностей -->
-              }
-              {{ activity.title }}
-            </mat-card-title>
-            @if (user?.role === Role.Specialist && activity.authorId === user?.id || user?.role === Role.Admin) {
-              <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
-                <mat-icon>more_vert</mat-icon>
-              </button>
-              <mat-menu #menu="matMenu">
-                <button type="button" mat-menu-item (click)="editActivity(activity)">Изменить</button>
-                <button type="button" mat-menu-item (click)="openOrCloseActivity(activity)">{{ activity.isClosed ? 'Открыть' : 'Закрыть' }}</button>
-                <button type="button" mat-menu-item (click)="deleteActivity(activity)" class="delete">Удалить</button>
-              </mat-menu>
+      <mat-card class="activity-card"
+                [routerLink]="['/activity', activity.id]"
+                [ngClass]="{'my-activity': activity.isEnrolled, 'closed-activity': activity.isClosed || toDate(activity.endAt) < now}">
+        <mat-card-header>
+          <mat-card-title class="mr-2">
+            @if (activity.isClosed || toDate(activity.endAt) < now) {
+              <mat-icon class="closed-icon">lock</mat-icon> <!-- Иконка для закрытых активностей -->
             }
-          </mat-card-header>
-          <img mat-card-image src="{{ activity.avatarUrl }}" alt="{{ activity.title }}" noDownloading placeholder="/assets/icons/placeholder.png">
-          @if (user) {
-            <mat-card-actions>
-              @if (activity.isClosed) {
-                Запись на курс закрыта
-              } @else if (toDate(activity.endAt) < now) {
-                Курс был открыт до {{ activity.endAt | ruDate }}
-              } @else {
-                <button type="button" mat-raised-button (click)="toggleActivity($event, activity)">
-                  {{ activity.isEnrolled ? 'Отписаться от курса' : 'Записаться на курс' }}
-                </button>
-              }
-            </mat-card-actions>
+            @else if (activity.isEnrolled) {
+              <mat-icon class="enrolled-icon">check_circle</mat-icon> <!-- Иконка для "моих" активностей -->
+            }
+            {{ activity.title }}
+          </mat-card-title>
+          @if (user?.role === Role.Specialist && activity.authorId === user?.id || user?.role === Role.Admin) {
+            <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button type="button" mat-menu-item (click)="editActivity(activity)">Изменить</button>
+              <button type="button" mat-menu-item (click)="openOrCloseActivity(activity)">{{ activity.isClosed ? 'Открыть' : 'Закрыть' }}</button>
+              <button type="button" mat-menu-item (click)="deleteActivity(activity)" class="delete">Удалить</button>
+            </mat-menu>
           }
-        </mat-card>
-      }
+        </mat-card-header>
+        <img mat-card-image src="{{ activity.avatarUrl }}" alt="{{ activity.title }}" noDownloading placeholder="/assets/icons/placeholder.png">
+        @if (user) {
+          <mat-card-actions>
+            @if (activity.isClosed) {
+              Запись на курс закрыта
+            } @else if (toDate(activity.endAt) < now) {
+              Курс был открыт до {{ activity.endAt | ruDate }}
+            } @else {
+              <button type="button" mat-raised-button (click)="toggleActivity($event, activity)">
+                {{ activity.isEnrolled ? 'Отписаться от курса' : 'Записаться на курс' }}
+              </button>
+            }
+          </mat-card-actions>
+        }
+      </mat-card>
     } @empty {
       @if (loading) {
         <mat-spinner></mat-spinner>
@@ -71,7 +69,7 @@
       }
     }
   </div>
-  <mat-paginator [length]="paginatedActivities.length" [pageSize]="pageSize"
-    [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)">
+  <mat-paginator [length]="filteredActivities.length" [pageSize]="pageSize"
+    [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)" showFirstLastButtons>
   </mat-paginator>
 </div>

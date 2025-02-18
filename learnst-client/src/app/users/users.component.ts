@@ -20,6 +20,7 @@ import { UsersService } from '../../services/users.service';
 import { Role } from './../../enums/Role';
 import { AlertService } from './../../services/alert.service';
 import { AuthService } from './../../services/auth.service';
+import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
 
 @Component({
   selector: 'app-users',
@@ -42,7 +43,7 @@ import { AuthService } from './../../services/auth.service';
     PlaceholderImageDirective
   ],
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent extends MediumScreenSupport implements OnInit {
   pageSize = 20;
   loading = true;
   currentPage = 0;
@@ -64,7 +65,9 @@ export class UsersComponent implements OnInit {
     private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router
-  ) { }
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {

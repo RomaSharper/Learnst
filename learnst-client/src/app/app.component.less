@@ -6,15 +6,14 @@
 
   @media (max-width: @medium-screen) {
     padding-top: 53px;
-    transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: padding @transition-time cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
 .main-navigation {
   position: relative;
-  padding: @step * 2 @step * 4;
-  box-shadow: 0 0 @step * 2.5 rgba(0, 0, 0, 0.5);
-  background: linear-gradient(@primary-bg, @secondary-bg);
+  // box-shadow: 0 0 @step * 2.5 rgba(0, 0, 0, 0.5);
+  // background: linear-gradient(@primary-bg, @secondary-bg);
 
   .hamburger {
     display: none;
@@ -35,7 +34,8 @@
     height: 53px;
     z-index: @menu;
     position: fixed;
-    box-shadow: 0 0 @step * 2 0 rgba(0, 0, 0, 0.75);
+    padding: @step * 2 @step * 4;
+    // box-shadow: 0 0 @step * 2 0 rgba(0, 0, 0, 0.75);
   }
 
   .background-overlay {
@@ -50,7 +50,7 @@
       z-index: @overlay;
       will-change: opacity;
       pointer-events: none;
-      background: rgba(0, 0, 0, 0.6);
+      // background: rgba(0, 0, 0, 0.6);
       transition: opacity @transition-time cubic-bezier(0.4, 0, 0.2, 1);
 
       &.active {
@@ -60,7 +60,7 @@
     }
   }
 
-  ul {
+  .mobile-menu {
     left: 0;
     margin: 0;
     padding: 0;
@@ -86,7 +86,7 @@
       z-index: @menu;
       position: fixed;
       width: @step * 70;
-      background: @alter-bg;
+      // background: @alter-bg;
       flex-direction: column;
       justify-content: flex-start;
       transform: translateX(-100%);
@@ -112,27 +112,27 @@
 
         a {
           padding: 0;
-          color: @online;
+          // color: @online;
           display: inline-block;
 
           img {
-            padding: 1px;
             width: @step * 8;
             aspect-ratio: 1 / 1;
+            padding: @step * 0.25;
           }
         }
       }
 
       @media (max-width: @medium-screen) {
-        color: @online;
+        // color: @online;
         overflow: hidden;
         white-space: nowrap;
         line-height: @step * 9;
         text-overflow: ellipsis;
         padding-bottom: @step * 3;
         padding: @step * 6 @step * 5;
-        box-shadow: inset 0 -@step @step * 2 0 black;
-        background: linear-gradient(107deg, #24313f 0%, #171a21 33%);
+        // box-shadow: inset 0 -@step @step * 2 0 black;
+        // background: linear-gradient(107deg, #24313f 0%, #171a21 33%);
 
         .user-avatar {
           filter: none;
@@ -143,7 +143,7 @@
 
           a {
             padding: 0;
-            color: @online;
+            // color: @online;
             border-radius: 0;
             vertical-align: middle;
 
@@ -152,19 +152,19 @@
               border-radius: 0;
               padding: @step * 0.25;
               -webkit-user-drag: none;
-              background: linear-gradient(to bottom, #41778f 5%, #3d697b 95%);
+              // background: linear-gradient(to bottom, #41778f 5%, #3d697b 95%);
             }
           }
         }
       }
 
       @media (min-width: @more-than-medium-screen) {
-        color: @online;
+        // color: @online;
         margin: auto 0;
         overflow: hidden;
+        position: relative;
         white-space: nowrap;
         text-overflow: ellipsis;
-        position: relative;
 
         .user-avatar {
           filter: none;
@@ -177,7 +177,7 @@
             img {
               vertical-align: middle;
               -webkit-user-drag: none;
-              background: linear-gradient(to bottom, #41778f 5%, #3d697b 95%);
+              // background: linear-gradient(to bottom, #41778f 5%, #3d697b 95%);
             }
           }
         }
@@ -200,16 +200,16 @@
       position: relative;
 
       &:not(:last-child) {
-        border-bottom: @step * 0.5 solid rgba(0, 0, 0, 0.1);
+        // border-bottom: @step * 0.5 solid rgba(0, 0, 0, 0.1);
       }
 
       @media (max-width: @medium-screen) {
         margin: 0;
         line-height: 2.5em;
         padding: 0 @step * 3;
-        background: @menu-item-bg;
-        border-bottom: 1px solid black;
-        border-top: 1px solid @menu-item-border;
+        // background: @menu-item-bg;
+        // border-bottom: 1px solid black;
+        // border-top: 1px solid @menu-item-border;
         transition: background @short-transition-time, color @short-transition-time;
 
         a {
@@ -226,23 +226,23 @@
         white-space: nowrap;
         padding: 0 @step * 3;
         text-decoration: none;
-        color: @text-on-accent;
+        // color: @text-on-accent;
         text-overflow: ellipsis;
 
         a {
           transition: all @transition-time cubic-bezier(0.4, 0, 0.2, 1);
 
           &:hover {
-            color: @text-high-emphasis;
-            box-shadow: inset 0 0 @step * 1.25 rgba(0, 0, 0, 0.2);
+            // color: @text-high-emphasis;
+            // box-shadow: inset 0 0 @step * 1.25 rgba(0, 0, 0, 0.2);
           }
 
           &.active {
-            color: @active;
+            // color: @active;
             text-decoration: underline;
 
             &:hover {
-              color: lighten(@active, 20%);
+              // color: lighten(@active, 20%);
             }
           }
         }
@@ -255,9 +255,9 @@
         font-weight: bold;
         padding: @step * 2;
         border-radius: @step;
-        color: @text-on-accent;
+        // color: @text-on-accent;
         transition: background @transition-time ease-in-out;
-        text-shadow: @step * 0.25 @step * 0.25 @step * 0.25 rgba(0, 0, 0, 0.5);
+        // text-shadow: @step * 0.25 @step * 0.25 @step * 0.25 rgba(0, 0, 0, 0.5);
       }
 
       &.user-profile {
@@ -270,15 +270,140 @@
       }
     }
   }
+
+  .desktop-menu {
+    margin: 0;
+    display: flex;
+    list-style: none;
+    align-items: center;
+    flex-direction: row;
+    padding: 0 @step * 4;
+
+    li {
+      cursor: pointer;
+      padding: @step @step * 2;
+
+      // Исключаем эффекты для логотипа
+      .logo-link {
+        display: flex;
+        width: fit-content;
+        align-items: center;
+        flex-direction: row;
+        column-gap: @step * 2;
+        margin-right: @step * 8;
+        padding-right: @step * 2;
+
+        img {
+          width: @step * 6;
+          border-radius: 50%;
+          aspect-ratio: 1 / 1;
+        }
+
+        // Логотип не должен иметь подчёркивания
+        &:hover {
+          a {
+            text-decoration: none;
+          }
+        }
+      }
+
+      a {
+        width: 100%;
+        height: 100%;
+        display: block;
+        position: relative; // Для позиционирования псевдоэлемента
+        text-decoration: none;
+        // color: @text-on-accent;
+        transition: color @transition-time ease;
+
+        // Добавляем подчёркивание
+        &::after {
+          left: 10%;
+          width: 80%;
+          opacity: 0;
+          content: '';
+          display: block;
+          position: absolute;
+          height: @step * 0.5;
+          bottom: -@step * 0.5;
+          // background-color: @gray; // Цвет линии
+          transition: opacity @transition-time ease;
+        }
+
+        &:hover {
+          // color: @text-high-emphasis; // Изменяем цвет текста при наведении
+
+          // Показываем подчёркивание
+          &::after {
+            opacity: 1;
+          }
+        }
+      }
+
+      // Подменю
+      .submenu {
+        left: 0;
+        top: 100%; // Под основным меню
+        width: 100vw;
+        display: none;
+        z-index: @menu;
+        position: absolute;
+        // background: @alter-bg;
+        // box-shadow: 0 @step * 2 @step * 4 rgba(0, 0, 0, 0.2);
+
+        .columns {
+          display: flex;
+          margin: 0 auto;
+          padding: @step * 4;
+          max-width: @step * 300;
+
+          >div {
+            flex: 1;
+            padding: 0 @step * 3;
+
+            h3 {
+              // color: @text-primary;
+              margin-bottom: @step * 2;
+              font-size: @font-size-large + 2;
+            }
+
+            ul {
+              margin: 0;
+              padding: 0;
+              list-style: none;
+
+              li {
+                cursor: pointer;
+                margin-bottom: @step;
+
+                a {
+                  width: 100%;
+                  height: 100%;
+                  text-decoration: none;
+                  // color: @text-secondary;
+                  transition: color @transition-time ease;
+
+                  &:hover {
+                    // color: @text-high-emphasis;
+                    text-decoration: underline;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      &:hover .submenu {
+        display: block; // Показываем подменю при наведении
+      }
+    }
+  }
 }
 
 @media (max-width: @large-screen) and (min-width: @more-than-medium-screen) {
   .main-navigation {
-    padding: @step * 2;
-
     li:not(.user-area) {
-      margin: @step * 0.5;
-
       a {
         padding: @step;
         font-size: @font-size-large - 1;

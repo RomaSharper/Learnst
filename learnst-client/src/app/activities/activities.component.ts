@@ -190,6 +190,9 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
   // Фильтрация активностей по searchQuery и тегам
   get filteredActivities(): Activity[] {
     return this.activities.filter(activity => {
+      if ([Role.User, Role.Backup].includes(this.user?.role!) && activity.isClosed)
+        return false;
+
       // Если searchQuery пустой, пропускаем фильтрацию по нему
       const matchesSearchQuery = this.searchQuery === '' || activity.title.toLowerCase().includes(this.searchQuery.toLowerCase());
 

@@ -17,19 +17,19 @@ input,
 textarea {
   width: 100%;
   padding: @step * 2;
-  color: @text-primary;
+  // color: @text-primary;
   border-radius: @step;
   font-size: @font-size-medium;
-  border: @step * 0.25 solid @muted;
-  background-color: darken(@primary-bg, 10%);
+  // border: @step * 0.25 solid @muted;
+  // background-color: darken(@primary-bg, 10%);
 
   &:focus {
-    border-color: @accent;
+    // border-color: @accent;
     outline: none;
   }
 
   &::placeholder {
-    color: @text-secondary;
+    // color: @text-secondary;
   }
 }
 
@@ -50,7 +50,7 @@ p {
 
 .update-date {
   font-size: 0.9em;
-  color: #cccccc;
+  // color: #cccccc;
 }
 
 .toc {
@@ -72,7 +72,7 @@ p {
 }
 
 .toc a {
-  color: #ffffff;
+  color: white;
   font-size: 1.1em;
   text-decoration: none;
 }
@@ -82,30 +82,30 @@ p {
 }
 
 mat-paginator {
-  color: @text-color;
+  // color: @text-color;
   margin-top: @step * 5;
-  background-color: @background-color;
+  // background-color: @background-color;
 
   .mat-paginator-page-size {
     select {
-      background-color: @background-color;
-      color: @text-color;
-      border: @step * 0.25 solid @border-color;
+      // color: @text-color;
+      // background-color: @background-color;
+      // border: @step * 0.25 solid @border-color;
     }
   }
 
   .mat-paginator-range-actions {
     button {
-      background-color: @background-color;
-      color: @text-color;
-      border: @step * 0.25 solid @border-color;
+      // color: @text-color;
+      // background-color: @background-color;
+      // border: @step * 0.25 solid @border-color;
 
       &:hover {
-        background-color: @card-hover-color;
+        // background-color: @card-hover-color;
       }
 
       &:active {
-        background-color: @card-active-color;
+        // background-color: @card-active-color;
       }
     }
   }
@@ -117,7 +117,7 @@ mat-paginator {
 
 mat-form-field {
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: @step * 4;
 }
 
 mat-date-range-input {
@@ -159,9 +159,9 @@ mat-date-range-input {
 
 .main-button {
   scale: 1.5;
-  right: @step * 8;
+  left: @step * 6;
+  bottom: @step * 6;
   z-index: @overlay;
-  bottom: @step * 8;
   position: fixed !important;
   font-size: @font-size-large;
 }
@@ -235,6 +235,10 @@ mat-date-range-input {
   margin-right: @step * 6 !important;
 }
 
+.mb-4 {
+  margin-bottom: @step * 25 !important;
+}
+
 .cursor-default {
   cursor: default;
 }
@@ -256,35 +260,35 @@ mat-date-range-input {
 }
 
 .delete {
-  color: @delete-color;
+  // color: @delete-color;
 }
 
 .tabs {
   display: flex;
   margin-bottom: @step * 5;
-  border-bottom: @step * 0.5 solid @border-color;
+  // border-bottom: @step * 0.5 solid @border-color;
 }
 
 .tab-button {
   border: none;
   cursor: pointer;
   border-radius: @step;
-  color: @text-secondary;
-  background: @primary-bg;
+  // color: @text-secondary;
+  // background: @primary-bg;
   margin-right: @step * 2;
   font-size: @font-size-medium;
   padding: @step * 2 @step * 5;
   transition: background @transition-time ease, color @transition-time ease;
 
   &.active {
-    background: @highlight;
-    color: @text-high-emphasis;
-    border-bottom: @step * 0.5 solid @accent;
+    // background: @highlight;
+    // color: @text-high-emphasis;
+    // border-bottom: @step * 0.5 solid @accent;
   }
 
   &:hover {
-    background: @hover-bg;
-    color: @text-high-emphasis;
+    // background: @hover-bg;
+    // color: @text-high-emphasis;
   }
 }
 
@@ -308,7 +312,7 @@ mat-date-range-input {
 }
 
 .muted {
-  color: @muted;
+  // color: @muted;
   font-style: italic;
 }
 
@@ -323,9 +327,9 @@ mat-date-range-input {
   padding: @step * 2;
   border-radius: @step;
   z-index: @context-menu;
-  background-color: @context-bg;
-  border: @step * 0.25 solid @context-border;
-  box-shadow: 0 @step @step * 2 rgba(0, 0, 0, 0.5);
+  // background-color: @context-bg;
+  // border: @step * 0.25 solid @context-border;
+  // box-shadow: 0 @step @step * 2 rgba(0, 0, 0, 0.5);
 
   button {
     width: 100%;
@@ -333,7 +337,7 @@ mat-date-range-input {
     cursor: pointer;
     text-align: left;
     border-radius: @step;
-    color: @text-high-emphasis;
+    // color: @text-high-emphasis;
     padding: @step * 2 @step * 3;
     background-color: transparent;
     transition: background-color @short-transition-time;
@@ -341,11 +345,11 @@ mat-date-range-input {
     /* Отступ между элементами */
     &:not(:last-child) {
       margin-bottom: @step;
-      border-bottom: @step * 0.25 solid @context-border;
+      // border-bottom: @step * 0.25 solid @context-border;
     }
 
     &:hover {
-      background-color: @context-hover;
+      // background-color: @context-hover;
     }
   }
 }
@@ -371,21 +375,21 @@ mat-date-range-input {
 }
 
 .danger {
-  color: darken(@danger, 20%);
-  border-left: @step solid @danger;
-  background: lighten(@danger, 30%);
+  // color: darken(@danger, 20%);
+  // border-left: @step solid @danger;
+  // background: lighten(@danger, 30%);
 }
 
 .warning {
-  color: darken(@warning, 20%);
-  border-left: @step solid @warning;
-  background: lighten(@warning, 30%);
+  // color: darken(@warning, 20%);
+  // border-left: @step solid @warning;
+  // background: lighten(@warning, 30%);
 }
 
 .success {
-  color: darken(@success, 20%);
-  border-left: @step solid @success;
-  background: lighten(@success, 30%);
+  // color: darken(@success, 20%);
+  // border-left: @step solid @success;
+  // background: lighten(@success, 30%);
 }
 
 .list {
@@ -404,7 +408,7 @@ mat-date-range-input {
       top: @step * 2;
       position: absolute;
       border-radius: 50%;
-      background-color: @info;
+      // background-color: @info;
     }
   }
 }
@@ -425,17 +429,17 @@ input,
 textarea {
   padding: @step * 2.5;
   border-radius: @step;
-  color: @text-high-emphasis;
-  background-color: #2a4751;
-  border: @step * 0.25 solid #66c0f4;
+  // color: @text-high-emphasis;
+  // background-color: #2a4751;
+  // border: @step * 0.25 solid #66c0f4;
 
   &:focus {
-    outline: none; // Убираем стандартный фокус
-    border-color: #4a90e2;
+    outline: none;
+    // border-color: #4a90e2;
   }
 
   &::placeholder {
-    color: @text-secondary;
+    // color: @text-secondary;
   }
 }
 
@@ -458,8 +462,8 @@ textarea {
   margin: @step * 5 auto;
   max-width: @step * 140;
   border-radius: @step * 5;
-  background-color: #232527;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  // background-color: #232527;
+  // box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 
   form>*:not(:last-child) {
     margin-bottom: @step * 4;
@@ -490,7 +494,7 @@ textarea {
 }
 
 .link {
-  color: #00b3ff;
+  // color: #00b3ff;
   text-decoration: none;
 
   &:hover {
@@ -503,25 +507,25 @@ textarea {
 
   @media (max-width: @medium-screen) {
     .container {
-        margin: @step * 3;
+      margin: @step * 3;
     }
   }
 
   h1 {
+    margin-bottom: @step * 4;
     font-size: @font-size-large;
-    margin-bottom: @spacing * 2;
   }
 
   .loading {
     text-align: center;
-    color: @primary-color;
+    // color: @primary-color;
     font-size: @font-size-medium;
   }
 
   .profile-grid {
     width: 100%;
-    gap: @spacing;
     display: grid;
+    gap: @step * 2;
     grid-template-columns: repeat(2, 1fr);
 
     .full-width {
@@ -530,23 +534,23 @@ textarea {
 
     mat-card {
       width: 100%;
-      padding: @spacing;
+      padding: @step * 2;
       position: relative;
-      border-radius: @border-radius;
-      background-color: @background-color;
+      // border-radius: @border-radius;
+      // background-color: @background-color;
       box-shadow: 0 @step * 0.5 @step rgba(0, 0, 0, 0.1);
 
       h2 {
-        color: @accent;
-        margin-bottom: @spacing;
+        // color: @accent;
+        margin-bottom: @step * 2;
         padding-right: @step * 10;
       }
     }
   }
 
   .user-info {
-    gap: @spacing;
     display: grid;
+    gap: @step * 2;
     grid-template-columns: repeat(2, 1fr);
 
     mat-form-field {
@@ -557,8 +561,8 @@ textarea {
   .avatar-container {
     width: @step * 50;
     height: @step * 50;
-    margin: 0 auto @spacing;
-    border: @step * 0.25 solid @online;
+    margin: 0 auto @step * 2;
+    // border: @step * 0.25 solid @online;
     background: linear-gradient(to bottom, #41778f 5%, #3d697b 95%);
 
     .avatar {
@@ -578,11 +582,11 @@ textarea {
   .social-card,
   .education-item,
   .work-item {
-    padding: @spacing;
+    padding: @step * 2;
     position: relative;
-    margin-bottom: @spacing;
-    border-radius: @border-radius;
-    border: @step * 0.25 solid @border-color;
+    margin-bottom: @step * 2;
+    border-radius: @step * 5;
+    // border: @step * 0.25 solid @border-color;
 
     >a {
       width: 100%;
@@ -600,14 +604,14 @@ textarea {
     }
 
     >div:not(:last-child) {
+      margin-bottom: @step;
       padding-right: @step * 10;
-      margin-bottom: @spacing * 0.5;
     }
   }
 
   // Специфичные стили для социальных сетей
   .cards {
-    margin-top: @spacing;
+    margin-top: @step * 2;
 
     .social-card {
       display: flex;
@@ -623,7 +627,7 @@ textarea {
 
   .save-button {
     width: 100%;
-    margin-top: @spacing;
+    margin-top: @step * 2;
   }
 }
 
@@ -873,6 +877,25 @@ textarea {
       color: #4ecdc4;
     }
   }*/
+}
+
+.mat-mdc-button {
+  transition: all 0.2s ease;
+
+  &:not(:disabled) {
+    &:hover {
+      color: var(--hover-text-color);
+      background-color: var(--hover-bg);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  &:disabled {
+    opacity: var(--disabled-opacity);
+  }
 }
 
 @keyframes pulse {

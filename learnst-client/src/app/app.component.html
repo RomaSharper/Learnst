@@ -1,36 +1,142 @@
 <nav class="main-navigation">
-  <div class="background-overlay" [class.active]="isMenuOpen" [style.opacity]="overlayOpacity"
-    (click)="closeMenu($event)"></div>
+  <div class="background-overlay" [class.active]="isMenuOpen" (click)="closeMenu($event)"></div>
 
   <button type="button" class="hamburger" mat-icon-button (click)="toggleMenu($event)">
     <mat-icon>menu</mat-icon>
   </button>
 
-  <ul [style.transform]="'translateX(' + (isMediumScreen ? menuTranslateX : 0) + '%)'" [class.swiping]="isSwiping">
-    @if (user) {
-      <li class="user-area">
-        <div class="user-avatar">
-          <a class="user-img" routerLink="/me" routerLinkActive="active">
-            <img [alt]="user.username" [src]="user.avatarUrl" placeholder="/images/user.png" noDownloading>
-          </a>
-          <a class="user-name" routerLink="/me" routerLinkActive="active">{{ user.username }}</a>
+  @if (isMediumScreen) {
+    <ul class="mobile-menu" [class.active]="isMenuOpen">
+      @if (user) {
+        <li class="user-area">
+          <div class="user-avatar">
+            <a class="user-img" routerLink="/me" routerLinkActive="active">
+              <img [alt]="user.username" [src]="user.avatarUrl" placeholder="/images/user.png" noDownloading>
+            </a>
+            <a class="user-name" routerLink="/me" routerLinkActive="active">{{ user.username }}</a>
+          </div>
+        </li>
+        <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
+        <li><a routerLink="/activities" routerLinkActive="active">Обучение</a></li>
+        <li><a routerLink="/users" routerLinkActive="active">Пользователи</a></li>
+        <li><a routerLink="/tickets" routerLinkActive="active">Поддержка</a></li>
+        <li class="mobile-only"><a routerLink="/dev" routerLinkActive="active">Для разработчиков</a></li>
+        <li class="mobile-only"><a routerLink="/termsofuse" routerLinkActive="active">Условия пользования</a></li>
+        <li class="mobile-only"><a routerLink="/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
+        <li><a routerLink="/logout">Выйти</a></li>
+      } @else {
+        <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
+        <li><a routerLink="/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
+        <li><a routerLink="/termsofuse" routerLinkActive="active">Условия пользования</a></li>
+        <li><a routerLink="/login" routerLinkActive="active">Войти</a></li>
+      }
+    </ul>
+  } @else {
+    <ul class="desktop-menu">
+      <li>
+        <a class="logo-link" routerLink="/">
+          <img src="assets/icons/favicon.png" alt="Learnst">
+          <span>Learnst</span>
+        </a>
+      </li>
+      <li>
+        <a>Основы</a>
+        <div class="submenu">
+          <div class="columns">
+            <div>
+              <h3>Начать</h3>
+              <ul>
+                <li><a routerLink="/start">Введение</a></li>
+                <li><a routerLink="/basics">Основные концепции</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3>Обучение</h3>
+              <ul>
+                <li><a routerLink="/training">Курсы</a></li>
+                <li><a routerLink="/tutorials">Руководства</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3>Информация</h3>
+              <ul>
+                <li><a routerLink="/privacypolicy">Конфиденциальность</a></li>
+                <li><a routerLink="/termsofuse">Условия использования</a></li>
+              </ul>
+            </div>
+          </div>
         </div>
       </li>
-      <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
-      <li><a routerLink="/activities" routerLinkActive="active">Обучение</a></li>
-      <li><a routerLink="/users" routerLinkActive="active">Пользователи</a></li>
-      <li><a routerLink="/tickets" routerLinkActive="active">Поддержка</a></li>
-      <li class="mobile-only"><a routerLink="/dev" routerLinkActive="active">Для разработчиков</a></li>
-      <li class="mobile-only"><a routerLink="/termsofuse" routerLinkActive="active">Условия пользования</a></li>
-      <li class="mobile-only"><a routerLink="/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
-      <li><a routerLink="/logout">Выйти</a></li>
-    } @else {
-      <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
-      <li><a routerLink="/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
-      <li><a routerLink="/termsofuse" routerLinkActive="active">Условия пользования</a></li>
-      <li><a routerLink="/login" routerLinkActive="active">Войти</a></li>
-    }
-  </ul>
+      <li>
+        <a>Обучение</a>
+        <div class="submenu">
+          <div class="columns">
+            <div>
+              <h3>Язык</h3>
+              <ul>
+                <li><a routerLink="/java">Java</a></li>
+                <li><a routerLink="/csharp">C#</a></li>
+                <li><a routerLink="/lua">Lua</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3>Стиль</h3>
+              <ul>
+                <li><a routerLink="/oop">ООП</a></li>
+                <li><a routerLink="/procedural">Процедурное программирование</a></li>
+                <li><a routerLink="/functional">Функциональное программирование</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3>Сложность</h3>
+              <ul>
+                <li><a routerLink="/easy">Легко</a></li>
+                <li><a routerLink="/moderate">Умеренно</a></li>
+                <li><a routerLink="/hard">Сложно</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li>
+        <a>Разработка</a>
+        <div class="submenu">
+          <div class="columns">
+            <div>
+              <h3>Основные области</h3>
+              <ul>
+                <li><a routerLink="/examples">Примеры кода</a></li>
+                <li><a routerLink="/guides">Быстрые руководства</a></li>
+                <li><a routerLink="/interfaces">Интерфейсы</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3>Инструменты разработчика</h3>
+              <ul>
+                <li><a routerLink="/sandbox/js">Песочница JavaScript</a></li>
+                <li><a routerLink="/sandbox/java">Песочница Java</a></li>
+                <li><a routerLink="/sandbox/csharp">Песочница C#</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3>Полезные библиотеки</h3>
+              <ul>
+                <li><a routerLink="/maven">Maven (Gradle)</a></li>
+                <li><a routerLink="/nuget">NuGet</a></li>
+                <li><a routerLink="/npm">NPM</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li>
+        <a routerLink="/community">Сообщество</a>
+      </li>
+      <li>
+        <app-theme-picker></app-theme-picker>
+      </li>
+    </ul>
+  }
 </nav>
 
 <div class="bounds">

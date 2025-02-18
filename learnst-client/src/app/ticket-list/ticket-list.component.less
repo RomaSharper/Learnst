@@ -10,19 +10,19 @@
     overflow: hidden;
     padding: @step * 2;
     position: relative;
-    background: @card-bg;
+    // background: @card-bg;
     border-radius: @step * 5;
     transition: transform @transition-time, box-shadow @transition-time;
 
     &:hover {
       transform: translateY(-@step);
-      box-shadow: 0 @step * 2 @step * 6 rgba(0, 0, 0, 0.2);
+      // box-shadow: 0 @step * 2 @step * 6 rgba(0, 0, 0, 0.2);
     }
 
     mat-card-title {
       font-size: 1.5em;
       font-weight: bold;
-      color: @text-primary;
+      // color: @text-primary;
       padding: @step * 2 @step * 2 0 @step * 2;
     }
 
@@ -30,21 +30,21 @@
       padding: @step * 2;
 
       p {
-        color: @text-secondary;
         margin: 0;
         line-height: 1.6;
+        // color: @text-secondary;
       }
 
       .ticket-info {
         display: flex;
-        justify-content: space-between;
         align-items: center;
         margin-top: @step * 2;
+        justify-content: space-between;
 
         .author-info {
+          gap: @step;
           display: flex;
           align-items: center;
-          gap: @step;
 
           .avatar {
             width: @step * 10;
@@ -52,7 +52,7 @@
             height: @step * 10;
             border-radius: 50%;
             transition: transform @transition-time;
-            border: @step * 0.5 solid @primary-color;
+            // border: @step * 0.5 solid @primary-color;
 
             &:hover {
               transform: scale(1.1);
@@ -61,25 +61,25 @@
 
           span {
             font-weight: 500;
-            color: @text-primary;
+            // color: @text-primary;
           }
         }
 
         .status {
-          color: white;
+          // color: white;
           font-weight: bold;
           padding: @step @step * 2;
           border-radius: @step * 5;
           text-transform: uppercase;
           font-size: @font-size-medium;
-          box-shadow: 0 @step * 0.5 @step * 2 rgba(0, 0, 0, 0.1);
+          // box-shadow: 0 @step * 0.5 @step * 2 rgba(0, 0, 0, 0.1);
         }
       }
 
       .created-at {
         opacity: 0.8;
         margin-top: @step * 2;
-        color: @text-secondary;
+        // color: @text-secondary;
         font-size: @font-size-medium;
       }
     }
@@ -93,7 +93,7 @@
       height: @step;
       position: absolute;
       transition: opacity @transition-time;
-      background: linear-gradient(90deg, @primary-color, darken(@primary-color, 10%));
+      // background: linear-gradient(90deg, @primary-color, darken(@primary-color, 10%));
     }
 
     &:hover::before {
@@ -106,5 +106,5 @@
   font-size: 1.2em;
   text-align: center;
   margin-top: @step * 4;
-  color: @text-secondary;
+  // color: @text-secondary;
 }

@@ -20,7 +20,7 @@
       position: relative;
       align-items: center;
       border-radius: @step * 5;
-      border: @step * 0.25 solid @border-color;
+      // border: @step * 0.25 solid @border-color;
       transition: background-color @transition-time, transform @transition-time;
 
       .avatar {
@@ -28,7 +28,7 @@
         width: @avatar-size;
         aspect-ratio: 1 / 1;
         margin-right: @step * 3;
-        border: @step * 0.5 solid @primary-color;
+        // border: @step * 0.5 solid @primary-color;
         transition: border-color @transition-time;
 
         @media (max-width: @small-screen) {
@@ -45,7 +45,7 @@
           margin: 0;
           display: flex;
           gap: @step * 1.5; // Отступ между текстом и иконкой
-          color: @text-color;
+          // color: @text-color;
           align-items: center;
           font-size: @font-size-medium;
 
@@ -56,35 +56,35 @@
           }
 
           .backup-icon {
-            color: @online;
+            // color: @online;
           }
 
           .specialist-icon {
-            color: #eff7f6;
+            // color: #eff7f6;
           }
 
           .admin-icon {
-            color: #f7ee7f;
+            // color: #f7ee7f;
           }
         }
       }
 
       .more-button {
-        position: absolute;
         top: @step * 2;
         right: @step * 2;
+        position: absolute;
       }
 
       &:hover {
-        background-color: @card-hover-color;
+        // background-color: @card-hover-color;
 
         .avatar {
-          border-color: @secondary-color;
+          // border-color: @secondary-color;
         }
       }
 
       &:active {
-        background-color: @card-active-color;
+        // background-color: @card-active-color;
       }
 
       @media (max-width: @medium-screen) {

@@ -13,13 +13,13 @@ const string policy = "CORS";
 const string apiName = "Learnst API v.1";
 const string swaggerUrl = "/swagger/v1/swagger.json";
 const string connectionStringName = "DefaultConnection";
-string[] trustedOrigins = ["https://learnst.runasp.net"];
 string[] trustedPaths = ["/error", "/oauth2", "/apps", "/account", "/sessions"];
+string[] trustedOrigins = ["https://learnst.runasp.net", "http://localhost:56387"];
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Настройка CORS
-builder.Services.AddCustomCors(trustedOrigins); //: null);
+builder.Services.AddCustomCors(trustedOrigins);
 
 // Настройка AutoMapper
 builder.Services.AddAutoMapper(cfg =>
@@ -92,11 +92,12 @@ app.UseRouting()
     .UseStaticFiles()
     .UseSession()
     .UseCustomSecurity(onError: async (context, _, origin) => // Middleware для безопасности
-     {
-         await LogService.WriteLine(
-             $"** Запрещен доступ источнику \"{(string.IsNullOrEmpty(origin) ? "Пустой" : origin)}\", так как он не является доверенным. **");
-         context.Response.Redirect("/error");
-     });
+    {
+        await LogService.WriteLine($"** Запрещен доступ источнику \"{(
+            string.IsNullOrEmpty(origin) ? "Пустой" : origin
+        )}\", так как он не является доверенным. **");
+        context.Response.Redirect("/error");
+    });
 
 app.UseCustomSwagger(apiName, swaggerUrl, willUse: true); // Используем метод для настройки Swagger
 app.MapControllers();
