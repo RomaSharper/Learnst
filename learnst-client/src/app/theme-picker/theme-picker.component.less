@@ -1,15 +1,31 @@
 @import url(../../styles/vars.less);
 
 .theme-grid {
+  gap: 1rem;
   display: grid;
-  gap: @step * 4;
-  padding: @step * 4;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-}
+  padding: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
 
-.theme-preview {
-  height: @step * 15;
-  border-radius: 50%;
-  aspect-ratio: 1 / 1;
-  border: @step * 0.5 solid var(--border-color);
+  button {
+    display: flex;
+    padding: 1rem;
+    cursor: pointer;
+    align-items: center;
+    flex-direction: column;
+    background: transparent;
+    border-radius: @step * 2;
+    border: @step * 0.25 solid var(--mat-sys-outline);
+
+    .theme-preview {
+      width: 100%;
+      height: @step * 15;
+      border-radius: 50%;
+      margin-bottom: 0.5rem;
+    }
+
+    &[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
 }

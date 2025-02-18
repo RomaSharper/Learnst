@@ -1,41 +1,53 @@
 @use '@angular/material' as mat;
 @use 'sass:map';
+@use './dark-theme-colors.scss' as dark-theme-colors;
+@use './light-theme-colors.scss' as light-theme-colors;
+@use './mint-theme-colors.scss' as mint-theme-colors;
 
 // 1. Глобальные CSS-переменные
 :root {
   // Основные цвета
-  --primary-bg: var(--mat-sys-surface);
-  --secondary-bg: var(--mat-sys-surface-container);
-  --text-primary: var(--mat-sys-on-surface);
-  --text-secondary: var(--mat-sys-on-surface-variant);
-  --accent-color: var(--mat-sys-primary);
+  --primary-color: var(--mat-sys-primary);
+  --tertiary-color: var(--mat-sys-tertiary);
+  --secondary-color: var(--mat-sys-secondary);
+  --on-primary-color: var(--mat-sys-on-primary);
+  --on-tertiary-color: var(--mat-sys-on-tertiary);
+  --on-secondary-color: var(--mat-sys-on-secondary);
+
+  --primary-bg: var(--mat-sys-tertiary);
+  --text-primary: var(--on-primary-color);
+  --secondary-bg: var(--mat-sys-tertiary-container);
+  --text-secondary: var(--mat-sys-on-tertiary-variant);
+
+  // Акцентные цвета
   --warn-color: var(--mat-sys-error);
+  --accent-color: var(--mat-sys-primary);
 
   // Границы и тени
-  --border-color: var(--mat-sys-outline);
   --shadow-color: rgba(0, 0, 0, 0.15);
+  --border-color: var(--mat-sys-outline);
   --card-shadow: 0 2px 8px var(--shadow-color);
 
   // Премиум переменные
+  --user-accent: var(--user-custom-accent, var(--accent-color));
   --premium-gradient: linear-gradient(135deg, #ffffff, #f5f5f5);
   --user-gradient: var(--user-custom-gradient, var(--premium-gradient));
-  --user-accent: var(--user-custom-accent, var(--accent-color));
 
   // Состояния элементов
-  --hover-bg: var(--mat-sys-on-surface-variant-008);
-  --active-bg: var(--mat-sys-on-surface-variant-012);
   --focus-border: var(--mat-sys-primary);
   --hover-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   --active-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --hover-bg: var(--mat-sys-on-tertiary-variant-008);
+  --active-bg: var(--mat-sys-on-tertiary-variant-012);
 }
 
 // 2. Базовые настройки
 $base-typography: (
-  plain-family: 'Motiva Sans',
-  brand-family: 'Motiva Sans',
   bold-weight: 900,
   medium-weight: 500,
   regular-weight: 300,
+  plain-family: 'Motiva Sans',
+  brand-family: 'Motiva Sans'
 );
 
 // 3. Основные темы
@@ -43,10 +55,13 @@ $light-theme: mat.define-theme(
   (
     color: (
       theme-type: light,
-      primary: mat.$azure-palette,
+      primary: light-theme-colors.$primary-palette,
+      tertiary: light-theme-colors.$tertiary-palette
     ),
     typography: $base-typography,
-    density: 0
+    density: (
+      scale: -1
+    )
   )
 );
 
@@ -54,111 +69,65 @@ $dark-theme: mat.define-theme(
   (
     color: (
       theme-type: dark,
-      primary: mat.$azure-palette,
+      primary: dark-theme-colors.$primary-palette,
+      tertiary: dark-theme-colors.$tertiary-palette
     ),
     typography: $base-typography,
-    density: 0
+    density: (
+      scale: -1
+    )
   )
 );
 
-// 4. Кастомные палитры
-@function create-palette($primary, $surface, $on-primary, $type) {
-  @return (
-    primary: $primary,
-    surface: $surface,
-    on-primary: $on-primary,
-    type: $type
-  );
-}
-
-$premium-palettes: (
-  'mint-apple': create-palette(#C6F6D5, #F0FFF4, #1A1A1A, light),
-  'citrus-sherbet': create-palette(#FFE0B2, #FFF3E0, #3E2723, light),
-  'retro-cloud': create-palette(#BBDEFB, #E3F2FD, #0D47A1, light),
-  'hanami': create-palette(#F8BBD0, #FFCDD2, #880E4F, light),
-  'sunrise': create-palette(#FFCC80, #FFE0B2, #311B92, light),
-  'cotton-candy': create-palette(#E1BEE7, #F3E5F5, #4A148C, light),
-  'lofi-atmosphere': create-palette(#B0BEC5, #CFD8DC, #263238, light),
-  'desert-khaki': create-palette(#D7CCC8, #F5F5F5, #3E2723, light),
-  'sunset': create-palette(#8D99AE, #2B2D42, #EDF2F4, dark),
-  'intense-glow': create-palette(#4A148C, #1A237E, #FFFFFF, dark),
-  'forest': create-palette(#40916C, #1B4332, #EDF2F4, dark),
-  'crimson-moon': create-palette(#9D0208, #4A0404, #FFFFFF, dark),
-  'midnight-blueviolet': create-palette(#5A189A, #240046, #FFFFFF, dark),
-  'mars': create-palette(#D00000, #6A040F, #FFFFFF, dark),
-  'twilight': create-palette(#370617, #03071E, #FFFFFF, dark),
-  'deep-sea': create-palette(#013A63, #012A4A, #FFFFFF, dark),
-  'retro-rose': create-palette(#800F2F, #590D22, #FFFFFF, dark),
-  'neon-nights': create-palette(#240046, #10002B, #FFFFFF, dark),
-  'strawberry-lemonade': create-palette(#A3320B, #6B0504, #FFFFFF, dark),
-  'aurora': create-palette(#005F73, #001219, #FFFFFF, dark),
-  'sepia': create-palette(#5D4037, #3E2723, #FFFFFF, dark),
-  'blue-summer-dusk': create-palette(#001D3D, #000814, #FFFFFF, dark)
+$mint-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mint-theme-colors.$primary-palette,
+      tertiary: mint-theme-colors.$tertiary-palette
+    ),
+    typography: $base-typography,
+    density: (
+      scale: -1
+    )
+  )
 );
 
-// 5. Генерация тем
-@mixin generate-theme($name, $config) {
-  html.#{$name} {
-    $theme: mat.define-theme((
-      color: (
-        theme-type: map.get($config, type),
-        primary: (
-          main: map.get($config, primary),
-          on: map.get($config, on-primary)
-        ),
-        surface: map.get($config, surface)
-      ),
-      typography: $base-typography,
-      density: 0
-    ));
-
-    @include mat.all-component-themes($theme);
-
-    --user-custom-gradient: #{map.get($config, gradient)};
-    --mat-sys-primary: #{map.get($config, primary)};
-    --mat-sys-surface: #{map.get($config, surface)};
-    --mat-sys-on-primary: #{map.get($config, on-primary)};
-  }
-}
-
-// 6. Применение базовых тем
+// 4. Применение базовых тем
 html {
-  color-scheme: light dark;
+  color-scheme: light;
 
   &:not([class*="theme-"]) {
     &.light-mode {
+      color-scheme: light;
+      --text-primary: var(--on-primary-color);
       @include mat.all-component-themes($light-theme);
       --premium-gradient: linear-gradient(135deg, #ffffff, #f5f5f5);
     }
 
     &.dark-mode {
+      color-scheme: dark;
+      --text-primary: var(--on-primary-color);
       @include mat.all-component-themes($dark-theme);
       --premium-gradient: linear-gradient(135deg, #212121, #424242);
     }
   }
 }
 
-// 7. Генерация премиум тем
-@each $name, $config in $premium-palettes {
-  @include generate-theme($name, $config);
-}
-
-// 8. Глобальные стили
+// 5. Глобальные стили
 body {
   margin: 0;
   min-height: 100vh;
-  color: var(--text-primary);
+  color: var(--text-color);
   background: var(--user-gradient, var(--primary-bg));
   transition: background 0.5s ease, color 0.3s ease;
 }
 
-// 9. Переопределение компонентов Material
-.mat-mdc-card {
-  background: var(--mat-sys-surface-container-high);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--card-shadow);
+button {
+  color: var(--text-color);
 }
 
+// 6. Переопределение компонентов Material
 .mat-mdc-button {
   transition: all 0.3s ease;
 
@@ -171,7 +140,29 @@ body {
   }
 }
 
-// 10. Миксины для кастомизации
+.mat-mdc-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+}
+
+.mat-mdc-standard-chip {
+
+  .mdc-evolution-chip__cell--primary,
+  .mdc-evolution-chip__action--primary,
+  .mat-mdc-chip-action-label {
+    overflow: hidden !important;
+  }
+}
+
+mat-chip-row {
+  cursor: pointer;
+  max-width: 120px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+// 7. Кастомизация через CSS-переменные
 @mixin apply-custom-gradient($start, $end) {
   --gradient-start: #{$start};
   --gradient-end: #{$end};

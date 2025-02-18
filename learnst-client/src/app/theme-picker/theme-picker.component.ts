@@ -1,6 +1,6 @@
 // theme-picker.component.ts
 import { Component } from '@angular/core';
-import { Theme, ThemeService } from '../../services/theme.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-theme-picker',
@@ -9,9 +9,11 @@ import { Theme, ThemeService } from '../../services/theme.service';
 })
 export class ThemePickerComponent {
   isPremium = true; // Получать из сервиса авторизации
-  availableThemes: Theme[] = ThemeService.THEMES;
+  availableThemes: string[] = ['dark-mode', 'light-mode'];
 
-  constructor(private themeService: ThemeService) { }
+  constructor(private themeService: ThemeService) {
+    this.applyTheme(localStorage.getItem('theme') || 'light-mode');
+  }
 
   applyTheme(themeName: string) {
     this.themeService.applyTheme(themeName);

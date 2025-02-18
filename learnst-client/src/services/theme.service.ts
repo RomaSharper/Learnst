@@ -1,74 +1,115 @@
-import { Injectable } from '@angular/core';
+// import { Injectable } from '@angular/core';
+// import { baseThemes, premiumThemes } from '../styles/themes';
+// import { Theme } from '../models/Theme';
 
-export interface Theme {
-  name: string;
-  premium: boolean;
-  gradient: string;
-}
+// @Injectable({
+//   providedIn: 'root',
+// })
+// export class ThemeService {
+//   private readonly THEME_KEY = 'theme';
+//   private readonly DARK_MODE_KEY = 'isDarkMode';
+//   public static readonly THEMES: Theme[] = [...baseThemes, ...premiumThemes];
+
+//   constructor() {
+//     this.initializeTheme();
+//   }
+
+//   private initializeTheme() {
+//     const savedTheme = localStorage.getItem(this.THEME_KEY);
+//     const savedIsDark = localStorage.getItem(this.DARK_MODE_KEY) ?? false;
+
+//     if (savedTheme)
+//       this.applyTheme(savedTheme);
+//     else
+//       this.setSystemTheme();
+//   }
+
+//   private setSystemTheme(): void {
+//     const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+//     const systemIsDark = darkQuery.matches;
+//     this.applyTheme(systemIsDark ? 'dark-mode' : 'light-mode');
+
+//     darkQuery.addEventListener('change', e =>
+//       this.applyTheme(e.matches ? 'dark-mode' : 'light-mode')
+//     );
+//   }
+
+//   applyTheme(themeName: string): void {
+//     const html = document.documentElement;
+//     const theme = ThemeService.THEMES.find(t => t.name === themeName);
+
+//     if (!theme) return;
+
+//     // Обновляем состояние
+//     localStorage.setItem(this.THEME_KEY, themeName);
+//     localStorage.setItem(this.DARK_MODE_KEY, JSON.stringify(theme.type === 'dark'));
+
+//     // Удаляем все темы
+//     this.removeAllThemes(html);
+
+//     // Добавляем новую тему
+//     html.classList.add(themeName);
+//     html.setAttribute('data-theme', themeName);
+
+//     // Применяем стили (важно: используем CSS переменные)
+//     html.style.setProperty('--primary-color', theme.primaryColor);
+//     html.style.setProperty('--surface-color', theme.surfaceColor);
+//     html.style.setProperty('--on-primary-color', theme.onPrimaryColor);
+//     html.style.setProperty('--text-color', theme.textColor); // Добавлено
+//     html.style.setProperty('--border-color', theme.borderColor); // Добавлено
+//     html.style.setProperty('--shadow-color', theme.shadowColor); // Добавлено
+//     html.style.setProperty('--hover-bg', theme.hoverBg); // Добавлено
+//     html.style.setProperty('--active-bg', theme.activeBg); // Добавлено
+//     html.style.setProperty('--focus-border', theme.focusBorder); // Добавлено
+//     html.style.setProperty('--gradient', theme.gradient);
+//   }
+
+//   private isDarkTheme(themeName: string): boolean {
+//     return themeName === 'dark-mode' || themeName.endsWith('-dark');
+//   }
+
+//   private removeAllThemes(html: HTMLElement) {
+//     ThemeService.THEMES.forEach(theme => html.classList.remove(theme.name));
+//   }
+// }
+
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ThemeService {
-  private readonly THEME_KEY = 'theme';
-  private readonly DARK_MODE_KEY = 'isDarkMode';
-  private readonly BASE_THEMES = ['light-mode', 'dark-mode'];
-  public readonly THEMES = this.BASE_THEMES.concat(this.getPremiumThemes());
+  private _isDarkTheme = new BehaviorSubject<boolean>(false); // По умолчанию темная тема
+  isDarkTheme$ = this._isDarkTheme.asObservable();
 
   constructor() {
-    this.initializeTheme();
-  }
-
-  private initializeTheme() {
-    const savedTheme = localStorage.getItem(this.THEME_KEY);
-    const savedIsDark = localStorage.getItem(this.DARK_MODE_KEY) ?? false;
-
-    if (savedTheme) {
-      this.applyTheme(savedTheme);
-    } else {
+    //  Загрузка темы из localStorage при инициализации (опционально)
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme)
+      this._isDarkTheme.next(storedTheme === 'dark-mode');
+    else
+      //  Если в localStorage ничего нет, применяем системную настройку
       this.setSystemTheme();
-    }
   }
 
-  private setSystemTheme() {
-    const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const systemIsDark = darkQuery.matches;
-    this.applyTheme(systemIsDark ? 'dark-mode' : 'light-mode');
-
-    darkQuery.addEventListener('change', e => {
-      this.applyTheme(e.matches ? 'dark-mode' : 'light-mode');
-    });
+  //  Метод для установки темы
+  setDarkTheme(isDark: boolean): void {
+    this._isDarkTheme.next(isDark);
+    localStorage.setItem('theme', isDark ? 'dark-mode' : 'light-mode'); // Сохранение в localStorage (опционально)
+    this.applyTheme(isDark ? 'dark-mode' : 'light-mode'); // Применение CSS класса
   }
 
-  applyTheme(themeName: string) {
-    const html = document.documentElement;
-    const isDark = this.isDarkTheme(themeName);
-
-    // Обновляем состояние
-    localStorage.setItem(this.THEME_KEY, themeName);
-    localStorage.setItem(this.DARK_MODE_KEY, JSON.stringify(isDark));
-
-    // Удаляем все темы
-    this.removeAllThemes(html);
-
-    // Добавляем новую тему
-    html.classList.add(themeName);
-    html.setAttribute('data-theme', themeName);
+  //  Метод для применения темы.  Этот метод, вероятно, самый важный
+  applyTheme(themeClass: string): void {
+    document.documentElement.classList.remove('light-mode', 'dark-mode');
+    document.documentElement.classList.add(themeClass);
+    localStorage.setItem('theme', themeClass);
   }
 
-  private isDarkTheme(themeName: string): boolean {
-    return themeName === 'dark-mode' || themeName.endsWith('-dark');
-  }
-
-  private removeAllThemes(html: HTMLElement) {
-    const themes = [...this.BASE_THEMES, ...this.getPremiumThemes()];
-    themes.forEach(theme => html.classList.remove(theme));
-  }
-
-  // Методы для работы с темами через CSS-классы
-  getPremiumThemes(): string[] {
-    return Array.from(document.documentElement.classList)
-      .filter(c => c.startsWith('theme-'))
-      .map(c => c.replace('theme-', ''));
+  //  Метод для установки темы, соответствующей системным настройкам (light/dark)
+  setSystemTheme(): void {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    this.setDarkTheme(prefersDark);
   }
 }

@@ -16,7 +16,7 @@ import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective'
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.less'],
+  styleUrls: ['./login.component.scss'],
   imports: [
     RouterLink,
     FormsModule,
