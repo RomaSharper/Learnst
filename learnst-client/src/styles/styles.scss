@@ -10,14 +10,13 @@
   font-family: 'Motiva Sans', 'Roboto', system-ui, 'Helvetica Neue',
     'Builder Sans', 'Consolas', sans-serif;
   transition:
-    color   .2s ease-in,
+    color   .1s ease-in,
     opacity .2s ease-in,
     scale   .2s ease-in,
     display .2s ease-in;
 
   @media (prefers-reduced-motion) {
     transition:
-      color   .4s ease-in,
       opacity .4s ease-in,
       scale   .4s ease-in,
       display .4s ease-in;
@@ -48,7 +47,7 @@ body {
   font-size: 18px;
   line-height: 1.4;
   background: var(--background);
-  color: var(--mat-sys-on-secondary-container);
+  color: var(--mat-sys-on-secondary-container); // --mat-sys-primary
 
 
   @media (max-width: 767px) {
