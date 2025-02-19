@@ -9,17 +9,12 @@
   transition-behavior: allow-discrete;
   font-family: 'Motiva Sans', 'Roboto', system-ui, 'Helvetica Neue',
     'Builder Sans', 'Consolas', sans-serif;
-  transition:
-    color   .1s ease-in,
-    opacity .2s ease-in,
-    scale   .2s ease-in,
-    display .2s ease-in;
 
-  @media (prefers-reduced-motion) {
+  @media (prefers-reduced-motion: no-preference) {
     transition:
-      opacity .4s ease-in,
-      scale   .4s ease-in,
-      display .4s ease-in;
+      opacity .2s ease-in,
+      scale   .2s ease-in,
+      display .2s ease-in;
   }
 
   @starting-style:not(.loading-screen) {
