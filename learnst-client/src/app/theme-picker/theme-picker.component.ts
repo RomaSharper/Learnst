@@ -1,42 +1,36 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ThemeService } from '../../services/theme.service';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select'; // Импортируем MatSelectChange
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { AuthService } from '../../services/auth.service';
+import { User } from '../../models/User';
+import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
 
 @Component({
   selector: 'app-theme-picker',
   templateUrl: './theme-picker.component.html',
   styleUrls: ['./theme-picker.component.scss'],
-  imports: [MatSelectModule, MatFormFieldModule, MatIconModule]
+  imports: [MatTooltipModule, NoDownloadingDirective]
 })
-export class ThemePickerComponent {
-  // availableThemes: string[] = ['light-mode', 'dark-mode', 'system'];
-  // selectedTheme: string = 'light-mode'; //  Изначально выбранная тема
-  // isSystemTheme: boolean = false; //  Флаг для системной темы
+export class ThemePickerComponent implements OnInit {
+  private user = signal<User | null>(null);
+  private readonly authService: AuthService = inject(AuthService);
+  private readonly themeService: ThemeService = inject(ThemeService);
 
-  // constructor(private themeService: ThemeService) {
-  //   this.selectedTheme = this.themeService.getCurrentTheme(); //  Инициализация выбранной темы
-  //   this.isSystemTheme = this.selectedTheme === 'system';  //  Проверка системной темы
-  // }
+  ngOnInit(): void {
+    this.authService.getUser().subscribe(user => {
+      this.user.set(user);
+    });
+  }
 
-  // onThemeChange(event: MatSelectChange): void {
-  //   const theme = event.value;
-  //   if (theme === 'system') {
-  //       this.themeService.setSystemTheme();
-  //       this.isSystemTheme = true;
-  //       this.selectedTheme = this.themeService.getCurrentTheme();
-  //   } else {
-  //       this.themeService.applyTheme(theme);
-  //       this.isSystemTheme = false;
-  //       this.selectedTheme = theme;
-  //   }
-  // }
+  isThemeSelected(themeId: string): boolean {
+    return this.currentTheme().id === themeId;
+  }
 
-  // getThemeIcon(): string {
-  //   if (this.isSystemTheme) {
-  //     return 'computer'; //  Иконка для системной темы
-  //   }
-  //   return this.selectedTheme === 'dark-mode' ? 'dark_mode' : 'light_mode';
-  // }
+  themes = signal(this.themeService.getThemes());
+  currentTheme = signal(this.themeService.currentTheme());
+
+  selectTheme(themeId: string): void {
+    this.themeService.setTheme(themeId);
+    this.currentTheme.set(this.themes().find(theme => theme.id === themeId)!);
+  }
 }

@@ -1,4 +1,4 @@
-<mat-card class="form-container">
+<mat-card class="form-container" appearance="outlined">
   <mat-card-header class="center-control">
     <mat-card-title>
       <h2>Регистрация</h2>
@@ -46,7 +46,7 @@
         }
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width">
+      <mat-form-field appearance="outline" class="full-width mb">
         <mat-label>Пароль</mat-label>
         <input matInput id="password" maxlength="50" formControlName="password" autocomplete="new-password"
           placeholder="Введите ваш пароль" [type]="hidePassword ? 'password' : 'text'">
@@ -91,7 +91,7 @@
   </mat-card-content>
   <mat-card-actions class="center-control form-actions">
     <a mat-raised-button routerLink="/login">Войти в учетную запись</a>
-    <a mat-button routerLink="/privacypolicy">Политика конфиденциальности</a>
-    <a mat-button routerLink="/termsofuse">Условия использования</a>
+    <a mat-button routerLink="/manuals/privacypolicy">Политика конфиденциальности</a>
+    <a mat-button routerLink="/manuals/termsofuse">Условия использования</a>
   </mat-card-actions>
 </mat-card>

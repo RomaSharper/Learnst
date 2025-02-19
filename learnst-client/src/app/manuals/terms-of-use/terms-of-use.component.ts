@@ -2,7 +2,7 @@ import { Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { Location } from '@angular/common';
-import { Return } from '../../helpers/Return';
+import { Return } from '../../../helpers/Return';
 
 @Return()
 @Component({

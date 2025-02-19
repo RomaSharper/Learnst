@@ -1,5 +1,6 @@
 <div class="activity-form-container">
-  <a mat-stroked-button routerLink="/activities" class="mb">Назад</a>
+  <a mat-flat-button routerLink="/activities" class="mb">Назад</a>
+
   <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" (keydown.enter)="$event.preventDefault()" class="activity-form">
     <!-- Основные поля -->
     <mat-form-field appearance="outline">
@@ -205,8 +206,7 @@
   </div>
 
     <!-- Кнопка сохранения -->
-    <button mat-stroked-button color="primary" class="mt" type="submit" class="full-width"
-      [disabled]="activityForm.invalid">
+    <button mat-flat-button color="primary" type="submit" class="full-width mt-2" [disabled]="activityForm.invalid">
       {{ activityId ? 'Обновить' : 'Создать' }}
     </button>
   </form>

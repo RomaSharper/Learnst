@@ -19,6 +19,7 @@ public class ActivitiesRepository(ApplicationDbContext context, IMapper mapper)
         existingEntity.TargetAudience = modifiedEntity.TargetAudience;
         existingEntity.CheckList = modifiedEntity.CheckList;
         existingEntity.InfoCards = modifiedEntity.InfoCards;
+        existingEntity.Topics = modifiedEntity.Topics;
         return existingEntity;
     }
 }

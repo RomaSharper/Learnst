@@ -10,7 +10,8 @@
         <mat-card>
           <h3>Личные данные</h3>
           <div class="avatar-container">
-            <img [src]="user.avatarUrl" [alt]="user.username" class="avatar" placeholder="/images/user.png" noDownloading>
+            <img [src]="user.avatarUrl" [alt]="user.username" class="avatar" placeholder="/assets/icons/user-192x192.png"
+            loading="lazy" noDownloading>
           </div>
           <div class="user-info">
             @if (user.fullName && user.fullName !== '') {

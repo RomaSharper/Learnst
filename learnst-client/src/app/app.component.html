@@ -1,136 +1,136 @@
-<nav class="main-navigation">
-  <div class="background-overlay" [class.active]="isMenuOpen()" (click)="closeMenu($event)"></div>
+<div class="loading-screen" [class.visible]="loading()">
+  <div class="loading-content">
+    <img class="loading-logo" alt="Learnst" src="/assets/icons/favicon.png">
+    <h1 class="loading-title">Learnst</h1>
+    @if (welcomeMessage()) {
+      <p class="welcome-message">{{ welcomeMessage() }}</p>
+    } @else {
+      <mat-spinner class="loading-spinner" diameter="50"></mat-spinner>
+    }
+  </div>
+</div>
 
-  <button type="button" class="hamburger" mat-icon-button (click)="toggleMenu($event)">
-    <mat-icon>menu</mat-icon>
-  </button>
+<div class="content" [class.visible]="!loading()">
+  <nav class="main-navigation">
+    <div class="background-overlay" [class.active]="isMenuOpen()" (click)="closeMenu($event)"></div>
 
-  @if (isMediumScreen) {
-    <ul class="mobile-menu" [class.active]="isMenuOpen()">
-      @if (user()) {
-        <li class="user-area">
-          <div class="user-avatar">
-            <a class="user-img" routerLink="/me" routerLinkActive="active">
-              <img [alt]="user()!.username" [src]="user()!.avatarUrl" placeholder="/images/user.png" noDownloading>
-            </a>
-            <a class="user-name" routerLink="/me" routerLinkActive="active">{{ user()!.username }}</a>
+    <button type="button" class="hamburger" mat-icon-button (click)="toggleMenu($event)">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    @if (isMediumScreen) {
+      <ul class="mobile-menu" [class.active]="isMenuOpen()">
+        @if (user()) {
+          <li class="user-area">
+            <div class="user-avatar">
+              <a class="user-img" routerLink="/me" routerLinkActive="active">
+                <img [alt]="user()!.username" [src]="user()!.avatarUrl" placeholder="/assets/icons/user-192x192.png"
+                  loading="eager" noDownloading>
+              </a>
+              <a class="user-name" routerLink="/me" routerLinkActive="active">{{ user()!.username }}</a>
+            </div>
+          </li>
+          <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
+          <li><a routerLink="/activities" routerLinkActive="active">Обучение</a></li>
+          <li><a routerLink="/users" routerLinkActive="active">Пользователи</a></li>
+          <li><a routerLink="/tickets" routerLinkActive="active">Поддержка</a></li>
+          <li><a routerLink="/logout">Выйти</a></li>
+        } @else {
+          <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
+          <li><a routerLink="/manuals/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
+          <li><a routerLink="/manuals/termsofuse" routerLinkActive="active">Условия пользования</a></li>
+          <li><a routerLink="/login" routerLinkActive="active">Войти</a></li>
+        }
+      </ul>
+    } @else {
+      <ul class="desktop-menu">
+        <li>
+          <a class="logo-link" routerLink="/">
+            <img src="assets/icons/favicon.png" alt="Learnst">
+            <span>Learnst</span>
+          </a>
+        </li>
+        <li>
+          <a>Основы</a>
+          <div class="submenu">
+            <div class="columns">
+              <div>
+                <h3>О сайте</h3>
+                <ul>
+                  <li><a routerLink="/manuals/intro">Введение</a></li>
+                  <li><a routerLink="/manuals/basics">Концепции и правила</a></li>
+                </ul>
+              </div>
+              <div>
+                <h3>Обучение</h3>
+                <ul>
+                  <li><a routerLink="/activities">Курсы</a></li>
+                </ul>
+              </div>
+              <div>
+                <h3>Информация</h3>
+                <ul>
+                  <li><a routerLink="/manuals/user">Руководство пользователя</a></li>
+                  <li><a routerLink="/manuals/specialist">Руководство специалиста</a></li>
+                  <li><a routerLink="/manuals/privacypolicy">Конфиденциальность</a></li>
+                  <li><a routerLink="/manuals/termsofuse">Условия использования</a></li>
+                </ul>
+              </div>
+            </div>
           </div>
         </li>
-        <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
-        <li><a routerLink="/activities" routerLinkActive="active">Обучение</a></li>
-        <li><a routerLink="/users" routerLinkActive="active">Пользователи</a></li>
-        <li><a routerLink="/tickets" routerLinkActive="active">Поддержка</a></li>
-        <li class="mobile-only"><a routerLink="/dev" routerLinkActive="active">Для разработчиков</a></li>
-        <li class="mobile-only"><a routerLink="/termsofuse" routerLinkActive="active">Условия пользования</a></li>
-        <li class="mobile-only"><a routerLink="/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
-        <li><a routerLink="/logout">Выйти</a></li>
-      } @else {
-        <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
-        <li><a routerLink="/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
-        <li><a routerLink="/termsofuse" routerLinkActive="active">Условия пользования</a></li>
-        <li><a routerLink="/login" routerLinkActive="active">Войти</a></li>
-      }
-    </ul>
-  } @else {
-    <ul class="desktop-menu">
-      <li>
-        <a class="logo-link" routerLink="/">
-          <img src="assets/icons/favicon.png" alt="Learnst">
-          <span>Learnst</span>
-        </a>
-      </li>
-      <li>
-        <a>Основы</a>
-        <div class="submenu">
-          <div class="columns">
-            <div>
-              <h3>Начать</h3>
-              <ul>
-                <li><a routerLink="/start">Введение</a></li>
-                <li><a routerLink="/basics">Основные концепции</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3>Обучение</h3>
-              <ul>
-                <li><a routerLink="/activities">Курсы</a></li>
-                <li><a routerLink="/tutorials">Руководства</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3>Информация</h3>
-              <ul>
-                <li><a routerLink="/privacypolicy">Конфиденциальность</a></li>
-                <li><a routerLink="/termsofuse">Условия использования</a></li>
-              </ul>
+        <li>
+          <a routerLink="/activities">Обучение</a>
+          <div class="submenu">
+            <div class="columns">
+              <div>
+                <h3>Язык</h3>
+                <ul>
+                  <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'java' }">Java</a></li>
+                  <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'c#' }">C#</a></li>
+                  <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'lua' }">Lua</a></li>
+                </ul>
+              </div>
+              <div>
+                <h3>Стиль</h3>
+                <ul>
+                  <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'ооп' }">ООП</a></li>
+                  <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'процедурное-программирование' }">Процедурное программирование</a></li>
+                  <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'функциональное-программирование' }">Функциональное программирование</a></li>
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
-      </li>
-      <li>
-        <a>Обучение</a>
-        <div class="submenu">
-          <div class="columns">
-            <div>
-              <h3>Язык</h3>
-              <ul>
-                <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'java' }">Java</a></li>
-                <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'c#' }">C#</a></li>
-                <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'lua' }">Lua</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3>Стиль</h3>
-              <ul>
-                <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'ооп' }">ООП</a></li>
-                <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'процедурное-программирование' }">Процедурное программирование</a></li>
-                <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'функциональное-программирование' }">Функциональное программирование</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </li>
-      <li>
-        <a>Разработка</a>
-        <div class="submenu">
-          <div class="columns">
-            <div>
-              <h3>Основные области</h3>
-              <ul>
-                <li><a routerLink="/examples">Примеры кода</a></li>
-                <li><a routerLink="/guides">Быстрые руководства</a></li>
-                <li><a routerLink="/interfaces">Интерфейсы</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3>Инструменты разработчика</h3>
-              <ul>
-                <li><a routerLink="/sandbox/js">Песочница JavaScript</a></li>
-                <li><a routerLink="/sandbox/java">Песочница Java</a></li>
-                <li><a routerLink="/sandbox/csharp">Песочница C#</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3>Полезные библиотеки</h3>
-              <ul>
-                <li><a routerLink="/libs/maven">Maven (Gradle)</a></li>
-                <li><a routerLink="/libs/nuget">NuGet</a></li>
-                <li><a routerLink="/libs/npm">NPM</a></li>
-              </ul>
+        </li>
+        <li>
+          <a>Разработка</a>
+          <div class="submenu">
+            <div class="columns">
+              <div>
+                <h3>Инструменты разработчика</h3>
+                <ul>
+                  <li><a routerLink="/code/js">Песочница JavaScript</a></li>
+                  <li><a routerLink="/code/java">Песочница Java</a></li>
+                  <li><a routerLink="/code/csharp">Песочница C#</a></li>
+                </ul>
+              </div>
+              <div>
+                <h3>Полезные библиотеки</h3>
+                <ul>
+                  <li><a routerLink="/manuals/libs/maven">Maven (Gradle)</a></li>
+                  <li><a routerLink="/manuals/libs/nuget">NuGet</a></li>
+                  <li><a routerLink="/manuals/libs/npm">NPM</a></li>
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
-      </li>
-      <li>
-        <a routerLink="/community">Сообщество</a>
-      </li>
-      <li>
-        <app-theme-picker></app-theme-picker>
-      </li>
-    </ul>
-  }
-</nav>
+        </li>
+        <li>
+          <a routerLink="/community">Сообщество</a>
+        </li>
+      </ul>
+    }
+  </nav>
 
-<div class="bounds">
   <router-outlet></router-outlet>
 </div>

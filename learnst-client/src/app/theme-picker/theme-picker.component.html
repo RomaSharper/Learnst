@@ -1,30 +1,15 @@
-<!-- <div class="theme-grid">
-  @for (theme of availableThemes; track theme) {
-    <button (click)="applyTheme(theme.name)"
-            [disabled]="theme.premium && !isPremium">
-      <div [style.background]="theme.gradient"></div>
-      {{ theme.name }}
-    </button>
-  }
-</div> -->
-
-<!-- <mat-form-field appearance="outline">
-  <mat-select
-    placeholder="Тема"
-    [value]="selectedTheme"
-    (selectionChange)="onThemeChange($event)"
-  >
-    <mat-select-trigger>
-      <mat-icon>{{ getThemeIcon() }}</mat-icon>
-    </mat-select-trigger>
-    <mat-option value="light-mode">
-      <mat-icon>light_mode</mat-icon> Светлая
-    </mat-option>
-    <mat-option value="dark-mode">
-      <mat-icon>dark_mode</mat-icon> Темная
-    </mat-option>
-    <mat-option value="system">
-      <mat-icon>computer</mat-icon> Системная
-    </mat-option>
-  </mat-select>
-</mat-form-field> -->
+<div class="theme-picker" noDownloading>
+  <div class="theme-grid">
+    @for (theme of themes(); track theme.id) {
+      <div
+        class="theme-preview"
+        [class.closed]="theme.premium"
+        (click)="selectTheme(theme.id)"
+        [matTooltip]="theme.displayName"
+        [style.background]="theme.preview"
+        [class.selected]="isThemeSelected(theme.id)"
+      >
+      </div>
+    }
+  </div>
+</div>

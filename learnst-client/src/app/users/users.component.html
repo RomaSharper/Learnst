@@ -24,7 +24,7 @@
     @for (user of displayedUsers; track user) {
       <mat-card [routerLink]="['/user', user.id]">
         <mat-card-content class="user-card">
-          <img [src]="user.avatarUrl" alt="Avatar" class="avatar" placeholder="/images/user.png" noDownloading>
+          <img [src]="user.avatarUrl" alt="Avatar" class="avatar" placeholder="/assets/icons/user-192x192.png" loading="lazy" noDownloading>
           <div class="user-info">
             <p [matTooltip]="RoleHelper.getName(user.role)" [matTooltipDisabled]="user.role === Role.User">
               {{ user.username }}

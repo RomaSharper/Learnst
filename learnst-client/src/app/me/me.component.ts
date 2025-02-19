@@ -38,6 +38,7 @@ import { UsersService } from '../../services/users.service';
 import { EducationDialogComponent } from './education.dialog/education.dialog.component';
 import { SocialMediaDialogComponent } from './social.media.dialog/social.media.dialog.component';
 import { WorkExperienceDialogComponent } from './work.experience.dialog/work.experience.dialog.component';
+import { ThemePickerComponent } from '../theme-picker/theme-picker.component';
 
 @Component({
   selector: 'app-me',
@@ -55,6 +56,7 @@ import { WorkExperienceDialogComponent } from './work.experience.dialog/work.exp
     MatTooltipModule,
     MatGridListModule,
     MatDatepickerModule,
+    ThemePickerComponent,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
     PlaceholderImageDirective,

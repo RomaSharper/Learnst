@@ -82,7 +82,7 @@ public static class FileService
 
     private static string GetPathFromContentType(string contentType) => contentType switch
     {
-        "image/jpeg" or "image/png" => "images",
+        "image/jpeg" or "image/png" or "image/gif" => "images",
         "video/mp4" => "videos",
         _ => "docs"
     };

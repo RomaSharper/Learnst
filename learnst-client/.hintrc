@@ -18,14 +18,7 @@
         "button-name": "off"
       }
     ],
-    "compat-api/css": [
-      "default",
-      {
-        "ignore": [
-          "text-wrap: pretty"
-        ]
-      }
-    ],
+    "compat-api/css": "off",
     "apple-touch-icons": "off",
     "compat-api/html": [
       "default",

@@ -26,7 +26,7 @@
     flex: 1;
     content: '';
     height: 1px; // Заменил @step * 0.25
-    background-color: var(--border-color); // Используем переменную из theme.scss
+    background-color: var(--mdc-filled-button-container-color, var(--mat-sys-primary));
   }
 
   .or-text {
@@ -59,7 +59,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); // Заменил @transition-time
 
   &:hover {
-    transform: translateY(-8px); // Заменил @step * 0.5
+    transform: translateY(-2px); // Заменил @step * 0.5
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); // Заменил @step * 3
 
     &::after {
@@ -68,8 +68,8 @@
   }
 
   &:active {
-    transform: translateY(8px); // Заменил @step
     transition: all 0.15s; // Заменил @short-transition-time * 0.5
+    transform: translateY(4px); // Заменил @step
   }
 
   &::after {
@@ -87,7 +87,7 @@
 
 // Анимация иконок
 .social-icon {
-  height: 25px; // Заменил @step * 16
+  height: 64px; // Заменил @step * 16
   vertical-align: middle;
   transform-origin: center;
   transition: transform 0.3s ease, filter 0.3s ease; // Заменил @transition-time
