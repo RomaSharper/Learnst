@@ -9,30 +9,30 @@ export class ThemeService {
     {
       id: 'light',
       premium: false,
-      primary: '#ffffff',
+      preview: '#ffffff',
       displayName: 'Светлая тема'
     },
     {
       id: 'dark',
       premium: false,
-      primary: '#313338',
+      preview: '#313338',
       displayName: 'Тёмная тема'
     },
     {
       premium: true,
       id: 'mint-apple',
-      primary: '#2b2d31',
+      preview: '#2b2d31',
       displayName: 'Мятное яблоко',
     },
     {
       premium: true,
-      primary: '#9eca67',
+      preview: '#9eca67',
       id: 'citrus-sherbet',
       displayName: 'Цитрусовый щербет'
     },
   ];
 
-  currentTheme = signal<Theme>(this.themes[1]);
+  currentTheme = signal<Theme>(this.themes[0]);
 
   getThemes(): Theme[] {
     return this.themes;

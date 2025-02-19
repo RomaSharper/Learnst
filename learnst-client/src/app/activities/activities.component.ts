@@ -23,6 +23,7 @@ import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
 import { TagHelper } from '../../helpers/TagHelper';
 import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
+import { Level } from '../../enums/Level';
 
 @Return()
 @Component({
@@ -56,6 +57,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
   searchQuery = '';
   tags: string[] = [];
   user: User | null = null;
+  level: string | null = null;
   activities: Activity[] = [];
   pageSizeOptions = [5, 10, 20];
   paginatedActivities: Activity[] = [];
@@ -77,6 +79,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.searchQuery = params['search_query'] || '';
       this.tags = params['tags'] ? params['tags'].split(',').map((tag: string) => TagHelper.toDisplayFormat(tag)) : [];
+      this.level = params['level'] || null; // Чтение параметра level
       this.searchInput = this.searchQuery + (this.tags.length ? ' #' + this.tags.join(' #') : '').trim();
       this.filterActivities();
     });
@@ -87,7 +90,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
     });
 
     setInterval(() => {
-      this.now = new Date()
+      this.now = new Date();
     }, 60000);
   }
 
@@ -158,19 +161,20 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
   updateUrl(): void {
     const queryParams: any = {};
 
-    // Добавляем search_query, только если он не пустой
-    if (this.searchQuery) {
+    if (this.searchQuery)
       queryParams.search_query = this.searchQuery;
-    } else {
-      queryParams.search_query = null; // Удаляем search_query из URL, если он пустой
-    }
+    else
+      queryParams.search_query = null;
 
-    // Добавляем теги, только если они есть
-    if (this.tags.length > 0) {
-      queryParams.tags = this.tags.join(','); // Теги уже в URL-формате
-    } else {
-      queryParams.tags = null; // Удаляем теги из URL, если их нет
-    }
+    if (this.tags.length > 0)
+      queryParams.tags = this.tags.join(',');
+    else
+      queryParams.tags = null;
+
+    if (this.level)
+      queryParams.level = this.level; // Добавляем параметр level
+    else
+      queryParams.level = null;
 
     // Обновляем URL с новыми параметрами
     this.router.navigate([], {
@@ -183,8 +187,8 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
   // Разбор ввода пользователя на searchQuery и теги
   parseSearchInput(): void {
     const parts = this.searchInput.split('#');
-    this.searchQuery = parts[0].trim(); // Текст до первого #
-    this.tags = parts.slice(1).map(tag => TagHelper.toUrlFormat(tag.trim())); // Теги в URL-формате
+    this.searchQuery = parts[0].trim();
+    this.tags = parts.slice(1).map(tag => TagHelper.toUrlFormat(tag.trim()));
   }
 
   // Фильтрация активностей по searchQuery и тегам
@@ -202,7 +206,20 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
         return activity.tags?.some(activityTag => activityTag.toLowerCase().includes(normalizedTag.toLowerCase()));
       });
 
-      return matchesSearchQuery && matchesTags;
+      let matchesLevel = !this.level;
+      switch (this.level?.toLowerCase()) {
+        case 'легко':
+          matchesLevel = activity.level === Level.Easy;
+          break;
+        case 'умеренно':
+          matchesLevel = activity.level === Level.Medium;
+          break;
+        case 'сложно':
+          matchesLevel = activity.level === Level.Hard;
+          break;
+      }
+
+      return matchesSearchQuery && matchesTags && matchesLevel;
     });
   }
 

@@ -1,6 +1,6 @@
 export interface Theme {
   id: string;
-  primary: string;
+  preview: string;
   premium: boolean;
   displayName: string;
 }

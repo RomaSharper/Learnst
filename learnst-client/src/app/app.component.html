@@ -1,19 +1,19 @@
 <nav class="main-navigation">
-  <div class="background-overlay" [class.active]="isMenuOpen" (click)="closeMenu($event)"></div>
+  <div class="background-overlay" [class.active]="isMenuOpen()" (click)="closeMenu($event)"></div>
 
   <button type="button" class="hamburger" mat-icon-button (click)="toggleMenu($event)">
     <mat-icon>menu</mat-icon>
   </button>
 
   @if (isMediumScreen) {
-    <ul class="mobile-menu" [class.active]="isMenuOpen">
-      @if (user) {
+    <ul class="mobile-menu" [class.active]="isMenuOpen()">
+      @if (user()) {
         <li class="user-area">
           <div class="user-avatar">
             <a class="user-img" routerLink="/me" routerLinkActive="active">
-              <img [alt]="user.username" [src]="user.avatarUrl" placeholder="/images/user.png" noDownloading>
+              <img [alt]="user()!.username" [src]="user()!.avatarUrl" placeholder="/images/user.png" noDownloading>
             </a>
-            <a class="user-name" routerLink="/me" routerLinkActive="active">{{ user.username }}</a>
+            <a class="user-name" routerLink="/me" routerLinkActive="active">{{ user()!.username }}</a>
           </div>
         </li>
         <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
@@ -53,7 +53,7 @@
             <div>
               <h3>Обучение</h3>
               <ul>
-                <li><a routerLink="/training">Курсы</a></li>
+                <li><a routerLink="/activities">Курсы</a></li>
                 <li><a routerLink="/tutorials">Руководства</a></li>
               </ul>
             </div>
@@ -74,25 +74,17 @@
             <div>
               <h3>Язык</h3>
               <ul>
-                <li><a routerLink="/java">Java</a></li>
-                <li><a routerLink="/csharp">C#</a></li>
-                <li><a routerLink="/lua">Lua</a></li>
+                <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'java' }">Java</a></li>
+                <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'c#' }">C#</a></li>
+                <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'lua' }">Lua</a></li>
               </ul>
             </div>
             <div>
               <h3>Стиль</h3>
               <ul>
-                <li><a routerLink="/oop">ООП</a></li>
-                <li><a routerLink="/procedural">Процедурное программирование</a></li>
-                <li><a routerLink="/functional">Функциональное программирование</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3>Сложность</h3>
-              <ul>
-                <li><a routerLink="/easy">Легко</a></li>
-                <li><a routerLink="/moderate">Умеренно</a></li>
-                <li><a routerLink="/hard">Сложно</a></li>
+                <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'ооп' }">ООП</a></li>
+                <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'процедурное-программирование' }">Процедурное программирование</a></li>
+                <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'функциональное-программирование' }">Функциональное программирование</a></li>
               </ul>
             </div>
           </div>
@@ -121,9 +113,9 @@
             <div>
               <h3>Полезные библиотеки</h3>
               <ul>
-                <li><a routerLink="/maven">Maven (Gradle)</a></li>
-                <li><a routerLink="/nuget">NuGet</a></li>
-                <li><a routerLink="/npm">NPM</a></li>
+                <li><a routerLink="/libs/maven">Maven (Gradle)</a></li>
+                <li><a routerLink="/libs/nuget">NuGet</a></li>
+                <li><a routerLink="/libs/npm">NPM</a></li>
               </ul>
             </div>
           </div>
