@@ -1,5 +1,5 @@
 import { Injectable, DestroyRef, inject } from '@angular/core';
-import { HubConnection, HubConnectionBuilder, IRetryPolicy, RetryContext } from '@microsoft/signalr';
+import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, IRetryPolicy, RetryContext } from '@microsoft/signalr';
 import { ReplaySubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -21,26 +21,26 @@ export class SignalRService {
 
     const subject = new ReplaySubject<HubConnection>(1);
     const connection = new HubConnectionBuilder()
-      .withUrl(hubUrl, { withCredentials: true })
+      .withUrl(hubUrl, {
+        withCredentials: true,
+        skipNegotiation: false,
+        transport: HttpTransportType.WebSockets | HttpTransportType.LongPolling
+      })
       .withAutomaticReconnect(this.retryPolicy)
       .build();
 
     this.connections.set(hubUrl, connection);
     this.connectionSubjects.set(hubUrl, subject);
 
-    connection.start()
-      .then(() => subject.next(connection))
-      .catch(err => subject.error(err));
-
     connection.onreconnected(() => subject.next(connection));
-    connection.onclose(err => subject.error(err));
+    connection.onclose(err => {
+      if (err) console.error(`Подключение завершилось ошибкой: ${err}`);
+      subject.complete();
+    });
+
+    this.startConnection(connection, subject);
 
     return subject;
-  }
-
-  invoke<T>(hubUrl: string, methodName: string, ...args: any[]): Promise<T> {
-    return this.connections.get(hubUrl)?.invoke<T>(methodName, ...args)
-      ?? Promise.reject('Connection not initialized');
   }
 
   on(hubUrl: string, eventName: string, callback: (...args: any[]) => void): void {
@@ -58,5 +58,73 @@ export class SignalRService {
     connection?.stop();
     this.connections.delete(hubUrl);
     this.connectionSubjects.delete(hubUrl);
+  }
+
+  async invoke<T>(hubUrl: string, methodName: string, ...args: any[]): Promise<T> {
+    const normalizedUrl = this.normalizeUrl(hubUrl);
+    const connection = this.connections.get(normalizedUrl);
+
+    if (!connection) {
+      throw new Error('Connection not initialized');
+    }
+
+    if (connection.state !== HubConnectionState.Connected) {
+      await this.waitForConnection(connection);
+    }
+
+    return connection.invoke<T>(methodName, ...args);
+  }
+
+  private normalizeUrl(url: string): string {
+    return url.toLowerCase().trim();
+  }
+
+  private async waitForConnection(connection: HubConnection): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        connection.off('close');
+        connection.off('reconnected');
+        reject(new Error('Connection timeout'));
+      }, 5000);
+
+      const handler = () => {
+        clearTimeout(timeout);
+        connection.off('close', closeHandler);
+        connection.off('reconnected', reconnectedHandler);
+        if (connection.state === HubConnectionState.Connected) {
+          resolve();
+        } else {
+          reject(new Error('Connection failed'));
+        }
+      };
+
+      const closeHandler = (error?: Error) => {
+        handler();
+        reject(error || new Error('Connection closed'));
+      };
+
+      const reconnectedHandler = () => {
+        handler();
+        resolve();
+      };
+
+      connection.onclose(closeHandler);
+      connection.onreconnected(reconnectedHandler);
+
+      if (connection.state === HubConnectionState.Connected) {
+        resolve();
+      }
+    });
+  }
+
+  private async startConnection(connection: HubConnection, subject: ReplaySubject<HubConnection>) {
+    try {
+      await connection.start();
+      subject.next(connection);
+    } catch (err) {
+      console.error('SignalR Connection Error:', err);
+      subject.error(err);
+      this.destroyConnection(connection.baseUrl);
+    }
   }
 }

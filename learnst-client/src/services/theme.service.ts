@@ -1,10 +1,13 @@
-import { effect, Inject, inject, Injectable, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { effect, Injectable, signal, DestroyRef, inject } from '@angular/core';
 import { FrontendTheme } from '../models/FrontendTheme';
 import { AuthService } from './auth.service';
 import { User } from '../models/User';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { AlertService } from './alert.service';
+import { SignalRService } from './signalr.service';
+import { filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +15,11 @@ import { AlertService } from './alert.service';
 export class ThemeService {
   private user: User | null = null;
   private http = inject(HttpClient);
+  private signalr = inject(SignalRService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly hubUrl = `${environment.apiBaseUrl}/themehub`;
 
   private readonly themes: FrontendTheme[] = [
     {
@@ -165,31 +171,39 @@ export class ThemeService {
   currentTheme = signal<FrontendTheme>(this.themes[0]);
 
   constructor() {
-    this.authService.getUser().subscribe(user => {
-      this.user = user;
-      if (this.user?.theme) this.setTheme(this.user.theme.id);
-    });
+    this.hubUrl = `${environment.apiBaseUrl}/themehub`.toLowerCase();
+    this.initializeSignalR();
+    this.setupUserSubscription();
   }
 
   getThemes(): FrontendTheme[] {
     return this.themes;
   }
 
-  setTheme(themeId: string) {
+  setTheme(themeId: string, isInitialLoad = false): void {
     if (!this.user?.id) {
       console.warn('Пользователь не авторизован для установки темы');
       return;
     }
 
     const theme = this.themes.find(t => t.id === themeId);
-    if (theme)
-      this.http.post<any>(`${environment.apiBaseUrl}/theme/${this.user.id}/${themeId}`, null).subscribe({
-        next: _response => this.currentTheme.set(theme),
-        error: error => {
-          console.error(error);
-          this.alertService.showSnackBar('Не удалось обновить тему');
+    if (!theme) return;
+
+    this.http.post<any>(
+      `${environment.apiBaseUrl}/theme/${this.user.id}/${themeId}`,
+      null
+    ).subscribe({
+      next: () => {
+        this.currentTheme.set(theme);
+        if (!isInitialLoad) {
+          this.sendThemeUpdate(themeId);
         }
-      });
+      },
+      error: error => {
+        console.error(error);
+        this.alertService.showSnackBar('Не удалось обновить тему');
+      }
+    });
   }
 
   updateThemeClass = effect(() => {
@@ -197,4 +211,58 @@ export class ThemeService {
     document.body.classList.remove(...this.themes.map(t => `${t.id}-theme`));
     document.body.classList.add(`${theme.id}-theme`);
   });
+
+  private initializeSignalR(): void {
+    this.signalr.createConnection(this.hubUrl)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        filter(connection => !!connection)
+      )
+      .subscribe({
+        next: connection => {
+          this.signalr.on(this.hubUrl, 'ReceiveThemeUpdate',
+            (themeId: string) => this.applyRemoteTheme(themeId)
+          );
+        },
+        error: err => console.error('SignalR connection error:', err)
+      });
+  }
+
+  private async joinUserGroup(userId: string): Promise<void> {
+    try {
+      await this.signalr.invoke(this.hubUrl, 'JoinUserGroup', userId);
+    } catch (err) {
+      console.error('Join group error:', err);
+      // Добавим повторную попытку через 2 секунды
+      setTimeout(() => this.joinUserGroup(userId), 2000);
+    }
+  }
+
+  private sendThemeUpdate(themeId: string): void {
+    if (this.user?.id) {
+      this.signalr.invoke(this.hubUrl, 'SendThemeUpdate',
+        this.user.id, themeId
+      ).catch(err => console.error('Ошибка отправки темы:', err));
+    }
+  }
+
+  private applyRemoteTheme(themeId: string): void {
+    const theme = this.themes.find(t => t.id === themeId);
+    if (theme && theme.id !== this.currentTheme().id) {
+      this.currentTheme.set(theme);
+      this.alertService.showSnackBar('Тема обновлена');
+    }
+  }
+
+  private setupUserSubscription(): void {
+    this.authService.getUser()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(user => {
+        this.user = user;
+        if (user?.id) {
+          this.joinUserGroup(user.id);
+          if (user.theme) this.setTheme(user.theme.id, true);
+        }
+      });
+  }
 }

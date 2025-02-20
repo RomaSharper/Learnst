@@ -1,6 +1,6 @@
 <div class="theme-picker" noDownloading>
   <div class="theme-grid">
-    @for (theme of themes(); track theme.id) {
+    @for (theme of themes; track theme.id) {
       <div
         class="theme-preview"
         [class.closed]="theme.premium"
