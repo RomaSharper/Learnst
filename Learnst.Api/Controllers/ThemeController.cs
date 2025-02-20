@@ -20,7 +20,7 @@ public class ThemeController(
     {
         try
         {
-            var user = await usersRepository.GetByIdAsync(userId, includes: [
+            var user = await usersRepository.GetByIdAsync(userId, noTracking: false, includes: [
                 u => u.UserSubscriptions,
                 u => u.Educations,
                 u => u.SocialMediaProfiles,
