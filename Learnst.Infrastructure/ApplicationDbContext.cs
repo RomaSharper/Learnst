@@ -16,6 +16,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Question> Questions { get; set; }
     public DbSet<SocialMediaProfile> SocialMediaProfiles { get; set; }
     public DbSet<StatusHistory> StatusHistories { get; set; }
+    public DbSet<Theme> Themes { get; set; }
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<TicketAnswer> TicketAnswers { get; set; }
     public DbSet<Topic> Topics { get; set; }
@@ -23,6 +24,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<UserActivity> UserActivities { get; set; }
     public DbSet<UserAnswer> UserAnswers { get; set; }
     public DbSet<UserLesson> UserLessons { get; set; }
+    public DbSet<UserSubscription> UserSubscriptions { get; set; }
     public DbSet<WorkExperience> WorkExperiences { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

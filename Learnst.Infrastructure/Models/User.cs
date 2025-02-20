@@ -34,6 +34,10 @@ public class User : IEntity
     
     public ExternalLoginType? ExternalLoginType { get; set; }
 
+    public string ThemeId { get; set; } = "light";
+
+    public Theme? Theme { get; set; }
+
     #endregion
 
     #region Образование
@@ -78,6 +82,8 @@ public class User : IEntity
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public ICollection<UserLesson> UserLessons { get; set; } = [];
+
+    public ICollection<UserSubscription> UserSubscriptions { get; set; } = [];
 
     public ICollection<Application> Applications { get; set; } = [];
     
