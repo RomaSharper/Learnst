@@ -29,16 +29,17 @@ public class ThemeController(
                 u => u.UserLessons,
                 u => u.UserAnswers,
                 u => u.Tickets,
-                u => u.TicketAnswers
+                u => u.TicketAnswers,
+                u => u.Theme
             ]) ?? throw new NotFoundException<User>(userId);
 
             if (!_freeThemes.Contains(themeId) && !user.UserSubscriptions.Any(us => us.EndDate > DateTime.UtcNow))
                 throw new AccessViolationException("Пользователь не обладает премиум-подпиской.");
 
-            var theme = await themesRepository.GetByIdAsync(themeId)
-                ?? throw new NotFoundException<Theme, string>(themeId);
+            if (!await themesRepository.ExistsAsync(themeId))
+                throw new NotFoundException<Theme, string>(themeId);
 
-            user.ThemeId = theme.Id;
+            user.ThemeId = themeId;
             await usersRepository.SaveAsync();
             return user;
         }
