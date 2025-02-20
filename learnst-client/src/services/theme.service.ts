@@ -14,7 +14,7 @@ export class ThemeService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
-  
+
   private readonly themes: FrontendTheme[] = [
     {
       id: 'light',
@@ -177,22 +177,17 @@ export class ThemeService {
 
   setTheme(themeId: string) {
     if (!this.user?.id) {
-      this.alertService.showSnackBar('Пользователь не авторизован');
+      console.warn('Пользователь не авторизован для установки темы');
       return;
     }
 
     const theme = this.themes.find(t => t.id === themeId);
     if (theme)
       this.http.post<any>(`${environment.apiBaseUrl}/theme/${this.user.id}/${themeId}`, null).subscribe({
-        next: response => {
-          console.log(response);
-          this.currentTheme.set(theme);
-          // this.authService.setUser(response); // под вопросом
-          this.alertService.showSnackBar('Тема была успешно изменена');
-        },
+        next: _response => this.currentTheme.set(theme),
         error: error => {
           console.error(error);
-          this.alertService.showSnackBar('Произошла ошибка при попытке изменить тему');
+          this.alertService.showSnackBar('Не удалось обновить тему');
         }
       });
   }

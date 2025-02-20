@@ -42,6 +42,7 @@ export class AppComponent extends MediumScreenSupport {
     super();
     effect(() => {
       this.authService.getUser().subscribe((user) => {
+        this.themeService.setTheme(user?.themeId || 'light');
         this.user.set(user);
         this.updateWelcomeMessage();
       });

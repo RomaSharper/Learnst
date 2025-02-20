@@ -25,9 +25,6 @@
             <mat-label>Имя пользователя</mat-label>
             <input matInput id="username" [(ngModel)]="user.username" placeholder="Имя пользователя" maxlength="20"
               minlength="3" (input)="onUserInfoChange()" required>
-            <span class="question-button" matSuffix matTooltip="Имя пользователя должно быть от 3 до 20 символов, содержать только латиницу, цифры и подчёркивание, не начинаться или заканчиваться на подчёркивание и не содержать бранных слов">
-              <mat-icon>help</mat-icon>
-            </span>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
@@ -43,9 +40,6 @@
             <mat-label>Электронная почта</mat-label>
             <input matInput id="email" type="email" [(ngModel)]="user.emailAddress" placeholder="Электронная почта"
               maxlength="255" (input)="onUserInfoChange()">
-            <span class="question-button" matSuffix matTooltip="Поддерживаемые домены: mail.ru, xmail.ru, gmail.com, vk.com, yandex.ru, icloud.com">
-              <mat-icon>help</mat-icon>
-            </span>
           </mat-form-field>
 
           <mat-form-field appearance="outline">

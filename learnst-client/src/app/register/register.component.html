@@ -10,9 +10,6 @@
         <mat-label>Имя пользователя</mat-label>
         <input matInput id="username" formControlName="username" placeholder="Придумайте логин" autocomplete="username"
           maxlength="20">
-        <span class="question-button" matSuffix matTooltip="Имя пользователя должно быть от 3 до 20 символов, содержать только латиницу, цифры и подчёркивание, не начинаться или заканчиваться на подчёркивание и не содержать бранных слов">
-          <mat-icon>help</mat-icon>
-        </span>
         @if (form.get('username')?.hasError('invalidLength')) {
           <mat-error>Имя должно быть от 3 до 20 символов.</mat-error>
         } @else if (form.get('username')?.hasError('invalidStartOrEnd')) {
@@ -32,16 +29,14 @@
         <mat-label>Адрес электронной почты</mat-label>
         <input matInput id="email" formControlName="email" placeholder="Введите электронную почту" autocomplete="email"
           maxlength="100">
-        <span class="question-button" matSuffix matTooltip="Поддерживаемые домены: mail.ru, xmail.ru, gmail.com, vk.com, yandex.ru, icloud.com">
+        <!-- <span class="question-button" matSuffix matTooltip="Поддерживаемые домены: mail.ru, xmail.ru, gmail.com, vk.com, yandex.ru, icloud.com">
           <mat-icon>help</mat-icon>
-        </span>
+        </span> -->
         @if (form.get('email')?.hasError('invalidDomain') && form.get('email')?.touched) {
           <mat-error>Домен не поддерживается, см. справку</mat-error>
-        }
-        @else if (form.get('email')?.hasError('serverError')) {
+        } @else if (form.get('email')?.hasError('serverError')) {
           <mat-error>{{ form.get('email')?.getError('serverError') }}</mat-error>
-        }
-        @else if (form.get('email')?.invalid && form.get('email')?.touched) {
+        } @else if (form.get('email')?.invalid && form.get('email')?.touched) {
           <mat-error>Пожалуйста, введите корректный адрес электронной почты.</mat-error>
         }
       </mat-form-field>

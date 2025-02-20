@@ -1,4 +1,5 @@
 using Learnst.Api;
+using Learnst.Api.Hubs;
 using Learnst.Api.Middleware;
 using Learnst.Api.Models;
 using Learnst.Api.Services;
@@ -101,4 +102,5 @@ app.UseRouting()
 
 app.UseCustomSwagger(apiName, swaggerUrl, willUse: true);
 app.MapControllers();
+app.MapHub<ThemeHub>("/themehub");
 app.Run();
