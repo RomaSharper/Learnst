@@ -1,10 +1,9 @@
-import { Injectable, DestroyRef, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, IRetryPolicy, RetryContext } from '@microsoft/signalr';
 import { ReplaySubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class SignalRService {
-  private destroyRef = inject(DestroyRef);
   private connections: Map<string, HubConnection> = new Map();
   private connectionSubjects: Map<string, ReplaySubject<HubConnection>> = new Map();
 
@@ -65,7 +64,7 @@ export class SignalRService {
     const connection = this.connections.get(normalizedUrl);
 
     if (!connection) {
-      throw new Error('Connection not initialized');
+      throw new Error('Подключение не было инициализировано');
     }
 
     if (connection.state !== HubConnectionState.Connected) {
@@ -84,7 +83,7 @@ export class SignalRService {
       const timeout = setTimeout(() => {
         connection.off('close');
         connection.off('reconnected');
-        reject(new Error('Connection timeout'));
+        reject();
       }, 5000);
 
       const handler = () => {
@@ -94,13 +93,13 @@ export class SignalRService {
         if (connection.state === HubConnectionState.Connected) {
           resolve();
         } else {
-          reject(new Error('Connection failed'));
+          reject(new Error('Не удалось подключиться'));
         }
       };
 
       const closeHandler = (error?: Error) => {
         handler();
-        reject(error || new Error('Connection closed'));
+        reject(error || new Error('Ошибка подключения'));
       };
 
       const reconnectedHandler = () => {
@@ -122,7 +121,7 @@ export class SignalRService {
       await connection.start();
       subject.next(connection);
     } catch (err) {
-      console.error('SignalR Connection Error:', err);
+      console.error('Ошибка подключения SignalR:', err);
       subject.error(err);
       this.destroyConnection(connection.baseUrl);
     }

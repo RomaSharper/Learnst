@@ -80,12 +80,15 @@ builder.Services.AddOpenApi()
     .AddSession()
     .AddControllers();
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Middleware
 app.UseMiddleware<TokenRefreshMiddleware>();
 
-app.UseRouting()
+app.UseWebSockets()
+    .UseRouting()
     .UseCors(policy)
     .UseAuthentication()
     .UseAuthorization()

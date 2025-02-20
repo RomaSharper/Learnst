@@ -1,0 +1,52 @@
+<div class="user-menu">
+  <div class="banner" (click)="$event.stopPropagation()"
+    [style.background-image]="user.banner"></div>
+
+  <div class="profile-info" (click)="$event.stopPropagation()">
+    <img [src]="user.avatarUrl" class="avatar" [alt]="user.username" noDownloading>
+    <div class="names">
+      <h3>{{ user.fullName }}</h3>
+      <span>{{ user.username }}</span>
+    </div>
+    <p class="about-me">{{ user.aboutMe }}</p>
+  </div>
+
+  <button type="button" mat-menu-item routerLink="/me">
+    <mat-icon>edit</mat-icon>
+    Редактировать профиль
+  </button>
+
+  <mat-menu #accountsMenu="matMenu">
+    @for (acc of accounts(); track acc.id) {
+      <button type="button" mat-menu-item
+              [class.current]="acc.isCurrent"
+              (click)="switchAccount(acc.id)">
+        <img [src]="acc.avatarUrl" class="account-avatar" noDownloading>
+        <span>{{ acc.username }}</span>
+        <div class="account-actions">
+          @if (acc.isCurrent) {
+            <mat-icon>check</mat-icon>
+          } @else {
+            <mat-icon class="error" (click)="deleteAccount(acc.id, $event)">delete</mat-icon>
+          }
+        </div>
+      </button>
+    }
+    <button type="button" mat-menu-item routerLink="/login">
+      <div class="account-actions">
+        <mat-icon>person_add</mat-icon>
+        <span>Добавить аккаунт</span>
+      </div>
+    </button>
+  </mat-menu>
+
+  <button type="button" mat-menu-item [matMenuTriggerFor]="accountsMenu">
+    <mat-icon>switch_account</mat-icon>
+    Сменить аккаунт
+  </button>
+
+  <button type="button" mat-menu-item (click)="logout()">
+    <mat-icon>logout</mat-icon>
+    Выйти
+  </button>
+</div>

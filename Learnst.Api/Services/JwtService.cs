@@ -27,6 +27,7 @@ public class JwtService(IOptions<JwtSettings> jwtSettings, IAsyncRepository<User
             new("openid", user.Id.ToString()),
             new("username", user.Username),
             new("role", user.Role.ToString()),
+            new("picture", user.AvatarUrl ?? string.Empty),
             new("exp", ((int)expirationTime.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds).ToString())
         ];
 

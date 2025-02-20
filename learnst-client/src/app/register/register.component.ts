@@ -23,6 +23,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { UsersService } from '../../services/users.service';
 import { User } from '../../models/User';
+import { ColorsService } from '../../services/colors.service';
 
 @Return()
 @Component({
@@ -95,7 +96,10 @@ export class RegisterComponent extends MediumScreenSupport {
       emailAddress: formValue.email,
       passwordHash: formValue.password,
       themeId: 'light',
-      userSubscriptions: []
+      userSubscriptions: [],
+      banner: ColorsService.generateColor(),
+      cardBackground: ColorsService.generateColor(),
+      cardBorderColor: ColorsService.generateColor(),
     };
 
     // Шаг 1: Отправляем код подтверждения
@@ -103,7 +107,6 @@ export class RegisterComponent extends MediumScreenSupport {
       catchError(errorObj => {
         this.alertService.showSnackBar('Ошибка при отправке кода подтверждения.');
         console.error(errorObj);
-        this.loading = false; // Выключаем состояние загрузки при ошибке
         return of(null);
       })
     ).subscribe(codeResponse => {

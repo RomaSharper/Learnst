@@ -49,14 +49,14 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     // Здесь нужно избавиться от localStorage, и читать токен из заголовков
-    this.route.queryParams.subscribe(params => {
-      const token = params['token'];
-      if (token) {
-        localStorage.setItem('token', token);
-        this.authService.checkSession();
-        this.router.navigate(['/']);
-      }
-    });
+    // this.route.queryParams.subscribe(params => {
+    //   const token = params['token'];
+    //   if (token) {
+    //     localStorage.setItem('token', token);
+    //     this.authService.checkSession();
+    //     this.router.navigate(['/']);
+    //   }
+    // });
   }
 
   onSubmit() {

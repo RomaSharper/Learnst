@@ -489,7 +489,7 @@ namespace Learnst.Domain.Migrations
                     b.Property<int?>("ExternalLoginType")
                         .HasColumnType("int");
 
-                    b.Property<string>("FullName")
+                    b.Property<string>("DisplayName")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 

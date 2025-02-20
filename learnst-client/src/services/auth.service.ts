@@ -1,38 +1,42 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { tap, catchError, map, switchMap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
-import { Role } from '../enums/Role';
 import { UserDao } from '../models/UserDao';
-import { User } from '../models/User';
 import { UsersService } from './users.service';
+import { StoredUser } from '../models/StoredUser';
+import { Role } from '../enums/Role';
+import { User } from '../models/User';
+import { AES, enc } from 'crypto-js';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = `${environment.apiBaseUrl}/sessions`;
-  private currentUserSubject: BehaviorSubject<UserDao | null> = new BehaviorSubject<UserDao | null>(null);
-  public currentUser$: Observable<UserDao | null> = this.currentUserSubject.asObservable();
+  private readonly TOKEN_KEY = 'auth_token';
+  private readonly ACCOUNTS_KEY = 'user_accounts';
+  private readonly ENCRYPTION_KEY = environment.encryptionKey;
 
-  constructor(
-    private router: Router,
-    private http: HttpClient,
-    private usersService: UsersService
-  ) {
-    this.checkSession();
-    this.handleOAuthCallback();
+  private router = inject(Router);
+  private http = inject(HttpClient);
+  private apiUrl = `${environment.apiBaseUrl}/sessions`;
+  private accountsSubject = new BehaviorSubject<StoredUser[]>([]);
+  public accounts = toSignal(this.accountsSubject);
+  private currentUserSubject = new BehaviorSubject<UserDao | null>(null);
+
+  public currentUser$ = this.currentUserSubject.asObservable();
+
+  constructor(private usersService: UsersService) {
+    this.initializeAuthState();
   }
 
   login(login: string, password: string): Observable<{ token: string }> {
     return this.http.post<{ token: string }>(`${this.apiUrl}/auth`, { login, password })
       .pipe(
-        tap(response => {
-          localStorage.setItem('token', response.token);
-          this.decodeToken(response.token); // Декодируем токен и сохраняем данные пользователя
-        }),
+        tap(({ token }) => this.handleAuthenticationSuccess(token)),
         catchError(error => {
           console.error('Login error:', error);
           throw error;
@@ -40,19 +44,41 @@ export class AuthService {
       );
   }
 
-  logout(): void {
-    localStorage.removeItem('token'); // Удаляем токен
-    this.currentUserSubject.next(null); // Очищаем состояние пользователя
-    this.router.navigate(['/login']);
+  logout(fullLogout = false): void {
+    if (fullLogout) {
+      // Полная очистка всех данных
+      localStorage.removeItem(this.TOKEN_KEY);
+      localStorage.removeItem(this.ACCOUNTS_KEY);
+      this.accountsSubject.next([]);
+    } else
+      // Очистка только текущей сессии
+      this.clearAuthData();
+
+    this.currentUserSubject.next(null);
   }
 
-  checkSession(): void {
-    const token = localStorage.getItem('token');
-    if (token) {
-      this.decodeToken(token);
-      return;
+  switchAccount(accountId: string): void {
+    const accounts = this.accountsSubject.value.map(acc => ({
+      ...acc,
+      isCurrent: acc.id === accountId
+    }));
+
+    const newCurrent = accounts.find(acc => acc.isCurrent);
+    if (newCurrent) {
+      this.saveAccounts(accounts);
+      this.setCurrentUser(newCurrent);
+      localStorage.setItem(this.TOKEN_KEY, newCurrent.accessToken);
     }
-    this.currentUserSubject.next(null);
+  }
+
+  removeAccount(accountId: string): void {
+    const filteredAccounts = this.accountsSubject.value
+      .filter(acc => acc.id !== accountId);
+    this.saveAccounts(filteredAccounts);
+
+    if (this.currentUserSubject.value?.openid === accountId) {
+      this.clearAuthData();
+    }
   }
 
   /**
@@ -62,16 +88,13 @@ export class AuthService {
   getUser(): Observable<User | null> {
     return this.currentUser$.pipe(
       switchMap(userDao => {
-        if (!userDao || !userDao.openid) {
-          console.error('Пользователь не авторизован или openid отсутствует');
-          return of(null);
-        }
+        if (!userDao?.openid) return of(null);
         return this.usersService.getUserById(userDao.openid);
       }),
-      catchError(error => {
-        console.error('Не удалось обработать данные:', error);
-        return of(null);
-      })
+      tap(user => {
+        if (user) this.updateAccountInfo(user);
+      }),
+      catchError(() => of(null))
     );
   }
 
@@ -101,6 +124,147 @@ export class AuthService {
     return this.currentUser$.pipe(map(user => user?.role === Role.Admin));
   }
 
+  private updateAccountInfo(user: User): void {
+    const accounts: StoredUser[] = this.accountsSubject.value.map(a => {
+      if (a.id === user.id)
+        return { ...a, username: user.username, avatarUrl: user.avatarUrl };
+      return a;
+    });
+    this.saveAccounts(accounts);
+  }
+
+  private initializeAuthState(): void {
+    this.loadAccounts();
+    this.handleOAuthCallback();
+    this.restoreCurrentSession();
+  }
+
+  private encryptData(data: string): string {
+    return AES.encrypt(data, this.ENCRYPTION_KEY).toString();
+  }
+
+  private decryptData(data: string): string {
+    const bytes = AES.decrypt(data, this.ENCRYPTION_KEY);
+    return bytes.toString(enc.Utf8);
+  }
+
+  private restoreCurrentSession(): void {
+    const encryptedToken = localStorage.getItem(this.TOKEN_KEY);
+    if (!encryptedToken) return;
+
+    try {
+      const decryptedToken = this.decryptData(encryptedToken);
+      const payload = this.decodeToken(decryptedToken);
+
+      if (payload) {
+        const accounts = this.accountsSubject.value;
+        const account = accounts.find(acc => acc.id === payload.openid);
+
+        if (account) {
+          this.setCurrentUser(account);
+        }
+      }
+    } catch (error) {
+      console.error('Session restore error:', error);
+      this.clearAuthData();
+    }
+  }
+
+  private handleAuthenticationSuccess(token: string): void {
+    const encryptedToken = this.encryptData(token);
+    const payload = this.decodeToken(token);
+
+    if (!payload) return;
+
+    const accounts = this.accountsSubject.value;
+    const existingAccount = accounts.find(acc => acc.id === payload.openid);
+
+    const updatedAccounts = accounts.map(acc => ({
+      ...acc,
+      isCurrent: false
+    }));
+
+    const newAccount = existingAccount
+      ? { ...existingAccount, accessToken: encryptedToken, isCurrent: true }
+      : this.createStoredUser(payload, encryptedToken);
+
+    if (!existingAccount) {
+      updatedAccounts.push(newAccount);
+    }
+
+    this.saveAccounts(updatedAccounts);
+    this.setCurrentUser(newAccount);
+    localStorage.setItem(this.TOKEN_KEY, encryptedToken);
+  }
+
+  private createStoredUser(payload: any, encryptedToken: string): StoredUser {
+    return {
+      id: payload.openid,
+      username: payload.username,
+      avatarUrl: payload.avatarUrl || '/assets/default-avatar.png',
+      accessToken: encryptedToken,
+      refreshToken: '',
+      isCurrent: true,
+      lastLogin: new Date()
+    };
+  }
+
+  private loadAccounts(): void {
+    const encrypted = localStorage.getItem(this.ACCOUNTS_KEY);
+    if (!encrypted) return;
+
+    try {
+      const decrypted = this.decryptData(encrypted);
+      const accounts: StoredUser[] = JSON.parse(decrypted);
+      const current = accounts.find(acc => acc.isCurrent);
+
+      this.accountsSubject.next(accounts);
+      if (current) {
+        this.setCurrentUser(current);
+        localStorage.setItem(this.TOKEN_KEY, current.accessToken);
+      }
+    } catch (error) {
+      console.error('Failed to load accounts:', error);
+    }
+  }
+
+  private saveAccounts(accounts: StoredUser[]): void {
+    const encrypted = this.encryptData(JSON.stringify(accounts));
+    localStorage.setItem(this.ACCOUNTS_KEY, encrypted);
+    this.accountsSubject.next(accounts);
+  }
+
+  private decodeToken(token: string): any | null {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (payload?.openid && payload?.username && payload?.role) {
+        return payload;
+      }
+      return null;
+    } catch (error) {
+      console.error('Token decoding failed:', error);
+      return null;
+    }
+  }
+
+  private setCurrentUser(account: StoredUser): void {
+    const decryptedToken = this.decryptData(account.accessToken);
+    const payload = this.decodeToken(decryptedToken);
+
+    if (payload) {
+      this.currentUserSubject.next({
+        openid: payload.openid,
+        username: payload.username,
+        role: payload.role
+      });
+    }
+  }
+
+  private clearAuthData(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
+    this.currentUserSubject.next(null);
+  }
+
   private handleOAuthCallback(): void {
     const token = this.getTokenFromUrl();
     if (!token) return;
@@ -112,37 +276,5 @@ export class AuthService {
   private getTokenFromUrl(): string | null {
     const params = new URLSearchParams(window.location.search);
     return params.get('token');
-  }
-
-  private decodeToken(token: string): void {
-    if (!token) {
-      this.currentUserSubject.next(null);
-      return;
-    }
-
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1])); // Декодируем payload токена
-
-      // Извлекаем данные из токена
-      const openid = payload['openid'];
-      const username = payload['username'];
-      const role = payload['role'];
-
-      if (!openid || !username || !role) {
-        console.error('Токен не содержит необходимых данных');
-        this.currentUserSubject.next(null);
-        return;
-      }
-
-      // Обновляем данные в BehaviorSubject
-      this.currentUserSubject.next({
-        openid: openid,
-        username: username,
-        role: role
-      });
-    } catch (error) {
-      console.error('Ошибка декодирования токена:', error);
-      this.currentUserSubject.next(null);
-    }
   }
 }

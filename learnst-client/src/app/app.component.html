@@ -110,16 +110,20 @@
             <a routerLink="/community">Сообщество</a>
           </li>
         </ul>
-        <div class="user-area">
-          @if (user()) {
-            <a mat-fab-button routerLink="/me">
-              <img [src]="user()!.avatarUrl" [alt]="user()!.username"
-                placeholder="/assets/icons/user-192x192.png" noDownloading>
-            </a>
-          } @else {
-            <a mat-stroked-button routerLink="/login">Войти</a>
-          }
-        </div>
+        @if (user()) {
+          <div class="user-area">
+            <button type="button" mat-icon-button [matMenuTriggerFor]="userMenu">
+              <img [src]="user()?.avatarUrl" [alt]="user()?.username"
+                class="user-avatar" placeholder="/assets/icons/user-192x192.png">
+            </button>
+
+            <mat-menu #userMenu="matMenu" class="user-menu-container">
+              <app-user-menu [user]="user()!"/>
+            </mat-menu>
+          </div>
+        } @else {
+          <a mat-stroked-button class="m-step" routerLink="/login">Войти</a>
+        }
       </div>
     }
   </nav>

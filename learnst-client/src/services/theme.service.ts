@@ -195,9 +195,8 @@ export class ThemeService {
     ).subscribe({
       next: () => {
         this.currentTheme.set(theme);
-        if (!isInitialLoad) {
+        if (!isInitialLoad)
           this.sendThemeUpdate(themeId);
-        }
       },
       error: error => {
         console.error(error);
@@ -232,18 +231,16 @@ export class ThemeService {
     try {
       await this.signalr.invoke(this.hubUrl, 'JoinUserGroup', userId);
     } catch (err) {
-      console.error('Join group error:', err);
       // Добавим повторную попытку через 2 секунды
       setTimeout(() => this.joinUserGroup(userId), 2000);
     }
   }
 
   private sendThemeUpdate(themeId: string): void {
-    if (this.user?.id) {
+    if (this.user?.id)
       this.signalr.invoke(this.hubUrl, 'SendThemeUpdate',
         this.user.id, themeId
-      ).catch(err => console.error('Ошибка отправки темы:', err));
-    }
+      ).catch(() => {});
   }
 
   private applyRemoteTheme(themeId: string): void {
