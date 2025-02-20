@@ -14,7 +14,7 @@ const string apiName = "Learnst API v.1";
 const string swaggerUrl = "/swagger/v1/swagger.json";
 const string connectionStringName = "DefaultConnection";
 string[] trustedPaths = ["/error", "/oauth2", "/apps", "/account", "/sessions"];
-string[] trustedOrigins = ["https://learnst.runasp.net", "http://localhost:56387"];
+string[] trustedOrigins = ["https://learnst.runasp.net", "http://localhost:3000"];
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,12 +65,12 @@ builder.Services.Configure<VkSettings>(builder.Configuration.GetSection("Vk"))
     .Configure<EpicGamesSettings>(builder.Configuration.GetSection("EpicGames"));
 
 // Настройка базы данных и аутентификации
-builder.Services.AddRequestTimeout(TimeSpan.FromMinutes(5))
+builder.Services.AddRequestTimeout(TimeSpan.FromSeconds(100))
     .AddDbContext<ApplicationDbContext>(options => options
         .UseSqlServer(builder.Configuration.GetConnectionString(connectionStringName)), ServiceLifetime.Transient)
     .AddJwtAuthentication(builder.Configuration)
     .AddAuthorization()
-    .AddHttpClient(apiName, client => client.Timeout = TimeSpan.FromMinutes(5));
+    .AddHttpClient(apiName, client => client.Timeout = TimeSpan.FromSeconds(100));
 
 // Добавление остальных служб
 builder.Services.AddOpenApi()
@@ -91,14 +91,14 @@ app.UseRouting()
     .UseHttpsRedirection()
     .UseStaticFiles()
     .UseSession()
-    .UseCustomSecurity(onError: async (context, _, origin) => // Middleware для безопасности
+    .UseCustomSecurity(onError: async (context, _, origin) =>
     {
         await LogService.WriteLine($"** Запрещен доступ источнику \"{(
-            string.IsNullOrEmpty(origin) ? "Пустой" : origin
+            string.IsNullOrEmpty(origin) ? "null" : origin
         )}\", так как он не является доверенным. **");
         context.Response.Redirect("/error");
     });
 
-app.UseCustomSwagger(apiName, swaggerUrl, willUse: true); // Используем метод для настройки Swagger
+app.UseCustomSwagger(apiName, swaggerUrl, willUse: true);
 app.MapControllers();
 app.Run();

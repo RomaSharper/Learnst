@@ -38,7 +38,7 @@ public class ThemeController(
             var theme = await themesRepository.GetByIdAsync(themeId)
                 ?? throw new NotFoundException<Theme, string>(themeId);
 
-            user.Theme = theme;
+            user.ThemeId = theme.Id;
             await usersRepository.SaveAsync();
             return user;
         }

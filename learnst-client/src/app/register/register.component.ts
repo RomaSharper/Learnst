@@ -93,7 +93,9 @@ export class RegisterComponent extends MediumScreenSupport {
       dateOfBirth: dateOfBirth!,
       username: formValue.username,
       emailAddress: formValue.email,
-      passwordHash: formValue.password
+      passwordHash: formValue.password,
+      themeId: 'light',
+      userSubscriptions: []
     };
 
     // Шаг 1: Отправляем код подтверждения

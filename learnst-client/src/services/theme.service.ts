@@ -1,11 +1,21 @@
-import { effect, Injectable, signal } from '@angular/core';
-import { Theme } from '../models/Theme';
+import { effect, Inject, inject, Injectable, OnInit, signal } from '@angular/core';
+import { FrontendTheme } from '../models/FrontendTheme';
+import { AuthService } from './auth.service';
+import { User } from '../models/User';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment';
+import { AlertService } from './alert.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ThemeService {
-  private readonly themes: Theme[] = [
+  private user: User | null = null;
+  private http = inject(HttpClient);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  
+  private readonly themes: FrontendTheme[] = [
     {
       id: 'light',
       premium: false,
@@ -152,15 +162,41 @@ export class ThemeService {
     },
   ];
 
-  currentTheme = signal<Theme>(this.themes[0]);
+  currentTheme = signal<FrontendTheme>(this.themes[0]);
 
-  getThemes(): Theme[] {
+  constructor() {
+    this.authService.getUser().subscribe(user => {
+      this.user = user;
+      if (this.user?.theme) this.setTheme(this.user.theme.id);
+    });
+  }
+
+  getThemes(): FrontendTheme[] {
     return this.themes;
   }
 
   setTheme(themeId: string) {
+    if (!this.user?.id) {
+      this.alertService.showSnackBar('Пользователь не авторизован');
+      return;
+    }
+
+    this.alertService.openMessageDialog('Сообщение', this.user.themeId);
+
     const theme = this.themes.find(t => t.id === themeId);
-    if (theme) this.currentTheme.set(theme);
+    if (theme)
+      this.http.post<any>(`${environment.apiBaseUrl}/theme/${this.user.id}/${themeId}`, null).subscribe({
+        next: response => {
+          console.log(response);
+          this.currentTheme.set(theme);
+          // this.authService.setUser(response);
+          this.alertService.showSnackBar(response.message || "Тема была успешно изменена " + response.themeId);
+        },
+        error: error => {
+          console.error(error);
+          this.alertService.showSnackBar("Произошла ошибка при попытке изменить тему");
+        }
+      });
   }
 
   updateThemeClass = effect(() => {
