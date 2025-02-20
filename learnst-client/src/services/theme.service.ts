@@ -181,20 +181,18 @@ export class ThemeService {
       return;
     }
 
-    this.alertService.openMessageDialog('Сообщение', this.user.themeId);
-
     const theme = this.themes.find(t => t.id === themeId);
     if (theme)
       this.http.post<any>(`${environment.apiBaseUrl}/theme/${this.user.id}/${themeId}`, null).subscribe({
         next: response => {
           console.log(response);
           this.currentTheme.set(theme);
-          // this.authService.setUser(response);
-          this.alertService.showSnackBar(response.message || "Тема была успешно изменена " + response.themeId);
+          // this.authService.setUser(response); // под вопросом
+          this.alertService.showSnackBar('Тема была успешно изменена');
         },
         error: error => {
           console.error(error);
-          this.alertService.showSnackBar("Произошла ошибка при попытке изменить тему");
+          this.alertService.showSnackBar('Произошла ошибка при попытке изменить тему');
         }
       });
   }
