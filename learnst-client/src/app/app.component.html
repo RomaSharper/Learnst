@@ -1,6 +1,6 @@
 <div class="loading-screen" [class.visible]="loading()">
   <div class="loading-content">
-    <img class="loading-logo" alt="Learnst" src="/assets/icons/favicon.png">
+    <img class="loading-logo" alt="Learnst" src="/assets/icons/favicon.png" noDownloading>
     <h1 class="loading-title">Learnst</h1>
     @if (welcomeMessage()) {
       <p class="welcome-message">{{ welcomeMessage() }}</p>
@@ -24,8 +24,8 @@
           <li class="user-area">
             <div class="user-avatar">
               <a class="user-img" routerLink="/me" routerLinkActive="active">
-                <img [alt]="user()!.username" [src]="user()!.avatarUrl" placeholder="/assets/icons/user-192x192.png"
-                  loading="eager" noDownloading>
+                <img [alt]="user()?.username" [src]="user()!.avatarUrl" placeholder="/assets/icons/user-192x192.png"
+                  loading="eager" [title]="user()!.username" noDownloading>
               </a>
               <a class="user-name" routerLink="/me" routerLinkActive="active">{{ user()!.username }}</a>
             </div>
@@ -46,7 +46,7 @@
       <ul class="desktop-menu">
         <li>
           <a class="logo-link" routerLink="/">
-            <img src="assets/icons/favicon.png" alt="Learnst">
+            <img src="assets/icons/favicon.png" alt="Learnst" noDownloading>
             <span>Learnst</span>
           </a>
         </li>
