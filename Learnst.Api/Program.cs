@@ -1,4 +1,5 @@
 using Learnst.Api;
+using Learnst.Api.Hubs;
 using Learnst.Api.Middleware;
 using Learnst.Api.Models;
 using Learnst.Api.Services;
@@ -79,12 +80,15 @@ builder.Services.AddOpenApi()
     .AddSession()
     .AddControllers();
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Middleware
 app.UseMiddleware<TokenRefreshMiddleware>();
 
-app.UseRouting()
+app.UseWebSockets()
+    .UseRouting()
     .UseCors(policy)
     .UseAuthentication()
     .UseAuthorization()
@@ -101,4 +105,5 @@ app.UseRouting()
 
 app.UseCustomSwagger(apiName, swaggerUrl, willUse: true);
 app.MapControllers();
+app.MapHub<ThemeHub>("/themehub");
 app.Run();

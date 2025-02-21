@@ -25,6 +25,7 @@
           "options": {
             "allowedCommonJsDependencies": [
               "bcryptjs",
+              "crypto-js",
               "global/window",
               "global/document",
               "@videojs/xhr",

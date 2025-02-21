@@ -1,9 +1,9 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, effect } from '@angular/core';
 import { ThemeService } from '../../services/theme.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../services/auth.service';
-import { User } from '../../models/User';
 import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-theme-picker',
@@ -11,26 +11,30 @@ import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective'
   styleUrls: ['./theme-picker.component.scss'],
   imports: [MatTooltipModule, NoDownloadingDirective]
 })
-export class ThemePickerComponent implements OnInit {
-  private user = signal<User | null>(null);
-  private readonly authService: AuthService = inject(AuthService);
-  private readonly themeService: ThemeService = inject(ThemeService);
+export class ThemePickerComponent {
+  private authService = inject(AuthService);
+  private themeService = inject(ThemeService);
 
-  ngOnInit(): void {
-    this.authService.getUser().subscribe(user => {
-      this.user.set(user);
-    });
-  }
+  // Используем toSignal для автоматической отписки
+  user = toSignal(this.authService.getUser());
+
+  // Получаем прямую ссылку на сигнал из сервиса
+  currentTheme = this.themeService.currentTheme;
+
+  themes = this.themeService.getThemes();
+
+  // Эффект для принудительного обновления при изменении темы
+  private themeEffect = effect(() => {
+    this.currentTheme(); // Принудительно триггерим изменение
+  });
 
   isThemeSelected(themeId: string): boolean {
     return this.currentTheme().id === themeId;
   }
 
-  themes = signal(this.themeService.getThemes());
-  currentTheme = signal(this.themeService.currentTheme());
-
   selectTheme(themeId: string): void {
-    this.themeService.setTheme(themeId);
-    this.currentTheme.set(this.themes().find(theme => theme.id === themeId)!);
+    if (this.user()?.theme?.id !== themeId) {
+      this.themeService.setTheme(themeId);
+    }
   }
 }

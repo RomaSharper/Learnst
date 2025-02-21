@@ -1,4 +1,4 @@
-import { Component, signal, effect, HostListener } from '@angular/core';
+import { Component, signal, effect, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { NoDownloadingDirective } from '../directives/NoDownloadingDirective';
@@ -10,6 +10,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MediumScreenSupport } from '../helpers/MediumScreenSupport';
 import { ThemeService } from '../services/theme.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { MatMenuModule } from '@angular/material/menu';
+import { UserMenuComponent } from './user-menu/user-menu.component';
 
 @Component({
   selector: 'app-root',
@@ -19,9 +22,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     RouterLink,
     CommonModule,
     RouterOutlet,
+    MatMenuModule,
     MatIconModule,
     MatButtonModule,
     RouterLinkActive,
+    UserMenuComponent,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
     PlaceholderImageDirective,
@@ -30,21 +35,19 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 export class AppComponent extends MediumScreenSupport {
   loading = signal(true);
   isMenuOpen = signal(false);
-  user = signal<User | null>(null);
+  authService = inject(AuthService);
+  user = toSignal(this.authService.getUser());
   welcomeMessage = signal<string | null>(null);
   private excludedRoutes = ['/login', '/register'];
 
   constructor(
     private router: Router,
-    private authService: AuthService,
     private themeService: ThemeService,
   ) {
     super();
     effect(() => {
-      this.authService.getUser().subscribe((user) => {
-        this.user.set(user);
-        this.updateWelcomeMessage();
-      });
+      this.themeService.setTheme(this.user()?.themeId || 'light');
+      this.updateWelcomeMessage();
     });
   }
 
@@ -66,13 +69,12 @@ export class AppComponent extends MediumScreenSupport {
   }
 
   updateWelcomeMessage(): void {
-    const userName = this.user()?.username || 'гость';
+    const userName = this.user()?.username || null;
 
     if (this.isExcludedRoute()) {
-      this.welcomeMessage.set(null);
       setTimeout(() => this.loading.set(false), 800);
     } else {
-      setTimeout(() => this.welcomeMessage.set(`Добро пожаловать, ${userName}!`), 300);
+      setTimeout(() => this.welcomeMessage.set(userName ? `Добро пожаловать, ${userName}!` : null), 300);
       setTimeout(() => this.loading.set(false), 1500);
     }
   }

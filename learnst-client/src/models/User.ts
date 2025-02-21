@@ -8,7 +8,6 @@ import { UserAnswer } from "./UserAnswer";
 import { Ticket } from "./Ticket";
 import { TicketAnswer } from "./TicketAnswer";
 import { ExternalLoginType } from "../enums/ExternalLoginType";
-import { FrontendTheme } from "./FrontendTheme";
 import { Theme } from "./Theme";
 import { UserSubscription } from "./UserSubscription";
 
@@ -37,4 +36,7 @@ export interface User {
   themeId: string;
   theme?: Theme;
   userSubscriptions: UserSubscription[];
+  banner?: string;
+  cardBackground: string;
+  cardBorderColor: string;
 }

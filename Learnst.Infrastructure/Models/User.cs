@@ -15,6 +15,15 @@ public class User : IEntity
 
     [StringLength(2048)] public string? AvatarUrl { get; set; }
 
+    /// <summary>
+    /// Изображение для заднего фона пользовательской карточки (может быть как цветом, так и ссылкой на изображение)
+    /// </summary>
+    [StringLength(2048)] public string Banner { get; set; } = "#333333";
+
+    [StringLength(100)] public string CardBackground { get; set; } = "#232527";
+
+    [StringLength(100)] public string CardBorderColor { get; set; } = "#000000";
+
     public DateOnly? DateOfBirth { get; set; }
 
     [StringLength(20, ErrorMessage = "Имя пользователя должно быть не длиннее 20 символов")]

@@ -43,92 +43,88 @@
         }
       </ul>
     } @else {
-      <ul class="desktop-menu">
-        <li>
-          <a class="logo-link" routerLink="/">
-            <img src="assets/icons/favicon.png" alt="Learnst" noDownloading>
-            <span>Learnst</span>
-          </a>
-        </li>
-        <li>
-          <a>Основы</a>
-          <div class="submenu">
-            <div class="columns">
-              <div>
-                <h3>О сайте</h3>
-                <ul>
-                  <li><a routerLink="/manuals/intro">Введение</a></li>
-                  <li><a routerLink="/manuals/basics">Концепции и правила</a></li>
-                </ul>
-              </div>
-              <div>
-                <h3>Обучение</h3>
-                <ul>
-                  <li><a routerLink="/activities">Курсы</a></li>
-                </ul>
-              </div>
-              <div>
-                <h3>Информация</h3>
-                <ul>
-                  <li><a routerLink="/manuals/user">Руководство пользователя</a></li>
-                  <li><a routerLink="/manuals/specialist">Руководство специалиста</a></li>
-                  <li><a routerLink="/manuals/privacypolicy">Конфиденциальность</a></li>
-                  <li><a routerLink="/manuals/termsofuse">Условия использования</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </li>
-        <li>
-          <a routerLink="/activities">Обучение</a>
-          <div class="submenu">
-            <div class="columns">
-              <div>
-                <h3>Язык</h3>
-                <ul>
-                  <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'java' }">Java</a></li>
-                  <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'c#' }">C#</a></li>
-                  <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'lua' }">Lua</a></li>
-                </ul>
-              </div>
-              <div>
-                <h3>Стиль</h3>
-                <ul>
-                  <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'ооп' }">ООП</a></li>
-                  <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'процедурное-программирование' }">Процедурное программирование</a></li>
-                  <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'функциональное-программирование' }">Функциональное программирование</a></li>
-                </ul>
+      <div class="desktop-panel">
+        <ul class="desktop-menu">
+          <li>
+            <a class="logo-link" routerLink="/">
+              <img src="assets/icons/favicon.png" alt="Learnst">
+              <span>Learnst</span>
+            </a>
+          </li>
+          <li>
+            <a>Основы</a>
+            <div class="submenu">
+              <div class="columns">
+                <div>
+                  <h3>О сайте</h3>
+                  <ul>
+                    <li><a routerLink="/manuals/intro">Введение</a></li>
+                    <li><a routerLink="/manuals/basics">Концепции и правила</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <h3>Обучение</h3>
+                  <ul>
+                    <li><a routerLink="/activities">Активности</a></li>
+                    <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'java' }">Java</a></li>
+                    <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'c#' }">C#</a></li>
+                    <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'lua' }">Lua</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <h3>Информация</h3>
+                  <ul>
+                    <li><a routerLink="/manuals/user">Для пользователя</a></li>
+                    <li><a routerLink="/manuals/specialist">Для специалиста</a></li>
+                    <li><a routerLink="/manuals/privacypolicy">Конфиденциальность</a></li>
+                    <li><a routerLink="/manuals/termsofuse">Условия использования</a></li>
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-        </li>
-        <li>
-          <a>Разработка</a>
-          <div class="submenu">
-            <div class="columns">
-              <div>
-                <h3>Инструменты разработчика</h3>
-                <ul>
-                  <li><a routerLink="/code/js">Песочница JavaScript</a></li>
-                  <li><a routerLink="/code/java">Песочница Java</a></li>
-                  <li><a routerLink="/code/csharp">Песочница C#</a></li>
-                </ul>
-              </div>
-              <div>
-                <h3>Полезные библиотеки</h3>
-                <ul>
-                  <li><a routerLink="/manuals/libs/maven">Maven (Gradle)</a></li>
-                  <li><a routerLink="/manuals/libs/nuget">NuGet</a></li>
-                  <li><a routerLink="/manuals/libs/npm">NPM</a></li>
-                </ul>
+          </li>
+          <li>
+            <a>Разработка</a>
+            <div class="submenu">
+              <div class="columns">
+                <div>
+                  <h3>Инструменты разработчика</h3>
+                  <ul>
+                    <li><a routerLink="/code/js">Песочница JavaScript</a></li>
+                    <li><a routerLink="/code/java">Песочница Java</a></li>
+                    <li><a routerLink="/code/csharp">Песочница C#</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <h3>Полезные библиотеки</h3>
+                  <ul>
+                    <li><a routerLink="/manuals/libs/maven">Maven (Gradle)</a></li>
+                    <li><a routerLink="/manuals/libs/nuget">NuGet</a></li>
+                    <li><a routerLink="/manuals/libs/npm">NPM</a></li>
+                  </ul>
+                </div>
               </div>
             </div>
+          </li>
+          <li>
+            <a routerLink="/community">Сообщество</a>
+          </li>
+        </ul>
+        @if (user()) {
+          <div class="user-area">
+            <button type="button" mat-icon-button [matMenuTriggerFor]="userMenu">
+              <img [src]="user()?.avatarUrl" [alt]="user()?.username"
+                class="user-avatar" placeholder="/assets/icons/user-192x192.png">
+            </button>
+
+            <mat-menu #userMenu="matMenu" class="user-menu-container">
+              <app-user-menu [user]="user()!"/>
+            </mat-menu>
           </div>
-        </li>
-        <li>
-          <a routerLink="/community">Сообщество</a>
-        </li>
-      </ul>
+        } @else {
+          <a mat-stroked-button class="m-step" routerLink="/login">Войти</a>
+        }
+      </div>
     }
   </nav>
 

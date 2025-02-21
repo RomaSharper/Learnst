@@ -1,5 +1,5 @@
 <div class="activity-form-container">
-  <a mat-flat-button routerLink="/activities" class="mb">Назад</a>
+  <a mat-button routerLink="/activities" class="mb">Назад</a>
 
   <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" (keydown.enter)="$event.preventDefault()" class="activity-form">
     <!-- Основные поля -->

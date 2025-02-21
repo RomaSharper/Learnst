@@ -36,7 +36,7 @@ public class ThemeController(
             if (!_freeThemes.Contains(themeId) && !user.UserSubscriptions.Any(us => us.EndDate > DateTime.UtcNow))
                 throw new AccessViolationException("Пользователь не обладает премиум-подпиской.");
 
-            if (!await themesRepository.ExistsAsync(themeId))
+            if (!await themesRepository.ExistsAsync(t => t.Id == themeId))
                 throw new NotFoundException<Theme, string>(themeId);
 
             user.ThemeId = themeId;

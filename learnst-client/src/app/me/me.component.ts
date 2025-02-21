@@ -35,10 +35,10 @@ import { DateService } from '../../services/date.service';
 import { EmailService } from '../../services/email.service';
 import { FileService } from '../../services/file.service';
 import { UsersService } from '../../services/users.service';
+import { ThemePickerComponent } from '../theme-picker/theme-picker.component';
 import { EducationDialogComponent } from './education.dialog/education.dialog.component';
 import { SocialMediaDialogComponent } from './social.media.dialog/social.media.dialog.component';
 import { WorkExperienceDialogComponent } from './work.experience.dialog/work.experience.dialog.component';
-import { ThemePickerComponent } from '../theme-picker/theme-picker.component';
 
 @Component({
   selector: 'app-me',

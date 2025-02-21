@@ -14,6 +14,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
+import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
 import { InfoType } from '../../enums/InfoType';
 import { Role } from '../../enums/Role';
 import { LevelHelper } from '../../helpers/LevelHelper';
@@ -29,7 +30,6 @@ import { CertificateService } from '../../services/certificate.service';
 import { LessonsService } from '../../services/lessons.service';
 import { TagHelper } from './../../helpers/TagHelper';
 import { InfoCard } from './../../models/InfoCard';
-import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
 
 interface ActivityNode {
   id: string;

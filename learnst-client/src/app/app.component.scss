@@ -323,128 +323,149 @@
     }
   }
 
-  .desktop-menu {
-    margin: 0;
+  .desktop-panel {
     display: flex;
-    padding: 0 16px;
-    list-style: none;
-    align-items: center;
-    flex-direction: row;
+    justify-content: space-between;
 
-    li {
-      padding: 4px 4px * 2;
+    .desktop-menu {
+      margin: 0;
+      display: flex;
+      padding: 0 16px;
+      list-style: none;
+      align-items: center;
+      flex-direction: row;
 
-      // Исключаем эффекты для логотипа
-      .logo-link {
-        display: flex;
-        width: fit-content;
-        align-items: center;
-        flex-direction: row;
-        column-gap: 4px * 2;
-        margin-right: 4px * 8;
-        padding-right: 4px * 2;
+      li {
+        padding: 4px 4px * 2;
 
-        img {
-          width: 24px;
-          border-radius: 50%;
-          aspect-ratio: 1 / 1;
-        }
-
-        // Логотип не должен иметь подчёркивания
-        &:hover {
-          a {
-            text-decoration: none;
-          }
-        }
-      }
-
-      a {
-        width: 100%;
-        height: 100%;
-        display: block;
-        cursor: pointer;
-        position: relative; // Для позиционирования псевдоэлемента
-        text-decoration: none;
-
-        // Добавляем подчёркивание
-        &::after {
-          bottom: 0;
-          opacity: 0;
-          width: 100%;
-          height: 2px;
-          content: '';
-          bottom: -5px;
-          display: block;
-          position: absolute;
-          background: var(--mat-sys-primary);
-        }
-
-        &:hover {
-          // Показываем подчёркивание
-          &::after {
-            opacity: 1;
-          }
-        }
-      }
-
-      // Подменю
-      .submenu {
-        left: 0;
-        right: 0;
-        z-index: 2;
-        opacity: 0;
-        height: 300px;
-        display: none;
-        position: absolute;
-        pointer-events: none;
-        transform: translateY(-142px);
-        background: var(--mat-sys-secondary-container);
-
-        // Стили для контента подменю
-        .columns {
+        // Исключаем эффекты для логотипа
+        .logo-link {
           display: flex;
-          padding: 16px;
-          margin: 0 auto;
-          max-width: 1200px;
-          justify-content: space-evenly;
+          width: fit-content;
+          align-items: center;
+          flex-direction: row;
+          column-gap: 4px * 2;
+          margin-right: 4px * 8;
+          padding-right: 4px * 2;
 
-          > div {
-            flex: 1;
-            padding: 0 4px * 3;
+          img {
+            width: 24px;
+            border-radius: 50%;
+            aspect-ratio: 1 / 1;
+          }
 
-            h3 {
-              font-size: 28px;
-              margin-bottom: 8px;
+          // Логотип не должен иметь подчёркивания
+          &:hover {
+            a {
+              text-decoration: none;
             }
+          }
+        }
 
-            ul {
-              margin: 0;
-              padding: 0;
-              list-style: none;
+        a {
+          width: 100%;
+          height: 100%;
+          display: block;
+          cursor: pointer;
+          position: relative; // Для позиционирования псевдоэлемента
+          text-decoration: none;
 
-              li {
-                margin-bottom: 4px;
+          // Добавляем подчёркивание
+          &:not(.user-area)::after {
+            bottom: 0;
+            opacity: 0;
+            width: 100%;
+            height: 2px;
+            content: '';
+            bottom: -5px;
+            display: block;
+            position: absolute;
+            background: var(--mat-sys-primary);
+          }
 
-                a {
-                  width: fit-content;
-                  text-decoration: none;
-                  transition: color 0.3s ease;
+          &:hover {
+            // Показываем подчёркивание
+            &::after {
+              opacity: 1;
+            }
+          }
+        }
 
-                  /* &:hover {
-                    text-decoration: underline;
-                  } */
+        // Подменю
+        .submenu {
+          left: 0;
+          right: 0;
+          z-index: 2;
+          opacity: 0;
+          height: 300px;
+          display: none;
+          position: absolute;
+          pointer-events: none;
+          transform: translateY(-142px);
+          background: var(--mat-sys-secondary-container);
+
+          // Стили для контента подменю
+          .columns {
+            display: flex;
+            padding: 16px;
+            margin: 0 auto;
+            max-width: 1200px;
+            justify-content: space-evenly;
+
+            > div {
+              flex: 1;
+              padding: 0 4px * 3;
+
+              h3 {
+                font-size: 28px;
+                margin-bottom: 8px;
+              }
+
+              ul {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+
+                li {
+                  margin-bottom: 4px;
+
+                  a {
+                    width: fit-content;
+                    text-decoration: none;
+                    transition: color 0.3s ease;
+
+                    /* &:hover {
+                      text-decoration: underline;
+                    } */
+                  }
                 }
               }
             }
           }
         }
-      }
 
-      &:hover .submenu {
-        opacity: 1;
-        display: block;
-        pointer-events: auto; // Разрешаем взаимодействие
-        transform: translateY(5px);
+        &:hover .submenu {
+          opacity: 1;
+          display: block;
+          pointer-events: auto; // Разрешаем взаимодействие
+          transform: translateY(5px);
+        }
+      }
+    }
+
+    .user-area {
+      margin: 4px 8px;
+      border-radius: 20px;
+      box-shadow: var(--mat-sys-level2);
+
+      button {
+        padding: 0;
+        .user-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          vertical-align: middle;
+        }
       }
     }
   }
