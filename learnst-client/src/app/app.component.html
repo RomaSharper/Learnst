@@ -112,7 +112,7 @@
         </ul>
         @if (user()) {
           <div class="user-area">
-            <button type="button" mat-icon-button [matMenuTriggerFor]="userMenu">
+            <button type="button" [title]="user()?.username" mat-icon-button [matMenuTriggerFor]="userMenu">
               <img [src]="user()?.avatarUrl" [alt]="user()?.username"
                 class="user-avatar" placeholder="/assets/icons/user-192x192.png">
             </button>
