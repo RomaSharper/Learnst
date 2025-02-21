@@ -265,16 +265,15 @@ export class AuthService {
     this.currentUserSubject.next(null);
   }
 
-  private handleOAuthCallback(): void {
-    const token = this.getTokenFromUrl();
-    if (!token) return;
-    localStorage.setItem('token', token);
-    this.decodeToken(token);
-    this.router.navigate(['/']); // Перенаправляем на главную после успешной авторизации
-  }
-
   private getTokenFromUrl(): string | null {
     const params = new URLSearchParams(window.location.search);
     return params.get('token');
+  }
+
+  private handleOAuthCallback(): void {
+    const token = this.getTokenFromUrl();
+    if (!token) return;
+    this.handleAuthenticationSuccess(token);
+    this.router.navigate(['/']); // Перенаправляем на главную после успешной авторизации
   }
 }
