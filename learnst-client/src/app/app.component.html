@@ -12,34 +12,42 @@
 
 <div class="content" [class.visible]="!loading()">
   <nav class="main-navigation">
-    <div class="background-overlay" [class.active]="isMenuOpen()" (click)="closeMenu($event)"></div>
+    <div class="background-overlay" [class.active]="isMenuOpen()"
+      (click)="closeMenu($event)"></div>
 
-    <button type="button" class="hamburger" mat-icon-button (click)="toggleMenu($event)">
+    <button type="button" class="hamburger" mat-icon-button
+      (click)="toggleMenu($event)">
       <mat-icon>menu</mat-icon>
     </button>
 
     @if (isMediumScreen) {
       <ul class="mobile-menu" [class.active]="isMenuOpen()">
         @if (user()) {
-          <li class="user-area">
-            <div class="user-avatar">
-              <a class="user-img" routerLink="/me" routerLinkActive="active">
-                <img [alt]="user()?.username" [src]="user()!.avatarUrl" placeholder="/assets/icons/user-192x192.png"
-                  loading="eager" [title]="user()!.username" noDownloading>
-              </a>
-              <a class="user-name" routerLink="/me" routerLinkActive="active">{{ user()!.username }}</a>
-            </div>
-          </li>
           <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
           <li><a routerLink="/activities" routerLinkActive="active">Обучение</a></li>
           <li><a routerLink="/users" routerLinkActive="active">Пользователи</a></li>
           <li><a routerLink="/tickets" routerLinkActive="active">Поддержка</a></li>
-          <li><a routerLink="/logout">Выйти</a></li>
+          <li class="user-area">
+            <button type="button" mat-stroked-button class="user-btn" routerLinkActive="active"
+              [title]="user()?.username" [matMenuTriggerFor]="userMenu">
+              <img [alt]="user()?.username" [src]="user()!.avatarUrl" noDownloading
+                [title]="user()!.username" placeholder="/assets/icons/user-192x192.png">
+              <a class="user-name" routerLinkActive="active">{{ user()!.username }}</a>
+            </button>
+            <mat-menu #userMenu="matMenu" class="user-menu-container">
+              <app-user-menu [user]="user()!" />
+            </mat-menu>
+          </li>
         } @else {
           <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
           <li><a routerLink="/manuals/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
           <li><a routerLink="/manuals/termsofuse" routerLinkActive="active">Условия пользования</a></li>
-          <li><a routerLink="/login" routerLinkActive="active">Войти</a></li>
+          <li class="user-area">
+            <a mat-stroked-button routerLink="/login">
+              <mat-icon class="scale-1-5">login</mat-icon>
+              Войти
+            </a>
+          </li>
         }
       </ul>
     } @else {
@@ -113,12 +121,12 @@
         @if (user()) {
           <div class="user-area">
             <button type="button" [title]="user()?.username" mat-icon-button [matMenuTriggerFor]="userMenu">
-              <img [src]="user()?.avatarUrl" [alt]="user()?.username"
-                class="user-avatar" placeholder="/assets/icons/user-192x192.png">
+              <img [src]="user()?.avatarUrl" [alt]="user()?.username" class="user-avatar"
+                placeholder="/assets/icons/user-192x192.png">
             </button>
 
             <mat-menu #userMenu="matMenu" class="user-menu-container">
-              <app-user-menu [user]="user()!"/>
+              <app-user-menu [user]="user()!" />
             </mat-menu>
           </div>
         } @else {

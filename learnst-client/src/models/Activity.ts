@@ -5,7 +5,7 @@ import { User } from './User';
 import { UserActivity } from './UserActivity';
 
 export interface Activity {
-  isEnrolled: any;
+  isEnrolled: boolean;
   id: string; // Guid
   title: string;
   description?: string;

@@ -72,7 +72,7 @@ export class AppComponent extends MediumScreenSupport {
     const userName = this.user()?.username || null;
 
     if (this.isExcludedRoute()) {
-      setTimeout(() => this.loading.set(false), 800);
+      this.loading.set(false);
     } else {
       setTimeout(() => this.welcomeMessage.set(userName ? `Добро пожаловать, ${userName}!` : null), 300);
       setTimeout(() => this.loading.set(false), 1500);
@@ -82,10 +82,10 @@ export class AppComponent extends MediumScreenSupport {
   // Обработчик кликов вне меню
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent): void {
-    // const clickedInsideMenu = (event.target as HTMLElement).closest('.main-navigation');
+    const clickedInsideMenu = (event.target as HTMLElement).closest('.main-navigation');
     const clickedOnOverlay = (event.target as HTMLElement).classList.contains('background-overlay');
 
-    if (this.isMenuOpen() && !clickedOnOverlay)
+    if (this.isMenuOpen() && !clickedOnOverlay && !clickedInsideMenu)
       this.closeMenu(event);
   }
 }
