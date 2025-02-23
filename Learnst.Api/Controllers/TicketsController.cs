@@ -1,5 +1,4 @@
-﻿using Learnst.Domain;
-using Learnst.Domain.Enums;
+﻿using Learnst.Domain.Enums;
 using Learnst.Infrastructure;
 using Learnst.Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;

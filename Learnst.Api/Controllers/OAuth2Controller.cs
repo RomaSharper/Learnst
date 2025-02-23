@@ -1,10 +1,10 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Globalization;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using Learnst.Api.Models;
 using Learnst.Api.Services;
-using Learnst.Domain;
 using Learnst.Domain.Enums;
 using Learnst.Infrastructure;
 using Learnst.Infrastructure.Models;
@@ -568,24 +568,28 @@ public partial class OAuth2Controller(
     #endregion
 
     #region Mail.ru
+
     [HttpGet("mailru/init")]
     public IActionResult InitMailRuAuth()
     {
         var state = Guid.NewGuid().ToString("N");
-        Response.Cookies.Append("oauth_state", state, new CookieOptions
+        var cookieOptions = new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Lax
-        });
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTime.UtcNow.AddMinutes(5)
+        };
+        
+        Response.Cookies.Append("mailru_oauth_state", state, cookieOptions);
 
-        var authUrl = "https://oauth.mail.ru/login?" +
-            $"client_id={_mailRuSettings.ClientId}" +
-            $"&redirect_uri={Uri.EscapeDataString(_mailRuSettings.RedirectUri)}" +
-            "&response_type=code" +
-            "&mode=default" +
-            "&scopes=['userinfo']" +
-            $"&state={state}";
+        var authUrl = new StringBuilder("https://oauth.mail.ru/login?")
+            .Append($"client_id={Uri.EscapeDataString(_mailRuSettings.ClientId)}")
+            .Append($"&redirect_uri={Uri.EscapeDataString(_mailRuSettings.RedirectUri)}")
+            .Append("&response_type=code")
+            .Append("&scope=userinfo.email+userinfo.name+userinfo.birthday+userinfo.avatar")
+            .Append($"&state={state}")
+            .ToString();
 
         return Redirect(authUrl);
     }
@@ -595,45 +599,87 @@ public partial class OAuth2Controller(
         [FromQuery] string code,
         [FromQuery] string state)
     {
-        // Проверка state
-        var expectedState = Request.Cookies["oauth_state"];
-        if (state != expectedState) return BadRequest("Invalid state");
+        try
+        {
+            // Validate state
+            var expectedState = Request.Cookies["mailru_oauth_state"];
+            if (state != expectedState)
+                return BadRequest("Неверное состояние OAuth");
 
-        // Получение токена
-        var tokenResponse = await httpClientFactory.CreateClient().PostAsync(
-            "https://oauth.mail.ru/token",
-            new FormUrlEncodedContent(new Dictionary<string, string>
-            {
-                {"client_id", _mailRuSettings.ClientId},
-                {"client_secret", _mailRuSettings.ClientSecret},
-                {"code", code},
-                {"grant_type", "authorization_code"},
-                {"redirect_uri", _mailRuSettings.RedirectUri}
-            }));
+            // Get access token
+            var tokenResponse = await httpClientFactory.CreateClient().PostAsync(
+                "https://oauth.mail.ru/token",
+                new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    {"client_id", _mailRuSettings.ClientId},
+                    {"client_secret", _mailRuSettings.ClientSecret},
+                    {"code", code},
+                    {"grant_type", "authorization_code"},
+                    {"redirect_uri", _mailRuSettings.RedirectUri}
+                }));
 
-        var tokenData = await tokenResponse.Content.ReadFromJsonAsync<MailRuTokenResponse>();
-        if (tokenData?.AccessToken is null) return BadRequest("Mail.ru auth failed");
+            if (!tokenResponse.IsSuccessStatusCode)
+                return BadRequest("Не удалось получить токен доступа");
 
-        // Получение данных пользователя
-        var userInfo = await httpClientFactory.CreateClient().GetFromJsonAsync<MailRuUserInfo>(
-            $"https://oauth.mail.ru/userinfo?access_token={tokenData.AccessToken}");
+            var tokenData = await tokenResponse.Content.ReadFromJsonAsync<MailRuTokenResponse>();
+            if (string.IsNullOrEmpty(tokenData?.AccessToken))
+                return BadRequest("Неверный токен");
 
-        DateOnly? birthDate = null;
-        if (!string.IsNullOrEmpty(userInfo?.Birthday) &&
-            DateOnly.TryParse(userInfo.Birthday, out var parsedDate))
-            birthDate = parsedDate;
+            // Get user info
+            var userInfo = await GetMailRuUserInfo(tokenData.AccessToken);
+            if (userInfo is null)
+                return BadRequest("Не удалось получить информацию о пользователе");
 
-        // Обработка пользователя
-        var user = await FindOrCreateUser(
-            email: userInfo!.Email,
-            externalLoginId: userInfo.Id,
-            externalLoginType: ExternalLoginType.MailRu,
-            avatar: userInfo.Image,
-            dateOfBirth: birthDate,
-            fullName: $"{userInfo.FirstName} {userInfo.LastName}".Trim());
-
-        return RedirectWithToken(user);
+            // Process user data
+            var user = await FindOrCreateUser(
+                userInfo.Email,
+                userInfo.Id,
+                ExternalLoginType.MailRu,
+                avatar: string.IsNullOrEmpty(userInfo.Image)
+                    ? $"https://avatar.mail.ru/{userInfo.Id}/{userInfo.DefaultAvatarId}"
+                    : userInfo.Image,
+                fullName: $"{userInfo.LastName} {userInfo.FirstName} {userInfo.Patronymic}",
+                dateOfBirth: ParseBirthDate(userInfo.Birthday));
+            
+            var token = jwtService.GenerateToken(user);
+            return Redirect($"/auth-complete?token={token}");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Ошибка сервера: {ex.Message}");
+        }
     }
+    
+    private static DateOnly? ParseBirthDate(string? dateStr)
+    {
+        if (string.IsNullOrEmpty(dateStr)) return null;
+
+        var formats = new[] { "dd.MM.yyyy", "yyyy-MM-dd" };
+        foreach (var format in formats)
+        {
+            if (DateOnly.TryParseExact(dateStr, format, 
+                CultureInfo.InvariantCulture, 
+                DateTimeStyles.None, 
+                out var date))
+            {
+                return date;
+            }
+        }
+        return null;
+    }
+
+    private async Task<MailRuUserInfo?> GetMailRuUserInfo(string accessToken)
+    {
+        var client = httpClientFactory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = 
+            new AuthenticationHeaderValue("Bearer", accessToken);
+
+        var response = await client.GetAsync("https://oauth.mail.ru/userinfo");
+        if (!response.IsSuccessStatusCode) return null;
+
+        return await response.Content.ReadFromJsonAsync<MailRuUserInfo>();
+    }
+
     #endregion
 
     #region Одноклассники (Не работает)
@@ -1384,19 +1430,21 @@ public partial class OAuth2Controller(
     public IActionResult InitEpicGamesAuth()
     {
         var state = Guid.NewGuid().ToString("N");
-        Response.Cookies.Append("oauth_state", state, new CookieOptions
+        Response.Cookies.Append("epic_state", state, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Lax
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTime.UtcNow.AddMinutes(5)
         });
 
         var authUrl = "https://www.epicgames.com/id/authorize?" +
-            $"client_id={_epicGamesSettings.ClientId}" +
-            $"&redirect_uri={Uri.EscapeDataString(_epicGamesSettings.RedirectUri)}" +
-            "&response_type=code" +
-            "&scope=basic_profile+friends_list+openid" +
-            $"&state={state}";
+                      $"client_id={_epicGamesSettings.ClientId}" +
+                      $"&redirect_uri={Uri.EscapeDataString(_epicGamesSettings.RedirectUri)}" +
+                      "&response_type=code" +
+                      "&scope=openid+profile+email" +
+                      "&access_type=offline" +
+                      $"&state={state}";
 
         return Redirect(authUrl);
     }
@@ -1408,70 +1456,39 @@ public partial class OAuth2Controller(
     {
         try
         {
-            var expectedState = Request.Cookies["oauth_state"];
-            if (state != expectedState)
-                return BadRequest("Invalid state");
+            var expectedState = Request.Cookies["epic_state"];
+            if (state != expectedState) return BadRequest("Invalid state");
 
-            using var client = httpClientFactory.CreateClient();
-
-            // 1. Запрос токена
-            var tokenRequest = new HttpRequestMessage(
-                HttpMethod.Post,
-                "https://api.epicgames.dev/epic/oauth/v2/token");
-
-            var authHeader = Convert.ToBase64String(Encoding.UTF8.GetBytes(
-                $"{_epicGamesSettings.ClientId}:{_epicGamesSettings.ClientSecret}"));
-
-            tokenRequest.Content = new FormUrlEncodedContent(new Dictionary<string, string>
-        {
-            {"grant_type", "authorization_code"},
-            {"code", code},
-            {"redirect_uri", _epicGamesSettings.RedirectUri},
-            {"deployment_id", _epicGamesSettings.DeploymentId}
-        });
-
-            tokenRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", authHeader);
-
-            var tokenResponse = await client.SendAsync(tokenRequest);
-
-            // 2. Расширенная обработка ошибок
-            if (!tokenResponse.IsSuccessStatusCode)
-            {
-                var errorContent = await tokenResponse.Content.ReadAsStringAsync();
-                return BadRequest($"Epic Games error: {errorContent}");
-            }
+            var httpClient = httpClientFactory.CreateClient();
+            // Получение токена
+            var tokenResponse = await httpClient.PostAsync(
+                "https://api.epicgames.dev/epic/oauth/v2/token",
+                new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    {"client_id", _epicGamesSettings.ClientId},
+                    {"client_secret", _epicGamesSettings.ClientSecret},
+                    {"code", code},
+                    {"grant_type", "authorization_code"},
+                    {"redirect_uri", _epicGamesSettings.RedirectUri}
+                }));
 
             var tokenData = await tokenResponse.Content.ReadFromJsonAsync<EpicGamesTokenResponse>();
+            if (tokenData?.AccessToken is null) return BadRequest("Epic auth failed");
 
-            // 3. Проверка обязательных полей
-            if (string.IsNullOrEmpty(tokenData?.AccessToken) || string.IsNullOrEmpty(tokenData.AccountId))
-                return BadRequest("Invalid token response");
+            // Получение данных пользователя
+            using var userRequest = new HttpRequestMessage(HttpMethod.Get, "https://api.epicgames.dev/epic/oauth/v2/userInfo");
+            userRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenData.AccessToken);
+    
+            var userInfoResponse = await httpClient.SendAsync(userRequest);
+            var userInfo = await userInfoResponse.Content.ReadFromJsonAsync<EpicGamesUserInfo>();
 
-            // 4. Запрос информации о пользователе
-            var userInfoRequest = new HttpRequestMessage(
-                HttpMethod.Get,
-                $"https://api.epicgames.dev/epic/id/v2/accounts?accountId={tokenData.AccountId}");
-
-            userInfoRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenData.AccessToken);
-
-            var userInfoResponse = await client.SendAsync(userInfoRequest);
-
-            if (!userInfoResponse.IsSuccessStatusCode)
-                return BadRequest("Failed to get user info");
-
-            var users = await userInfoResponse.Content.ReadFromJsonAsync<List<EpicGamesUserInfo>>();
-            var userInfo = users?.FirstOrDefault();
-
-            if (userInfo is null)
-                return BadRequest("No user data found");
-
-            // 5. Создание/обновление пользователя
+            // Обработка данных
             var user = await FindOrCreateUser(
-                email: userInfo.Email,
-                externalLoginId: userInfo.AccountId,
+                email: userInfo?.Email ?? $"{userInfo?.Sub}@epic.temp",
+                externalLoginId: userInfo!.Sub,
                 externalLoginType: ExternalLoginType.EpicGames,
-                fullName: userInfo.DisplayName,
-                usernameBase: userInfo.DisplayName);
+                avatar: userInfo.Picture,
+                fullName: userInfo.PreferredUsername);
 
             return RedirectWithToken(user);
         }
@@ -1557,7 +1574,7 @@ public partial class OAuth2Controller(
 
     #endregion
 
-    #region TikTok (Проверяет приложение)
+    #region TikTok
 
     [HttpGet("tiktok/init")]
     public IActionResult InitTikTokAuth()

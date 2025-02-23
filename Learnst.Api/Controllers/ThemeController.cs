@@ -2,6 +2,7 @@
 using Learnst.Infrastructure.Exceptions;
 using Learnst.Infrastructure.Interfaces;
 using Learnst.Infrastructure.Models;
+using Learnst.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Learnst.Api.Controllers;
@@ -9,7 +10,7 @@ namespace Learnst.Api.Controllers;
 [ApiController]
 [Route("[controller]")]
 public class ThemeController(
-    IAsyncRepository<User, Guid> usersRepository,
+    UsersRepository usersRepository,
     IAsyncRepository<Theme, string> themesRepository
 ) : ControllerBase
 {
@@ -33,7 +34,7 @@ public class ThemeController(
                 u => u.Theme
             ]) ?? throw new NotFoundException<User>(userId);
 
-            if (!_freeThemes.Contains(themeId) && !user.UserSubscriptions.Any(us => us.EndDate > DateTime.UtcNow))
+            if (!_freeThemes.Contains(themeId) && !await usersRepository.IsPremium(userId))
                 throw new AccessViolationException("Пользователь не обладает премиум-подпиской.");
 
             if (!await themesRepository.ExistsAsync(t => t.Id == themeId))

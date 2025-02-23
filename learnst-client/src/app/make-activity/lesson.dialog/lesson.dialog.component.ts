@@ -20,7 +20,6 @@ import { FileService } from '../../../services/file.service';
 import { ValidationService } from '../../../services/validation.service';
 import { AnswerType } from './../../../enums/AnswerType';
 import { LessonType } from './../../../enums/LessonType';
-import { format } from 'date-fns';
 
 @Component({
   selector: 'app-lesson-dialog',

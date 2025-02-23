@@ -1,37 +1,35 @@
-<div class="container">
-  <a mat-button routerLink="" (click)="goBack()">Назад</a>
-  @if (!loading) {
-    @switch (lesson?.lessonType) {
-      @case (LessonType.LongRead) {
-        <div class="md-container" [innerHTML]="innerHTML"></div>
-      }
-      @case (LessonType.Video) {
-        <h2>{{ lesson?.title }}</h2>
-        <div class="video-container">
-          <app-vjs-player
-            noDownloading
-            id="videoPlayer"
-            [options]="{
-              fluid: true,
-              controls: true,
-              autoplay: true,
-              playbackRates: [.5, 1, 1.5, 2],
-              sources: [{
-                type: 'video/mp4',
-                src: lesson?.videoUrl!
-              }]
-            }"
+@if (lesson) {
+  <div class="container">
+    <a mat-button (click)="goBack()" class="mb">Назад</a>
+    <h1>{{lesson!.title}}</h1>
+    @if (!loading) {
+      @switch (lesson.lessonType) {
+        @case (LessonType.LongRead) {
+          <div class="md-container" [innerHTML]="innerHTML"></div>
+        }
+        @case (LessonType.Video) {
+          <media-theme-sutro
+            style="--media-secondary-color: #616161; --media-accent-color: #007bff;"
           >
-            Ваш браузер не поддерживает воспроизводение видео, скачайте его <a mat-raised-button [href]="'videos/' + lesson?.videoUrl">по этой ссылке</a>
-          </app-vjs-player>
-        </div>
+            <video
+              slot="media"
+              playsinline
+              crossorigin
+              [src]="lesson.videoUrl"
+            >
+              Ваш браузер не поддерживает видео
+            </video>
+          </media-theme-sutro>
+        }
+        @case (LessonType.Test) {
+          <h2>{{ lesson.title }}</h2>
+          <app-questions [questions]="lesson.questions"></app-questions>
+        }
       }
-      @case (LessonType.Test) {
-        <h2>{{ lesson?.title }}</h2>
-        <app-questions [questions]="lesson?.questions"></app-questions>
-      }
+    } @else {
+      <mat-spinner></mat-spinner>
     }
-  } @else {
-    <mat-spinner></mat-spinner>
-  }
-</div>
+  </div>
+} @else {
+  <div class="danger">Урок не найден</div>
+}

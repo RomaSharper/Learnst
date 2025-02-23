@@ -59,8 +59,8 @@
 
 .main-navigation {
   position: relative;
-  box-shadow: var(--mat-sys-level2);
   color: var(--mat-sys-secondary);
+  box-shadow: var(--mat-sys-level2);
   background: var(--mat-sys-secondary-container);
 
   .hamburger {
@@ -134,8 +134,8 @@
       bottom: 0;
       height: 100px;
       padding: 16px;
-      position: fixed;
       display: flex;
+      position: fixed;
       align-items: center;
       border-top: 1px solid var(--mat-sys-outline);
       background: var(--mat-sys-secondary-container);
@@ -144,19 +144,19 @@
         gap: 12px;
         width: 100%;
         display: flex;
-        padding: 32px;
-        align-items: start;
-        justify-content: center;
+        padding: 30px 8px;
+        justify-content: flex-start;
 
         img {
-          width: 60px;
+          width: 48px;
           border-radius: 50%;
           aspect-ratio: 1 / 1;
           vertical-align: middle;
         }
-        
+
         .user-name {
           font-size: 18px;
+          margin-left: 8px;
           color: var(--mat-sys-on-surface);
         }
       }
@@ -175,7 +175,7 @@
             color: var(--mat-sys-primary);
             background: var(--mat-sys-surface-container-high);
           }
-          
+
           &.active {
             font-weight: bold;
             color: var(--mat-sys-primary);
@@ -300,8 +300,9 @@
     }
 
     .user-area {
+      height: 40px;
       margin: 4px 8px;
-      border-radius: 20px;
+      border-radius: 50%;
       box-shadow: var(--mat-sys-level2);
 
       button {

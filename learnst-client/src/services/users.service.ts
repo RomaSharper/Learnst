@@ -36,6 +36,10 @@ export class UsersService {
     return this.http.get<User | null>(`${this.apiUrl}/email/${email}`);
   }
 
+  isPremium(userId: string): Observable<{ premium: boolean }> {
+    return this.http.get<{ premium: boolean }>(`${this.apiUrl}/${userId}/isPremium`);
+  }
+
   createUser(user: User): Observable<User> {
     return this.http.post<User>(this.apiUrl, user);
   }

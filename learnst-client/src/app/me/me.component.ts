@@ -358,16 +358,17 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       if (!confirmed || !this.user) return;
 
       // Удаляем профиль
-      this.usersService.deleteUser(this.user.id!).pipe(
-        catchError(err => {
+      this.usersService.deleteUser(this.user.id!).subscribe({
+        next: () => {
+          this.alertService.showSnackBar(`Аккаунт ${this.user?.username} успешно удалён.`);
+          this.authService.logout();
+          this.router.navigate(['/login']);
+        },
+        error: err => {
           this.alertService.showSnackBar('Не удалось удалить аккаунт.');
           console.error(err);
           return of(null);
-        })
-      ).subscribe(() => {
-        // Показываем сообщение об успешном удалении
-        this.alertService.showSnackBar(`Аккаунт ${this.user?.username} успешно удалён.`);
-        this.router.navigate(['/logout']);
+        }
       });
     });
   }

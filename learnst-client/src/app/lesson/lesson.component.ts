@@ -1,10 +1,9 @@
+import { LessonType } from './../../enums/LessonType';
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
-import { LessonType } from '../../enums/LessonType';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
 import { Return } from '../../helpers/Return';
 import { Lesson } from '../../models/Lesson';
@@ -13,7 +12,6 @@ import { AuthService } from '../../services/auth.service';
 import { DocumentService } from '../../services/document.service';
 import { LessonsService } from '../../services/lessons.service';
 import { QuestionsComponent } from '../questions/questions.component';
-import { VjsPlayerComponent } from '../vjs-player/vjs-player.component';
 import { AlertService } from './../../services/alert.service';
 
 @Return()
@@ -21,26 +19,20 @@ import { AlertService } from './../../services/alert.service';
   selector: 'app-lesson',
   templateUrl: './lesson.component.html',
   styleUrls: ['./lesson.component.scss'],
+  schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
   imports: [
-    RouterLink,
     MatButtonModule,
     QuestionsComponent,
-    VjsPlayerComponent,
-    NoDownloadingDirective,
     MatProgressSpinnerModule,
   ]
 })
 export class LessonComponent extends MediumScreenSupport implements OnInit {
+[x: string]: any;
   loading = true;
   innerHTML = '';
   lesson?: Lesson;
   userId?: string;
-  currentSpeed = 1;
   goBack!: () => void;
-  isMouseHeld = false;
-  showSpeedMenu = false;
-  videoElement?: HTMLVideoElement;
-  playbackRates = [0.25, 0.5, 1, 1.5, 2];
 
   LessonType = LessonType;
 

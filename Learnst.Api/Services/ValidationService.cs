@@ -1,5 +1,4 @@
-﻿using Learnst.Domain;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using Learnst.Api.Models;
 using Learnst.Infrastructure;

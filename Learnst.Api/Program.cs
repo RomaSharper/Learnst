@@ -37,6 +37,7 @@ builder.Services.AddAutoMapper(cfg =>
 
 // Регистрация сервисов
 builder.Services.AddScoped<JwtService>()
+    .AddScoped<UsersRepository>()
     .AddScoped<ActivitiesRepository>()
     .AddScoped<IEmailSender, SmtpEmailSender>()
     .AddScoped<IValidationService, ValidationService>()
@@ -68,6 +69,7 @@ builder.Services.Configure<VkSettings>(builder.Configuration.GetSection("Vk"))
 // Настройка базы данных и аутентификации
 builder.Services.AddRequestTimeout(TimeSpan.FromSeconds(100))
     .AddDbContext<ApplicationDbContext>(options => options
+        .EnableSensitiveDataLogging()
         .UseSqlServer(builder.Configuration.GetConnectionString(connectionStringName)), ServiceLifetime.Transient)
     .AddJwtAuthentication(builder.Configuration)
     .AddAuthorization()

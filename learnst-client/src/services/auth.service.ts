@@ -50,6 +50,7 @@ export class AuthService {
       localStorage.removeItem(this.TOKEN_KEY);
       localStorage.removeItem(this.ACCOUNTS_KEY);
       this.accountsSubject.next([]);
+      this.router.navigate(['/login']);
     } else
       // Очистка только текущей сессии
       this.clearAuthData();
@@ -179,16 +180,32 @@ export class AuthService {
     const accounts = this.accountsSubject.value;
     const existingAccount = accounts.find(acc => acc.id === payload.openid);
 
+    // Сбрасываем isCurrent для всех аккаунтов
     const updatedAccounts = accounts.map(acc => ({
       ...acc,
       isCurrent: false
     }));
 
-    const newAccount = existingAccount
-      ? { ...existingAccount, accessToken: encryptedToken, isCurrent: true }
-      : this.createStoredUser(payload, encryptedToken);
+    let newAccount: StoredUser;
 
-    if (!existingAccount) {
+    if (existingAccount) {
+      // Обновляем существующий аккаунт
+      newAccount = {
+        ...existingAccount,
+        accessToken: encryptedToken,
+        isCurrent: true,
+        lastLogin: new Date()
+      };
+
+      // Заменяем существующий аккаунт в updatedAccounts
+      const index = updatedAccounts.findIndex(acc => acc.id === existingAccount.id);
+      if (index !== -1)
+        updatedAccounts[index] = newAccount;
+      else
+        updatedAccounts.push(newAccount);
+    } else {
+      // Создаем новый аккаунт
+      newAccount = this.createStoredUser(payload, encryptedToken);
       updatedAccounts.push(newAccount);
     }
 

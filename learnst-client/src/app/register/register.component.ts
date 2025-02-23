@@ -83,23 +83,24 @@ export class RegisterComponent extends MediumScreenSupport {
 
     const user: User = {
       tickets: [],
+      authCodes: [],
       educations: [],
       userLessons: [],
       userAnswers: [],
       role: Role.User,
+      themeId: 'light',
+      applications: [],
       ticketAnswers: [],
       userActivities: [],
       workExperiences: [],
+      userSubscriptions: [],
       socialMediaProfiles: [],
       dateOfBirth: dateOfBirth!,
       username: formValue.username,
       emailAddress: formValue.email,
       passwordHash: formValue.password,
-      themeId: 'light',
-      userSubscriptions: [],
       banner: ColorsService.generateColor(),
-      cardBackground: ColorsService.generateColor(),
-      cardBorderColor: ColorsService.generateColor(),
+      background: ColorsService.generateColor()
     };
 
     // Шаг 1: Отправляем код подтверждения

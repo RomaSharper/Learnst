@@ -16,7 +16,7 @@ public class Ticket : IEntity
     public TicketStatus Status { get; set; } = TicketStatus.Open;
     
     public Guid AuthorId { get; set; }
-    
+
     [JsonIgnore] public User? Author { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

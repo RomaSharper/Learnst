@@ -4,6 +4,7 @@ import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material
 import { ConfirmDialogComponent } from '../app/confirm-dialog/confirm-dialog.component';
 import { MessageDialogComponent } from '../app/message-dialog/message-dialog.component';
 import { VerificationDialogComponent } from '../app/verification-dialog/verification-dialog.component';
+import { ChangeBannerDialogComponent } from '../app/user-menu/change-banner-dialog/change-banner-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -72,6 +73,13 @@ export class AlertService {
     return this.dialog.open(VerificationDialogComponent, {
       width: '400px',
       data: { email }
+    });
+  }
+
+  openChangeBannerDialog(isPremium: boolean): MatDialogRef<ChangeBannerDialogComponent, any> {
+    return this.dialog.open(ChangeBannerDialogComponent, {
+      width: '400px',
+      data: { isPremium }
     });
   }
 

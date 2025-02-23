@@ -62,11 +62,9 @@
   border-radius: 50%;
 }
 
-.account-avatar {
-  width: 32px;
-  height: 32px;
-  margin-right: 8px;
-  border-radius: 50%;
+.account-username {
+  top: 12px;
+  position: absolute;
 }
 
 .account-actions {
@@ -76,8 +74,10 @@
   align-items: center;
 
   mat-icon {
+    right: 0;
     cursor: pointer;
     font-size: 18px;
+    position: absolute;
     color: var(--mat-sys-neutral);
 
     &.error:hover {
@@ -86,6 +86,23 @@
   }
 }
 
-.current {
-  filter: brightness(1.1);
+.account-btn,
+.add-account-btn {
+  padding-right: 48px;
+
+  .current {
+    background: var(--mat-sys-secondary-container);
+  }
+}
+
+.account-btn {
+  mat-icon {
+    top: 12px;
+  }
+}
+
+.add-account-btn {
+  mat-icon {
+    top: 15px;
+  }
 }

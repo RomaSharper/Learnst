@@ -29,14 +29,15 @@
           <li><a routerLink="/tickets" routerLinkActive="active">Поддержка</a></li>
           <li class="user-area">
             <button type="button" mat-stroked-button class="user-btn" routerLinkActive="active"
-              [title]="user()?.username" [matMenuTriggerFor]="userMenu">
+              [matTooltip]="user()?.username" [matMenuTriggerFor]="userMenu">
               <img [alt]="user()?.username" [src]="user()!.avatarUrl" noDownloading
-                [title]="user()!.username" placeholder="/assets/icons/user-192x192.png">
-              <a class="user-name" routerLinkActive="active">{{ user()!.username }}</a>
+                placeholder="/assets/icons/user-192x192.png">
+              <span class="user-name">{{ user()!.username | ellipsis:10 }}</span>
             </button>
-            <mat-menu #userMenu="matMenu" class="user-menu-container">
-              <app-user-menu [user]="user()!" />
-            </mat-menu>
+
+              <mat-menu #userMenu="matMenu">
+                <app-user-menu [user]="user()!" />
+              </mat-menu>
           </li>
         } @else {
           <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
@@ -120,7 +121,7 @@
         </ul>
         @if (user()) {
           <div class="user-area">
-            <button type="button" [title]="user()?.username" mat-icon-button [matMenuTriggerFor]="userMenu">
+            <button type="button" [matTooltip]="user()?.username" mat-icon-button [matMenuTriggerFor]="userMenu">
               <img [src]="user()?.avatarUrl" [alt]="user()?.username" class="user-avatar"
                 placeholder="/assets/icons/user-192x192.png">
             </button>

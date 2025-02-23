@@ -28,7 +28,6 @@ import { DocsComponent } from './dev/docs/docs.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'not-found', component: NotFoundComponent },
   { path: 'manuals/termsofuse', component: TermsOfUseComponent },
   { path: 'manuals/privacypolicy', component: PrivacyPolicyComponent },
   { path: 'login', component: LoginComponent },
@@ -52,5 +51,5 @@ export const routes: Routes = [
   { path: 'dev/docs', component: DocsComponent, canActivate: [AuthGuard] },
   { path: 'dev', component: DevComponent, canActivate: [AuthGuard] },
 
-  { path: '**', redirectTo: '/not-found' }
+  { path: '**', component: NotFoundComponent }
 ];

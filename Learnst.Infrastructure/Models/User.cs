@@ -15,14 +15,9 @@ public class User : IEntity
 
     [StringLength(2048)] public string? AvatarUrl { get; set; }
 
-    /// <summary>
-    /// Изображение для заднего фона пользовательской карточки (может быть как цветом, так и ссылкой на изображение)
-    /// </summary>
     [StringLength(2048)] public string Banner { get; set; } = "#333333";
 
-    [StringLength(100)] public string CardBackground { get; set; } = "#232527";
-
-    [StringLength(100)] public string CardBorderColor { get; set; } = "#000000";
+    [StringLength(2048)] public string Background { get; set; } = "#333333";
 
     public DateOnly? DateOfBirth { get; set; }
 
@@ -30,7 +25,7 @@ public class User : IEntity
     [RegularExpression("^(?!_)[a-z0-9]+(_[a-z0-9]+)*(?<!_)$", ErrorMessage = "Имя пользователя должно содержать только строчные латинские буквы, цифры и максимум одно нижнее подчёркивание (не в начале и не в конце)")]
     public string Username { get; set; } = string.Empty;
 
-    [EmailAddress, StringLength(255)]
+    [StringLength(255)]
     public string? EmailAddress { get; set; }
 
     [MaxLength(60)] public string? PasswordHash { get; set; }
@@ -43,7 +38,7 @@ public class User : IEntity
     
     public ExternalLoginType? ExternalLoginType { get; set; }
 
-    public string ThemeId { get; set; } = "light";
+    [StringLength(50)] public string ThemeId { get; set; } = "light";
 
     public Theme? Theme { get; set; }
 
@@ -75,8 +70,7 @@ public class User : IEntity
 
     #endregion
 
-    #region Деятельность в 
-    [DeleteBehavior(DeleteBehavior.NoAction)]
+    #region Деятельность в поддержке
     public ICollection<Ticket> Tickets { get; set; } = [];
     
     [DeleteBehavior(DeleteBehavior.NoAction)]

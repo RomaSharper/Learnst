@@ -35,8 +35,9 @@ export interface User {
   externalLoginType?: ExternalLoginType;
   themeId: string;
   theme?: Theme;
+  authCodes: string[];
+  applications: string[];
   userSubscriptions: UserSubscription[];
-  banner?: string;
-  cardBackground: string;
-  cardBorderColor: string;
+  banner: string;
+  background: string;
 }
