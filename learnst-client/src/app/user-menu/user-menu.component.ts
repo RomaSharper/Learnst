@@ -75,10 +75,11 @@ export class UserMenuComponent implements OnInit {
   logout(): void {
     this.alertService.openConfirmDialog(
       'Выход из всех аккаунтов',
-      'Вы уверены, что хотите выйти из всех аккаунтов?'
+      'Вы уверены, что хотите выйти из текущего аккаунта?'
     ).afterClosed().subscribe(result => {
-      if (result)
-        this.authService.logout(true);
+      if (!result) return;
+      this.authService.removeAccount(this.user?.id!);
+      this.router.navigate(['/login']);
     });
   }
 
