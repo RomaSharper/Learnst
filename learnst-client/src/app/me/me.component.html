@@ -9,6 +9,14 @@
       <!-- Личные данные -->
       <mat-card class="full-width">
         <h3>Личные данные</h3>
+        @if (user.externalLoginType) {
+          <mat-icon
+            class="external-icon"
+            [matTooltip]="'Пользователь вошёл с помощью ' + ExternalLoginTypeHelper.getName(user.externalLoginType)"
+          >
+            badge
+          </mat-icon>
+        }
         <div class="avatar-container">
           <input type="file" id="avatarInput" (change)="onFileSelected($event)" class="hidden" accept="image/*">
           <img [src]="user.avatarUrl" [alt]="user.username" class="avatar" (click)="openFilePicker()"

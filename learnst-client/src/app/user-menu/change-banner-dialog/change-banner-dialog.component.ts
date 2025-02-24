@@ -30,14 +30,20 @@ export class ChangeBannerDialogComponent {
   private alertService = inject(AlertService);
   private dialogRef = inject(MatDialogRef<ChangeBannerDialogComponent>);
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { isPremium: boolean }) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { isPremium: boolean, banner?: string }) {
     this.isPremium = data.isPremium;
+    const isBannerImage = data.banner?.startsWith('http');
     this.form = this.fb.group({
       bannerType: ['color', Validators.required], // 'color' or 'image'
       color: ['#000000'], // Для цвета
       imageUrl: [''], // Для URL изображения
       imageFile: [null] // Для файла
     });
+
+    if (isBannerImage)
+      this.form.patchValue({ color: data.banner });
+    else
+      this.form.patchValue({ imageUrl: data.banner });
   }
 
   onColorSelected(target: EventTarget | null) {
@@ -48,11 +54,10 @@ export class ChangeBannerDialogComponent {
   onFileSelected(event: Event) {
     const fileInput = event.target as HTMLInputElement;
     const file = fileInput.files?.[0];
-    if (file && file.size <= 5 * 1024 * 1024) { // Ограничение на 5 МБ
+    if (file && file.size <= 5 * 1024 * 1024) // Ограничение на 5 МБ
       this.form.patchValue({ imageFile: file });
-    } else {
+    else
       this.alertService.showSnackBar('Нельзя загружать файлы больше 5 МБ!');
-    }
   }
 
   confirm() {

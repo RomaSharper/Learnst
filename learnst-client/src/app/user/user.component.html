@@ -9,6 +9,14 @@
       <div class="full-width">
         <mat-card>
           <h3>Личные данные</h3>
+          @if (user.externalLoginType) {
+            <mat-icon
+              class="external-icon"
+              [matTooltip]="'Пользователь вошёл с помощью ' + ExternalLoginTypeHelper.getName(user.externalLoginType)"
+            >
+              badge
+            </mat-icon>
+          }
           <div class="avatar-container">
             <img [src]="user.avatarUrl" [alt]="user.username" class="avatar" placeholder="/assets/icons/user-192x192.png"
             loading="lazy" noDownloading>

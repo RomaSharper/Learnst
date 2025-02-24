@@ -1,3 +1,4 @@
+import { ExternalLoginTypeHelper } from './../../helpers/ExternalLoginTypeHelper';
 import { Location } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -78,6 +79,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   readonly maxDate = new Date();
   readonly minDate = new Date(1900, 0, 1);
 
+  ExternalLoginTypeHelper = ExternalLoginTypeHelper;
   SocialMediaPlatformHelper = SocialMediaPlatformHelper;
 
   constructor(
@@ -357,11 +359,10 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
     ).afterClosed().subscribe(confirmed => {
       if (!confirmed || !this.user) return;
 
-      // Удаляем профиль
       this.usersService.deleteUser(this.user.id!).subscribe({
         next: () => {
           this.alertService.showSnackBar(`Аккаунт ${this.user?.username} успешно удалён.`);
-          this.authService.logout();
+          this.authService.removeAccount(this.user?.id!);
           this.router.navigate(['/login']);
         },
         error: err => {

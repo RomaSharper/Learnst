@@ -83,7 +83,7 @@ export class UserMenuComponent implements OnInit {
   }
 
   openChangeBannerDialog(): void {
-    this.alertService.openChangeBannerDialog(this.isPremium()).afterClosed().subscribe({
+    this.alertService.openChangeBannerDialog(this.isPremium(), this.user.banner).afterClosed().subscribe({
       next: response => {
         if (!response) return;
 
@@ -92,11 +92,10 @@ export class UserMenuComponent implements OnInit {
         if (bannerType === 'color') {
           this.user.banner = color; // Устанавливаем цвет
         } else if (bannerType === 'image') {
-          if (imageUrl) {
+          if (imageUrl)
             this.user.banner = imageUrl; // Если URL, обновляем баннер
-          } else if (imageFile) {
+          else if (imageFile)
             this.uploadImageFile(imageFile, this.user); // Если файл, загружаем его
-          }
         }
 
         // Обновляем данные пользователя

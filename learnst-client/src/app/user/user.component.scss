@@ -3,7 +3,21 @@
     cursor: default; // Аватар не кликабельный на чужой странице
   }
 
+  .avatar-container {
+    position: relative;
+  }
+
   mat-form-field {
     pointer-events: none; // Запрещаем редактирование полей
+  }
+}
+
+.avatar-container {
+  position: relative;
+
+  .external-icon {
+    right: 8px;
+    bottom: 8px;
+    position: absolute;
   }
 }

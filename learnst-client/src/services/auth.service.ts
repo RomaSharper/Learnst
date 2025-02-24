@@ -46,16 +46,12 @@ export class AuthService {
 
   logout(fullLogout = false): void {
     if (fullLogout) {
-      // Полная очистка всех данных
-      localStorage.removeItem(this.TOKEN_KEY);
+      this.clearAuthData();
       localStorage.removeItem(this.ACCOUNTS_KEY);
       this.accountsSubject.next([]);
       this.router.navigate(['/login']);
     } else
-      // Очистка только текущей сессии
       this.clearAuthData();
-
-    this.currentUserSubject.next(null);
   }
 
   switchAccount(accountId: string): void {

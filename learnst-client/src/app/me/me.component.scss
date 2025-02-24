@@ -8,8 +8,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    position: fixed;
     z-index: 2;
+    position: fixed;
     padding: 4px * 6 4px * 4;
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
@@ -47,5 +47,15 @@
       font-size: 0.9em;
       // color: @not-found-error;
     }
+  }
+}
+
+.avatar-container {
+  position: relative;
+
+  .external-icon {
+    right: 8px;
+    bottom: 8px;
+    position: absolute;
   }
 }

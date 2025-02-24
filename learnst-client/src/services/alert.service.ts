@@ -76,10 +76,10 @@ export class AlertService {
     });
   }
 
-  openChangeBannerDialog(isPremium: boolean): MatDialogRef<ChangeBannerDialogComponent, any> {
+  openChangeBannerDialog(isPremium: boolean, banner?: string): MatDialogRef<ChangeBannerDialogComponent, any> {
     return this.dialog.open(ChangeBannerDialogComponent, {
       width: '400px',
-      data: { isPremium }
+      data: { isPremium, banner }
     });
   }
 

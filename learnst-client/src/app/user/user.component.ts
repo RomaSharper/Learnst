@@ -1,3 +1,4 @@
+import { ExternalLoginTypeHelper } from './../../helpers/ExternalLoginTypeHelper';
 
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
@@ -16,6 +17,8 @@ import { User } from '../../models/User';
 import { DateRangePipe } from '../../pipes/date.range.pipe';
 import { AuthService } from '../../services/auth.service';
 import { UsersService } from '../../services/users.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-user',
@@ -23,10 +26,12 @@ import { UsersService } from '../../services/users.service';
   styleUrls: ['./user.component.scss'],
   imports: [
     FormsModule,
+    MatIconModule,
     MatCardModule,
     DateRangePipe,
     MatInputModule,
     MatButtonModule,
+    MatTooltipModule,
     MatGridListModule,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
@@ -39,6 +44,7 @@ export class UserComponent implements OnInit {
   date = new Date();
   errorMessage = '';
 
+  ExternalLoginTypeHelper = ExternalLoginTypeHelper;
   SocialMediaPlatformHelper = SocialMediaPlatformHelper;
 
   constructor(
