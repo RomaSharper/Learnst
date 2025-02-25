@@ -25,9 +25,7 @@ import { TicketListComponent } from './ticket-list/ticket-list.component';
 import { UserComponent } from './user/user.component';
 import { UsersComponent } from './users/users.component';
 import { DocsComponent } from './dev/docs/docs.component';
-import { JavaSandboxComponent } from './code/java-sandbox/java-sandbox';
 import { JavaScriptSandboxComponent } from './code/javascript-sandbox/javascript-sandbox';
-import { CSharpSandboxComponent } from './code/csharp-sandbox/csharp-sandbox';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -39,13 +37,14 @@ export const routes: Routes = [
   { path: 'me', component: MeComponent, canActivate: [AuthGuard], canDeactivate: [ConfirmGuard] },
   { path: 'user/:userId', component: UserComponent, canActivate: [AuthGuard] },
   { path: 'community', component: UsersComponent, canActivate: [AuthGuard] },
+  { path: 'code/js', component: JavaScriptSandboxComponent },
 
   { path: 'activities', component: ActivitiesComponent, canActivate: [AuthGuard] },
   { path: 'activity/make', component: MakeActivityComponent, canActivate: [RoleGuard], data: { roles: [Role.Specialist, Role.Admin] } },
   { path: 'activity/make/:activityId', component: MakeActivityComponent, canActivate: [RoleGuard], data: { roles: [Role.Specialist, Role.Admin] } },
   { path: 'activity/:activityId', component: ActivityComponent, canActivate: [AuthGuard] },
   { path: 'lesson/:lessonId', component: LessonComponent, canActivate: [AuthGuard] },
-  { path: 'tickets', component: TicketListComponent, canActivate: [AuthGuard] },
+  { path: 'support', component: TicketListComponent, canActivate: [AuthGuard] },
   { path: 'ticket/:ticketId', component: TicketDetailComponent, canActivate: [AuthGuard] },
   { path: 'app/:clientId', component: DevAppComponent, canActivate: [AuthGuard] },
   { path: 'dev/apps/oauth2', component: OAuth2Component, canActivate: [AuthGuard] },
@@ -53,10 +52,6 @@ export const routes: Routes = [
   { path: 'dev/apps', component: DevAppsComponent, canActivate: [AuthGuard] },
   { path: 'dev/docs', component: DocsComponent, canActivate: [AuthGuard] },
   { path: 'dev', component: DevComponent, canActivate: [AuthGuard] },
-
-  { path: 'code/csharp', component: CSharpSandboxComponent },
-  { path: 'code/js', component: JavaScriptSandboxComponent },
-  { path: 'code/java', component: JavaSandboxComponent },
 
   { path: '**', component: NotFoundComponent }
 ];

@@ -1,5 +1,5 @@
 import { catchError, of } from 'rxjs';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
+import { AccountsManagerComponent } from '../accounts-manager/accounts-manager.component';
 
 @Component({
   selector: 'app-login',
@@ -27,37 +28,21 @@ import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective'
     MatTooltipModule,
     ReactiveFormsModule,
     NoDownloadingDirective,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    AccountsManagerComponent
   ]
 })
-export class LoginComponent implements OnInit {
-  form: FormGroup;
+export class LoginComponent {
+  private router = inject(Router);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+
   loading = false;
   hidePassword = true;
-
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private authService: AuthService,
-    private alertService: AlertService
-  ) {
-    this.form = new FormGroup({
-      login: new FormControl('', [Validators.required, ValidationService.loginValidator]),
-      password: new FormControl('', [Validators.required])
-    });
-  }
-
-  ngOnInit(): void {
-    // Здесь нужно избавиться от localStorage, и читать токен из заголовков
-    // this.route.queryParams.subscribe(params => {
-    //   const token = params['token'];
-    //   if (token) {
-    //     localStorage.setItem('token', token);
-    //     this.authService.checkSession();
-    //     this.router.navigate(['/']);
-    //   }
-    // });
-  }
+  form = new FormGroup({
+    login: new FormControl('', [Validators.required, ValidationService.loginValidator]),
+    password: new FormControl('', [Validators.required])
+  });
 
   onSubmit() {
     if (this.form.invalid) {
@@ -67,7 +52,7 @@ export class LoginComponent implements OnInit {
 
     this.loading = true; // Включаем состояние загрузки
     const formValue = this.form.value;
-    this.authService.login(formValue.login, formValue.password)
+    this.authService.login(formValue.login!, formValue.password!)
       .pipe(
         catchError(error => {
           console.error('Ошибка', error.message);

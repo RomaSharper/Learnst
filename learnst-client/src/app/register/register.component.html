@@ -41,11 +41,11 @@
       <mat-form-field appearance="outline" class="full-width mb">
         <mat-label>Пароль</mat-label>
         <input matInput id="password" maxlength="50" formControlName="password" autocomplete="new-password"
-          placeholder="Введите ваш пароль" [type]="hidePassword ? 'password' : 'text'">
+          placeholder="Введите ваш пароль" [type]="hidePassword() ? 'password' : 'text'">
 
-        <button matSuffix type="button" mat-icon-button class="input-button" (click)="hidePassword = !hidePassword"
-          [attr.aria-label]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'">
-          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        <button matSuffix type="button" mat-icon-button class="input-button" (click)="hidePassword.set(!hidePassword())"
+          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'">
+          <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
 
         @if (form.get('password')?.invalid && form.get('password')?.touched) {
@@ -56,11 +56,11 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Повторите пароль</mat-label>
         <input matInput maxlength="50" id="repeat-password" autocomplete="new-password" placeholder="Введите ваш пароль"
-          formControlName="repeatPassword" [type]="hidePassword ? 'password' : 'text'">
+          formControlName="repeatPassword" [type]="hidePassword() ? 'password' : 'text'">
 
-        <button matSuffix type="button" mat-icon-button class="input-button" (click)="hidePassword = !hidePassword"
-          [attr.aria-label]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'">
-          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        <button matSuffix type="button" mat-icon-button class="input-button" (click)="hidePassword.set(!hidePassword())"
+          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'">
+          <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
 
         @if (form.hasError('passwordsDontMatch') && form.get('repeatPassword')?.touched) {
@@ -70,8 +70,10 @@
         }
       </mat-form-field>
 
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAAA-lpuh_BYavc73X"></div>
+
       <button mat-flat-button [disabled]="form.invalid || loading" color="primary" type="submit" class="full-width">
-        @if (loading) {
+        @if (loading()) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else {
           Создать аккаунт

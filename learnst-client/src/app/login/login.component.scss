@@ -15,27 +15,6 @@
   width: 100%;
 }
 
-.separator {
-  display: flex;
-  margin: 16px 0;
-  position: relative;
-  align-items: center;
-
-  &::before,
-  &::after {
-    flex: 1;
-    content: '';
-    height: 1px; // Заменил @step * 0.25
-    background-color: var(--mdc-filled-button-container-color, var(--mat-sys-primary));
-  }
-
-  .or-text {
-    padding: 0 16px; // Заменил @step * 2
-    font-size: 14px; // Заменил @font-size-medium
-    color: var(--text-color-secondary); //  Добавил цвет текста
-  }
-}
-
 .social-grid {
   gap: 12px;
   display: grid;

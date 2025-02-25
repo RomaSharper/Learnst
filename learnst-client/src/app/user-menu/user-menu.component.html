@@ -3,7 +3,7 @@
     class="banner"
     [style.background]="user.banner"
   >
-    @if (isCurrentUser()) {
+    @if (!redirectOnly) {
       <button type="button" mat-icon-button matTooltip="Изменить баннер"
         (click)="openChangeBannerDialog()">
         <mat-icon>edit</mat-icon>
@@ -21,7 +21,9 @@
     <p class="about-me">{{ user.aboutMe }}</p>
   </div>
 
-  @if (isCurrentUser()) {
+  @if (redirectOnly) {
+    <a mat-flat-button [routerLink]="['/user/', user.id || '0']">Перейти на страницу</a>
+  } @else {
     <button type="button" mat-menu-item routerLink="/me">
       <mat-icon>edit</mat-icon>
       Редактировать профиль
@@ -66,7 +68,5 @@
       <mat-icon>logout</mat-icon>
       Выйти
     </button>
-  } @else {
-    <a mat-flat-button [routerLink]="['/users/', currentUser()?.id || '0']">Перейти на страницу</a>
   }
 </div>

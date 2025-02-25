@@ -24,7 +24,18 @@
                     </mat-chip>
                   }
                 </div>
-                <p><strong>Автор:</strong> <a mat-button color="primary" class="ml" [routerLink]="['/user', activity.author?.id]"> {{ activity.author?.username }}</a></p>
+                <div class="author-container">
+                  <a mat-stroked-button [matMenuTriggerFor]="userMenu"
+                    [matTooltip]="activity.author?.username" class="user-btn">
+                    <img [src]="activity.author?.avatarUrl" class="user-avatar"
+                      [alt]="activity.author?.username" placeholder="/assets/icons/user-192x192.png">
+                    <span class="username">{{ activity.author?.username }}</span>
+                  </a>
+
+                  <mat-menu #userMenu="matMenu" class="user-menu-container">
+                    <app-user-menu [user]="activity.author!" [redirectOnly]="true" />
+                  </mat-menu>
+                </div>
                 <p><strong>Дата создания:</strong> {{ activity.createdAt | ruDate }}</p>
                 <p><strong>Уровень:</strong> {{ LevelHelper.getName(activity.level) }}</p>
                 @if (activity.minimalScore > 0) {

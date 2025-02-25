@@ -185,3 +185,51 @@ ul {
     }
   }
 }
+
+.user-btn {
+  line-height: 1; // Добавлено для выравнивания текста
+  padding: 6px 16px; // Уменьшен padding для компактности
+  align-items: center;
+  border-radius: 24px;
+  display: inline-flex; // Изменено с flex на inline-flex
+  vertical-align: middle; // Для inline-элементов
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-high);
+
+  // Исправление для Angular Material button
+  ::ng-deep .mat-button-wrapper {
+    gap: 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    .user-avatar {
+      transform: scale(1.05);
+    }
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0; // Запрет уменьшения размера
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    border: 2px solid var(--mat-sys-outline);
+  }
+
+  .username {
+    overflow: hidden;
+    font-weight: 500;
+    max-width: 150px; // Ограничение ширины имени
+    font-size: 0.9rem;
+    white-space: nowrap; // Запрет переноса текста
+    text-overflow: ellipsis;
+    color: var(--mat-sys-on-surface);
+  }
+}

@@ -32,6 +32,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 })
 export class UserMenuComponent implements OnInit {
   @Input() user!: User;
+  @Input() redirectOnly!: boolean;
 
   router = inject(Router);
   dialog = inject(MatDialog);
@@ -42,17 +43,15 @@ export class UserMenuComponent implements OnInit {
   currentUser = toSignal(this.authService.getUser());
 
   isPremium = signal(false);
-  isCurrentUser = signal(false);
   isBannerImage = signal(false);
   accounts = this.authService.accounts;
 
   ngOnInit(): void {
     if (this.user && this.user.id) {
-      this.isCurrentUser.set(this.currentUser()!.id === this.user.id);
       this.usersService.isPremium(this.user.id).subscribe({
         next: response => {
           this.isPremium.set(response.premium);
-          this.isBannerImage.set(this.user.banner.startsWith('http') && this.isPremium());
+          this.isBannerImage.set(this.user!.banner.startsWith('http') && this.isPremium());
         },
         error: error => {
           console.error(error);
@@ -68,8 +67,8 @@ export class UserMenuComponent implements OnInit {
   deleteAccount(accountId: string, event: MouseEvent): void {
     event.stopPropagation();
     this.alertService.openConfirmDialog(
-      'Выход из аккаунта',
-      'Вы уверены, что хотите выйти из этого аккаунта?'
+      'Выход из дополнительного аккаунта',
+      'Вы уверены, что хотите выйти из дополнительного аккаунта?'
     ).afterClosed().subscribe(result => {
       if (result)
         this.authService.removeAccount(accountId);
@@ -78,7 +77,7 @@ export class UserMenuComponent implements OnInit {
 
   logout(): void {
     this.alertService.openConfirmDialog(
-      'Выход из всех аккаунтов',
+      'Выход из текущего аккаунта',
       'Вы уверены, что хотите выйти из текущего аккаунта?'
     ).afterClosed().subscribe(result => {
       if (!result) return;
@@ -88,23 +87,23 @@ export class UserMenuComponent implements OnInit {
   }
 
   openChangeBannerDialog(): void {
-    this.alertService.openChangeBannerDialog(this.isPremium(), this.user.banner).afterClosed().subscribe({
+    this.alertService.openChangeBannerDialog(this.isPremium(), this.user!.banner).afterClosed().subscribe({
       next: response => {
         if (!response) return;
 
         const { bannerType, color, imageUrl, imageFile } = response;
 
         if (bannerType === 'color') {
-          this.user.banner = color; // Устанавливаем цвет
+          this.user!.banner = color; // Устанавливаем цвет
         } else if (bannerType === 'image') {
           if (imageUrl)
-            this.user.banner = imageUrl; // Если URL, обновляем баннер
+            this.user!.banner = imageUrl; // Если URL, обновляем баннер
           else if (imageFile)
-            this.uploadImageFile(imageFile, this.user); // Если файл, загружаем его
+            this.uploadImageFile(imageFile, this.user!); // Если файл, загружаем его
         }
 
         // Обновляем данные пользователя
-        this.updateUser(this.user);
+        this.updateUser(this.user!);
       },
       error: error => {
         console.error(error);
@@ -116,9 +115,8 @@ export class UserMenuComponent implements OnInit {
   private uploadImageFile(file: File, user: User): void {
     this.fileService.upload(file).subscribe({
       next: (response) => {
-        if (user.banner) {
+        if (user.banner)
           this.deleteOriginalBanner(user.banner); // Удаляем старый баннер, если он есть
-        }
         user.banner = response.fileUrl; // Обновляем URL с загруженного файла
         this.updateUser(user); // Обновляем данные пользователя на сервере
       },

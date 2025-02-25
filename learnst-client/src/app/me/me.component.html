@@ -9,39 +9,40 @@
       <!-- Личные данные -->
       <mat-card class="full-width">
         <h3>Личные данные</h3>
-        @if (user()?.externalLoginType) {
+        @if (user.externalLoginType) {
           <mat-icon
             class="external-icon"
-            [matTooltip]="'Пользователь вошёл с помощью ' + ExternalLoginTypeHelper.getName(user()?.externalLoginType!)"
+            [matTooltip]="'Пользователь вошёл с помощью ' + ExternalLoginTypeHelper.getName(user.externalLoginType!)"
           >
             badge
           </mat-icon>
         }
         <div class="avatar-container">
           <input type="file" id="avatarInput" (change)="onFileSelected($event)" class="hidden" accept="image/*">
-          <img [src]="user()?.avatarUrl" [alt]="user()?.username" class="avatar" (click)="openFilePicker()"
-            placeholder="/images/user()?.png" matTooltip="Изменить аватар" matTooltipPosition="below">
+          <img [src]="user.avatarUrl" [alt]="user.username" class="avatar" (click)="openFilePicker()"
+            placeholder="/images/user.png" matTooltip="Изменить аватар" matTooltipPosition="below">
         </div>
         <div class="user-info">
           <mat-form-field appearance="outline">
             <mat-label>ФИО</mat-label>
-            <input matInput id="fullname" [(ngModel)]="user()!.fullName" placeholder="Иванов Иван Иванович" maxlength="48"
+            <input matInput id="fullname" [(ngModel)]="user!.fullName" placeholder="Иванов Иван Иванович" maxlength="48"
               (input)="onUserInfoChange()">
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Имя пользователя</mat-label>
-            <input matInput id="username" [(ngModel)]="user()!.username" placeholder="Имя пользователя" maxlength="20"
+            <input matInput id="username" [(ngModel)]="user!.username" placeholder="Имя пользователя" maxlength="20"
               minlength="3" (input)="onUserInfoChange()" required>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Дата рождения</mat-label>
-            <input matInput id="date" [(ngModel)]="user()!.dateOfBirth" placeholder="Выберите день рождения" readonly
+            <input matInput id="date" [(ngModel)]="user!.dateOfBirth" placeholder="Выберите день рождения" readonly
               (dateChange)="onUserInfoChange()" [matDatepicker]="picker" [min]="minDate" [max]="maxDate">
             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker [touchUi]="isMediumScreen"></mat-datepicker>
-            <button type="button" matTooltip="Очистить дату">
+            <button type="button" mat-icon-button matTooltip="Очистить дату" class="clear-date-btn"
+              (click)="clearDate()">
               <mat-icon>close</mat-icon>
             </button>
             <mat-hint>dd.mm.yyyy</mat-hint>
@@ -49,25 +50,25 @@
 
           <mat-form-field appearance="outline">
             <mat-label>Электронная почта</mat-label>
-            <input matInput id="email" type="email" [(ngModel)]="user()!.emailAddress" placeholder="Электронная почта"
+            <input matInput id="email" type="email" [(ngModel)]="user!.emailAddress" placeholder="Электронная почта"
               maxlength="255" (input)="onUserInfoChange()">
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Город</mat-label>
-            <input matInput id="city" type="text" [(ngModel)]="user()!.city" placeholder="Город" maxlength="50"
+            <input matInput id="city" type="text" [(ngModel)]="user!.city" placeholder="Город" maxlength="50"
               (input)="onUserInfoChange()">
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Резюме</mat-label>
-            <textarea matInput id="resume" [(ngModel)]="user()!.resumeText" maxlength="500"
+            <textarea matInput id="resume" [(ngModel)]="user!.resumeText" maxlength="500"
               placeholder="Введите ваше резюме" rows="4" (input)="onUserInfoChange()"></textarea>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Обо мне</mat-label>
-            <textarea matInput id="aboutMe" [(ngModel)]="user()!.aboutMe" maxlength="500" placeholder="Расскажите о себе"
+            <textarea matInput id="aboutMe" [(ngModel)]="user!.aboutMe" maxlength="500" placeholder="Расскажите о себе"
               rows="4" (input)="onUserInfoChange()"></textarea>
           </mat-form-field>
         </div>
@@ -136,7 +137,7 @@
           Добавить профиль
         </button>
         <div class="cards">
-          @for (socialMediaProfile of user()?.socialMediaProfiles; track socialMediaProfile) {
+          @for (socialMediaProfile of user.socialMediaProfiles; track socialMediaProfile) {
           <div class="social-card">
             <a [href]="socialMediaProfile.url" target="_blank">
               <img [src]="SocialMediaPlatformHelper.getImagePath(socialMediaProfile.platform)" alt=""
@@ -162,7 +163,7 @@
           Добавить образование
         </button>
         <div class="cards">
-          @for (education of user()?.educations; track education) {
+          @for (education of user.educations; track education) {
           <div class="education-item">
             <div><strong>Вуз:</strong> {{ education.institutionName }}</div>
             <div><strong>Факультет:</strong> {{ education.degree }}</div>
@@ -186,7 +187,7 @@
           Добавить опыт работы
         </button>
         <div class="cards">
-          @for (job of user()?.workExperiences; track job) {
+          @for (job of user.workExperiences; track job) {
           <div class="work-item">
             <div><strong>Компания:</strong> {{ job.companyName }}</div>
             <div><strong>Должность:</strong> {{ job.position }}</div>

@@ -30,6 +30,8 @@ import { CertificateService } from '../../services/certificate.service';
 import { LessonsService } from '../../services/lessons.service';
 import { TagHelper } from './../../helpers/TagHelper';
 import { InfoCard } from './../../models/InfoCard';
+import { MatMenuModule } from '@angular/material/menu';
+import { UserMenuComponent } from '../user-menu/user-menu.component';
 
 interface ActivityNode {
   id: string;
@@ -50,9 +52,11 @@ interface ActivityNode {
     MatCardModule,
     MatTreeModule,
     MatListModule,
+    MatMenuModule,
     MatChipsModule,
     MatButtonModule,
     MatTooltipModule,
+    UserMenuComponent,
     MatProgressBarModule,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
@@ -60,8 +64,6 @@ interface ActivityNode {
   ]
 })
 export class ActivityComponent implements OnInit {
-  LevelHelper = LevelHelper;
-
   activeTab = 0;
   loading = true;
   totalPoints = 0;
@@ -77,6 +79,8 @@ export class ActivityComponent implements OnInit {
   isCertificateLoading = false;
   isCertificateAvailable = false;
   dataSource: ActivityNode[] = [];
+
+  LevelHelper = LevelHelper;
 
   // Метод для доступа к дочерним элементам узла
   childrenAccessor = (node: ActivityNode) => node.children ?? [];

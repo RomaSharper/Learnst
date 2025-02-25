@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, parseISO } from 'date-fns';
 import { format, toZonedTime } from 'date-fns-tz';
 import { ru } from 'date-fns/locale';
 
@@ -8,66 +8,88 @@ import { ru } from 'date-fns/locale';
   standalone: true
 })
 export class RuDateTimePipe implements PipeTransform {
+  private readonly timezoneRegex = /(GMT[+-]\d{4}|\([A-Za-zа-яА-Я\s,]+\))/;
+  private readonly dateFormats = [
+    'EEE MMM dd yyyy HH:mm:ss', // Формат типа "Tue Feb 25 2025 23:23:03"
+    'yyyy-MM-dd',               // ISO форматы
+    'dd.MM.yyyy',               // Русский формат
+    'MM/dd/yyyy'                // Американский формат
+  ];
+
   transform(value: string | Date | number | undefined | null, type: 'relative' | 'absolute' = 'absolute'): string | null {
     if (!value) return null;
-    if (value === 'Только что') return value;
 
-    // Преобразуем входящее значение в объект Date
-    const utcDate = this.parseDateAsUTC(value); // Явно парсим как UTC
-    if (!utcDate) return null;
+    const parsedDate = this.parseDate(value);
+    if (!parsedDate) return null;
 
-    // Преобразуем UTC-время в локальное время пользователя
-    const localDate = this.convertUtcToLocal(utcDate);
+    const localDate = this.convertToLocalTime(parsedDate);
 
-    // Форматируем дату в зависимости от типа
-    if (type === 'relative') {
-      return this.formatRelative(localDate); // Относительное время
-    } else {
-      return this.formatAbsolute(localDate); // Абсолютное время
+    return type === 'relative'
+      ? this.formatRelative(localDate)
+      : this.formatAbsolute(localDate);
+  }
+
+  private parseDate(value: string | Date | number): Date | null {
+    if (value instanceof Date) return value;
+    if (typeof value === 'number') return new Date(value);
+
+    // Обработка строковых форматов
+    if (this.isTimezonePresent(value)) {
+      return this.parseWithTimezone(value);
+    }
+
+    // Попытка парсинга разными методами
+    return this.safeDateParse(value);
+  }
+
+  private isTimezonePresent(value: string): boolean {
+    return this.timezoneRegex.test(value);
+  }
+
+  private parseWithTimezone(value: string): Date | null {
+    try {
+      // Удаляем информацию о временной зоне в скобках
+      const cleanedDateString = value.replace(/\s*\([^)]+\)$/, '');
+      return new Date(cleanedDateString);
+    } catch {
+      return null;
     }
   }
 
-  /**
-   * Парсит входящее значение как UTC-время.
-   * Поддерживает строки ISO, числа (timestamp) и объекты Date.
-   */
-  private parseDateAsUTC(value: string | Date | number): Date | null {
-    if (value instanceof Date)
-      return value; // Если уже объект Date
-    else if (typeof value === 'string')
-      return new Date(value + 'Z'); // Добавляем суффикс "Z" для явного указания UTC
-    else if (typeof value === 'number')
-      return new Date(value); // Создаём Date из timestamp
-    return null; // Некорректный формат
+  private safeDateParse(value: string): Date | null {
+    // Пробуем разные форматы дат
+    for (const _fmt of this.dateFormats) {
+      try {
+        const parsed = parseISO(value);
+        if (!isNaN(parsed.getTime())) return parsed;
+      } catch {
+
+      }
+    }
+
+    // Пробуем стандартный парсинг
+    try {
+      const timestamp = Date.parse(value);
+      if (!isNaN(timestamp)) return new Date(timestamp);
+    } catch {}
+
+    return null;
   }
 
-  /**
-   * Преобразует UTC-время в локальное время пользователя.
-   */
-  private convertUtcToLocal(utcDate: Date): Date {
-    // Определяем временную зону клиента
-    const clientTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-    // Преобразуем UTC-время в локальное время
-    return toZonedTime(utcDate, clientTimeZone);
+  private convertToLocalTime(date: Date): Date {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return toZonedTime(date, timeZone);
   }
 
-  /**
-   * Форматирует дату как относительное время (например, "2 минуты назад").
-   */
   private formatRelative(date: Date): string {
     return formatDistanceToNow(date, {
-      addSuffix: true, // Добавляет суффикс "назад" или "через"
-      locale: ru // Локализация на русский язык
-    });
+      addSuffix: true,
+      locale: ru,
+      includeSeconds: true
+    }); //.replace(/^примерно /, '');
   }
 
-  /**
-   * Форматирует дату как абсолютное время (например, "1 февраля 2025 года").
-   */
   private formatAbsolute(date: Date): string {
-    return format(date, "d MMMM yyyy 'года' HH:mm", {
-      locale: ru // Локализация на русский язык
-    });
+    return format(date, "d MMMM yyyy 'г.' HH:mm", { locale: ru });
   }
 }

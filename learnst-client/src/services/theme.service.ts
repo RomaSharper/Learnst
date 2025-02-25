@@ -205,10 +205,7 @@ export class ThemeService {
   }
 
   setTheme(themeId: string, isInitialLoad = false): void {
-    if (!this.user?.id) {
-      console.warn('Пользователь не авторизован для установки темы');
-      return;
-    }
+    if (!this.user?.id) return;
 
     const theme = this.themes.find(t => t.id === themeId);
     if (!theme) return;

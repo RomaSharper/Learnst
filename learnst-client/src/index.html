@@ -52,9 +52,20 @@
   <!-- Скрипты -->
   <script type="module" src="https://cdn.jsdelivr.net/npm/player.style/sutro/+esm"></script>
   <script type="module" src="https://cdn.jsdelivr.net/npm/hls-video-element@1.2/+esm"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" defer></script>
 </head>
 <body class="mat-typography">
   <app-root></app-root>
-  <noscript class="danger">Пожалуйста, включите JavaScript, чтобы использовать приложение.</noscript>
+  <script>
+    window.onloadTurnstileCallback = function () {
+      turnstile.render("#example-container", {
+        sitekey: "<YOUR_SITE_KEY>",
+        callback: function (token) {
+          console.log(`Challenge Success ${token}`);
+        },
+      });
+    };
+  </script>
+  <noscript class="error static">Пожалуйста, включите JavaScript, чтобы использовать приложение.</noscript>
 </body>
 </html>

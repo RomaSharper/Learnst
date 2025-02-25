@@ -74,8 +74,13 @@ body {
   }
 }
 
-a, button {
+/*a, button {
   color: var(--mat-sys-primary);
+}*/
+
+a {
+  text-decoration: none;
+  font-size: 18px !important;
 }
 
 input::-ms-clear,
@@ -86,6 +91,55 @@ input::-ms-reveal {
 video {
   min-width: calc(100vw - 40px);
   min-height: calc(100vh - 140px);
+}
+
+.sandbox {
+  .output {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--background-alt);
+    border-radius: 4px;
+  }
+  pre {
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
+  }
+  button {
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+}
+
+.error {
+  &.static, &:hover {
+    color: var(--mat-sys-on-error);
+  }
+}
+
+.separator {
+  display: flex;
+  margin: 16px 0;
+  position: relative;
+  align-items: center;
+
+  &::before,
+  &::after {
+    flex: 1;
+    content: '';
+    height: 1px; // Заменил @step * 0.25
+    background-color: var(--mdc-filled-button-container-color, var(--mat-sys-primary));
+  }
+
+  .or-text {
+    padding: 0 16px; // Заменил @step * 2
+    font-size: 14px; // Заменил @font-size-medium
+    color: var(--text-color-secondary); //  Добавил цвет текста
+  }
 }
 
 // 6. Переопределение компонентов Material
@@ -167,11 +221,6 @@ textarea {
   resize: vertical;
   max-height: 4px * 50;
   min-height: fit-content;
-}
-
-a, button {
-  text-decoration: none;
-  font-size: 18px !important;
 }
 
 p {

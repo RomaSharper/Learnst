@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -24,6 +24,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { UsersService } from '../../services/users.service';
 import { User } from '../../models/User';
 import { ColorsService } from '../../services/colors.service';
+import { TurnstileService } from '../../services/turnstile.service';
 
 @Return()
 @Component({
@@ -47,20 +48,24 @@ import { ColorsService } from '../../services/colors.service';
   ]
 })
 export class RegisterComponent extends MediumScreenSupport {
+  @ViewChild('turnstileContainer') turnstileContainer!: ElementRef;
+
   form: FormGroup;
-  loading = false;
-  hidePassword = true;
+  loading = signal(false);
+  hidePassword = signal(true);
   readonly maxDate = new Date();
   readonly minDate = new Date(1900, 0, 1);
   emailDomains = ValidationService.emailDomains;
 
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private emailService = inject(EmailService);
+  private usersService = inject(UsersService);
+  private turnstile = inject(TurnstileService);
+
   constructor(
-    private authService: AuthService,
-    private alertService: AlertService,
-    private emailService: EmailService,
-    private usersService: UsersService,
-    public location: Location,
-    public router: Router
+    private router: Router,
+    public location: Location
   ) {
     super();
     this.form = new FormGroup({
@@ -68,15 +73,33 @@ export class RegisterComponent extends MediumScreenSupport {
       email: new FormControl('', [Validators.required, Validators.email, ValidationService.domainValidator]),
       password: new FormControl('', [Validators.required, Validators.minLength(8), ValidationService.passwordValidator]),
       repeatPassword: new FormControl('', [Validators.required]),
+      cfToken: new FormControl('', Validators.required)
     }, {
       validators: [this.matchValidator('password', 'repeatPassword')],
     });
   }
 
-  onSubmit() {
-    if (this.form.invalid || this.loading) return;
+  ngOnInit() {
+    this.initTurnstile();
+  }
 
-    this.loading = true; // Включаем состояние загрузки
+  private initTurnstile() {
+    this.turnstile.init(
+      'cf-turnstile',
+      '0x4AAAAAAA-lpuh_BYavc73X',
+      (token: string) => {
+        this.form.patchValue({ cfToken: token });
+      }
+    );
+  }
+
+  onSubmit() {
+    if (this.form.invalid || !this.form.value.cfToken || this.loading()) {
+      this.turnstile.reset();
+      return;
+    }
+
+    this.loading.set(true); // Включаем состояние загрузки
 
     const formValue = this.form.value;
     const dateOfBirth = DateService.formatDate(formValue.dateOfBirth);
@@ -112,7 +135,7 @@ export class RegisterComponent extends MediumScreenSupport {
       })
     ).subscribe(codeResponse => {
       if (!codeResponse) {
-        this.loading = false; // Выключаем состояние загрузки, если код не отправлен
+        this.loading.set(false); // Выключаем состояние загрузки, если код не отправлен
         return;
       }
 
@@ -120,7 +143,7 @@ export class RegisterComponent extends MediumScreenSupport {
       this.alertService.openVerificationCodeDialog(user.emailAddress!).afterClosed().subscribe(result => {
         if (result === 0) {
           this.alertService.showSnackBar("Вы отказались от подтверждения почты.");
-          this.loading = false; // Выключаем состояние загрузки
+          this.loading.set(false); // Выключаем состояние загрузки
           return; // Пользователь закрыл диалог
         }
 
@@ -131,11 +154,11 @@ export class RegisterComponent extends MediumScreenSupport {
             catchError(errorObj => {
               const error: string = errorObj?.error?.message ?? 'Произошла ошибка при регистрации. Попробуйте еще раз.';
               this.alertService.showSnackBar(error);
-              this.loading = false; // Выключаем состояние загрузки при ошибке
+              this.loading.set(false); // Выключаем состояние загрузки при ошибке
               return of(null);
             })
           ).subscribe(registeredUser => {
-            this.loading = false; // Выключаем состояние загрузки
+            this.loading.set(false); // Выключаем состояние загрузки
 
             if (registeredUser) {
               this.authService.login(user.username, user.passwordHash!).subscribe();
@@ -145,7 +168,7 @@ export class RegisterComponent extends MediumScreenSupport {
           });
         } else {
           this.alertService.showSnackBar('Неверный код');
-          this.loading = false; // Выключаем состояние загрузки
+          this.loading.set(false); // Выключаем состояние загрузки
         }
       });
     });

@@ -25,7 +25,7 @@
         @if (user()) {
           <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
           <li><a routerLink="/activities" routerLinkActive="active">Обучение</a></li>
-          <li><a routerLink="/users" routerLinkActive="active">Пользователи</a></li>
+          <li><a routerLink="/community" routerLinkActive="active">Пользователи</a></li>
           <li><a routerLink="/tickets" routerLinkActive="active">Поддержка</a></li>
           <li class="user-area">
             <button type="button" mat-stroked-button class="user-btn" routerLinkActive="active"
@@ -61,16 +61,9 @@
             </a>
           </li>
           <li>
-            <a>Основы</a>
+            <a>Обучение</a>
             <div class="submenu">
               <div class="columns">
-                <!-- <div>
-                  <h3>О сайте</h3>
-                  <ul>
-                    <li><a routerLink="/manuals/intro">Введение</a></li>
-                    <li><a routerLink="/manuals/basics">Концепции и правила</a></li>
-                  </ul>
-                </div> -->
                 <div>
                   <h3>Обучение</h3>
                   <ul>
@@ -80,6 +73,13 @@
                     <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'lua' }">Lua</a></li>
                   </ul>
                 </div>
+              </div>
+            </div>
+          </li>
+          <li>
+            <a>Информация</a>
+            <div class="submenu">
+              <div class="columns">
                 <div>
                   <h3>Информация</h3>
                   <ul>
@@ -93,23 +93,14 @@
             </div>
           </li>
           <li>
-            <a>Разработка</a>
+            <a>Прочее</a>
             <div class="submenu">
               <div class="columns">
                 <div>
-                  <h3>Инструменты разработчика</h3>
+                  <h3>Прочее</h3>
                   <ul>
+                    <li><a routerLink="/support">Поддержка</a></li>
                     <li><a routerLink="/code/js">Песочница JavaScript</a></li>
-                    <li><a routerLink="/code/java">Песочница Java</a></li>
-                    <li><a routerLink="/code/csharp">Песочница C#</a></li>
-                  </ul>
-                </div>
-                <div>
-                  <h3>Полезные библиотеки</h3>
-                  <ul>
-                    <li><a routerLink="/manuals/libs/maven">Maven (Gradle)</a></li>
-                    <li><a routerLink="/manuals/libs/nuget">NuGet</a></li>
-                    <li><a routerLink="/manuals/libs/npm">NPM</a></li>
                   </ul>
                 </div>
               </div>
@@ -127,7 +118,7 @@
             </button>
 
             <mat-menu #userMenu="matMenu" class="user-menu-container">
-              <app-user-menu [user]="user()!" />
+              <app-user-menu [user]="user()!" [redirectOnly]="false" />
             </mat-menu>
           </div>
         } @else {

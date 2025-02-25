@@ -1,9 +1,5 @@
-﻿using System.Globalization;
-using System.Net.Http.Headers;
-using System.Security.Cryptography;
+﻿using System.Net.Http.Headers;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using Learnst.Api.Models;
 using Learnst.Api.Services;
@@ -33,7 +29,7 @@ public partial class OAuth2Controller(
     IOptions<TwitchSettings> twitchSettings,
     IOptions<TikTokSettings> tiktokSettings,
     IOptions<DiscordSettings> discordSettings,
-    IOptions<FacebookSettings> facebookSettings,
+    // IOptions<FacebookSettings> facebookSettings,
     // IOptions<TelegramSettings> telegramSettings,
     IOptions<MicrosoftSettings> microsoftSettings,
     IOptions<EpicGamesSettings> epicGamesSettings
@@ -50,7 +46,7 @@ public partial class OAuth2Controller(
     private readonly YandexSettings _yandexSettings = yandexSettings.Value;
     private readonly MailRuSettings _mailRuSettings = mailRuSettings.Value;
     private readonly DiscordSettings _discordSettings = discordSettings.Value;
-    private readonly FacebookSettings _facebookSettings = facebookSettings.Value;
+    // private readonly FacebookSettings _facebookSettings = facebookSettings.Value;
     // private readonly TelegramSettings _telegramSettings = telegramSettings.Value;
     private readonly MicrosoftSettings _microsoftSettings = microsoftSettings.Value;
     private readonly EpicGamesSettings _epicGamesSettings = epicGamesSettings.Value;
@@ -176,7 +172,7 @@ public partial class OAuth2Controller(
     [HttpGet("google/init")]
     public IActionResult InitGoogleAuth()
     {
-        var state = Guid.NewGuid().ToString("N");
+        var state = $"{Guid.NewGuid():N}";
         Response.Cookies.Append("oauth_state", state, new CookieOptions
         {
             HttpOnly = true,
@@ -293,7 +289,7 @@ public partial class OAuth2Controller(
     [HttpGet("yandex/init")]
     public IActionResult InitYandexAuth()
     {
-        var state = Guid.NewGuid().ToString("N");
+        var state = $"{Guid.NewGuid():N}";
         Response.Cookies.Append("oauth_state", state, new CookieOptions
         {
             HttpOnly = true,
@@ -377,7 +373,7 @@ public partial class OAuth2Controller(
     [HttpGet("microsoft/init")]
     public IActionResult InitMicrosoftAuth()
     {
-        var state = Guid.NewGuid().ToString("N");
+        var state = $"{Guid.NewGuid():N}";
         Response.Cookies.Append("oauth_state", state, new CookieOptions
         {
             Secure = true,
@@ -500,7 +496,7 @@ public partial class OAuth2Controller(
     [HttpGet("vk/init")]
     public IActionResult InitVkAuth()
     {
-        var state = Guid.NewGuid().ToString("N");
+        var state = $"{Guid.NewGuid():N}";
         Response.Cookies.Append("oauth_state", state, new CookieOptions
         {
             HttpOnly = true,
@@ -574,7 +570,7 @@ public partial class OAuth2Controller(
     [HttpGet("mailru/init")]
     public IActionResult InitMailRuAuth()
     {
-        var state = Guid.NewGuid().ToString("N");
+        var state = $"{Guid.NewGuid():N}";
         Response.Cookies.Append("oauth_state", state, new CookieOptions
         {
             HttpOnly = true,
@@ -594,9 +590,7 @@ public partial class OAuth2Controller(
     }
 
     [HttpGet("mailru/callback")]
-    public async Task<IActionResult> HandleMailRuCallback(
-        [FromQuery] string code,
-        [FromQuery] string state)
+    public async Task<IActionResult> HandleMailRuCallback([FromQuery] string code, [FromQuery] string state)
     {
         // Проверка state
         var expectedState = Request.Cookies["oauth_state"];
@@ -616,7 +610,8 @@ public partial class OAuth2Controller(
 
         var tokenData = await tokenResponse.Content.ReadFromJsonAsync<MailRuTokenResponse>();
 
-        if (tokenData?.AccessToken is null) return BadRequest("Не удалось получить токен Mail.ru.");
+        if (tokenData?.AccessToken is null)
+            return BadRequest("Не удалось получить токен Mail.ru.");
 
         // Получение данных пользователя
         var userInfo = await httpClientFactory.CreateClient().GetFromJsonAsync<MailRuUserInfo>(
@@ -639,24 +634,6 @@ public partial class OAuth2Controller(
         return RedirectWithToken(user);
     }
 
-    private static DateOnly? ParseBirthDate(string? dateStr)
-    {
-        if (string.IsNullOrEmpty(dateStr)) return null;
-
-        var formats = new[] { "dd.MM.yyyy", "yyyy-MM-dd" };
-        foreach (var format in formats)
-        {
-            if (DateOnly.TryParseExact(dateStr, format, 
-                CultureInfo.InvariantCulture, 
-                DateTimeStyles.None, 
-                out var date))
-            {
-                return date;
-            }
-        }
-        return null;
-    }
-
     #endregion
 
     #region Одноклассники (Не работает)
@@ -664,7 +641,7 @@ public partial class OAuth2Controller(
     /*[HttpGet("ok/init")]
     public IActionResult InitOkAuth()
     {
-        var state = Guid.NewGuid().ToString("N");
+        var state = $"{Guid.NewGuid():N}";
         Response.Cookies.Append("oauth_state", state, new CookieOptions
         {
             HttpOnly = true,
@@ -757,8 +734,8 @@ public partial class OAuth2Controller(
     /*[HttpGet("apple/init")]
     public IActionResult InitAppleAuth()
     {
-        var state = Guid.NewGuid().ToString("N");
-        var nonce = Guid.NewGuid().ToString("N");
+        var state = $"{Guid.NewGuid():N}";
+        var nonce = $"{Guid.NewGuid():N}";
 
         Response.Cookies.Append("oauth_state", state, new CookieOptions
         {
@@ -956,7 +933,7 @@ public partial class OAuth2Controller(
     [HttpGet("github/init")]
     public IActionResult InitGitHubAuth()
     {
-        var state = Guid.NewGuid().ToString("N");
+        var state = $"{Guid.NewGuid():N}";
         Response.Cookies.Append("oauth_state", state, new CookieOptions
         {
             HttpOnly = true,
@@ -1068,7 +1045,7 @@ public partial class OAuth2Controller(
     [HttpGet("discord/init")]
     public IActionResult InitDiscordAuth()
     {
-        var state = Guid.NewGuid().ToString("N");
+        var state = $"{Guid.NewGuid():N}";
         Response.Cookies.Append("oauth_state", state, new CookieOptions
         {
             HttpOnly = true,
@@ -1306,7 +1283,7 @@ public partial class OAuth2Controller(
     [HttpGet("twitch/init")]
     public IActionResult InitTwitchAuth()
     {
-        var state = Guid.NewGuid().ToString("N");
+        var state = $"{Guid.NewGuid():N}";
         Response.Cookies.Append("oauth_state", state, new CookieOptions
         {
             HttpOnly = true,
@@ -1407,7 +1384,7 @@ public partial class OAuth2Controller(
     [HttpGet("epicgames/init")]
     public IActionResult InitEpicGamesAuth()
     {
-        var state = Guid.NewGuid().ToString("N");
+        var state = $"{Guid.NewGuid():N}";
         Response.Cookies.Append("epic_state", state, new CookieOptions
         {
             HttpOnly = true,
@@ -1483,7 +1460,7 @@ public partial class OAuth2Controller(
     /*[HttpGet("facebook/init")]
     public IActionResult InitFacebookAuth()
     {
-        var state = Guid.NewGuid().ToString("N");
+        var state = $"{Guid.NewGuid():N}";
         Response.Cookies.Append("oauth_state", state, new CookieOptions
         {
             HttpOnly = true,
@@ -1557,7 +1534,7 @@ public partial class OAuth2Controller(
     [HttpGet("tiktok/init")]
     public IActionResult InitTikTokAuth()
     {
-        var state = Guid.NewGuid().ToString("N");
+        var state = $"{Guid.NewGuid():N}";
         Response.Cookies.Append("oauth_state", state, new CookieOptions
         {
             HttpOnly = true,

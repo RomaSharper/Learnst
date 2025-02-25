@@ -32,7 +32,8 @@
               "videojs-vtt.js",
               "mux.js/lib/tools/parse-sidx",
               "mux.js/lib/utils/clock",
-              "@xmldom/xmldom"
+              "@xmldom/xmldom",
+              "@ctrl/ngx-codemirror/fesm2022/ctrl-ngx-codemirror.mjs"
             ],
             "outputPath": "dist/learnst-client",
             "index": "src/index.html",
@@ -45,16 +46,12 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              },
-              {
-                "glob": "**/*",
-                "output": "/assets/monaco/",
-                "input": "node_modules/monaco-editor"
               }
             ],
 
             "styles": [
               "src/styles/styles.scss",
+              "node_modules/codemirror/lib/codemirror.css",
               "node_modules/highlight.js/styles/github-dark.css"
             ]
           },
@@ -122,15 +119,12 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              },
-              {
-                "glob": "**/*",
-                "output": "/assets/monaco/",
-                "input": "node_modules/monaco-editor"
               }
             ],
             "styles": [
-              "src/styles/styles.scss"
+              "src/styles/styles.scss",
+              "node_modules/codemirror/lib/codemirror.css",
+              "node_modules/highlight.js/styles/github-dark.css"
             ],
             "scripts": [],
             "karmaConfig": "karma.conf.js"

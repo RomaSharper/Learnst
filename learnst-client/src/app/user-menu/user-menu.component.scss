@@ -1,11 +1,13 @@
 .user-menu {
   text-wrap: wrap;
+  padding: 8px 4px;
+  overflow: hidden;
   max-width: 320px;
 
   .banner {
     height: 64px;
     background-size: cover;
-    border-radius: 8px 8px 0 0;
+    border-radius: 4px 4px 0 0;
     border-bottom: 2px solid var(--mat-sys-secondary-container);
   }
 

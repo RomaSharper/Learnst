@@ -1,0 +1,125 @@
+.accounts-container {
+  padding: 1rem;
+  margin: 0 auto;
+  max-width: 480px;
+
+  h3 {
+    font-weight: 500;
+    margin: 0 0 1.5rem;
+    color: var(--mat-primary-text);
+  }
+}
+
+.account-item {
+  gap: 1rem;
+  display: flex;
+  cursor: pointer;
+  margin: 0.5rem 0;
+  align-items: center;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+  background: var(--mat-sys-surface);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--mat-sys-outline-variant);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  img[mat-list-avatar] {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 2px solid var(--mat-sys-outline);
+  }
+}
+
+.account-info {
+  flex: 1;
+  min-width: 0;
+
+  span {
+    display: block;
+    overflow: hidden;
+    font-weight: 500;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--mat-sys-on-surface);
+  }
+
+  small {
+    display: block;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.account-actions {
+  gap: 0.5rem;
+  display: flex;
+  margin-left: auto;
+  align-items: center;
+  padding-left: 0.5rem;
+
+  button {
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  mat-icon[color="primary"] {
+    color: var(--mat-primary);
+  }
+}
+
+.actions {
+  gap: 1rem;
+  display: flex;
+  margin-top: 1.5rem;
+  justify-content: center;
+
+  button {
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+.no-accounts {
+  padding: 2rem;
+  text-align: center;
+  color: var(--mat-sys-on-secondary-container);
+  font-size: 0.9rem;
+
+  p {
+    margin: 0;
+    opacity: 0.7;
+  }
+}
+
+@media (max-width: 767px) {
+  .account-item {
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .account-actions {
+    gap: 0.25rem;
+  }
+
+  .actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
