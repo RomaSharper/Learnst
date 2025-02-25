@@ -38,7 +38,7 @@ export const routes: Routes = [
   { path: 'logout', component: LogoutComponent, canActivate: [AuthGuard] },
   { path: 'me', component: MeComponent, canActivate: [AuthGuard], canDeactivate: [ConfirmGuard] },
   { path: 'user/:userId', component: UserComponent, canActivate: [AuthGuard] },
-  { path: 'users', component: UsersComponent, canActivate: [AuthGuard] },
+  { path: 'community', component: UsersComponent, canActivate: [AuthGuard] },
 
   { path: 'activities', component: ActivitiesComponent, canActivate: [AuthGuard] },
   { path: 'activity/make', component: MakeActivityComponent, canActivate: [RoleGuard], data: { roles: [Role.Specialist, Role.Admin] } },
