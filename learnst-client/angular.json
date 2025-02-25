@@ -45,6 +45,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "output": "/assets/monaco/",
+                "input": "node_modules/monaco-editor"
               }
             ],
 
@@ -117,6 +122,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "output": "/assets/monaco/",
+                "input": "node_modules/monaco-editor"
               }
             ],
             "styles": [

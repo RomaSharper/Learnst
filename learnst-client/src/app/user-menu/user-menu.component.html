@@ -3,10 +3,12 @@
     class="banner"
     [style.background]="user.banner"
   >
-    <button type="button" mat-icon-button matTooltip="Изменить баннер"
-      (click)="openChangeBannerDialog()">
-      <mat-icon>edit</mat-icon>
-    </button>
+    @if (isCurrentUser()) {
+      <button type="button" mat-icon-button matTooltip="Изменить баннер"
+        (click)="openChangeBannerDialog()">
+        <mat-icon>edit</mat-icon>
+      </button>
+    }
   </div>
 
   <div class="profile-info" (click)="$event.stopPropagation()">
@@ -19,48 +21,52 @@
     <p class="about-me">{{ user.aboutMe }}</p>
   </div>
 
-  <button type="button" mat-menu-item routerLink="/me">
-    <mat-icon>edit</mat-icon>
-    Редактировать профиль
-  </button>
+  @if (isCurrentUser()) {
+    <button type="button" mat-menu-item routerLink="/me">
+      <mat-icon>edit</mat-icon>
+      Редактировать профиль
+    </button>
 
-  <mat-menu #accountsMenu="matMenu">
-    @for (acc of accounts(); track acc.id) {
-      <button class="account-btn" type="button" mat-menu-item
-        [class.current]="acc.isCurrent" (click)="switchAccount(acc.id)">
-        <img [src]="acc.avatarUrl" class="account-avatar" noDownloading
-          placeholder="/assets/icons/user-192x192.png">
-        <span class="account-username">{{ acc.username | ellipsis:8 }}</span>
+    <mat-menu #accountsMenu="matMenu">
+      @for (acc of accounts(); track acc.id) {
+        <button class="account-btn" type="button" mat-menu-item
+          [class.current]="acc.isCurrent" (click)="switchAccount(acc.id)">
+          <img [src]="acc.avatarUrl" class="account-avatar" noDownloading
+            placeholder="/assets/icons/user-192x192.png">
+          <span class="account-username">{{ acc.username | ellipsis:8 }}</span>
+          <div class="account-actions">
+            @if (acc.isCurrent) {
+              <mat-icon matTooltip="Ваш текущий аккаунт">person_check</mat-icon>
+            } @else {
+              <mat-icon
+                class="error"
+                matTooltip="Выйти из аккаунта"
+                (click)="deleteAccount(acc.id, $event)"
+              >
+                logout
+              </mat-icon>
+            }
+          </div>
+        </button>
+      }
+      <button type="button" class="add-account-btn" mat-menu-item routerLink="/login">
         <div class="account-actions">
-          @if (acc.isCurrent) {
-            <mat-icon matTooltip="Ваш текущий аккаунт">person_check</mat-icon>
-          } @else {
-            <mat-icon
-              class="error"
-              matTooltip="Выйти из аккаунта"
-              (click)="deleteAccount(acc.id, $event)"
-            >
-              logout
-            </mat-icon>
-          }
+          <mat-icon>person_add</mat-icon>
+          <span>Добавить аккаунт</span>
         </div>
       </button>
-    }
-    <button type="button" class="add-account-btn" mat-menu-item routerLink="/login">
-      <div class="account-actions">
-        <mat-icon>person_add</mat-icon>
-        <span>Добавить аккаунт</span>
-      </div>
+    </mat-menu>
+
+    <button type="button" mat-menu-item [matMenuTriggerFor]="accountsMenu">
+      <mat-icon>switch_account</mat-icon>
+      Сменить аккаунт
     </button>
-  </mat-menu>
 
-  <button type="button" mat-menu-item [matMenuTriggerFor]="accountsMenu">
-    <mat-icon>switch_account</mat-icon>
-    Сменить аккаунт
-  </button>
-
-  <button type="button" mat-menu-item (click)="logout()">
-    <mat-icon>logout</mat-icon>
-    Выйти
-  </button>
+    <button type="button" mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Выйти
+    </button>
+  } @else {
+    <a mat-flat-button [routerLink]="['/users/', currentUser()?.id || '0']">Перейти на страницу</a>
+  }
 </div>

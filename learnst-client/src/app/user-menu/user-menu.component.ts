@@ -13,6 +13,7 @@ import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDire
 import { UsersService } from '../../services/users.service';
 import { FileService } from '../../services/file.service';
 import { MatButtonModule } from '@angular/material/button';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-user-menu',
@@ -38,13 +39,16 @@ export class UserMenuComponent implements OnInit {
   authService = inject(AuthService);
   usersService = inject(UsersService);
   alertService = inject(AlertService);
+  currentUser = toSignal(this.authService.getUser());
 
-  isPremium = signal<boolean>(false);
+  isPremium = signal(false);
+  isCurrentUser = signal(false);
+  isBannerImage = signal(false);
   accounts = this.authService.accounts;
-  isBannerImage = signal<boolean>(false);
 
   ngOnInit(): void {
     if (this.user && this.user.id) {
+      this.isCurrentUser.set(this.currentUser()!.id === this.user.id);
       this.usersService.isPremium(this.user.id).subscribe({
         next: response => {
           this.isPremium.set(response.premium);

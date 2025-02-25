@@ -1,0 +1,10 @@
+<div>
+  <h2>C# Sandbox</h2>
+  <ngx-monaco-editor
+    [options]="editorOptions"
+    [(ngModel)]="code"
+    (onInit)="onEditorInit($event)"
+  ></ngx-monaco-editor>
+  <button type="button" (click)="runCode()">Run</button>
+  <pre>{{ output }}</pre>
+</div>
