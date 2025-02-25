@@ -3,7 +3,7 @@ export interface StoredUser {
   username: string;
   avatarUrl?: string;
   accessToken: string;
-  refreshToken: string;
+  refreshToken?: string;
   isCurrent: boolean;
   lastLogin: Date;
 }
