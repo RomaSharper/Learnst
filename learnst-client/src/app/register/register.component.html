@@ -28,10 +28,7 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Адрес электронной почты</mat-label>
         <input matInput id="email" formControlName="email" placeholder="Введите электронную почту" autocomplete="email"
-          maxlength="100">
-        <!-- <span class="question-button" matSuffix matTooltip="Поддерживаемые домены: mail.ru, xmail.ru, gmail.com, vk.com, yandex.ru, icloud.com">
-          <mat-icon>help</mat-icon>
-        </span> -->
+          maxlength="100" matTooltip="Поддерживаемые домены: mail.ru, xmail.ru, gmail.com, vk.com, yandex.ru, icloud.com">
         @if (form.get('email')?.hasError('invalidDomain') && form.get('email')?.touched) {
           <mat-error>Домен не поддерживается, см. справку</mat-error>
         } @else if (form.get('email')?.hasError('serverError')) {
@@ -46,7 +43,6 @@
         <input matInput id="password" maxlength="50" formControlName="password" autocomplete="new-password"
           placeholder="Введите ваш пароль" [type]="hidePassword ? 'password' : 'text'">
 
-        <!-- Иконка "глазика" -->
         <button matSuffix type="button" mat-icon-button class="input-button" (click)="hidePassword = !hidePassword"
           [attr.aria-label]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'">
           <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
@@ -62,7 +58,6 @@
         <input matInput maxlength="50" id="repeat-password" autocomplete="new-password" placeholder="Введите ваш пароль"
           formControlName="repeatPassword" [type]="hidePassword ? 'password' : 'text'">
 
-        <!-- Иконка "глазика" -->
         <button matSuffix type="button" mat-icon-button class="input-button" (click)="hidePassword = !hidePassword"
           [attr.aria-label]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'">
           <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>

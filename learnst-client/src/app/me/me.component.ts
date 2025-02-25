@@ -1,10 +1,10 @@
 import { ExternalLoginTypeHelper } from './../../helpers/ExternalLoginTypeHelper';
 import { Location } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormField } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -65,43 +65,42 @@ import { WorkExperienceDialogComponent } from './work.experience.dialog/work.exp
 })
 @Return()
 export class MeComponent extends MediumScreenSupport implements OnInit, CanComponentDeactivate {
-  user?: User;
-  userId = '';
+  public location = inject(Location);
+
+  private router = inject(Router);
+  private dialog = inject(MatDialog);
+  private authService = inject(AuthService);
+  private fileService = inject(FileService);
+  private alertService = inject(AlertService);
+  private emailService = inject(EmailService);
+  private usersService = inject(UsersService);
+
   oldPassword = '';
   newPassword = '';
-  goBack!: () => void;
   selectedFile?: File;
-  originalUser?: User;
+  goBack!: () => void;
   hidePassword = true;
   changesSaving = false;
   unsavedChanges = false;
   passwordChanging = false;
   readonly maxDate = new Date();
+  user = signal<User | null>(null);
   readonly minDate = new Date(1900, 0, 1);
+  originalUser = signal<User | null>(null);
+  @ViewChild(MatDatepicker<Date | null>) picker!: MatDatepicker<Date | null>;
 
   ExternalLoginTypeHelper = ExternalLoginTypeHelper;
   SocialMediaPlatformHelper = SocialMediaPlatformHelper;
 
-  constructor(
-    public router: Router,
-    public location: Location,
-    private dialog: MatDialog,
-    private authService: AuthService,
-    private fileService: FileService,
-    private alertService: AlertService,
-    private emailService: EmailService,
-    private usersService: UsersService,
-  ) {
+  constructor() {
     super();
   }
 
   ngOnInit(): void {
-    this.authService.getUser().subscribe(user => {
-      if (!user) return;
-      this.userId = user.id!;
-      this.originalUser = JSON.parse(JSON.stringify(user));
-      this.usersService.getUserById(this.userId).subscribe(user => this.user = user);
-    });
+    const user = this.user();
+    if (!user) return;
+    this.originalUser = JSON.parse(JSON.stringify(user));
+    this.usersService.getUserById(user.id!).subscribe(user => this.user.set(user));
   }
 
   canDeactivate(): boolean {
@@ -113,11 +112,14 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   beforeUnloadHandler(event: BeforeUnloadEvent): void {
     if (!this.unsavedChanges) return;
     event.preventDefault();
-    event.returnValue = false;
+  }
+
+  clearDate(): void {
+    this.picker.select(null);
   }
 
   // Метод для установки несохраненных изменений
-  onUserInfoChange() {
+  onUserInfoChange(): void {
     this.unsavedChanges = this.hasUserChanged();
   }
 
@@ -136,8 +138,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        if (!this.user) return;
-        this.user.avatarUrl = e.target!.result as string; // Временное отображение нового аватара
+        this.user()!.avatarUrl = e.target!.result as string; // Временное отображение нового аватара
         this.onUserInfoChange();
       };
       reader.readAsDataURL(this.selectedFile);
@@ -155,7 +156,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       return;
     }
 
-    if (!this.oldPassword && this.user.passwordHash) {
+    if (!this.oldPassword && this.user()?.passwordHash) {
       // Если пользователь авторизован по паролю, но старый пароль не указан
       this.alertService.showSnackBar('Пожалуйста, введите старый пароль');
       return;
@@ -168,8 +169,8 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
     }
 
     if (
-      this.user.passwordHash && // У пользователя уже есть сохраненный пароль
-      !bcrypt.compareSync(this.oldPassword, this.user.passwordHash || '') // Старый пароль не совпадает с хэшем
+      this.user()?.passwordHash && // У пользователя уже есть сохраненный пароль
+      !bcrypt.compareSync(this.oldPassword, this.user()?.passwordHash || '') // Старый пароль не совпадает с хэшем
     ) {
       this.alertService.showSnackBar('Старый пароль введен неверно');
       return;
@@ -179,7 +180,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
     // Обновляем пароль на сервере
     this.usersService.updateUserPassword({
-      userId: this.userId,
+      userId: this.user()?.id!,
       password: this.newPassword
     }).pipe(
       catchError(err => {
@@ -199,7 +200,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       this.alertService.showSnackBar('Пароль успешно изменен');
       this.oldPassword = '';
       this.newPassword = '';
-      this.user!.passwordHash = updateUserResponse.message!;
+      this.user()!.passwordHash = updateUserResponse.message!;
     });
   }
 
@@ -207,7 +208,15 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   openEducationModal(education?: Education): void {
     const dialogRef = this.dialog.open(EducationDialogComponent, {
       width: '500px',
-      data: { education: education || { id: 0, institutionName: '', degree: '', graduationYear: new Date().getFullYear(), userId: this.userId } }
+      data: {
+        education: education || {
+          id: 0,
+          institutionName: '',
+          degree: '',
+          graduationYear: new Date().getFullYear(),
+          userId: this.user()!.id
+        }
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -223,7 +232,17 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   openWorkExperienceModal(workExperience?: WorkExperience): void {
     const dialogRef = this.dialog.open(WorkExperienceDialogComponent, {
       width: '500px',
-      data: { workExperience: workExperience || { id: 0, companyName: '', position: '', description: '', startDate: '', endDate: '', userId: this.userId } }
+      data: {
+        workExperience: workExperience || {
+          id: 0,
+          companyName: '',
+          position: '',
+          description: '',
+          startDate: '',
+          endDate: '',
+          userId: this.user()!.id
+        }
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -239,7 +258,14 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   openSocialMediaModal(socialMedia?: SocialMediaProfile): void {
     const dialogRef = this.dialog.open(SocialMediaDialogComponent, {
       width: '500px',
-      data: { socialMedia: socialMedia || { id: 0, url: '', platform: SocialMediaPlatform.Bluesky, userId: this.userId } }
+      data: {
+        socialMedia: socialMedia || {
+          id: 0,
+          url: '',
+          platform: SocialMediaPlatform.Bluesky,
+          userId: this.user()!.id
+        }
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -253,49 +279,48 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
   // Метод для добавления образования
   addEducation(education: Education): void {
-    if (!this.user) return;
-    this.user.educations.push(education);
+    this.user()?.educations.push(education);
     this.onUserInfoChange();
   }
 
   // Метод для обновления образования
   updateEducation(education: Education): void {
     if (!this.user) return;
-    const index = this.user.educations.findIndex(e => e.id === education.id);
+    const index = this.user()!.educations.findIndex(e => e.id === education.id);
     if (index === -1) return;
-    this.user.educations[index] = education;
+    this.user()!.educations[index] = education;
     this.onUserInfoChange();
   }
 
   // Метод для добавления опыта работы
   addWorkExperience(workExperience: WorkExperience): void {
     if (!this.user) return;
-    this.user.workExperiences.push(workExperience);
+    this.user()?.workExperiences.push(workExperience);
     this.onUserInfoChange();
   }
 
   // Метод для обновления опыта работы
   updateWorkExperience(workExperience: WorkExperience): void {
     if (!this.user) return;
-    const index = this.user.workExperiences.findIndex(w => w.id === workExperience.id);
+    const index = this.user()!.workExperiences.findIndex(w => w.id === workExperience.id);
     if (index === -1) return;
-    this.user.workExperiences[index] = workExperience;
+    this.user()!.workExperiences[index] = workExperience;
     this.onUserInfoChange();
   }
 
   // Метод для добавления социальной сети
   addSocialMedia(socialMedia: SocialMediaProfile): void {
     if (!this.user) return;
-    this.user.socialMediaProfiles.push(socialMedia);
+    this.user()?.socialMediaProfiles.push(socialMedia);
     this.onUserInfoChange();
   }
 
   // Метод для обновления социальной сети
   updateSocialMedia(socialMedia: SocialMediaProfile): void {
     if (!this.user) return;
-    const index = this.user.socialMediaProfiles.findIndex(s => s.id === socialMedia.id);
+    const index = this.user()!.socialMediaProfiles.findIndex(s => s.id === socialMedia.id);
     if (index === -1) return;
-    this.user.socialMediaProfiles[index] = socialMedia;
+    this.user()!.socialMediaProfiles[index] = socialMedia;
     this.onUserInfoChange();
   }
 
@@ -303,7 +328,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   deleteEducation(education: Education): void {
     this.alertService.openConfirmDialog(AlertService.CONFIRM_TITLE, 'Вы уверены, что хотите удалить образование?').afterClosed().subscribe(confirmed => {
       if (!this.user || !confirmed) return;
-      this.user.educations = this.user.educations.filter(e => e.id !== education.id);
+      this.user()!.educations = this.user()!.educations.filter(e => e.id !== education.id);
       this.onUserInfoChange();
     });
   }
@@ -312,7 +337,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   deleteWorkExperience(workExperience: WorkExperience): void {
     this.alertService.openConfirmDialog(AlertService.CONFIRM_TITLE, 'Вы уверены, что хотите удалить опыт работы?').afterClosed().subscribe(confirmed => {
       if (!this.user || !confirmed) return;
-      this.user.workExperiences = this.user.workExperiences.filter(w => w.id !== workExperience.id);
+      this.user()!.workExperiences = this.user()!.workExperiences.filter(w => w.id !== workExperience.id);
       this.onUserInfoChange();
     });
   }
@@ -321,7 +346,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   deleteSocialMedia(socialMedia: SocialMediaProfile): void {
     this.alertService.openConfirmDialog(AlertService.CONFIRM_TITLE, 'Вы уверены, что хотите удалить опыт работы?').afterClosed().subscribe(confirmed => {
       if (!this.user || !confirmed) return;
-      this.user.socialMediaProfiles = this.user.socialMediaProfiles.filter(s => s.id !== socialMedia.id);
+      this.user()!.socialMediaProfiles = this.user()!.socialMediaProfiles.filter(s => s.id !== socialMedia.id);
       this.onUserInfoChange();
     });
   }
@@ -332,7 +357,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
     this.changesSaving = true;
 
-    this.checkDuplicates(this.user!).subscribe(({ emailTaken, usernameTaken }) => {
+    this.checkDuplicates(this.user()!).subscribe(({ emailTaken, usernameTaken }) => {
       if (emailTaken) {
         this.alertService.showSnackBar('Эта почта уже занята');
         this.changesSaving = false;
@@ -345,7 +370,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
         return;
       }
 
-      if (this.user?.emailAddress && this.user?.emailAddress !== this.originalUser?.emailAddress)
+      if (this.user()?.emailAddress && this.user()?.emailAddress !== this.originalUser()?.emailAddress)
         this.verifyEmail();
       else
         this.proceedWithSave();
@@ -359,10 +384,10 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
     ).afterClosed().subscribe(confirmed => {
       if (!confirmed || !this.user) return;
 
-      this.usersService.deleteUser(this.user.id!).subscribe({
+      this.usersService.deleteUser(this.user()?.id!).subscribe({
         next: () => {
-          this.alertService.showSnackBar(`Аккаунт ${this.user?.username} успешно удалён.`);
-          this.authService.removeAccount(this.user?.id!);
+          this.alertService.showSnackBar(`Аккаунт ${this.user()?.username} успешно удалён.`);
+          this.authService.removeAccount(this.user()?.id!);
           this.router.navigate(['/login']);
         },
         error: err => {
@@ -378,11 +403,11 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   private checkDuplicates(user: User): Observable<{ emailTaken: boolean, usernameTaken: boolean }> {
     return forkJoin({
       emailTaken: user.emailAddress ? this.usersService.getUserByEmail(user.emailAddress).pipe(
-        map(user => !!user && user.id !== this.userId),
+        map(user => !!user && user.id !== this.user()?.id),
         catchError(() => of(false))
       ) : of(false),
       usernameTaken: this.usersService.getUserByName(user.username).pipe(
-        map(user => !!user && user.id !== this.userId),
+        map(user => !!user && user.id !== this.user()?.id),
         catchError(() => of(false))
       )
     });
@@ -393,21 +418,24 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
     // Сравниваем основные поля
     const basicFieldsChanged =
-      this.user.emailAddress !== this.originalUser.emailAddress ||
-      this.user.username !== this.originalUser.username ||
-      this.user.fullName !== this.originalUser.fullName ||
-      DateService.formatDate(this.user.dateOfBirth) !== DateService.formatDate(this.originalUser.dateOfBirth) ||
-      this.user.city !== this.originalUser.city ||
-      this.user.resumeText !== this.originalUser.resumeText ||
-      this.user.aboutMe !== this.originalUser.aboutMe;
+      this.user()?.emailAddress !== this.originalUser()?.emailAddress ||
+      this.user()?.username !== this.originalUser()?.username ||
+      this.user()?.fullName !== this.originalUser()?.fullName ||
+      DateService.formatDate(this.user()?.dateOfBirth) !== DateService.formatDate(this.originalUser()?.dateOfBirth) ||
+      this.user()?.city !== this.originalUser()?.city ||
+      this.user()?.resumeText !== this.originalUser()?.resumeText ||
+      this.user()?.aboutMe !== this.originalUser()?.aboutMe;
 
     // Сравниваем аватар
-    const avatarChanged = this.user.avatarUrl !== this.originalUser.avatarUrl;
+    const avatarChanged = this.user()?.avatarUrl !== this.originalUser()?.avatarUrl;
 
     // Сравниваем массивы (образование, опыт работы, социальные сети)
-    const educationsChanged = JSON.stringify(this.user.educations) !== JSON.stringify(this.originalUser.educations);
-    const workExperiencesChanged = JSON.stringify(this.user.workExperiences) !== JSON.stringify(this.originalUser.workExperiences);
-    const socialMediaProfilesChanged = JSON.stringify(this.user.socialMediaProfiles) !== JSON.stringify(this.originalUser.socialMediaProfiles);
+    const educationsChanged = JSON.stringify(
+      this.user()?.educations) !== JSON.stringify(this.originalUser()?.educations);
+    const workExperiencesChanged = JSON.stringify(
+      this.user()?.workExperiences) !== JSON.stringify(this.originalUser()?.workExperiences);
+    const socialMediaProfilesChanged = JSON.stringify(
+      this.user()?.socialMediaProfiles) !== JSON.stringify(this.originalUser()?.socialMediaProfiles);
 
     // Если хотя бы одно поле изменилось, возвращаем true
     return (
@@ -421,7 +449,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
   private verifyEmail() {
     // Шаг 1: Отправляем код подтверждения
-    return this.user && this.emailService.sendVerificationCode(this.user.emailAddress!).pipe(
+    return this.user && this.emailService.sendVerificationCode(this.user()?.emailAddress!).pipe(
       catchError(errorObj => {
         this.alertService.showSnackBar('Ошибка при отправке кода подтверждения.');
         console.error(errorObj);
@@ -431,7 +459,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       if (!codeResponse) return; // Если ошибка, выходим
 
       // Шаг 2: Открываем диалог для ввода кода
-      this.alertService.openVerificationCodeDialog(this.user!.emailAddress!).afterClosed().subscribe(result => {
+      this.alertService.openVerificationCodeDialog(this.user()?.emailAddress!).afterClosed().subscribe(result => {
         if (result === 0) {
           this.alertService.showSnackBar('Почта не была подтверждена. Изменения не сохранены.');
           return; // Пользователь закрыл диалог
@@ -449,7 +477,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
   private proceedWithSave() {
     // Если аватар не изменился, сразу обновляем пользователя
-    if (this.originalUser?.avatarUrl === this.user?.avatarUrl) {
+    if (this.originalUser()?.avatarUrl === this.user()?.avatarUrl) {
       this.updateUserData();
       return;
     }
@@ -465,10 +493,10 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
         })
       ).subscribe({
         next: (response) => {
-          if (this.originalUser?.avatarUrl)
-            this.deleteOriginalAvatar(this.originalUser.avatarUrl); // Удаляем старый аватар
+          if (this.originalUser()?.avatarUrl)
+            this.deleteOriginalAvatar(this.originalUser()?.avatarUrl!); // Удаляем старый аватар
           if (response)
-            this.user!.avatarUrl = response.fileUrl; // Обновляем URL аватара
+            this.user()!.avatarUrl = response.fileUrl; // Обновляем URL аватара
           this.updateUserData(); // Обновляем данные пользователя
         },
         error: error => {
@@ -487,9 +515,9 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   private updateUserData(): void {
     if (!this.user) return;
     this.unsavedChanges = false;
-    this.user.dateOfBirth = DateService.formatDate(this.user.dateOfBirth)!;
+    this.user()!.dateOfBirth = DateService.formatDate(this.user()!.dateOfBirth)!;
 
-    this.usersService.updateUser(this.userId, this.user).pipe(
+    this.usersService.updateUser(this.user()?.id!, this.user()!).pipe(
       catchError(err => {
         this.changesSaving = false;
         this.alertService.showSnackBar(err.error.message || 'Не удалось обновить данные.');
@@ -514,7 +542,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
         return;
       }
 
-      this.user = updatedResponse.user;
+      this.user.set(updatedResponse.user);
       this.authService.setUser(updatedResponse.user);
       this.alertService.showSnackBar('Данные обновлены успешно.');
     });

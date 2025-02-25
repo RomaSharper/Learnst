@@ -12,6 +12,7 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { provideServiceWorker } from '@angular/service-worker';
 import { MAT_TOOLTIP_DEFAULT_OPTIONS } from '@angular/material/tooltip';
 import { AuthInterceptor } from '../interceptors/auth.interceptor';
+import { NGX_MONACO_EDITOR_CONFIG } from 'ngx-monaco-editor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -31,5 +32,6 @@ export const appConfig: ApplicationConfig = {
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 3000 } },
     provideServiceWorker('ngsw-worker.js', { enabled: !isDevMode(), registrationStrategy: 'registerWhenStable:30000' }),
     { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: { showDelay: 250, hideDelay: 0, touchendHideDelay: 5, touchGestures: 'off' } },
+    { provide: NGX_MONACO_EDITOR_CONFIG, useValue: { baseUrl: '/assets/monaco', defaultOptions: { theme: 'vs-dark', automaticLayout: true } } },
   ]
 };
