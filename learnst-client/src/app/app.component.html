@@ -25,7 +25,7 @@
         @if (user()) {
           <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
           <li><a routerLink="/activities" routerLinkActive="active">Обучение</a></li>
-          <li><a routerLink="/community" routerLinkActive="active">Пользователи</a></li>
+          <li><a routerLink="/community" routerLinkActive="active">Сообщество</a></li>
           <li><a routerLink="/support" routerLinkActive="active">Поддержка</a></li>
           <li class="user-area">
             <button type="button" mat-stroked-button class="user-btn" routerLinkActive="active"
@@ -43,6 +43,8 @@
           <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
           <li><a routerLink="/manuals/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
           <li><a routerLink="/manuals/termsofuse" routerLinkActive="active">Условия пользования</a></li>
+          <li><a routerLink="/manuals/oferta" routerLinkActive="active">Публичная оферта</a></li>
+          <li><a routerLink="/manuals/delivery" routerLinkActive="active">О подписке</a></li>
           <li class="user-area">
             <a mat-stroked-button routerLink="/login">
               <mat-icon class="scale-1-5">login</mat-icon>
@@ -55,26 +57,21 @@
       <div class="desktop-panel">
         <ul class="desktop-menu">
           <li>
-            <a class="logo-link" routerLink="/">
+            <a
+              class="logo-link" routerLink="/"
+            >
               <img src="assets/icons/favicon.png" alt="Learnst">
               <span>Learnst</span>
             </a>
           </li>
           <li>
-            <a>Обучение</a>
-            <div class="submenu">
-              <div class="columns">
-                <div>
-                  <h3>Обучение</h3>
-                  <ul>
-                    <li><a routerLink="/activities">Активности</a></li>
-                    <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'java' }">Java</a></li>
-                    <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'c#' }">C#</a></li>
-                    <li><a [routerLink]="['/activities']" [queryParams]="{ tags: 'lua' }">Lua</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+            <a routerLink="/activities" routerLinkActive="active">Активности</a>
+          </li>
+          <li>
+            <a routerLink="/support" routerLinkActive="active">Поддержка</a>
+          </li>
+          <li>
+            <a routerLink="/community" routerLinkActive="active">Сообщество</a>
           </li>
           <li>
             <a>Информация</a>
@@ -83,31 +80,14 @@
                 <div>
                   <h3>Информация</h3>
                   <ul>
-                    <li><a routerLink="/manuals/user">Для пользователя</a></li>
-                    <li><a routerLink="/manuals/specialist">Для специалиста</a></li>
-                    <li><a routerLink="/manuals/privacypolicy">Конфиденциальность</a></li>
-                    <li><a routerLink="/manuals/termsofuse">Условия использования</a></li>
+                    <li><a routerLink="/manuals/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
+                    <li><a routerLink="/manuals/termsofuse" routerLinkActive="active">Условия использования</a></li>
+                    <li><a routerLink="/manuals/oferta" routerLinkActive="active">Публичная оферта</a></li>
+                    <li><a routerLink="/manuals/delivery" routerLinkActive="active">О подписке</a></li>
                   </ul>
                 </div>
               </div>
             </div>
-          </li>
-          <li>
-            <a>Прочее</a>
-            <div class="submenu">
-              <div class="columns">
-                <div>
-                  <h3>Прочее</h3>
-                  <ul>
-                    <li><a routerLink="/support">Поддержка</a></li>
-                    <li><a routerLink="/code/js">Песочница JavaScript</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>
-            <a routerLink="/community">Сообщество</a>
           </li>
         </ul>
         @if (user()) {

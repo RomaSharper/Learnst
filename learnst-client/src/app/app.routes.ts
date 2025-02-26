@@ -25,19 +25,27 @@ import { TicketListComponent } from './ticket-list/ticket-list.component';
 import { UserComponent } from './user/user.component';
 import { UsersComponent } from './users/users.component';
 import { DocsComponent } from './dev/docs/docs.component';
-import { JavaScriptSandboxComponent } from './code/javascript-sandbox/javascript-sandbox';
+import { SubscriptionsComponent } from './subscription/subscription.component';
+import { OfferAgreementComponent } from './offer-agreement/offer-agreement.component';
+import { ContactsComponent } from './contacts/contacts.component';
+import { DeliveryInfoComponent } from './delivery-info/delivery-info.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
+
   { path: 'manuals/termsofuse', component: TermsOfUseComponent },
   { path: 'manuals/privacypolicy', component: PrivacyPolicyComponent },
+  { path: 'manuals/oferta', component: OfferAgreementComponent },
+  { path: 'manuals/contacts', component: ContactsComponent },
+  { path: 'manuals/delivery', component: DeliveryInfoComponent },
+  { path: 'subscriptions', component: SubscriptionsComponent },
+
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'logout', component: LogoutComponent, canActivate: [AuthGuard] },
   { path: 'me', component: MeComponent, canActivate: [AuthGuard], canDeactivate: [ConfirmGuard] },
   { path: 'user/:userId', component: UserComponent, canActivate: [AuthGuard] },
   { path: 'community', component: UsersComponent, canActivate: [AuthGuard] },
-  { path: 'code/js', component: JavaScriptSandboxComponent },
 
   { path: 'activities', component: ActivitiesComponent, canActivate: [AuthGuard] },
   { path: 'activity/make', component: MakeActivityComponent, canActivate: [RoleGuard], data: { roles: [Role.Specialist, Role.Admin] } },

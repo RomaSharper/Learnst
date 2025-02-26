@@ -1,0 +1,71 @@
+.subscription-widget {
+  margin: 2rem auto;
+
+  .current-subscription {
+    margin-bottom: 2rem;
+
+    .subscription-info {
+      .highlight {
+        font-weight: 500;
+      }
+
+      mat-list-item {
+        height: 64px;
+      }
+    }
+  }
+
+  .plan-selection {
+    .plan-cards {
+      gap: 1.5rem;
+      display: grid;
+      margin: 2rem 0;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .plan-card {
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+      transition: all 0.3s ease;
+
+      &.selected {
+        border: var(--mat-sys-level2);
+        background-color: var(--mat-sys-secondary-container);
+      }
+
+      .discount-badge {
+        padding: 4px 8px;
+        font-size: 0.8rem;
+        border-radius: 16px;
+      }
+
+      .price-container {
+        margin: 1rem 0;
+        text-align: center;
+
+        .plan-price {
+          line-height: 1;
+          font-size: 2rem;
+        }
+
+        .monthly-price {
+          font-size: 0.9rem;
+        }
+      }
+    }
+
+    .purchase-button {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.1rem;
+
+      .button-content {
+        gap: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+}

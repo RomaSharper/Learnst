@@ -40,6 +40,7 @@ import { ThemePickerComponent } from '../theme-picker/theme-picker.component';
 import { EducationDialogComponent } from './education.dialog/education.dialog.component';
 import { SocialMediaDialogComponent } from './social.media.dialog/social.media.dialog.component';
 import { WorkExperienceDialogComponent } from './work.experience.dialog/work.experience.dialog.component';
+import { SubscriptionsComponent } from '../subscription/subscription.component';
 
 @Component({
   selector: 'app-me',
@@ -58,6 +59,7 @@ import { WorkExperienceDialogComponent } from './work.experience.dialog/work.exp
     MatGridListModule,
     MatDatepickerModule,
     ThemePickerComponent,
+    SubscriptionsComponent,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
     PlaceholderImageDirective,

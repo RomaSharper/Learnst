@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Learnst.Infrastructure.Interfaces;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Learnst.Infrastructure.Models;
 
-public class UserSubscription
+public class UserSubscription : IEntity
 {
     [Key] public Guid Id { get; set; } = Guid.NewGuid();
     public Guid UserId { get; set; }

@@ -205,7 +205,17 @@
         </div>
       </mat-card>
 
-      <!-- Кнопка "Удалить профиль" -->
+      <!-- Подписка -->
+      <div class="full-width">
+        <app-subscription />
+      </div>
+
+      <!-- Темы -->
+      <mat-card class="full-width">
+        <app-theme-picker />
+      </mat-card>
+
+      <!-- Удалить профиль -->
       <mat-card class="full-width">
         <div class="delete-profile-wrapper">
           <button type="button" mat-raised-button color="warn" (click)="deleteProfile()">
@@ -213,11 +223,6 @@
           </button>
           <p class="warning-text">Внимание: это действие необратимо. Все ваши данные будут удалены.</p>
         </div>
-      </mat-card>
-
-      <!-- Темы -->
-      <mat-card class="full-width">
-        <app-theme-picker></app-theme-picker>
       </mat-card>
     </div>
 

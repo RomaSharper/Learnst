@@ -1,0 +1,88 @@
+<div class="subscription-widget">
+  <!-- Текущая подписка -->
+  @if (currentSubscription() && !isLoading()) {
+    <mat-card class="current-subscription">
+      <mat-card-header>
+        <mat-card-title>Ваша подписка активна</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="subscription-info">
+          <mat-list>
+            <mat-list-item>
+              <span matListItemTitle>Осталось дней</span>
+              <span matListItemLine class="highlight">
+                {{ getDaysRemaining(currentSubscription()!.endDate.toString()) }}
+              </span>
+            </mat-list-item>
+
+            <mat-list-item>
+              <span matListItemTitle>Дата окончания</span>
+              <span matListItemLine class="highlight">
+                {{ currentSubscription()!.endDate | date: 'dd.MM.yyyy' }}
+              </span>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Выбор плана -->
+  <mat-card class="plan-selection">
+    <mat-card-header>
+      <mat-card-title>Выберите тарифный план</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="plan-cards">
+        @for (plan of subscriptionPlans; track plan) {
+          <mat-card
+            class="plan-card"
+            (click)="selectPlan(plan.duration)"
+            [class.selected]="selectedPlan() === plan.duration"
+          >
+
+            <mat-card-header>
+              <mat-card-title>{{ plan.label }}</mat-card-title>
+              @if (plan.discount > 0) {
+                <mat-card-subtitle>
+                  <span class="discount-badge">-{{ plan.discount }}%</span>
+                </mat-card-subtitle>
+              }
+            </mat-card-header>
+
+            <mat-card-content>
+              <div class="price-container">
+                <div class="plan-price">
+                  {{ subService.calculatePrice(plan.duration) | round: 2 }}₽ @if (plan.duration == 1) { / мес }
+                </div>
+                @if (plan.duration > 1) {
+                  <div class="monthly-price">
+                    {{ (subService.calculatePrice(plan.duration) / plan.duration) | round: 2 }}₽ / мес
+                  </div>
+                }
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+
+      <button
+        color="primary"
+        mat-raised-button
+        class="purchase-button"
+        (click)="purchaseSubscription()"
+        [disabled]="!selectedPlan() || isLoading()"
+      >
+        <div class="button-content">
+          @if (isLoading()) {
+            <mat-spinner diameter="24"></mat-spinner>
+          } @else {
+            <span>Оформить подписку</span>
+          }
+        </div>
+      </button>
+    </mat-card-content>
+  </mat-card>
+</div>

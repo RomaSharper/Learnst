@@ -38,6 +38,7 @@ builder.Services.AddAutoMapper(cfg =>
 // Регистрация сервисов
 builder.Services.AddScoped<JwtService>()
     .AddScoped<UsersRepository>()
+    .AddScoped<YookassaService>()
     .AddScoped<ActivitiesRepository>()
     .AddScoped<IEmailSender, SmtpEmailSender>()
     .AddScoped<IValidationService, ValidationService>()
@@ -63,8 +64,10 @@ builder.Services.Configure<VkSettings>(builder.Configuration.GetSection("Vk"))
     .Configure<DiscordSettings>(builder.Configuration.GetSection("Discord"))
     .Configure<TelegramSettings>(builder.Configuration.GetSection("Telegram"))
     .Configure<FacebookSettings>(builder.Configuration.GetSection("Facebook"))
+    .Configure<YookassaSettings>(builder.Configuration.GetSection("Yookassa"))
     .Configure<MicrosoftSettings>(builder.Configuration.GetSection("Microsoft"))
-    .Configure<EpicGamesSettings>(builder.Configuration.GetSection("EpicGames"));
+    .Configure<EpicGamesSettings>(builder.Configuration.GetSection("EpicGames"))
+    .Configure<SubscriptionSettings>(builder.Configuration.GetSection("Subscription"));
 
 // Настройка базы данных и аутентификации
 builder.Services.AddRequestTimeout(TimeSpan.FromSeconds(100))
