@@ -17,7 +17,9 @@
             </div>
             <div class="account-actions">
               @if (account.isCurrent) {
-                <mat-icon color="primary" matTooltip="Текущий аккаунт">check_circle</mat-icon>
+                <mat-icon color="primary" matTooltip="Текущий аккаунт">
+                  check_circle
+                </mat-icon>
               }
               <button type="button" mat-icon-button color="error warn"
                 (click)="removeAccount(account.id, $event)"
@@ -37,9 +39,10 @@
     <div class="actions">
       @if (authService.accounts()?.length) {
         <button type="button" mat-raised-button
-          (click)="logoutAll()" color="warn">
+          (click)="logoutAll()" color="warn"
+          matTooltip="Выйти из всех аккаунтов">
           <mat-icon>logout</mat-icon>
-          Выйти из всех
+          Полностью выйти
         </button>
       }
     </div>

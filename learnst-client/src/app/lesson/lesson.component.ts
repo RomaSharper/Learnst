@@ -27,7 +27,6 @@ import { AlertService } from './../../services/alert.service';
   ]
 })
 export class LessonComponent extends MediumScreenSupport implements OnInit {
-[x: string]: any;
   loading = true;
   innerHTML = '';
   lesson?: Lesson;
@@ -49,22 +48,49 @@ export class LessonComponent extends MediumScreenSupport implements OnInit {
   }
 
   ngOnInit() {
-    // Получаем ID пользователя
-    this.authService.getUser().subscribe(user => {
-      if (!user) return;
-      this.userId = user.id!;
-      const lessonId = this.route.snapshot.paramMap.get('lessonId') ?? ''; // Загружаем урок
-      this.lessonsService.getLessonById(lessonId).subscribe(lesson => {
-        if (!lesson) return;
-        this.lesson = lesson;
-        // Проверяем, был ли урок уже пройден
-        this.checkAndCreateUserLesson(lessonId);
-        if (this.lesson.longReadUrl)
-          this.loadMarkdownContent(this.lesson.longReadUrl);
-        if (this.lesson.videoUrl)
-          this.lesson.videoUrl = encodeURIComponent(this.lesson.videoUrl);
+    this.loading = true; // Устанавливаем загрузку в начале
+
+    this.authService.getUser().subscribe({
+      next: user => {
+        if (!user) {
+          this.loading = false;
+          return;
+        }
+
+        this.userId = user.id!;
+        const lessonId = this.route.snapshot.paramMap.get('lessonId') ?? '';
+
+        this.lessonsService.getLessonById(lessonId).subscribe({
+          next: lesson => {
+            this.lesson = lesson;
+            if (!lesson) {
+              this.loading = false;
+              return;
+            }
+
+            this.checkAndCreateUserLesson(lessonId);
+
+            if (this.lesson.longReadUrl) {
+              this.loadMarkdownContent(this.lesson.longReadUrl);
+            }
+
+            if (this.lesson.videoUrl) {
+              this.lesson.videoUrl = encodeURIComponent(this.lesson.videoUrl);
+            }
+
+            this.loading = false;
+          },
+          error: (err) => {
+            console.error('Ошибка загрузки урока:', err);
+            this.loading = false;
+            this.alertService.showSnackBar('Не удалось загрузить урок');
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Ошибка получения пользователя:', err);
         this.loading = false;
-      });
+      }
     });
   }
 

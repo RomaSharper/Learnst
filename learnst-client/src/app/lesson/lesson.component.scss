@@ -1,4 +1,4 @@
-.video-container {
+/*.video-container {
   position: relative;
 
   video {
@@ -7,4 +7,21 @@
     // background-color: black;
     // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
+}*/
+
+.loading-container {
+  display: flex;
+  padding: 40px;
+  justify-content: center;
+
+  mat-spinner {
+    margin: 0 auto;
+  }
+}
+
+.error.static {
+  padding: 40px;
+  font-size: 1.2rem;
+  text-align: center;
+  color: var(--mat-sys-error);
 }
