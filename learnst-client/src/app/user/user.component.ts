@@ -1,5 +1,3 @@
-import { ExternalLoginTypeHelper } from './../../helpers/ExternalLoginTypeHelper';
-
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -44,7 +42,6 @@ export class UserComponent implements OnInit {
   date = new Date();
   errorMessage = '';
 
-  ExternalLoginTypeHelper = ExternalLoginTypeHelper;
   SocialMediaPlatformHelper = SocialMediaPlatformHelper;
 
   constructor(

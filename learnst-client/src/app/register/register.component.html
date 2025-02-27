@@ -10,7 +10,14 @@
         <mat-label>Имя пользователя</mat-label>
         <input matInput id="username" formControlName="username" placeholder="Придумайте логин" autocomplete="username"
           maxlength="20">
-        @if (form.get('username')?.hasError('invalidLength')) {
+
+        @if (form.get('username')?.hasError('asyncValidation')) {
+          <mat-progress-spinner matSuffix mode="indeterminate" diameter="20"></mat-progress-spinner>
+        }
+
+        @if (form.get('username')?.hasError('duplicateUsername')) {
+          <mat-error>Имя пользователя уже занято</mat-error>
+        } @else if (form.get('username')?.hasError('invalidLength')) {
           <mat-error>Имя должно быть от 3 до 20 символов.</mat-error>
         } @else if (form.get('username')?.hasError('invalidStartOrEnd')) {
           <mat-error>Имя не может начинаться или заканчиваться подчёркиванием.</mat-error>
@@ -29,8 +36,15 @@
         <mat-label>Адрес электронной почты</mat-label>
         <input matInput id="email" formControlName="email" placeholder="Введите электронную почту" autocomplete="email"
           maxlength="100" matTooltip="Поддерживаемые домены: mail.ru, xmail.ru, gmail.com, vk.com, yandex.ru, icloud.com">
-        @if (form.get('email')?.hasError('invalidDomain') && form.get('email')?.touched) {
-          <mat-error>Домен не поддерживается, см. справку</mat-error>
+
+        @if (form.get('email')?.hasError('asyncValidation')) {
+          <mat-progress-spinner matSuffix mode="indeterminate" diameter="20"></mat-progress-spinner>
+        }
+
+        @if (form.get('email')?.hasError('duplicateEmail')) {
+          <mat-error>Почта уже занята</mat-error>
+        } @else if (form.get('email')?.hasError('invalidDomain') && form.get('email')?.touched) {
+          <mat-error><button type="button" mat-button (click)="openEmailHelp()">Неподдерживаемый домен</button></mat-error>
         } @else if (form.get('email')?.hasError('serverError')) {
           <mat-error>{{ form.get('email')?.getError('serverError') }}</mat-error>
         } @else if (form.get('email')?.invalid && form.get('email')?.touched) {
@@ -44,7 +58,7 @@
           placeholder="Введите ваш пароль" [type]="hidePassword() ? 'password' : 'text'">
 
         <button matSuffix type="button" mat-icon-button class="input-button" (click)="hidePassword.set(!hidePassword())"
-          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'">
+          tabindex="-1" [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'">
           <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
 
@@ -59,7 +73,7 @@
           formControlName="repeatPassword" [type]="hidePassword() ? 'password' : 'text'">
 
         <button matSuffix type="button" mat-icon-button class="input-button" (click)="hidePassword.set(!hidePassword())"
-          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'">
+          tabindex="-1" [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'">
           <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
 
@@ -71,8 +85,21 @@
       </mat-form-field>
 
       <div class="cf-turnstile" data-sitekey="0x4AAAAAAA-lpuh_BYavc73X"></div>
+      @if (form.get('cfToken')?.invalid && (form.get('cfToken')?.touched || form.get('cfToken')?.dirty)) {
+        <mat-error class="captcha-error">
+          @if (form.get('cfToken')?.hasError('required')) {
+            Пожалуйста, пройдите проверку безопасности
+          }
+        </mat-error>
+      }
 
-      <button mat-flat-button [disabled]="form.invalid || loading" color="primary" type="submit" class="full-width">
+      <button
+        type="submit"
+        color="primary"
+        mat-flat-button
+        class="full-width"
+        [disabled]="form.invalid || form.pending || loading()"
+      >
         @if (loading()) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else {
@@ -82,8 +109,14 @@
     </form>
   </mat-card-content>
   <mat-card-actions class="center-control form-actions">
-    <a mat-raised-button routerLink="/login">Войти в учетную запись</a>
-    <a mat-button routerLink="/manuals/privacypolicy">Политика конфиденциальности</a>
-    <a mat-button routerLink="/manuals/termsofuse">Условия использования</a>
+    <button type="button" mat-raised-button routerLink="/login">
+      Войти в учетную запись
+    </button>
+    <button type="button" mat-button routerLink="/manuals/privacypolicy">
+      Политика конфиденциальности
+    </button>
+    <button type="button" mat-button routerLink="/manuals/termsofuse">
+      Условия использования
+    </button>
   </mat-card-actions>
 </mat-card>

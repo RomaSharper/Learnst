@@ -147,6 +147,10 @@ mat-list-item {
   height: fit-content !important;
 }
 
+mat-progress-spinner {
+  margin: 0 8px;
+}
+
 .mat-mdc-menu-content {
   padding: 0 !important;
 }
@@ -512,12 +516,12 @@ mat-date-range-input {
 }
 
 .context-menu {
+  z-index: 3;
+  padding: 8px;
   display: block;
   position: fixed;
   width: 4px * 50;
-  padding: 8px;
   border-radius: 4px;
-  z-index: 3;
   // background-color: @context-bg;
   // border: 4px * 0.25 solid @context-border;
   // box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);

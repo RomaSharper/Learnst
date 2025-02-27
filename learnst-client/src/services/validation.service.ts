@@ -1,7 +1,9 @@
-import { AbstractControl, FormControl, ValidationErrors } from "@angular/forms";
+import { AbstractControl, AsyncValidatorFn, FormControl, ValidationErrors } from "@angular/forms";
 import { SocialMediaPlatform } from "../enums/SocialMediaPlatform";
 import { SocialMediaPlatformHelper } from "../helpers/SocialMediaPlatformHelper";
-import { TransliterationMap } from "../models/TransliterationMap";
+import { switchMap, debounceTime, distinctUntilChanged, skip, startWith, takeUntil } from 'rxjs/operators';
+import { Observable, of, map, catchError } from "rxjs";
+import { UsersService } from "./users.service";
 
 export class ValidationService {
   static fullNamePattern = /^[A-Za-zА-Яа-яЁё\s]+$/;
@@ -179,10 +181,39 @@ export class ValidationService {
     let result = input;
 
     // Проходим по каждой паре символов
-    for (const [key, value] of Object.entries(translitMap)) {
+    for (const [key, value] of Object.entries(translitMap))
       result = result.replace(new RegExp(key, 'gi'), value); // 'gi' - для нечувствительного к регистру
-    }
 
     return result;
+  }
+
+  static uniqueEmailValidator(userService: UsersService): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      if (!control.value || control.invalid) return of(null);
+
+      return userService.checkEmailExists(control.value).pipe(
+        debounceTime(500),
+        map(exists => {
+          if (exists) return { duplicateEmail: true };
+          return null;
+        }),
+        catchError(() => of(null))
+      );
+    };
+  }
+
+  static uniqueUsernameValidator(userService: UsersService): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      if (!control.value || control.invalid) return of(null);
+
+      return userService.checkUsernameExists(control.value).pipe(
+        debounceTime(500),
+        map(exists => {
+          if (exists) return { duplicateUsername: true };
+          return null;
+        }),
+        catchError(() => of(null))
+      );
+    };
   }
 }

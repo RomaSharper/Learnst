@@ -2,7 +2,6 @@ export enum SocialMediaPlatform {
   Bluesky,
   Discord,
   Facebook,
-  GitHub,
   Instagram,
   LinkedIn,
   Tumblr,
@@ -18,5 +17,12 @@ export enum SocialMediaPlatform {
   Pinterest,
   Snapchat,
   TikTok,
+  Google,
+  Microsoft,
+  Yandex,
+  MailRu,
+  Ok,
+  Apple,
+  Github,
   Unknown
 }

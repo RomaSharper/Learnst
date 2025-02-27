@@ -1,4 +1,3 @@
-import { ExternalLoginTypeHelper } from './../../helpers/ExternalLoginTypeHelper';
 import { Location } from '@angular/common';
 import { Component, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -92,7 +91,6 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   readonly minDate = new Date(1900, 0, 1);
   @ViewChild(MatDatepicker<Date | null>) picker!: MatDatepicker<Date | null>;
 
-  ExternalLoginTypeHelper = ExternalLoginTypeHelper;
   SocialMediaPlatformHelper = SocialMediaPlatformHelper;
 
   ngOnInit(): void {

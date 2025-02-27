@@ -46,8 +46,8 @@
             </mat-menu>
           }
         </mat-card-header>
-        <img mat-card-image src="{{ activity.avatarUrl }}" alt="{{ activity.title }}" noDownloading loading="lazy"
-          placeholder="/assets/icons/placeholder.png">
+        <img mat-card-image [src]="activity.avatarUrl" [alt]="activity.title"
+          noDownloading loading="lazy" placeholder="/assets/icons/placeholder.png">
         @if (user) {
           <mat-card-actions>
             @if (activity.isClosed) {

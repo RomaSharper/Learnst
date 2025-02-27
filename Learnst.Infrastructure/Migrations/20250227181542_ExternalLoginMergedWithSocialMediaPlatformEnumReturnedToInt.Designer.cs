@@ -4,6 +4,7 @@ using Learnst.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Learnst.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250227181542_ExternalLoginMergedWithSocialMediaPlatformEnumReturnedToInt")]
+    partial class ExternalLoginMergedWithSocialMediaPlatformEnumReturnedToInt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,6 +106,83 @@ namespace Learnst.Domain.Migrations
                     b.HasIndex("QuestionId");
 
                     b.ToTable("Answers");
+                });
+
+            modelBuilder.Entity("Learnst.Infrastructure.Models.Application", b =>
+                {
+                    b.Property<string>("ClientId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.PrimitiveCollection<string>("AllowedScopes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClientSecret")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RedirectUri")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ClientId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ClientId", "ClientSecret")
+                        .IsUnique();
+
+                    b.ToTable("Applications");
+                });
+
+            modelBuilder.Entity("Learnst.Infrastructure.Models.AuthCode", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ApplicationClientId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.PrimitiveCollection<string>("Scopes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Code");
+
+                    b.HasIndex("ApplicationClientId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AuthCodes");
                 });
 
             modelBuilder.Entity("Learnst.Infrastructure.Models.Education", b =>
@@ -520,8 +600,8 @@ namespace Learnst.Domain.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("ExternalLoginType")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("ExternalLoginType")
+                        .HasColumnType("int");
 
                     b.Property<string>("FullName")
                         .HasMaxLength(100)
@@ -704,6 +784,34 @@ namespace Learnst.Domain.Migrations
                         .IsRequired();
 
                     b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("Learnst.Infrastructure.Models.Application", b =>
+                {
+                    b.HasOne("Learnst.Infrastructure.Models.User", "User")
+                        .WithMany("Applications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Learnst.Infrastructure.Models.AuthCode", b =>
+                {
+                    b.HasOne("Learnst.Infrastructure.Models.Application", "Application")
+                        .WithMany()
+                        .HasForeignKey("ApplicationClientId");
+
+                    b.HasOne("Learnst.Infrastructure.Models.User", "User")
+                        .WithMany("AuthCodes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Learnst.Infrastructure.Models.Education", b =>
@@ -944,6 +1052,10 @@ namespace Learnst.Domain.Migrations
 
             modelBuilder.Entity("Learnst.Infrastructure.Models.User", b =>
                 {
+                    b.Navigation("Applications");
+
+                    b.Navigation("AuthCodes");
+
                     b.Navigation("Educations");
 
                     b.Navigation("SocialMediaProfiles");

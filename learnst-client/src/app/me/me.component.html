@@ -8,19 +8,20 @@
     <div class="profile-grid">
       <!-- Личные данные -->
       <mat-card class="full-width">
-        <h3>Личные данные</h3>
-        @if (user.externalLoginType) {
-          <mat-icon
-            class="external-icon"
-            [matTooltip]="'Пользователь вошёл с помощью ' + ExternalLoginTypeHelper.getName(user.externalLoginType!)"
-          >
-            badge
-          </mat-icon>
-        }
+        <h3>
+          Личные данные
+          @if (user.externalLoginType) {
+            <img class="social-icon" [src]="SocialMediaPlatformHelper.getImagePath(user.externalLoginType)"
+              [matTooltip]="SocialMediaPlatformHelper.getName(user.externalLoginType)"
+              [alt]="SocialMediaPlatformHelper.getName(user.externalLoginType)"
+              placeholder="/assets/icons/placeholder.png">
+          }
+        </h3>
+
         <div class="avatar-container">
           <input type="file" id="avatarInput" (change)="onFileSelected($event)" class="hidden" accept="image/*">
           <img [src]="user.avatarUrl" [alt]="user.username" class="avatar" (click)="openFilePicker()"
-            placeholder="/images/user.png" matTooltip="Изменить аватар" matTooltipPosition="below">
+            placeholder="/assets/icons/user-192x192.png" matTooltip="Изменить аватар" matTooltipPosition="below">
         </div>
         <div class="user-info">
           <mat-form-field appearance="outline">
@@ -75,7 +76,7 @@
       </mat-card>
 
       <!-- Изменить пароль -->
-      <mat-card class="full-width">
+      <mat-card>
         <h3>Изменить пароль</h3>
         <mat-form-field appearance="outline">
           <mat-label>Старый пароль</mat-label>

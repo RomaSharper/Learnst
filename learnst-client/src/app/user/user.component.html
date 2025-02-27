@@ -8,15 +8,15 @@
       <!-- Личные данные -->
       <div class="full-width">
         <mat-card>
-          <h3>Личные данные</h3>
-          @if (user.externalLoginType) {
-            <mat-icon
-              class="external-icon"
-              [matTooltip]="'Пользователь вошёл с помощью ' + ExternalLoginTypeHelper.getName(user.externalLoginType)"
-            >
-              badge
-            </mat-icon>
-          }
+          <h3>
+            Личные данные
+            @if (user.externalLoginType) {
+              <img class="social-icon" [src]="SocialMediaPlatformHelper.getImagePath(user.externalLoginType)"
+                [matTooltip]="SocialMediaPlatformHelper.getName(user.externalLoginType)"
+                [alt]="SocialMediaPlatformHelper.getName(user.externalLoginType)"
+                placeholder="/assets/icons/placeholder.png">
+            }
+          </h3>
           <div class="avatar-container">
             <img [src]="user.avatarUrl" [alt]="user.username" class="avatar" placeholder="/assets/icons/user-192x192.png"
             loading="lazy" noDownloading>

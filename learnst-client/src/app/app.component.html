@@ -32,19 +32,20 @@
               [matTooltip]="user()?.username" [matMenuTriggerFor]="userMenu">
               <img [alt]="user()?.username" [src]="user()!.avatarUrl" noDownloading
                 placeholder="/assets/icons/user-192x192.png">
-              <span class="user-name">{{ user()!.username | ellipsis:10 }}</span>
+              <span class="user-name">{{ user()!.username | ellipsis: 10 }}</span>
             </button>
 
-              <mat-menu #userMenu="matMenu">
-                <app-user-menu [user]="user()!" />
-              </mat-menu>
+            <mat-menu #userMenu="matMenu">
+              <app-user-menu [user]="user()!" />
+            </mat-menu>
           </li>
         } @else {
           <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
           <li><a routerLink="/manuals/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
           <li><a routerLink="/manuals/termsofuse" routerLinkActive="active">Условия пользования</a></li>
           <li><a routerLink="/manuals/oferta" routerLinkActive="active">Публичная оферта</a></li>
-          <li><a routerLink="/manuals/delivery" routerLinkActive="active">О подписке</a></li>
+          <li><a routerLink="/manuals/subscription" routerLinkActive="active">О подписке</a></li>
+          <li><a routerLink="/manuals/contacts" routerLinkActive="active">Контакты</a></li>
           <li class="user-area">
             <a mat-stroked-button routerLink="/login">
               <mat-icon class="scale-1-5">login</mat-icon>
@@ -57,9 +58,7 @@
       <div class="desktop-panel">
         <ul class="desktop-menu">
           <li>
-            <a
-              class="logo-link" routerLink="/"
-            >
+            <a class="logo-link" routerLink="/">
               <img src="assets/icons/favicon.png" alt="Learnst">
               <span>Learnst</span>
             </a>
@@ -83,7 +82,8 @@
                     <li><a routerLink="/manuals/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
                     <li><a routerLink="/manuals/termsofuse" routerLinkActive="active">Условия использования</a></li>
                     <li><a routerLink="/manuals/oferta" routerLinkActive="active">Публичная оферта</a></li>
-                    <li><a routerLink="/manuals/delivery" routerLinkActive="active">О подписке</a></li>
+                    <li><a routerLink="/manuals/subscription" routerLinkActive="active">О подписке</a></li>
+                    <li><a routerLink="/manuals/contacts" routerLinkActive="active">Контакты</a></li>
                   </ul>
                 </div>
               </div>

@@ -26,7 +26,6 @@ builder.Services.AddCustomCors(trustedOrigins);
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<FullUpdateProfile<Activity, Guid>>();
-    cfg.AddProfile<ApplicationUpdateProfile>();
     cfg.AddProfile<FullUpdateProfile<InfoCard, int>>();
     cfg.AddProfile<FullUpdateProfile<Lesson, Guid>>();
     cfg.AddProfile<FullUpdateProfile<Question, Guid>>();

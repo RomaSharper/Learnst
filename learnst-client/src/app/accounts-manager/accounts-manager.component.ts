@@ -1,16 +1,15 @@
-import { Component, effect, inject, Signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../services/auth.service';
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { RuDateTimePipe } from '../../pipes/ru.date.time.pipe';
 import { AlertService } from '../../services/alert.service';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
 
 @Component({
   selector: 'app-accounts-manager',
@@ -21,12 +20,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatIconModule,
     RuDateTimePipe,
     MatButtonModule,
-    MatTooltipModule
+    MatTooltipModule,
+    PlaceholderImageDirective
   ],
 })
 export class AccountsManagerComponent {
   private router = inject(Router);
-  private dialog = inject(MatDialog);
   private alertService = inject(AlertService);
 
   authService = inject(AuthService);

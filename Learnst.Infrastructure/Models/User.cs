@@ -36,7 +36,7 @@ public class User : IEntity
 
     [StringLength(255)] public string? ExternalLoginId { get; set; }
     
-    public ExternalLoginType? ExternalLoginType { get; set; }
+    public SocialMediaPlatform? ExternalLoginType { get; set; }
 
     [StringLength(50)] public string ThemeId { get; set; } = "light";
 
@@ -87,8 +87,4 @@ public class User : IEntity
     public ICollection<UserLesson> UserLessons { get; set; } = [];
 
     public ICollection<UserSubscription> UserSubscriptions { get; set; } = [];
-
-    public ICollection<Application> Applications { get; set; } = [];
-    
-    public ICollection<AuthCode> AuthCodes { get; set; } = [];
 }

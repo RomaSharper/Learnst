@@ -17,7 +17,7 @@ public class UsersController(
     IValidationService validationService
 ) : ControllerBase
 {
-    // GET: api/Users
+    // GET: Users
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         => Ok(await repository.GetAsync(includes: [
@@ -31,7 +31,7 @@ public class UsersController(
             u => u.TicketAnswers,
         ]));
 
-    // GET: api/Users/5
+    // GET: Users/5
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUserById(Guid id)
     {
@@ -58,13 +58,14 @@ public class UsersController(
         }
     }
 
-    // GET: api/Users/Email/5
+    // GET: Users/Email/5
     [HttpGet("Email/{email}")]
     public async Task<ActionResult<User>> GetUserByEmail(string email)
     {
         try
         {
-            return await repository.GetFirstAsync(where: u => u.EmailAddress == email, includes: [
+            return await repository.GetFirstAsync(where: u => !string.IsNullOrEmpty(u.EmailAddress) && u.EmailAddress.ToLower() == email.ToLower(),
+                includes: [
                 u => u.Educations,
                 u => u.SocialMediaProfiles,
                 u => u.WorkExperiences,
@@ -85,7 +86,7 @@ public class UsersController(
         }
     }
 
-    // GET: api/Users/Username/5
+    // GET: Users/Username/5
     [HttpGet("Username/{username}")]
     public async Task<ActionResult<User>> GetUserByName(string username)
     {
@@ -112,7 +113,7 @@ public class UsersController(
         }
     }
 
-    // POST: api/Users/Auth
+    // POST: Users/Auth
     [HttpPost("Auth")]
     public async Task<ActionResult<User>> Authenticate([FromBody] LoginRequest request)
     {
@@ -145,7 +146,17 @@ public class UsersController(
         }
     }
 
-    // POST: api/Users
+    // GET: Users/CheckName
+    [HttpGet("CheckName")]
+    public async Task<ActionResult<bool>> CheckName(string username)
+        => await repository.ExistsAsync(u => u.Username == username);
+
+    // GET: Users/CheckEmail
+    [HttpGet("CheckEmail")]
+    public async Task<ActionResult<bool>> CheckEmail(string emailAddress)
+        => await repository.ExistsAsync(u => u.EmailAddress == emailAddress);
+
+    // POST: Users
     [HttpPost]
     public async Task<ActionResult<User>> PostUser(User user)
     {
@@ -155,6 +166,11 @@ public class UsersController(
 
             if (await repository.ExistsAsync(u => u.Id == id))
                 throw new DuplicateException<User>(id);
+
+            if (await repository.ExistsAsync(u => u.Id == id)
+                || !string.IsNullOrEmpty(user.EmailAddress) && await repository.ExistsAsync(
+                    u => !string.IsNullOrEmpty(u.EmailAddress) && u.EmailAddress.ToLower() == user.EmailAddress.ToLower()))
+                throw new DuplicateException<User>("Пользователь с такой почтой уже существует");
 
             if (user.Role is not Role.User)
                 throw new AccessViolationException("Запрещено создание пользователя с любой ролью кроме User");
@@ -193,7 +209,7 @@ public class UsersController(
         }
     }
 
-    // PUT: api/Users/5
+    // PUT: Users/5
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<UpdatedResponse>> PutUser(Guid id, User user)
     {
@@ -273,7 +289,7 @@ public class UsersController(
         }
     }
 
-    // PUT: api/Users/Role
+    // PUT: Users/Role
     [HttpPut("Role")]
     public async Task<ActionResult<UpdateUserResponse>> PutUserRole([FromBody] UpdateRoleRequest request)
     {
@@ -310,7 +326,7 @@ public class UsersController(
         }
     }
 
-    // PUT: api/Users/Password
+    // PUT: Users/Password
     [HttpPut("Password")]
     public async Task<ActionResult<UpdateUserResponse>> PutUserPassword([FromBody] UpdatePasswordRequest request)
     {
@@ -348,7 +364,7 @@ public class UsersController(
         }
     }
 
-    // DELETE: api/Users/5
+    // DELETE: Users/5
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteUser(Guid id)
     {
@@ -364,7 +380,7 @@ public class UsersController(
         }
         catch (Exception ex)
         {
-            return BadRequest(new ErrorResponse(ex.InnerException));
+            return BadRequest(new ErrorResponse(ex.InnerException ?? ex));
         }
     }
 

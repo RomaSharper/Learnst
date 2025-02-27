@@ -14,7 +14,8 @@
             <div class="activity-details">
               <div class="activity-left">
                 <div class="activity-avatar">
-                  <img [src]="activity.avatarUrl" alt="{{ activity.title }}"  noDownloading placeholder="/assets/icons/placeholder.png">
+                  <img [src]="activity.avatarUrl" [alt]="activity.title"
+                    noDownloading placeholder="/assets/icons/placeholder.png">
                 </div>
                 <p>{{ activity.description }}</p>
                 <div class="tags-container">
@@ -105,7 +106,7 @@
               <div class="info-cards">
                 @for (card of benefits; track card) {
                   <div class="info-card">
-                    <img alt="{{ card.text }}" src="{{ card.iconUrl }}" noDownloading>
+                    <img [alt]="card.text" [src]="card.iconUrl" noDownloading>
                     <p>{{ card.text }}</p>
                   </div>
                 }
@@ -116,7 +117,7 @@
               <div class="info-cards">
                 @for (card of waysToLearn; track card) {
                   <div class="info-card">
-                    <img alt="{{ card.text }}" src="{{ card.iconUrl }}" noDownloading>
+                    <img [alt]="card.text" [src]="card.iconUrl" noDownloading>
                     <p>{{ card.text }}</p>
                   </div>
                 }

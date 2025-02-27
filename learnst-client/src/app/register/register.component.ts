@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -47,7 +47,7 @@ import { TurnstileService } from '../../services/turnstile.service';
     MatProgressSpinnerModule
   ]
 })
-export class RegisterComponent extends MediumScreenSupport {
+export class RegisterComponent extends MediumScreenSupport implements AfterViewInit {
   @ViewChild('turnstileContainer') turnstileContainer!: ElementRef;
 
   form: FormGroup;
@@ -69,32 +69,49 @@ export class RegisterComponent extends MediumScreenSupport {
   ) {
     super();
     this.form = new FormGroup({
-      username: new FormControl('', [Validators.required, Validators.minLength(3), ValidationService.usernameValidator]),
-      email: new FormControl('', [Validators.required, Validators.email, ValidationService.domainValidator]),
-      password: new FormControl('', [Validators.required, Validators.minLength(8), ValidationService.passwordValidator]),
-      repeatPassword: new FormControl('', [Validators.required]),
+      username: new FormControl('', [
+        Validators.required,
+        Validators.minLength(3),
+        ValidationService.usernameValidator
+      ], [ ValidationService.uniqueUsernameValidator(this.usersService) ]),
+      email: new FormControl('', [
+        Validators.required,
+        Validators.email,
+        ValidationService.domainValidator
+      ], [ ValidationService.uniqueEmailValidator(this.usersService) ]),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8),
+        ValidationService.passwordValidator
+      ]),
+      repeatPassword: new FormControl('', [
+        Validators.required
+      ]),
       cfToken: new FormControl('', Validators.required)
     }, {
       validators: [this.matchValidator('password', 'repeatPassword')],
     });
   }
 
-  ngOnInit() {
-    this.initTurnstile();
-  }
-
-  private initTurnstile() {
-    this.turnstile.init(
-      'cf-turnstile',
-      '0x4AAAAAAA-lpuh_BYavc73X',
-      (token: string) => {
-        this.form.patchValue({ cfToken: token });
-      }
-    );
+  ngAfterViewInit() {
+    setTimeout(() => this.initTurnstile(), 0); // Даём Angular время на рендеринг
   }
 
   onSubmit() {
-    if (this.form.invalid || !this.form.value.cfToken || this.loading()) {
+    Object.values(this.form.controls).forEach(control => {
+      control.markAsTouched();
+      control.updateValueAndValidity();
+    });
+
+    if (!this.form.value.cfToken) {
+      this.form.get('cfToken')?.setErrors({ required: true });
+      this.alertService.showSnackBar('Пройдите проверку безопасности');
+      this.turnstile.reset();
+      return;
+    }
+
+    if (this.form.invalid || this.loading()) {
+      console.log('Form invalid:', this.form.errors);
       this.turnstile.reset();
       return;
     }
@@ -191,5 +208,34 @@ export class RegisterComponent extends MediumScreenSupport {
       matchingControl!.setErrors(null);
       return null;
     }
+  }
+
+  openEmailHelp(): void {
+    this.alertService.openMessageDialog(
+      'О поддерживаемых доменах',
+      'На платформе Learnst в качестве безопасности поддерживаются только следующие домены: mail.ru, xmail.ru, gmail.com, vk.com, yandex.ru, icloud.com.');
+  }
+
+  private initTurnstile() {
+    try {
+      this.turnstile.init(
+        'cf-turnstile',
+        '0x4AAAAAAA-lpuh_BYavc73X',
+        (token: string) => {
+          this.form.patchValue({ cfToken: token });
+          this.form.get('cfToken')?.markAsTouched();
+        }
+      );
+    } catch (error) {
+      console.error('Turnstile init error:', error);
+      this.alertService.showSnackBar('Ошибка инициализации защиты. Перезагрузите страницу.');
+    }
+  }
+
+  private markAllAsTouched() {
+    Object.values(this.form.controls).forEach(control => {
+      control.markAsTouched();
+      control.updateValueAndValidity();
+    });
   }
 }

@@ -59,4 +59,16 @@ export class UsersService {
   deleteUser(userId: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${userId}`);
   }
+
+  checkUsernameExists(username: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/checkName`, {
+      params: { username }
+    });
+  }
+
+  checkEmailExists(emailAddress: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/checkEmail`, {
+      params: { emailAddress }
+    });
+  }
 }

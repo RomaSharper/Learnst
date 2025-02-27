@@ -5,7 +5,6 @@ public enum SocialMediaPlatform
     Bluesky,
     Discord,
     Facebook,
-    GitHub,
     Instagram,
     LinkedIn,
     Tumblr,
@@ -21,5 +20,12 @@ public enum SocialMediaPlatform
     Pinterest,
     Snapchat,
     TikTok,
+    Google,
+    Microsoft,
+    Yandex,
+    MailRu,
+    Ok,
+    Apple,
+    Github,
     Unknown
 }

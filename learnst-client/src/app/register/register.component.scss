@@ -1,0 +1,14 @@
+.cf-turnstile {
+  display: flex;
+  justify-content: center;
+
+  iframe {
+    margin: 0 auto;
+  }
+}
+
+.captcha-error {
+  font-size: 12px;
+  margin: -10px 0 10px;
+  color: var(--mat-sys-error);
+}

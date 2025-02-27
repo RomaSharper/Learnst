@@ -58,7 +58,7 @@ public partial class OAuth2Controller(
     private async Task<User> FindOrCreateUser(
         string? email,
         string externalLoginId,
-        ExternalLoginType externalLoginType,
+        SocialMediaPlatform SocialMediaPlatform,
         string? avatar = null,
         string? usernameBase = null,
         string? fullName = null,
@@ -67,7 +67,7 @@ public partial class OAuth2Controller(
         var user = await context.Users.FirstOrDefaultAsync(u =>
             u.EmailAddress == email ||
             (u.ExternalLoginId == externalLoginId &&
-            u.ExternalLoginType == externalLoginType));
+            u.ExternalLoginType == SocialMediaPlatform));
 
         if (user is null)
         {
@@ -78,7 +78,7 @@ public partial class OAuth2Controller(
                 EmailAddress = email,
                 DateOfBirth = dateOfBirth,
                 ExternalLoginId = externalLoginId,
-                ExternalLoginType = externalLoginType,
+                ExternalLoginType = SocialMediaPlatform,
                 Username = usernameBase is null
                     ? await GenerateUniqueUsernameAsync()
                     : await GenerateUniqueUsernameAsync(usernameBase)
@@ -236,7 +236,7 @@ public partial class OAuth2Controller(
             AvatarUrl = userInfo.Picture,
             EmailAddress = userInfo.Email,
             ExternalLoginId = userInfo.Id,
-            ExternalLoginType = ExternalLoginType.Google,
+            ExternalLoginType = SocialMediaPlatform.Google,
             Username = await GenerateUniqueUsernameAsync(),
         };
 
@@ -333,7 +333,7 @@ public partial class OAuth2Controller(
         var userInfo = await GetYandexUserInfo(tokenData.AccessToken);
 
         // Поиск/создание пользователя
-        var user = await FindOrCreateUser(userInfo.DefaultEmail, userInfo.Id, ExternalLoginType.Google, $"https://avatars.yandex.net/get-yapic/{userInfo.DefaultAvatarId}/islands-200");
+        var user = await FindOrCreateUser(userInfo.DefaultEmail, userInfo.Id, SocialMediaPlatform.Google, $"https://avatars.yandex.net/get-yapic/{userInfo.DefaultAvatarId}/islands-200");
 
         return RedirectWithToken(user);
     }
@@ -425,12 +425,12 @@ public partial class OAuth2Controller(
 
         var existingUser = await context.Users.FirstOrDefaultAsync(u => u.EmailAddress == userInfo.Mail
             || u.ExternalLoginId == userInfo.Id
-            && u.ExternalLoginType == ExternalLoginType.Microsoft);
+            && u.ExternalLoginType == SocialMediaPlatform.Microsoft);
 
         if (existingUser is not null)
             return RedirectWithToken(existingUser);
 
-        var user = await FindOrCreateUser(userInfo.Mail, userInfo.Id, ExternalLoginType.Microsoft, avatarUrl);
+        var user = await FindOrCreateUser(userInfo.Mail, userInfo.Id, SocialMediaPlatform.Microsoft, avatarUrl);
 
         return RedirectWithToken(user);
     }
@@ -555,7 +555,7 @@ public partial class OAuth2Controller(
         var user = await FindOrCreateUser(
             email: tokenData.Email,
             externalLoginId: tokenData.UserId.ToString(),
-            externalLoginType: ExternalLoginType.Vk,
+            SocialMediaPlatform: SocialMediaPlatform.VK,
             avatar: userInfo?.Photo200,
             dateOfBirth: birthDate,
             fullName: $"{userInfo?.FirstName} {userInfo?.LastName}".Trim());
@@ -626,7 +626,7 @@ public partial class OAuth2Controller(
         var user = await FindOrCreateUser(
             email: userInfo!.Email,
             externalLoginId: userInfo.Id,
-            externalLoginType: ExternalLoginType.MailRu,
+            SocialMediaPlatform: SocialMediaPlatform.MailRu,
             avatar: userInfo.Image,
             dateOfBirth: birthDate,
             fullName: $"{userInfo.FirstName} {userInfo.LastName}".Trim());
@@ -693,7 +693,7 @@ public partial class OAuth2Controller(
         var user = await FindOrCreateUser(
             email: userInfo?.Email,
             externalLoginId: userInfo?.Uid!,
-            externalLoginType: ExternalLoginType.Ok,
+            SocialMediaPlatform: SocialMediaPlatform.Ok,
             avatar: userInfo?.Pic1024x768);
 
         return RedirectWithToken(user);
@@ -804,7 +804,7 @@ public partial class OAuth2Controller(
         var user = await FindOrCreateUser(
             email: email,
             externalLoginId: userId,
-            externalLoginType: ExternalLoginType.Apple);
+            SocialMediaPlatform: SocialMediaPlatform.Apple);
 
         return RedirectWithToken(user);
     }
@@ -891,7 +891,7 @@ public partial class OAuth2Controller(
             var user = await FindOrCreateUser(
                 email: null,
                 externalLoginId: response.Id.ToString(),
-                externalLoginType: ExternalLoginType.Telegram,
+                SocialMediaPlatform: SocialMediaPlatform.Telegram,
                 fullName: $"{response.FirstName} {response.LastName}".Trim(),
                 avatar: response.PhotoUrl);
 
@@ -1020,7 +1020,7 @@ public partial class OAuth2Controller(
             var user = await FindOrCreateUser(
                 email: email,
                 externalLoginId: userInfo.Id.ToString(),
-                externalLoginType: ExternalLoginType.Github,
+                SocialMediaPlatform: SocialMediaPlatform.Github,
                 avatar: userInfo.AvatarUrl,
                 fullName: userInfo.Name);
 
@@ -1141,7 +1141,7 @@ public partial class OAuth2Controller(
             var user = await FindOrCreateUser(
                 email: userInfo.Email,
                 externalLoginId: userInfo.Id,
-                externalLoginType: ExternalLoginType.Discord,
+                SocialMediaPlatform: SocialMediaPlatform.Discord,
                 avatar: avatarUrl,
                 fullName: $"{userInfo.Username}#{userInfo.Discriminator}");
 
@@ -1235,7 +1235,7 @@ public partial class OAuth2Controller(
                 externalLoginId: steamId,
                 avatar: userInfo.AvatarFull,
                 fullName: userInfo.PersonaName,
-                externalLoginType: ExternalLoginType.Steam,
+                SocialMediaPlatform: SocialMediaPlatform.Steam,
                 usernameBase: SanitizeUsername(userInfo.PersonaName));
 
             return RedirectWithToken(user);
@@ -1360,7 +1360,7 @@ public partial class OAuth2Controller(
             var user = await FindOrCreateUser(
                 email: userData.Email,
                 externalLoginId: userData.Id,
-                externalLoginType: ExternalLoginType.Twitch,
+                SocialMediaPlatform: SocialMediaPlatform.Twitch,
                 avatar: userData.ProfileImageUrl,
                 fullName: userData.DisplayName,
                 usernameBase: userData.Login);
@@ -1441,7 +1441,7 @@ public partial class OAuth2Controller(
             var user = await FindOrCreateUser(
                 email: userInfo?.Email ?? $"{userInfo?.Sub}@epic.temp",
                 externalLoginId: userInfo!.Sub,
-                externalLoginType: ExternalLoginType.EpicGames,
+                SocialMediaPlatform: SocialMediaPlatform.EpicGames,
                 avatar: userInfo.Picture,
                 fullName: userInfo.PreferredUsername);
 
@@ -1520,7 +1520,7 @@ public partial class OAuth2Controller(
         var user = await FindOrCreateUser(
             email: userInfo.Email,
             externalLoginId: userInfo.Id,
-            externalLoginType: ExternalLoginType.Facebook,
+            SocialMediaPlatform: SocialMediaPlatform.Facebook,
             avatar: userInfo.Picture.Data.Url,
             fullName: userInfo.Name);
 
@@ -1603,7 +1603,7 @@ public partial class OAuth2Controller(
         var user = await FindOrCreateUser(
             email: null, // TikTok не предоставляет email
             externalLoginId: userInfo.Data.User.OpenId,
-            externalLoginType: ExternalLoginType.TikTok,
+            SocialMediaPlatform: SocialMediaPlatform.TikTok,
             avatar: userInfo.Data.User.AvatarUrl,
             fullName: userInfo.Data.User.DisplayName);
 

@@ -7,9 +7,9 @@ import { WorkExperience } from "./WorkExperience";
 import { UserAnswer } from "./UserAnswer";
 import { Ticket } from "./Ticket";
 import { TicketAnswer } from "./TicketAnswer";
-import { ExternalLoginType } from "../enums/ExternalLoginType";
 import { Theme } from "./Theme";
 import { UserSubscription } from "./UserSubscription";
+import { SocialMediaPlatform } from "../enums/SocialMediaPlatform";
 
 export interface User {
   id?: string;
@@ -32,7 +32,7 @@ export interface User {
   ticketAnswers: TicketAnswer[];
   username: string;
   externalLoginId?: string;
-  externalLoginType?: ExternalLoginType;
+  externalLoginType?: SocialMediaPlatform;
   themeId: string;
   theme?: Theme;
   authCodes: string[];
