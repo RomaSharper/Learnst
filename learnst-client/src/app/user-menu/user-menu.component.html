@@ -40,11 +40,8 @@
             @if (acc.isCurrent) {
               <mat-icon matTooltip="Ваш текущий аккаунт">person_check</mat-icon>
             } @else {
-              <mat-icon
-                class="error"
-                matTooltip="Выйти из аккаунта"
-                (click)="deleteAccount(acc.id, $event)"
-              >
+              <mat-icon matTooltip="Выйти из аккаунта"
+                (click)="deleteAccount(acc.id, $event)">
                 logout
               </mat-icon>
             }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 
 export type ClipboardContentType =
   'text/plain' |
@@ -17,7 +17,7 @@ interface ClipboardError extends Error {
 export class ClipboardService {
   private readonly clipboard: Clipboard;
 
-  constructor() {
+  constructor(private ngZone: NgZone) {
     this.clipboard = navigator.clipboard;
   }
 
@@ -25,23 +25,28 @@ export class ClipboardService {
     return !!this.clipboard && !!document.hasFocus && document.hasFocus();
   }
 
-  async copy(content: Record<ClipboardContentType, Blob>): Promise<void> {
+  async copy(content: { type: ClipboardContentType, blob: Blob }): Promise<void> {
     if (!this.isSupported)
       throw this.createError('Clipboard API is not supported');
 
-    const clipboardItems = Object.entries(content).map(
-      ([type, blob]) => new ClipboardItem({ [type]: blob })
-    );
+    const clipboardItem = new ClipboardItem({ [content.type]: content.blob });
 
-    await this.clipboard.write(clipboardItems);
+    this.ngZone.runOutsideAngular(async () =>
+      await this.clipboard.write([clipboardItem])
+    );
   }
 
-  async paste(): Promise<ClipboardItems> {
+  async paste(): Promise<ClipboardItems | null> {
     if (!this.isSupported)
       throw this.createError('Clipboard API not supported');
 
+    let clipboardItems = null;
+
     try {
-      const clipboardItems = await this.clipboard.read();
+      this.ngZone.runOutsideAngular(async () =>
+        clipboardItems = await this.clipboard.read()
+      );
+
       return clipboardItems;
     } catch (error) {
       throw this.createError('Paste failed', error);

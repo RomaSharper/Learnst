@@ -29,16 +29,14 @@ export class ContactsComponent {
 
   copyToClipboard(value: string, label: string) {
     this.clipboardService.copy({
-      'text/plain': new Blob([value], { type: 'text/plain' }),
-      'text/html': new Blob(),
-      'image/png': new Blob(),
-      'application/json': new Blob()
+      type: 'text/plain',
+      blob: new Blob([value], { type: 'text/plain' })
     })
-      .then(() => {
-        this.alertService.showSnackBar(`${label} успешно скопировано`);
-      })
-      .catch(err => {
-        console.error('Копирование в буфер обмена не удалось: ', err);
-      });
+    .then(() =>
+      this.alertService.showSnackBar(`${label} успешно скопировано`)
+    )
+    .catch(err =>
+      console.error('Копирование в буфер обмена не удалось: ', err)
+    );
   }
 }
