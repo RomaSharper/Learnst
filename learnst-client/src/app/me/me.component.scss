@@ -9,8 +9,8 @@
     right: 0;
     bottom: 0;
     z-index: 2;
-    position: fixed;
-    padding: 4px * 6 4px * 4;
+    padding: 24px 0;
+    position: sticky;
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
   }
@@ -19,16 +19,12 @@
     width: 100%;
     border: none;
     cursor: pointer;
-    // color: @text-high-emphasis;
-    // background-color: #005cf4;
     font-size: 18px;
     padding: 4px * 3 4px * 6;
+    color: var(--mat-sys-on-primary);
+    box-shadow: var(--mat-sys-level2);
     transition: background-color 0.3s ease;
-    // box-shadow: 0 4px * 0.5 4px rgba(0, 0, 0, 0.2);
-
-    &:hover {
-      // background-color: darken(#005cf4, 10%);
-    }
+    background-color: var(--mat-sys-primary);
 
     @media (max-width: 767px) {
       padding: 4px * 4 4px * 8;
@@ -41,6 +37,9 @@
 
     button {
       margin-bottom: 4px;
+      // color: var(--mat-sys-on-error);
+      box-shadow: var(--mat-sys-level2);
+      // background-color: var(--mat-sys-error);
     }
 
     .warning-text {

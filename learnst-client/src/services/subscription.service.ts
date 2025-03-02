@@ -16,8 +16,8 @@ export class SubscriptionService {
   getSubscriptionOptions(): { duration: number, label: string, discount: number }[] {
     return [
       { duration: 1, label: '1 месяц', discount: 0 },
-      { duration: 3, label: '3 месяца (-10%)', discount: 10 },
-      { duration: 12, label: '1 год (-20%)', discount: 20 }
+      { duration: 3, label: '3 месяца', discount: 10 },
+      { duration: 12, label: '1 год', discount: 20 }
     ];
   }
 

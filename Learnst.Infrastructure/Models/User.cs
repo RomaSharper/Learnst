@@ -77,6 +77,12 @@ public class User : IEntity
     public ICollection<TicketAnswer> TicketAnswers { get; set; } = [];
     #endregion
 
+    #region Отношения пользователя
+    public ICollection<Follow> Followers { get; set; } = [];
+
+    public ICollection<Follow> Followings { get; set; } = [];
+    #endregion
+
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public ICollection<UserActivity> UserActivities { get; set; } = [];
 

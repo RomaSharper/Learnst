@@ -1,7 +1,5 @@
-<!-- <article class="terms-container"> -->
 <article class="md-container">
-  <a mat-button (click)="goBack()">Назад</a>
-
+  <a mat-button routerLink="/manuals" class="nav-btn">Назад</a>
   <h1>Условия использования Learnst</h1>
   <p><em>Последнее обновление: 2025-02-07</em></p>
 
@@ -11,10 +9,10 @@
       <li><a href="manuals/termsofuse#acceptance">1. Принятие условий</a></li>
       <li><a href="manuals/termsofuse#account">2. Учетная запись</a></li>
       <li><a href="manuals/termsofuse#content">3. Контент и лицензии</a></li>
-      <!-- <li><a href="termsofuse#payments">4. Платежи и подписки</a></li> -->
-      <li><a href="manuals/termsofuse#termination">4. Прекращение доступа</a></li>
-      <li><a href="manuals/termsofuse#disclaimer">5. Отказ от гарантий</a></li>
-      <li><a href="manuals/termsofuse#changes">6. Изменения условий</a></li>
+      <li><a href="termsofuse#payments">4. Платежи и подписки</a></li>
+      <li><a href="manuals/termsofuse#termination">5. Прекращение доступа</a></li>
+      <li><a href="manuals/termsofuse#disclaimer">6. Отказ от гарантий</a></li>
+      <li><a href="manuals/termsofuse#changes">7. Изменения условий</a></li>
     </ul>
   </section>
 
@@ -52,7 +50,7 @@
     </ul>
   </section>
 
-  <!-- <section id="payments">
+  <section id="payments">
     <h2>4. Платежи и подписки</h2>
     <p>При покупке активностей вы соглашаетесь:</p>
     <ul>
@@ -60,10 +58,10 @@
       <li>Автоматическое продление подписок</li>
       <li>Возврат средств в течение 14 дней при технических проблемах</li>
     </ul>
-  </section> -->
+  </section>
 
   <section id="termination">
-    <h2>4. Прекращение доступа</h2>
+    <h2>5. Прекращение доступа</h2>
     <p>Мы оставляем за собой право блокировать аккаунты за:</p>
     <ul>
       <li>Нарушение авторских прав</li>
@@ -74,7 +72,7 @@
   </section>
 
   <section id="disclaimer">
-    <h2>5. Отказ от гарантий</h2>
+    <h2>6. Отказ от гарантий</h2>
     <p>Learnst не гарантирует:</p>
     <ul>
       <li>Бесперебойную работу сервиса</li>
@@ -84,13 +82,13 @@
   </section>
 
   <section id="changes">
-    <h2>6. Изменения условий</h2>
+    <h2>7. Изменения условий</h2>
     <p>Мы можем обновлять условия использования. Актуальная версия всегда доступна на этой странице.</p>
   </section>
 
   <footer class="footer">
     <p>© 2025 TCorporation. Все права защищены.</p>
     <p>Юрисдикция: Российская Федерация</p>
-    <p>Контакты: <a href="mailto:oraclehub-tech@mail.ru">oraclehub-tech&#64;mail.ru</a></p>
+    <p><a routerLink="/manuals/contacts">Контакты</a></p>
   </footer>
 </article>

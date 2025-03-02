@@ -1,4 +1,14 @@
 .profile-container {
+  .actions {
+    gap: 1rem;
+    display: flex;
+    margin-top: 1rem;
+    
+    button {
+      flex: 1;
+    }
+  }
+
   .avatar {
     cursor: default; // Аватар не кликабельный на чужой странице
   }

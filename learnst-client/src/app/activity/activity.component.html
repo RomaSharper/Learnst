@@ -29,7 +29,8 @@
                   <a mat-stroked-button [matMenuTriggerFor]="userMenu"
                     [matTooltip]="activity.author?.username" class="user-btn">
                     <img [src]="activity.author?.avatarUrl" class="user-avatar"
-                      [alt]="activity.author?.username" placeholder="/assets/icons/user-192x192.png">
+                      [alt]="activity.author?.username" noDownloading
+                      placeholder="/assets/icons/user-192x192.png">
                     <span class="username">{{ activity.author?.username }}</span>
                   </a>
 

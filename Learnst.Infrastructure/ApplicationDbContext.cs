@@ -8,6 +8,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Activity> Activities { get; set; }
     public DbSet<Answer> Answers { get; set; }
     public DbSet<Education> Educations { get; set; }
+    public DbSet<Follow> Follows { get; set; }
     public DbSet<InfoCard> InfoCards { get; set; }
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<Question> Questions { get; set; }

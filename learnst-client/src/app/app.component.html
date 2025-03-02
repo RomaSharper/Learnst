@@ -27,6 +27,7 @@
           <li><a routerLink="/activities" routerLinkActive="active">Обучение</a></li>
           <li><a routerLink="/community" routerLinkActive="active">Сообщество</a></li>
           <li><a routerLink="/support" routerLinkActive="active">Поддержка</a></li>
+          <li><a routerLink="/manuals" routerLinkActive="active">Информация</a></li>
           <li class="user-area">
             <button type="button" mat-stroked-button class="user-btn" routerLinkActive="active"
               [matTooltip]="user()?.username" [matMenuTriggerFor]="userMenu">
@@ -41,11 +42,7 @@
           </li>
         } @else {
           <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
-          <li><a routerLink="/manuals/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
-          <li><a routerLink="/manuals/termsofuse" routerLinkActive="active">Условия пользования</a></li>
-          <li><a routerLink="/manuals/oferta" routerLinkActive="active">Публичная оферта</a></li>
-          <li><a routerLink="/manuals/subscription" routerLinkActive="active">О подписке</a></li>
-          <li><a routerLink="/manuals/contacts" routerLinkActive="active">Контакты</a></li>
+          <li><a routerLink="/manuals" routerLinkActive="active">Информация</a></li>
           <li class="user-area">
             <a mat-stroked-button routerLink="/login">
               <mat-icon class="scale-1-5">login</mat-icon>
@@ -63,33 +60,12 @@
               <span>Learnst</span>
             </a>
           </li>
-          <li>
-            <a routerLink="/activities" routerLinkActive="active">Активности</a>
-          </li>
-          <li>
-            <a routerLink="/support" routerLinkActive="active">Поддержка</a>
-          </li>
-          <li>
-            <a routerLink="/community" routerLinkActive="active">Сообщество</a>
-          </li>
-          <li>
-            <a>Информация</a>
-            <div class="submenu">
-              <div class="columns">
-                <div>
-                  <h3>Информация</h3>
-                  <ul>
-                    <li><a routerLink="/manuals/privacypolicy" routerLinkActive="active">Конфиденциальность</a></li>
-                    <li><a routerLink="/manuals/termsofuse" routerLinkActive="active">Условия использования</a></li>
-                    <li><a routerLink="/manuals/oferta" routerLinkActive="active">Публичная оферта</a></li>
-                    <li><a routerLink="/manuals/subscription" routerLinkActive="active">О подписке</a></li>
-                    <li><a routerLink="/manuals/contacts" routerLinkActive="active">Контакты</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </li>
+          <li><a routerLink="/activities" routerLinkActive="active">Активности</a></li>
+          <li><a routerLink="/support" routerLinkActive="active">Поддержка</a></li>
+          <li><a routerLink="/community" routerLinkActive="active">Сообщество</a></li>
+          <li><a routerLink="/manuals" routerLinkActive="active">Информация</a></li>
         </ul>
+
         @if (user()) {
           <div class="user-area">
             <button type="button" [matTooltip]="user()?.username" mat-icon-button [matMenuTriggerFor]="userMenu">

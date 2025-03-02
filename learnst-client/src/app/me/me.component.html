@@ -7,7 +7,7 @@
   } @else {
     <div class="profile-grid">
       <!-- Личные данные -->
-      <mat-card class="full-width">
+      <mat-card class="full-width" appearance="outlined">
         <h3>
           Личные данные
           @if (user.externalLoginType) {
@@ -23,6 +23,11 @@
           <img [src]="user.avatarUrl" [alt]="user.username" class="avatar" (click)="openFilePicker()"
             placeholder="/assets/icons/user-192x192.png" matTooltip="Изменить аватар" matTooltipPosition="below">
         </div>
+
+        <div class="full-width">
+          <p>{{ followersCount() | plural:'подписчик':'подписчика':'подписчиков' }}</p>
+        </div>
+
         <div class="user-info">
           <mat-form-field appearance="outline">
             <mat-label>ФИО</mat-label>
@@ -76,7 +81,7 @@
       </mat-card>
 
       <!-- Изменить пароль -->
-      <mat-card>
+      <mat-card appearance="outlined">
         <h3>Изменить пароль</h3>
         <mat-form-field appearance="outline">
           <mat-label>Старый пароль</mat-label>
@@ -122,7 +127,7 @@
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
         </mat-form-field>
-        <button type="button" mat-raised-button color="primary" class="full-width" (click)="changePassword()">
+        <button type="button" mat-flat-button color="primary" class="full-width" (click)="changePassword()">
           @if (passwordChanging) {
             <mat-spinner diameter="20"></mat-spinner>
           } @else {
@@ -132,9 +137,9 @@
       </mat-card>
 
       <!-- Социальные сети -->
-      <mat-card class="full-height">
+      <mat-card class="full-height" appearance="outlined">
         <h3>Социальные сети</h3>
-        <button type="button" mat-raised-button color="primary" (click)="openSocialMediaModal()">
+        <button type="button" mat-flat-button color="primary" (click)="openSocialMediaModal()">
           Добавить профиль
         </button>
         <div class="cards">
@@ -158,9 +163,9 @@
       </mat-card>
 
       <!-- Образование -->
-      <mat-card class="full-height">
+      <mat-card class="full-height" appearance="outlined">
         <h3>Образование</h3>
-        <button type="button" mat-raised-button color="primary" (click)="openEducationModal()">
+        <button type="button" mat-flat-button color="primary" (click)="openEducationModal()">
           Добавить образование
         </button>
         <div class="cards">
@@ -182,9 +187,9 @@
       </mat-card>
 
       <!-- Опыт работы -->
-      <mat-card class="full-height">
+      <mat-card class="full-height" appearance="outlined">
         <h3>Опыт работы</h3>
-        <button type="button" mat-raised-button color="primary" (click)="openWorkExperienceModal()">
+        <button type="button" mat-flat-button color="primary" (click)="openWorkExperienceModal()">
           Добавить опыт работы
         </button>
         <div class="cards">
@@ -207,19 +212,25 @@
       </mat-card>
 
       <!-- Подписка -->
-      <div class="full-width">
+      <div class="full-width" appearance="outlined">
         <app-subscription />
       </div>
 
       <!-- Темы -->
-      <mat-card class="full-width">
+      <mat-card class="full-width" appearance="outlined">
         <app-theme-picker />
       </mat-card>
 
       <!-- Удалить профиль -->
-      <mat-card class="full-width">
+      <mat-card class="full-width" appearance="outlined">
         <div class="delete-profile-wrapper">
-          <button type="button" mat-raised-button color="warn" (click)="deleteProfile()">
+          <button
+            color="warn"
+            type="button"
+            mat-flat-button
+            (click)="deleteProfile()"
+            class="full-width error with-background"
+          >
             Удалить мой профиль
           </button>
           <p class="warning-text">Внимание: это действие необратимо. Все ваши данные будут удалены.</p>
@@ -229,7 +240,7 @@
 
     @if (unsavedChanges) {
     <div class="save-button-wrapper">
-      <button type="button" mat-raised-button color="primary" class="save-button" (click)="saveChanges()">
+      <button type="button" mat-flat-button color="primary" class="save-button" (click)="saveChanges()">
         @if (changesSaving) {
           <mat-spinner color="white" diameter="20"></mat-spinner>
         } @else {

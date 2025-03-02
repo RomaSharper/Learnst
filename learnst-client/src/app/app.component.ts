@@ -41,6 +41,7 @@ export class AppComponent extends MediumScreenSupport {
   authService = inject(AuthService);
   user = toSignal(this.authService.getUser());
   welcomeMessage = signal<string | null>(null);
+
   private excludedRoutes = ['/login', '/register'];
 
   constructor(

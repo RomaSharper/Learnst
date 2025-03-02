@@ -20,9 +20,10 @@ import { TicketListComponent } from './ticket-list/ticket-list.component';
 import { UserComponent } from './user/user.component';
 import { UsersComponent } from './users/users.component';
 import { SubscriptionsComponent } from './subscription/subscription.component';
-import { OfferAgreementComponent } from './offer-agreement/offer-agreement.component';
-import { ContactsComponent } from './contacts/contacts.component';
-import { DeliveryInfoComponent } from './delivery-info/delivery-info.component';
+import { OfferAgreementComponent } from './manuals/offer-agreement/offer-agreement.component';
+import { ContactsComponent } from './manuals/contacts/contacts.component';
+import { DeliveryInfoComponent } from './manuals/delivery-info/delivery-info.component';
+import { ManualsComponent } from './manuals/manuals.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -32,6 +33,7 @@ export const routes: Routes = [
   { path: 'manuals/oferta', component: OfferAgreementComponent },
   { path: 'manuals/contacts', component: ContactsComponent },
   { path: 'manuals/subscription', component: DeliveryInfoComponent },
+  { path: 'manuals', component: ManualsComponent },
   { path: 'subscriptions', component: SubscriptionsComponent },
 
   { path: 'login', component: LoginComponent },

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Learnst.Domain.Enums;
 using Learnst.Infrastructure.Exceptions;
 using Learnst.Infrastructure.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Learnst.Infrastructure.Repositories;
 

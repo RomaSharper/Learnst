@@ -38,6 +38,7 @@ builder.Services.AddAutoMapper(cfg =>
 builder.Services.AddScoped<JwtService>()
     .AddScoped<UsersRepository>()
     .AddScoped<YookassaService>()
+    .AddScoped<FollowsRepository>()
     .AddScoped<ActivitiesRepository>()
     .AddScoped<IEmailSender, SmtpEmailSender>()
     .AddScoped<IValidationService, ValidationService>()

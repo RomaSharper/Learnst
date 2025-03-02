@@ -1,7 +1,7 @@
 <div class="subscription-widget">
   <!-- Текущая подписка -->
   @if (currentSubscription() && !isLoading()) {
-    <mat-card class="current-subscription">
+    <mat-card class="current-subscription" appearance="outlined">
       <mat-card-header>
         <mat-card-title>Ваша подписка активна</mat-card-title>
       </mat-card-header>
@@ -29,7 +29,7 @@
   }
 
   <!-- Выбор плана -->
-  <mat-card class="plan-selection">
+  <mat-card class="plan-selection" appearance="outlined">
     <mat-card-header>
       <mat-card-title>Выберите тарифный план</mat-card-title>
     </mat-card-header>
@@ -39,6 +39,7 @@
         @for (plan of subscriptionPlans; track plan) {
           <mat-card
             class="plan-card"
+            appearance="outlined"
             (click)="selectPlan(plan.duration)"
             [class.selected]="selectedPlan() === plan.duration"
           >
@@ -69,6 +70,7 @@
       </div>
 
       <button
+        type="button"
         color="primary"
         mat-raised-button
         class="purchase-button"

@@ -116,8 +116,25 @@ video {
 }
 
 .error {
-  &.static, &:hover {
-    color: var(--mat-sys-on-error);
+  color: var(--mat-sys-on-error) !important;
+
+  &.with-background {
+    background-color: var(--mat-sys-error) !important;
+  }
+}
+
+.copy-field {
+  width: 100%;
+  margin-bottom: 10px;
+
+  mat-label {
+    font-weight: bold;
+  }
+
+  input {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 }
 
@@ -130,15 +147,14 @@ video {
   &::before,
   &::after {
     flex: 1;
+    height: 1px;
     content: '';
-    height: 1px; // Заменил @step * 0.25
     background-color: var(--mdc-filled-button-container-color, var(--mat-sys-primary));
   }
 
   .or-text {
-    padding: 0 16px; // Заменил @step * 2
-    font-size: 14px; // Заменил @font-size-medium
-    color: var(--text-color-secondary); //  Добавил цвет текста
+    padding: 0 8px;
+    color: var(--text-color-secondary);
   }
 }
 
@@ -555,38 +571,6 @@ mat-date-range-input {
   }
 }
 
-.danger,
-.warning,
-.success {
-  display: none;
-  padding: 8px;
-  font-size: 12px;
-  border-radius: 4px;
-  margin: 12px 0 4px;
-
-  &:not(:empty) {
-    display: block;
-  }
-}
-
-.danger {
-  // color: darken(@danger, 20%);
-  // border-left: 4px solid @danger;
-  // background: lighten(@danger, 30%);
-}
-
-.warning {
-  // color: darken(@warning, 20%);
-  // border-left: 4px solid @warning;
-  // background: lighten(@warning, 30%);
-}
-
-.success {
-  // color: darken(@success, 20%);
-  // border-left: 4px solid @success;
-  // background: lighten(@success, 30%);
-}
-
 .list {
   padding-left: 0;
   list-style-type: none !important;
@@ -729,7 +713,7 @@ textarea {
 
     mat-card {
       width: 100%;
-      padding: 8px;
+      padding: 20px;
       position: relative;
       // border-radius: @border-radius;
       // background-color: @background-color;
@@ -739,6 +723,10 @@ textarea {
         // color: @accent;
         margin-bottom: 8px;
         padding-right: 40px;
+      }
+
+      @media (max-width: 767px) {
+        padding: 8px;
       }
     }
   }
@@ -935,7 +923,7 @@ textarea {
     text-decoration: none;
     color: var(--mat-sys-primary);
 
-    &:hover {
+    &:not(.nav-btn):hover {
       text-decoration: underline;
     }
   }

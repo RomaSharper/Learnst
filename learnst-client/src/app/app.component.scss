@@ -57,6 +57,12 @@
   }
 }
 
+.desktop-notifications {
+  top: 4px;
+  right: 56px;
+  position: absolute;
+}
+
 .main-navigation {
   position: relative;
   color: var(--mat-sys-secondary);
@@ -302,7 +308,6 @@
       height: 40px;
       margin: 4px 8px;
       border-radius: 50%;
-      box-shadow: var(--mat-sys-level2);
 
       button {
         padding: 0;

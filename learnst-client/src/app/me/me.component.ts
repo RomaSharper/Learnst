@@ -40,12 +40,15 @@ import { EducationDialogComponent } from './education.dialog/education.dialog.co
 import { SocialMediaDialogComponent } from './social.media.dialog/social.media.dialog.component';
 import { WorkExperienceDialogComponent } from './work.experience.dialog/work.experience.dialog.component';
 import { SubscriptionsComponent } from '../subscription/subscription.component';
+import { PluralPipe } from '../../pipes/plural.pipe';
 
+@Return()
 @Component({
   selector: 'app-me',
   templateUrl: './me.component.html',
   styleUrls: ['./me.component.scss'],
   imports: [
+    PluralPipe,
     FormsModule,
     MatFormField,
     MatIconModule,
@@ -64,11 +67,7 @@ import { SubscriptionsComponent } from '../subscription/subscription.component';
     PlaceholderImageDirective,
   ]
 })
-@Return()
 export class MeComponent extends MediumScreenSupport implements OnInit, CanComponentDeactivate {
-  public location = inject(Location);
-
-  private router = inject(Router);
   private dialog = inject(MatDialog);
   private authService = inject(AuthService);
   private fileService = inject(FileService);
@@ -87,11 +86,14 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   changesSaving = false;
   unsavedChanges = false;
   passwordChanging = false;
+  followersCount = signal(0);
   readonly maxDate = new Date();
   readonly minDate = new Date(1900, 0, 1);
   @ViewChild(MatDatepicker<Date | null>) picker!: MatDatepicker<Date | null>;
 
   SocialMediaPlatformHelper = SocialMediaPlatformHelper;
+
+  constructor(public router: Router, public location: Location) { super(); }
 
   ngOnInit(): void {
     this.authService.getUser().subscribe(user => {
@@ -99,6 +101,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       this.userId = user.id!;
       this.originalUser = JSON.parse(JSON.stringify(user));
       this.usersService.getUserById(this.userId).subscribe(user => this.user = user);
+      this.usersService.getFollowersCount(this.userId).subscribe(count => this.followersCount.set(count));
     });
   }
 

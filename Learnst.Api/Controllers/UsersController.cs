@@ -14,6 +14,7 @@ namespace Learnst.Api.Controllers;
 [ApiController]
 public class UsersController(
     UsersRepository repository,
+    FollowsRepository followsRepository,
     IValidationService validationService
 ) : ControllerBase
 {
@@ -45,7 +46,9 @@ public class UsersController(
                 u => u.UserLessons,
                 u => u.UserAnswers,
                 u => u.Tickets,
-                u => u.TicketAnswers
+                u => u.TicketAnswers,
+                u => u.Followers,
+                u => u.Followings
             ]) ?? throw new NotFoundException<User>(id);
         }
         catch (NotFoundException<User> nfe)
@@ -73,7 +76,9 @@ public class UsersController(
                 u => u.UserLessons,
                 u => u.UserAnswers,
                 u => u.Tickets,
-                u => u.TicketAnswers
+                u => u.TicketAnswers,
+                u => u.Followers,
+                u => u.Followings
             ]) ?? throw new NotFoundException<User>("Пользователь с такой почтой не найден");
         }
         catch (NotFoundException<User> nfe)
@@ -100,7 +105,9 @@ public class UsersController(
                 u => u.UserLessons,
                 u => u.UserAnswers,
                 u => u.Tickets,
-                u => u.TicketAnswers
+                u => u.TicketAnswers,
+                u => u.Followers,
+                u => u.Followings
             ]) ?? throw new NotFoundException<User>("Пользователь с таким именем не найден");
         }
         catch (NotFoundException<User> nfe)
@@ -128,7 +135,9 @@ public class UsersController(
                     u => u.UserLessons,
                     u => u.UserAnswers,
                     u => u.Tickets,
-                    u => u.TicketAnswers
+                    u => u.TicketAnswers,
+                    u => u.Followers,
+                    u => u.Followings
                 ]) ?? throw new NotFoundException<User>("Неверный логин или пароль");
 
             if (!bcrypt.Verify(request.Password, user.PasswordHash))
@@ -167,8 +176,7 @@ public class UsersController(
             if (await repository.ExistsAsync(u => u.Id == id))
                 throw new DuplicateException<User>(id);
 
-            if (await repository.ExistsAsync(u => u.Id == id)
-                || !string.IsNullOrEmpty(user.EmailAddress) && await repository.ExistsAsync(
+            if (!string.IsNullOrEmpty(user.EmailAddress) && await repository.ExistsAsync(
                     u => !string.IsNullOrEmpty(u.EmailAddress) && u.EmailAddress.ToLower() == user.EmailAddress.ToLower()))
                 throw new DuplicateException<User>("Пользователь с такой почтой уже существует");
 
@@ -192,7 +200,7 @@ public class UsersController(
                 if (!emailValidation.Succeed)
                     return BadRequest(emailValidation);
             }
-        
+
             user.PasswordHash = bcrypt.HashPassword(user.PasswordHash);
             await repository.AddAsync(user);
             await repository.SaveAsync();
@@ -226,7 +234,9 @@ public class UsersController(
                     u => u.UserLessons,
                     u => u.UserAnswers,
                     u => u.Tickets,
-                    u => u.TicketAnswers
+                    u => u.TicketAnswers,
+                    u => u.Followers,
+                    u => u.Followings
                 ]) ?? throw new NotFoundException<User>(id);
 
             // Валидация имени пользователя
@@ -269,6 +279,10 @@ public class UsersController(
             existingUser.UserAnswers = user.UserAnswers;
             existingUser.Tickets = user.Tickets;
             existingUser.TicketAnswers = user.TicketAnswers;
+            // existingUser.Followers = user.Followers;
+            // existingUser.Followings = user.Followings;
+            // existingUser.SendedFriendships = user.SendedFriendships;
+            // existingUser.ReceivedFriendships = user.ReceivedFriendships;
 
             await repository.SaveAsync();
 
@@ -394,6 +408,44 @@ public class UsersController(
         catch (NotFoundException<User> nfe)
         {
             return NotFound(new ErrorResponse(nfe));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ErrorResponse(ex));
+        }
+    }
+
+    [HttpGet("{userId:guid}/Followers")]
+    public async Task<IActionResult> GetFollowers(Guid userId)
+        => Ok(await followsRepository.GetFollowersAsync(userId));
+
+    [HttpGet("{userId:guid}/Followers/Count")]
+    public async Task<ActionResult<int>> GetFollowersCount(Guid userId)
+        => Ok(await followsRepository.GetFollowersCountAsync(userId));
+
+    [HttpPost("{userId:guid}/Follow/{targetUserId:guid}")]
+    public async Task<IActionResult> FollowUser(Guid userId, Guid targetUserId)
+    {
+        try
+        {
+            await followsRepository.AddFollowerAsync(targetUserId, userId);
+            await followsRepository.SaveAsync();
+            return Ok(new { Message = "Успешная подписка" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ErrorResponse(ex));
+        }
+    }
+
+    [HttpDelete("{userId:guid}/Follow/{targetUserId:guid}")]
+    public async Task<IActionResult> UnfollowUser(Guid userId, Guid targetUserId)
+    {
+        try
+        {
+            await followsRepository.RemoveFollowerAsync(targetUserId, userId);
+            await followsRepository.SaveAsync();
+            return Ok(new { Message = "Подписка отменена" });
         }
         catch (Exception ex)
         {

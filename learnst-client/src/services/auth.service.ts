@@ -20,12 +20,13 @@ export class AuthService {
   private readonly ACCOUNTS_KEY = 'user_accounts';
   private readonly ENCRYPTION_KEY = environment.encryptionKey;
 
+  private accountsSubject = new BehaviorSubject<StoredUser[]>([]);
+  private currentUserSubject = new BehaviorSubject<UserDao | null>(null);
+  public accounts = toSignal(this.accountsSubject);
+
   private router = inject(Router);
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiBaseUrl}/sessions`;
-  private accountsSubject = new BehaviorSubject<StoredUser[]>([]);
-  public accounts = toSignal(this.accountsSubject);
-  private currentUserSubject = new BehaviorSubject<UserDao | null>(null);
 
   public currentUser$ = this.currentUserSubject.asObservable();
 
