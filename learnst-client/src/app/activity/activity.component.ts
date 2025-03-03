@@ -32,6 +32,8 @@ import { TagHelper } from './../../helpers/TagHelper';
 import { InfoCard } from './../../models/InfoCard';
 import { MatMenuModule } from '@angular/material/menu';
 import { UserMenuComponent } from '../user-menu/user-menu.component';
+import { EllipsisPipe } from '../../pipes/ellipsis.pipe';
+import { InspectableDirective } from '../../pipes/inspectable.pipe';
 
 interface ActivityNode {
   id: string;
@@ -47,6 +49,7 @@ interface ActivityNode {
   imports: [
     RuDatePipe,
     RouterLink,
+    EllipsisPipe,
     MatTabsModule,
     MatIconModule,
     MatCardModule,
@@ -57,6 +60,7 @@ interface ActivityNode {
     MatButtonModule,
     MatTooltipModule,
     UserMenuComponent,
+    InspectableDirective,
     MatProgressBarModule,
     NoDownloadingDirective,
     MatProgressSpinnerModule,

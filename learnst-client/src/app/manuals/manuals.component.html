@@ -1,24 +1,20 @@
-<article class="md-container">
-  <a mat-button routerLink="/" class="nav-btn">Назад</a>
+<mat-card class="md-container" appearance="outlined">
+  <a mat-button routerLink="/">Назад</a>
 
-  <mat-card class="manuals-container">
-    <mat-card-header>
-      <mat-card-title class="title">Документы и справочные материалы</mat-card-title>
-      <mat-card-subtitle>Ознакомьтесь с важной информацией</mat-card-subtitle>
-    </mat-card-header>
+  <h1>Документы и справочные материалы</h1>
 
-    <mat-divider></mat-divider>
-
-    <mat-nav-list class="links-list">
-      @for (link of links; track link) {
-        <a mat-list-item
-          [routerLink]="link.path"
-          routerLinkActive="active-link">
-          <mat-icon matListItemIcon>description</mat-icon>
-          <span matListItemTitle>{{ link.title }}</span>
-          <span matListItemLine class="hint">Подробная информация</span>
-        </a>
-      }
-    </mat-nav-list>
-  </mat-card>
-</article>
+  <mat-nav-list class="links-list">
+    @for (link of links; track link) {
+      <a
+        mat-list-item
+        class="full-width"
+        [routerLink]="link.path"
+        routerLinkActive="active-link"
+      >
+        <mat-icon matListItemIcon>description</mat-icon>
+        <span matListItemTitle>{{ link.title }}</span>
+        <span matListItemLine class="hint">Подробная информация</span>
+      </a>
+    }
+  </mat-nav-list>
+</mat-card>

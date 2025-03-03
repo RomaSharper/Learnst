@@ -1,22 +1,23 @@
-<div class="container">
-  <a mat-button color="primary" routerLink="" (click)="goBack()">Назад</a>
+<mat-card class="container" appearance="outlined">
+  <a mat-button color="primary" (click)="goBack()">Назад</a>
 
-  @if (isMediumScreen) {
+  <!-- @if (isMediumScreen) {
     <button type="button" mat-fab class="main-button" aria-label="Добавить" (click)="openCreateTicketDialog()">
       <mat-icon>add</mat-icon>
     </button>
-  } @else {
-    <a type="button" mat-button color="primary" routerLink="" (click)="openCreateTicketDialog()">
+  } @else { -->
+    <a type="button" mat-button color="primary"
+      (click)="openCreateTicketDialog()">
       Добавить
     </a>
-  }
+  <!-- } -->
 
   <div class="ticket-list mt">
     @if (loading) {
       <mat-spinner></mat-spinner>
     } @else {
       @for (ticket of tickets; track ticket.id) {
-        <mat-card (click)="navigateToTicketDetails(ticket.id!)">
+        <mat-card (click)="navigateToTicketDetails(ticket.id!)" appearance="outlined">
           <mat-card-title>{{ ticket.title }}</mat-card-title>
           <mat-card-content>
             <p>{{ ticket.description }}</p>
@@ -45,4 +46,4 @@
       }
     }
   </div>
-</div>
+</mat-card>

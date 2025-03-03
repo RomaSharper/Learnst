@@ -3,7 +3,7 @@
     <mat-spinner diameter="40"></mat-spinner>
   </div>
 } @else if (lesson) {
-  <div class="container">
+  <mat-card class="container" appearance="outlined">
     <a mat-button (click)="goBack()" class="mb">Назад</a>
     <h1>{{lesson.title}}</h1>
 
@@ -30,7 +30,7 @@
         <app-questions [questions]="lesson.questions"></app-questions>
       }
     }
-  </div>
+  </mat-card>
 } @else {
   <div class="error">Урок не найден</div>
 }

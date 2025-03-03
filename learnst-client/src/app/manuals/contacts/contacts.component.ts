@@ -13,7 +13,6 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-contacts',
   templateUrl: './contacts.component.html',
-  styleUrls: ['./contacts.component.scss'],
   imports: [
     RouterLink,
     MatIconModule,

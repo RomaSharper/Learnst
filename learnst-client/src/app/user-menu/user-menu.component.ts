@@ -2,7 +2,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { User } from './../../models/User';
 import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatDialog } from '@angular/material/dialog';
 import { Router, RouterLink } from '@angular/router';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
@@ -14,12 +13,15 @@ import { UsersService } from '../../services/users.service';
 import { FileService } from '../../services/file.service';
 import { MatButtonModule } from '@angular/material/button';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { PluralPipe } from '../../pipes/plural.pipe';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-user-menu',
   templateUrl: './user-menu.component.html',
   styleUrls: ['./user-menu.component.scss'],
   imports: [
+    PluralPipe,
     RouterLink,
     EllipsisPipe,
     MatIconModule,
@@ -34,15 +36,18 @@ export class UserMenuComponent implements OnInit {
   @Input() user!: User;
   @Input() redirectOnly!: boolean;
 
-  router = inject(Router);
-  dialog = inject(MatDialog);
-  fileService = inject(FileService);
-  authService = inject(AuthService);
-  usersService = inject(UsersService);
-  alertService = inject(AlertService);
+  private router = inject(Router);
+  private fileService = inject(FileService);
+  private authService = inject(AuthService);
+  private usersService = inject(UsersService);
+  private alertService = inject(AlertService);
+
   currentUser = toSignal(this.authService.getUser());
 
+  loading = signal(true);
   isPremium = signal(false);
+  followersCount = signal(0);
+  isFollowing = signal(false);
   isBannerImage = signal(false);
   accounts = this.authService.accounts;
 
@@ -53,11 +58,44 @@ export class UserMenuComponent implements OnInit {
           this.isPremium.set(response.premium);
           this.isBannerImage.set(this.user!.banner.startsWith('http') && this.isPremium());
         },
-        error: error => {
-          console.error(error);
-        }
+        error: error => console.error(error)
       });
+
+      this.usersService.getFollowers(this.user.id!).subscribe(followers =>
+        this.isFollowing.set(followers.some(f => f.id === this.currentUser()!.id))
+      );
+
+      // Обновить счетчики
+      this.updateCounters(this.user.id!);
+      this.loading.set(false);
     }
+  }
+
+  handleFollow(): void {
+    if (!this.currentUser() || !this.user) return;
+
+    const currentUserId = this.currentUser()!.id!;
+    const targetUserId = this.user!.id!;
+
+    const action = this.isFollowing()
+      ? this.usersService.unfollowUser(currentUserId, targetUserId)
+      : this.usersService.followUser(currentUserId, targetUserId);
+
+    action.pipe(
+      finalize(() => {
+        this.updateCounters(targetUserId);
+        this.refreshUserData(); // Добавляем обновление данных
+      })
+    ).subscribe({
+      next: () => {
+        this.isFollowing.update(v => !v);
+        this.alertService.showSnackBar('Успешно обновлено');
+      },
+      error: err => {
+        console.error(err);
+        this.alertService.showSnackBar('Ошибка обновления');
+      }
+    });
   }
 
   switchAccount(accountId: string): void {
@@ -109,6 +147,19 @@ export class UserMenuComponent implements OnInit {
         console.error(error);
       }
     });
+  }
+
+  private refreshUserData(): void {
+    const userId = this.user.id!;
+    this.usersService.getUserById(userId).subscribe(user => {
+      this.user = user;
+      this.updateCounters(userId);
+    });
+  }
+
+  private updateCounters(userId: string): void {
+    this.usersService.getFollowersCount(userId).subscribe(count =>
+      this.followersCount.set(count));
   }
 
   // Метод для загрузки файла изображения

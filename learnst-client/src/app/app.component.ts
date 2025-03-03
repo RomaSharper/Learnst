@@ -89,9 +89,15 @@ export class AppComponent extends MediumScreenSupport {
     const el = event.target as HTMLElement;
     const clickedOnLink = el.closest('a');
     const clickedInsideMenu = el.closest('.main-navigation');
-    const clickedOnOverlay = el.classList.contains('background-overlay') || el.classList.contains('cdk-overlay-backdrop');
+    const clickedOnOverlay = el.classList.contains('background-overlay')
+      || el.classList.contains('cdk-overlay-backdrop')
+      || el.closest('.background-overlay')
+      || el.closest('.cdk-overlay-backdrop');
+    const clickedOnAlerts = el.closest('.mat-mdc-dialog-actions')
+      || el.closest('.cdk-overlay-container');
 
-    if (this.isMenuOpen() && !clickedOnOverlay && !clickedInsideMenu || clickedOnLink)
+    if (this.isMenuOpen() && !clickedOnOverlay && !clickedInsideMenu
+      && !clickedOnAlerts || clickedOnLink)
       this.closeMenu(event);
   }
 }

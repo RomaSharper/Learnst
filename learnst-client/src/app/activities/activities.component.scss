@@ -1,9 +1,9 @@
 .activities-container {
-  gap: 4px * 3;
+  gap: 16px;
   display: grid;
+  padding: 20px;
   margin: 0 auto;
-  padding: 4px * 4;
-  max-width: 4px * 300;
+  max-width: 1200px;
   grid-template-columns: repeat(2, 1fr);
 
   @media (max-width: 767px) {
@@ -12,33 +12,34 @@
 }
 
 .activity-card {
+  padding: 8px;
   overflow: hidden;
-  padding: 4px * 2;
-  border-radius: 4px * 5;
+  border-radius: 20px;
+  border: var(--mat-sys-level2);
   transition: all var(--transition-time) ease;
   background: var(--mat-sys-surface-container);
-  border: 4px * 0.25 solid var(--border-color);
   box-shadow: var(--mdc-fab-container-elevation-shadow, var(--mat-sys-level2));
 
   &:hover {
     .activity-title {
-      color: var(--hover-text-color);
+      // color: var(--hover-text-color);
     }
   }
 
   &:active {
-    background: var(--card-active-bg);
-    box-shadow: var(--active-shadow);
+    // background: var(--card-active-bg);
+    box-shadow: var(--mat-sys-level4);
   }
 
   &:focus-within {
-    border-color: var(--focus-border);
+    border-color: var(--mat-sys-level3);
   }
 
   // Применяем эффекты только к карточкам, которые НЕ имеют класса .closed-activity
   &:not(.closed-activity) {
     cursor: pointer;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background 0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out,
+      background 0.3s ease-in-out;
 
     &:hover img {
       transform: scale(0.9);
@@ -48,17 +49,17 @@
   img {
     width: 80%;
     height: 100%;
+    aspect-ratio: 1;
+    margin: 8px auto;
     max-width: 400px;
     object-fit: cover;
-    aspect-ratio: 1 / 1;
-    margin: 4px * 2 auto;
     transition: transform 0.3s ease-in-out;
   }
 
   .mat-card-header {
     .mat-card-title {
-      font-weight: bold;
       font-size: 24px;
+      font-weight: bold;
     }
   }
 
@@ -68,14 +69,6 @@
     justify-content: flex-end;
     button {
       margin-left: 4px;
-
-      &:hover {
-        background: var(--button-hover);
-      }
-
-      &:active {
-        background: var(--button-active);
-      }
     }
   }
 }

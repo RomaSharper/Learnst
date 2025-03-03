@@ -1,4 +1,4 @@
-<div class="profile-container">
+<mat-card class="profile-container" appearance="outlined">
   <a mat-button color="primary" (click)="goBack()">Назад</a>
   <h1>Управление профилем</h1>
 
@@ -7,7 +7,7 @@
   } @else {
     <div class="profile-grid">
       <!-- Личные данные -->
-      <mat-card class="full-width" appearance="outlined">
+      <mat-card class="full-width">
         <h3>
           Личные данные
           @if (user.externalLoginType) {
@@ -250,4 +250,4 @@
     </div>
     }
   }
-</div>
+</mat-card>

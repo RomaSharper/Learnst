@@ -1,4 +1,4 @@
-<div class="profile-container">
+<mat-card class="profile-container" appearance="outlined">
   <a mat-button color="primary" class="mb" (click)="goBack()">Назад</a>
 
   @if (loading()) {
@@ -30,10 +30,11 @@
             <button
               type="button"
               color="primary"
-              mat-raised-button
+              mat-flat-button
               [disabled]="loading()"
               (click)="handleFollow()"
             >
+              <mat-icon>{{ isFollowing() ? 'person_remove' : 'person_add' }}</mat-icon>
               {{ isFollowing() ? 'Отписаться' : 'Подписаться' }}
             </button>
           </div>
@@ -142,4 +143,4 @@
       }
     </div>
   }
-</div>
+</mat-card>

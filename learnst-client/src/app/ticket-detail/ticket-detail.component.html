@@ -1,5 +1,5 @@
-<div class="container">
-  <a mat-button color="primary" class="mb" routerLink="" (click)="goBack()">Назад</a>
+<mat-card class="container" appearance="outlined">
+  <a mat-button color="primary" class="mb" (click)="goBack()">Назад</a>
 
   @if (canAnswerOrDelete) {
     <a mat-button (click)="deleteTicket()" class="mb">Удалить</a>
@@ -23,7 +23,7 @@
   }
 
   @if (ticket) {
-    <mat-card>
+    <mat-card appearance="outlined">
       <mat-card-title class="m" [ngClass]="{ 'center': isMediumScreen }">
         {{ ticket.title }}
         <span [matTooltip]="TicketStatusHelper.getName(ticket.status)" class="status-icon">
@@ -112,4 +112,4 @@
 } @else {
   <mat-spinner></mat-spinner>
 }
-</div>
+</mat-card>

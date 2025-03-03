@@ -1,7 +1,7 @@
 .users-container {
+  gap: 20px;
   display: grid;
-  gap: 4px * 5;
-  margin-top: 4px * 5;
+  margin-top: 20px;
   grid-template-columns: repeat(2, 1fr);
 
   @media (max-width: 767px) {
@@ -13,21 +13,21 @@
 
     .user-card {
       display: flex;
+      padding: 12px;
       cursor: pointer;
-      padding: 4px * 3;
       position: relative;
       align-items: center;
-      border-radius: 4px * 5;
+      border-radius: 20px;
       // border: 4px * 0.25 solid @border-color;
       transition: background-color 0.3s, transform 0.3s;
 
       .avatar {
-        border-radius: 50%;
         width: 96px;
-        aspect-ratio: 1 / 1;
-        margin-right: 4px * 3;
-        // border: 4px * 0.5 solid @primary-color;
+        aspect-ratio: 1;
+        margin-right: 12px;
+        border-radius: 50%;
         transition: border-color 0.3s;
+        // border: 4px * 0.5 solid @primary-color;
 
         @media (max-width: 500px) {
           width: 96px * 0.5;
@@ -44,33 +44,20 @@
           margin: 0;
           display: flex;
           gap: 4px * 1.5; // Отступ между текстом и иконкой
-          // color: @text-color;
-          align-items: center;
           font-size: 18px;
+          align-items: center;
 
           .role-icon {
             width: 18px;
             height: 18px;
             font-size: 18px; // Размер иконки
           }
-
-          .backup-icon {
-            // color: @online;
-          }
-
-          .specialist-icon {
-            // color: #eff7f6;
-          }
-
-          .admin-icon {
-            // color: #f7ee7f;
-          }
         }
       }
 
       .more-button {
-        top: 4px * 2;
-        right: 4px * 2;
+        top: 8px;
+        right: 8px;
         position: absolute;
       }
 
@@ -87,7 +74,7 @@
       }
 
       @media (max-width: 767px) {
-        gap: 4px * 4;
+        gap: 16px;
 
         h3,
         p {

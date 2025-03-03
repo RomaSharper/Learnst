@@ -1,14 +1,7 @@
 .activity-container {
   display: flex;
-  padding: 4px * 5;
+  padding: 20px;
   flex-direction: column;
-}
-
-.activity-info:not(:empty) {
-  padding: 4px * 5;
-  // background: @dark-bg;
-  border-radius: 4px;
-  // box-shadow: 0 4px * 0.5 4px @card-shadow;
 }
 
 .activity-details {
@@ -17,28 +10,28 @@
 
 .activity-left {
   flex: 2; // Левый столбец занимает больше пространства
-  padding: 4px * 2;
+  padding: 8px;
 }
 
 .activity-right {
   flex: 1;
+  gap: 8px;
+  padding: 8px;
   display: flex;
-  gap: 4px * 2;
-  padding: 4px * 2;
   flex-direction: column;
 }
 
 .card {
-  padding: 4px * 2;
-  border-radius: 4px;
-  // background: @light-bg;
-  // box-shadow: 0 4px * 0.5 4px @card-shadow;
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: var(--mat-sys-level2);
+  background: var(--mat-sys-secondary-container);
 }
 
 .activity-avatar {
   display: flex;
+  margin-bottom: 8px;
   justify-content: center;
-  margin-bottom: 4px * 2;
 
   img {
     width: 100%;
@@ -57,74 +50,105 @@ ul {
 }
 
 .info-cards {
+  gap: 16px;
   display: grid;
-  gap: 4px * 2;
-  grid-template-columns: repeat(auto-fill, minmax(4px * 50), 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(200px), 1fr);
 }
 
 .info-card {
   flex: 1;
-  padding: 4px * 2;
+  padding: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  min-width: 200px;
+  max-width: 400px;
+  position: relative;
   text-align: center;
-  // background: @card-bg;
-  border-radius: 4px;
-  min-width: 4px * 50;
-  transition: transform 0.3s ease;
-  // box-shadow: 0 4px * 0.25 4px * 0.5 @card-shadow;
+  perspective: 1000px;
+  border-radius: 20px;
+  transform-style: preserve-3d;
+  box-shadow: var(--mat-sys-level2);
+  background: var(--mat-sys-secondary-container);
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 
   img {
     height: auto;
     max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  &::before {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: '';
+    position: absolute;
+    background: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
   }
 
   &:hover {
-    transform: scale(1.05);
+    transform: scale(1.05) rotateX(var(--rotate-x)) rotateY(var(--rotate-y));
+
+    &::before {
+      opacity: 1;
+    }
+
+    img {
+      transform: scale(1.1);
+    }
   }
 }
 
 .info-cards {
+  gap: 8px;
   display: flex;
-  gap: 4px * 2;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .loading {
+  padding: 20px;
+  font-size: 24px;
   font-weight: bold;
-  padding: 4px * 5;
   text-align: center;
   // color: @text-primary;
-  font-size: 24px;
 }
 
 .topics-container {
-  padding: 4px * 2 4px * 5;
+  padding: 8px 20px;
 }
 
 .topic-card {
-  padding: 4px * 4;
-  // background: @card-bg;
+  padding: 16px;
   border-radius: 4px;
-  margin-bottom: 4px * 4;
+  margin-bottom: 16px;
   transition: box-shadow 0.3s ease;
-  // box-shadow: 0 4px * 0.25 4px * 0.5 @card-shadow;
+  box-shadow: var(--mat-sys-level2);
 
   &:hover {
-    // box-shadow: 0 4px 4px * 2 @card-shadow;
+    // box-shadow: 0 4px 8px @card-shadow;
   }
 }
 
 .tags-container {
+  gap: 8px;
   display: flex;
-  gap: 4px * 2;
   flex-wrap: wrap;
-  margin-bottom: 4px * 4;
+  margin-bottom: 16px;
 
   .tag-card {
     // background: @card-bg;
-    border-radius: 4px * 4;
+    border-radius: 16px;
     font-size: 18px;
-    padding: 4px * 1.5 4px * 3;
+    padding: 6px 12px;
     transition: box-shadow 0.3s ease;
     // box-shadow: 0 4px * 0.25 4px * 0.5 @card-shadow;
 
@@ -141,7 +165,7 @@ ul {
   }
 
   .activity-right {
-    padding: 4px * 2;
+    padding: 8px;
     border-radius: 4px;
     // box-shadow: 0 4px * 0.5 4px @card-shadow;
   }
@@ -158,18 +182,18 @@ ul {
 }
 
 .topics-container {
-  padding: 4px * 2 4px * 5;
+  padding: 8px 20px;
 
   mat-tree {
-    padding: 4px * 2;
+    padding: 8px;
     border-radius: 4px;
 
     .tree-node {
-      display: flex;
       padding: 4px;
+      display: flex;
       cursor: pointer;
-      align-items: center;
       font-size: 24px;
+      align-items: center;
 
       &:hover {
         // background: rgba(255, 255, 255, 0.1);
@@ -187,23 +211,18 @@ ul {
 }
 
 .user-btn {
-  line-height: 1; // Добавлено для выравнивания текста
-  padding: 6px 16px; // Уменьшен padding для компактности
-  align-items: center;
-  border-radius: 24px;
-  display: inline-flex; // Изменено с flex на inline-flex
-  vertical-align: middle; // Для inline-элементов
+  gap: 8px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 6px 16px;
+  border-radius: 20px;
+  display: inline-flex;
+  vertical-align: middle;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  justify-content: space-between;
+  box-shadow: var(--mat-sys-level2);
   border: 1px solid var(--mat-sys-outline-variant);
   background: var(--mat-sys-surface-container-high);
-
-  // Исправление для Angular Material button
-  ::ng-deep .mat-button-wrapper {
-    gap: 8px;
-    display: flex;
-    align-items: center;
-  }
 
   &:hover {
     transform: translateY(-1px);
@@ -217,18 +236,19 @@ ul {
   .user-avatar {
     width: 32px;
     height: 32px;
-    flex-shrink: 0; // Запрет уменьшения размера
     border-radius: 50%;
+    vertical-align: middle;
     transition: transform 0.2s ease;
     border: 2px solid var(--mat-sys-outline);
   }
 
   .username {
     overflow: hidden;
+    max-width: 150px;
+    margin-left: 8px;
     font-weight: 500;
-    max-width: 150px; // Ограничение ширины имени
     font-size: 0.9rem;
-    white-space: nowrap; // Запрет переноса текста
+    white-space: nowrap;
     text-overflow: ellipsis;
     color: var(--mat-sys-on-surface);
   }

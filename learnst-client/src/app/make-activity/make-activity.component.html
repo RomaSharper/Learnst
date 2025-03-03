@@ -1,4 +1,4 @@
-<div class="activity-form-container">
+<mat-card class="activity-form-container" appearance="outlined">
   <a mat-button routerLink="/activities" class="mb">Назад</a>
 
   <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" (keydown.enter)="$event.preventDefault()" class="activity-form">
@@ -210,4 +210,4 @@
       {{ activityId ? 'Обновить' : 'Создать' }}
     </button>
   </form>
-</div>
+</mat-card>

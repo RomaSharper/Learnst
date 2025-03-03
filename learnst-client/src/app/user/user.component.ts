@@ -42,8 +42,6 @@ import { PluralPipe } from '../../pipes/plural.pipe';
   ]
 })
 export class UserComponent implements OnInit {
-  location = inject(Location);
-  private router = inject(Router);
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
@@ -58,6 +56,8 @@ export class UserComponent implements OnInit {
   currentUser = signal<User | null>(null);
 
   SocialMediaPlatformHelper = SocialMediaPlatformHelper;
+
+  constructor(public router: Router, public location: Location) { }
 
   ngOnInit(): void {
     const userId = this.route.snapshot.paramMap.get('userId')!;

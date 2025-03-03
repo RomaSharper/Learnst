@@ -1,109 +1,177 @@
 .user-menu {
-  text-wrap: wrap;
+  padding: 0;
+  width: 280px;
   overflow: hidden;
-  max-width: 320px;
+  border-radius: 20px;
+  box-shadow: var(--mat-sys-level2);
+  background: var(--mat-sys-secondary-container);
 
   .banner {
-    height: 64px;
+    height: 96px;
+    position: relative;
     background-size: cover;
-    border-radius: 4px 4px 0 0;
-    border-bottom: 2px solid var(--mat-sys-secondary-container);
+    background-position: center;
+
+    button {
+      top: 8px;
+      right: 8px;
+      position: absolute;
+      backdrop-filter: blur(2px);
+    }
   }
 
   .profile-info {
+    padding: 16px;
+    margin-top: -48px;
     position: relative;
+    text-align: center;
 
     .avatar {
-      top: -72px;
-      left: 12px;
-      width: 64px;
-      height: 64px;
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
       border-radius: 50%;
-      position: absolute;
-      border: 2px solid #34c759;
-
-      img {
-        width: 64px;
-        aspect-ratio: 1 / 1;
-      }
+      margin-bottom: 12px;
+      border: 2px solid var(--mat-sys-primary);
     }
 
     .names {
-      padding: 8px;
-      margin-top: 40px;
+      margin-bottom: 12px;
 
       h3 {
         margin: 0;
-        font-size: 16px;
-      }
-
-      span {
-        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.2;
+        font-size: 1.2rem;
       }
     }
 
     .about-me {
-      padding: 8px;
-      margin: 8px 0 0;
-      font-size: 14px;
+      margin: 0 0 12px;
+      line-height: 1.4;
     }
   }
 
-  .mat-menu-item {
+  .stats {
+    padding: 0 16px;
+    text-align: center;
+
+    .followers-count {
+      margin: 0 0 8px;
+    }
+  }
+
+  .actions {
     gap: 8px;
     display: flex;
-    align-items: center;
+    padding: 0 16px 16px;
+    flex-direction: column;
+
+    .follow-button {
+      transition: all 0.2s ease;
+
+      mat-icon {
+        width: 18px;
+        height: 18px;
+        font-size: 18px;
+        margin-right: 8px;
+      }
+    }
+
+    .profile-button {
+      box-shadow: var(--mat-sys-level2);
+
+      mat-icon {
+        width: 18px;
+        height: 18px;
+        font-size: 18px;
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+/* Меню аккаунтов */
+.accounts-menu.mat-menu-panel {
+  margin-top: 8px !important;
+  min-width: 280px !important;
+  border-radius: 16px !important;
+  box-shadow: var(--mat-sys-level2);
+}
+
+/* Элементы меню аккаунтов */
+.account-btn {
+  height: 60px;
+  display: flex;
+  padding: 0 20px;
+  overflow: hidden;
+  position: relative;
+  align-items: center;
+  flex-direction: row;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.current {
+    backdrop-filter: brightness(120%);
+
+    .account-avatar {
+      border: 2px solid var(--mat-sys-primary);
+    }
   }
 }
 
 .account-avatar {
-  width: 32px;
-  height: 32px;
-  margin-right: 8px;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
   border-radius: 50%;
+  vertical-align: middle;
+  border: 2px solid var(--mat-sys-outline-variant);
 }
 
 .account-username {
-  top: 12px;
-  position: absolute;
+  overflow: hidden;
+  font-weight: 400;
+  margin-left: 8px;
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: middle;
+  text-overflow: ellipsis;
+  font-size: 14px !important;
+  color: var(--mat-sys-on-surface);
 }
 
 .account-actions {
-  gap: 8px;
-  display: flex;
-  margin-left: auto;
-  align-items: center;
+  right: 8px;
+  bottom: 14px;
+  position: absolute;
 
   mat-icon {
-    right: 0;
-    cursor: pointer;
-    font-size: 18px;
-    position: absolute;
-    color: var(--mat-sys-neutral);
-
-    &.error:hover {
-      color: var(--mat-sys-error);
-    }
+    transition: color 0.2s ease;
+    color: var(--mat-sys-on-surface-variant);
   }
 }
 
-.account-btn,
-.add-account-btn {
-  padding-right: 48px;
-
-  .current {
-    background: var(--mat-sys-secondary-container);
-  }
+/* Ховер-эффекты */
+.account-btn.mat-menu-item:hover,
+.add-account-btn.mat-menu-item:hover {
+  background: var(--mat-sys-hover-state-layer-opacity) !important;
 }
 
-.account-btn {
-  mat-icon {
-    top: 12px;
-  }
+.account-btn.mat-menu-item:hover .account-actions mat-icon {
+  color: var(--mat-sys-primary) !important;
 }
 
-.add-account-btn {
-  mat-icon {
-    top: 15px;
-  }
+/* Текущий аккаунт */
+.account-btn.current .account-username {
+  font-weight: 500 !important;
+  color: var(--mat-sys-primary) !important;
+}
+
+.account-btn.current mat-icon {
+  color: var(--mat-sys-primary) !important;
+}
+
+/* Кнопка добавления аккаунта */
+.add-account-btn.mat-menu-item {
+  font-weight: 500 !important;
 }

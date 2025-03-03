@@ -1,4 +1,5 @@
-<div class="container" [class.mb-4]="isMediumScreen">
+<mat-card class="container" appearance="outlined"
+  [class.mb-4]="isMediumScreen">
   <a class="mb" mat-button color="primary" routerLink="/">Назад</a>
 
   <!-- Поле поиска с автозаполнением -->
@@ -22,7 +23,7 @@
 
   <div class="users-container">
     @for (user of displayedUsers; track user) {
-      <mat-card [routerLink]="['/user', user.id]">
+      <mat-card [routerLink]="['/user', user.id]" appearance="outlined">
         <mat-card-content class="user-card">
           <img [src]="user.avatarUrl" alt="Avatar" class="avatar" placeholder="/assets/icons/user-192x192.png" loading="lazy" noDownloading>
           <div class="user-info">
@@ -87,4 +88,4 @@
   <mat-paginator [length]="users.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
     (page)="onPageChange($event)" showFirstLastButtons>
   </mat-paginator>
-</div>
+</mat-card>
