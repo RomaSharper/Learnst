@@ -240,6 +240,107 @@ p {
   text-wrap: pretty;
 }
 
+table {
+  width: 100%;
+  margin: 2rem 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--mat-sys-color-surface-container);
+  border-radius: var(--mat-sys-corner-medium);
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.1),
+    inset 0 0 0 1px var(--mat-sys-color-outline-variant);
+  overflow: hidden;
+  position: relative;
+
+  th, td {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    border-bottom: 1px solid var(--mat-sys-color-outline-variant);
+
+    &:not(:last-child) {
+      border-right: 1px solid var(--mat-sys-color-outline-variant);
+    }
+  }
+
+  thead {
+    background: var(--mat-sys-color-surface-container-high);
+
+    th {
+      color: var(--mat-sys-color-on-surface-variant);
+      font: var(--mat-sys-title-medium);
+      padding: 1.25rem 1.5rem;
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(4px);
+    }
+  }
+
+  tbody {
+    tr {
+      transition: background-color 0.2s ease;
+
+      &:nth-child(even) {
+        background: rgba(var(--mat-sys-color-primary-fixed), 0.03);
+      }
+
+      &:hover {
+        background: rgba(var(--mat-sys-color-primary), 0.05);
+
+        td:first-child {
+          padding-left: 1.75rem;
+        }
+      }
+
+      &:last-child td {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      color: var(--mat-sys-color-on-surface);
+      font: var(--mat-sys-body-medium);
+      transition: padding 0.2s ease;
+    }
+  }
+
+  .numeric-column {
+    font-family: var(--mat-sys-typescale-label-medium-font);
+    color: var(--mat-sys-color-primary);
+  }
+
+  @media (max-width: 600px) {
+    border-radius: var(--mat-sys-corner-small);
+
+    thead {
+      display: none;
+    }
+
+    tr {
+      display: block;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      box-shadow: var(--mat-sys-level1);
+      border-radius: var(--mat-sys-corner-small);
+      background: var(--mat-sys-color-surface-container-lowest);
+    }
+
+    td {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border: none !important;
+
+      &::before {
+        margin-right: 1rem;
+        content: attr(data-label);
+        font: var(--mat-sys-label-medium);
+        color: var(--mat-sys-color-primary);
+      }
+    }
+  }
+}
+
 .update-date {
   font-size: 0.9em;
 }
@@ -881,18 +982,6 @@ mat-date-range-input {
 
     &:not(.nav-btn):hover {
       text-decoration: underline;
-    }
-  }
-
-  table {
-    width: 100%;
-    margin: 1em 0;
-    border-collapse: collapse;
-
-    th,
-    td {
-      padding: 0.5em;
-      border: 1px solid var(--mat-sys-level2);
     }
   }
 }
