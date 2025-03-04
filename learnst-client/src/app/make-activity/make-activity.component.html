@@ -1,5 +1,5 @@
 <mat-card class="activity-form-container" appearance="outlined">
-  <a mat-button routerLink="/activities" class="mb">Назад</a>
+  <a mat-button routerLink="/activities" class="mb-2">Назад</a>
 
   <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" (keydown.enter)="$event.preventDefault()" class="activity-form">
     <!-- Основные поля -->
@@ -24,15 +24,17 @@
 
     <!-- Поле для выбора файла -->
     <div class="avatar-section">
-      <div class="avatar-preview-container">
+      <div class="avatar-preview-container" inspectable>
         @if (previewAvatarUrl) {
-        <img [src]="previewAvatarUrl" alt="Аватар активности" class="avatar-preview" noDownloading>
+          <img [src]="previewAvatarUrl" alt="Аватар активности"
+            class="avatar-preview" noDownloading>
         }
       </div>
       <button type="button" mat-stroked-button class="choose-preview-button" (click)="openFilePicker()"
         class="full-width">
         Выбрать превью</button>
-      <input type="file" id="avatarInput" accept="image/*" (change)="onFileSelected($event)" class="hidden">
+      <input type="file" id="avatarInput" accept="image/png, image/jpeg, image/jpg"
+        (change)="onFileSelected($event)" class="hidden">
     </div>
 
     <mat-form-field appearance="outline">
@@ -167,8 +169,9 @@
       @for (infoCard of infoCards; track infoCard; let i = $index) {
         <div class="info-card">
           <div class="info-card-content">
-            <div class="preview-container">
-              <img [src]="infoCard.iconUrl" placeholder="/assets/icons/placeholder.png" noDownloading>
+            <div class="preview-container" inspectable>
+              <img [src]="infoCard.iconUrl" placeholder="/assets/icons/placeholder.png"
+                noDownloading>
             </div>
             <p><strong>{{ InfoTypeHelper.getName(infoCard.infoType) }}</strong></p>
             <p>{{ infoCard.text }}</p>
@@ -202,11 +205,14 @@
         </mat-menu>
       </div>
     }
-    <button type="button" mat-stroked-button (click)="addTopic()">Добавить тему</button>
+    <button type="button" mat-stroked-button (click)="addTopic()">
+      Добавить тему
+    </button>
   </div>
 
     <!-- Кнопка сохранения -->
-    <button mat-flat-button color="primary" type="submit" class="full-width mt-2" [disabled]="activityForm.invalid">
+    <button mat-flat-button color="primary" type="submit" class="full-width mt-2"
+      [disabled]="activityForm.invalid">
       {{ activityId ? 'Обновить' : 'Создать' }}
     </button>
   </form>

@@ -1,16 +1,16 @@
 .activity-form-container {
   width: 100%;
-  padding: 4px * 5;
-  max-width: 4px * 200;
-  margin: 4px * 5 auto;
-  border-radius: 4px * 5;
+  padding: 20px;
+  max-width: 8px00;
+  margin: 20px auto;
+  border-radius: 20px;
   // background-color: @background-color-dark;
 
   @media (max-width: 767px) {
     margin: 0;
+    padding: 12px;
     max-width: 100%;
     border-radius: 0;
-    padding: 4px * 3;
   }
 
   .activity-form {
@@ -18,23 +18,7 @@
     flex-direction: column;
 
     mat-form-field {
-      margin-bottom: 4px * 5;
-
-      .mat-form-field-label {
-        // color: @text-color-dark;
-      }
-
-      .mat-input-element {
-        // color: @text-color-dark;
-      }
-
-      .mat-form-field-underline {
-        // background-color: @border-color-dark;
-      }
-
-      .mat-form-field-ripple {
-        // background-color: @primary-color;
-      }
+      margin-bottom: 20px;
     }
 
     button[type="submit"] {
@@ -43,74 +27,70 @@
 
     .topic,
     .info-card {
+      padding: 8px;
       position: relative;
-      padding: 4px * 2;
-      margin-bottom: 4px * 2;
-      border-radius: 4px * 2;
+      margin-bottom: 8px;
+      border-radius: 8px;
       // border: 4px * 0.25 solid @border-color-dark;
       // background-color: @background-color-dark-secondary;
 
       .topic-content {
         p {
-          padding-left: 4px * 3;
+          padding-left: 12px;
         }
       }
 
       .info-card-content {
         .preview-container {
-          display: flex;
+          width: 160px;
+          height: 160px;
+          margin: 0 auto;
           overflow: hidden;
-          width: 4px * 40;
-          height: 4px * 40;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 4px * 2;
-          border-radius: 4px * 2;
-          // background-color: #181818;
-          // border: 4px * 0.5 dashed @border-color-dark;
+          border-radius: 8px;
+          margin-bottom: 8px;
+          box-shadow: var(--mat-sys-level2);
 
           img {
-            max-width: 100%;
-            max-height: 100%;
+            width: 100%;
+            aspect-ratio: 1;
             object-fit: cover;
-            border-radius: 4px * 2;
+            border-radius: 8px;
           }
         }
       }
 
       .more-button {
-        top: 4px * 5 !important;
+        top: 20px !important;
       }
     }
 
     .avatar-section {
       display: flex;
+      align-items: center;
+      margin-bottom: 20px;
       flex-direction: column;
-      align-items: flex-start;
-      margin-bottom: 4px * 5;
 
       .avatar-preview-container {
+        width: 240px;
+        height: 240px;
         display: flex;
         overflow: hidden;
-        width: 4px * 40;
-        height: 4px * 40;
+        border-radius: 8px;
         align-items: center;
+        margin-bottom: 16px;
         justify-content: center;
-        margin-bottom: 4px * 2;
-        border-radius: 4px * 2;
-        // border: 4px * 0.5 dashed @border-color-dark;
-        // background-color: @background-color-dark-secondary;
+        box-shadow: var(--mat-sys-level2);
 
         .avatar-preview {
-          max-width: 100%;
-          max-height: 100%;
+          width: 100%;
+          aspect-ratio: 1;
           object-fit: cover;
-          border-radius: 4px * 2;
+          border-radius: 8px;
         }
       }
 
       .choose-preview-button {
-        margin-top: 4px * 2;
+        margin-top: 8px;
       }
     }
   }

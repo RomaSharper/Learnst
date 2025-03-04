@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Learnst.Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Learnst.Infrastructure.Models;
 
@@ -14,9 +15,10 @@ public class TicketAnswer : IEntity
     
     [JsonIgnore] public Ticket? Ticket { get; set; }
     
-    public Guid AuthorId { get; set; }
+    public Guid? AuthorId { get; set; }
     
-    [JsonIgnore] public User? Author{ get; set; }
+    [JsonIgnore, DeleteBehavior(DeleteBehavior.SetNull)]
+    public User? Author{ get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -20,6 +20,7 @@ import { AlertService } from '../../services/alert.service';
 import { Return } from '../../helpers/Return';
 import { finalize } from 'rxjs';
 import { PluralPipe } from '../../pipes/plural.pipe';
+import { InspectableDirective } from '../../pipes/inspectable.pipe';
 
 @Return()
 @Component({
@@ -36,6 +37,7 @@ import { PluralPipe } from '../../pipes/plural.pipe';
     MatButtonModule,
     MatTooltipModule,
     MatGridListModule,
+    InspectableDirective,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
     PlaceholderImageDirective

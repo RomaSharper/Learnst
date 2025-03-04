@@ -30,7 +30,6 @@ public class ThemeController(
                 u => u.UserLessons,
                 u => u.UserAnswers,
                 u => u.Tickets,
-                u => u.TicketAnswers,
                 u => u.Theme
             ]) ?? throw new NotFoundException<User>(userId);
 

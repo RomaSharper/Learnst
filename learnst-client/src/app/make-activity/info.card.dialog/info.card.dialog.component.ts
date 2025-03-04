@@ -11,6 +11,7 @@ import { InfoType } from '../../../enums/InfoType';
 import { InfoTypeHelper } from '../../../helpers/InfoTypeHelper';
 import { AlertService } from '../../../services/alert.service';
 import { FileService } from '../../../services/file.service';
+import { InspectableDirective } from '../../../pipes/inspectable.pipe';
 
 @Component({
   selector: 'app-info-card-dialog',
@@ -22,7 +23,8 @@ import { FileService } from '../../../services/file.service';
     MatDialogModule,
     MatSelectModule,
     MatFormFieldModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    InspectableDirective
   ]
 })
 export class InfoCardDialogComponent {

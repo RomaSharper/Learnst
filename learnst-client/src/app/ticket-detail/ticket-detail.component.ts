@@ -32,7 +32,6 @@ import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
   styleUrls: ['./ticket-detail.component.scss'],
   imports: [
     RouterLink,
-    CommonModule,
     MatCardModule,
     MatListModule,
     MatIconModule,

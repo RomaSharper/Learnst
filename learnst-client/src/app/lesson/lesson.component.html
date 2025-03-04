@@ -4,14 +4,14 @@
   </div>
 } @else if (lesson) {
   <mat-card class="container" appearance="outlined">
-    <a mat-button (click)="goBack()" class="mb">Назад</a>
-    <h1>{{lesson.title}}</h1>
+    <a mat-button (click)="goBack()" class="mb nav-btn">Назад</a>
 
     @switch (lesson.lessonType) {
       @case (LessonType.LongRead) {
         <div class="md-container" [innerHTML]="innerHTML"></div>
       }
       @case (LessonType.Video) {
+        <h1>{{lesson.title}}</h1>
         <media-theme-sutro
           style="--media-secondary-color: #616161; --media-accent-color: #007bff;"
         >
@@ -26,7 +26,7 @@
         </media-theme-sutro>
       }
       @case (LessonType.Test) {
-        <h2>{{ lesson.title }}</h2>
+        <h1>{{ lesson.title }}</h1>
         <app-questions [questions]="lesson.questions"></app-questions>
       }
     }

@@ -13,6 +13,7 @@ import { DocumentService } from '../../services/document.service';
 import { LessonsService } from '../../services/lessons.service';
 import { QuestionsComponent } from '../questions/questions.component';
 import { AlertService } from './../../services/alert.service';
+import { MatCardModule } from '@angular/material/card';
 
 @Return()
 @Component({
@@ -21,6 +22,7 @@ import { AlertService } from './../../services/alert.service';
   styleUrls: ['./lesson.component.scss'],
   schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
   imports: [
+    MatCardModule,
     MatButtonModule,
     QuestionsComponent,
     MatProgressSpinnerModule,
@@ -36,13 +38,13 @@ export class LessonComponent extends MediumScreenSupport implements OnInit {
   LessonType = LessonType;
 
   constructor(
-    private lessonsService: LessonsService,
-    private documentService: DocumentService,
-    private route: ActivatedRoute,
-    private alertService: AlertService,
-    private authService: AuthService,
+    public router: Router,
     public location: Location,
-    public router: Router
+    private route: ActivatedRoute,
+    private authService: AuthService,
+    private alertService: AlertService,
+    private lessonsService: LessonsService,
+    private documentService: DocumentService
   ) {
     super();
   }

@@ -11,6 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../services/auth.service';
 import { lastValueFrom } from 'rxjs';
 import { RoundPipe } from '../../pipes/round.pipe';
+import { InspectableDirective } from '../../pipes/inspectable.pipe';
 
 @Component({
   selector: 'app-subscription',
@@ -22,6 +23,7 @@ import { RoundPipe } from '../../pipes/round.pipe';
     MatListModule,
     MatCardModule,
     MatButtonModule,
+    InspectableDirective,
     MatProgressSpinnerModule
   ]
 })

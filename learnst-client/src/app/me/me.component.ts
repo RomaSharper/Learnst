@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -41,6 +41,7 @@ import { SocialMediaDialogComponent } from './social.media.dialog/social.media.d
 import { WorkExperienceDialogComponent } from './work.experience.dialog/work.experience.dialog.component';
 import { SubscriptionsComponent } from '../subscription/subscription.component';
 import { PluralPipe } from '../../pipes/plural.pipe';
+import { InspectableDirective } from '../../pipes/inspectable.pipe';
 
 @Return()
 @Component({
@@ -60,6 +61,7 @@ import { PluralPipe } from '../../pipes/plural.pipe';
     MatTooltipModule,
     MatGridListModule,
     MatDatepickerModule,
+    InspectableDirective,
     ThemePickerComponent,
     SubscriptionsComponent,
     NoDownloadingDirective,
@@ -68,13 +70,6 @@ import { PluralPipe } from '../../pipes/plural.pipe';
   ]
 })
 export class MeComponent extends MediumScreenSupport implements OnInit, CanComponentDeactivate {
-  private dialog = inject(MatDialog);
-  private authService = inject(AuthService);
-  private fileService = inject(FileService);
-  private alertService = inject(AlertService);
-  private emailService = inject(EmailService);
-  private usersService = inject(UsersService);
-
   user?: User;
   userId = '';
   oldPassword = '';
@@ -86,14 +81,27 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   changesSaving = false;
   unsavedChanges = false;
   passwordChanging = false;
+  isPremium = signal(false);
   followersCount = signal(0);
   readonly maxDate = new Date();
   readonly minDate = new Date(1900, 0, 1);
+  @ViewChild('importFile') importFileInput!: ElementRef<HTMLInputElement>;
   @ViewChild(MatDatepicker<Date | null>) picker!: MatDatepicker<Date | null>;
 
   SocialMediaPlatformHelper = SocialMediaPlatformHelper;
 
-  constructor(public router: Router, public location: Location) { super(); }
+  constructor(
+    public router: Router,
+    public location: Location,
+    private dialog: MatDialog,
+    private fileService: FileService,
+    private authService: AuthService,
+    private alertService: AlertService,
+    private emailService: EmailService,
+    private usersService: UsersService
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
     this.authService.getUser().subscribe(user => {
@@ -101,6 +109,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       this.userId = user.id!;
       this.originalUser = JSON.parse(JSON.stringify(user));
       this.usersService.getUserById(this.userId).subscribe(user => this.user = user);
+      this.usersService.isPremium(this.userId).subscribe(data => this.isPremium.set(data.premium));
       this.usersService.getFollowersCount(this.userId).subscribe(count => this.followersCount.set(count));
     });
   }
@@ -366,6 +375,11 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   }
 
   deleteProfile(): void {
+    if (!this.user?.id) {
+      this.alertService.showSnackBar('User ID не определено');
+      return;
+    }
+
     this.alertService.openConfirmDialog(
       AlertService.CONFIRM_TITLE,
       'Вы уверены, что хотите удалить свой аккаунт? Это действие необратимо.'
@@ -385,6 +399,234 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
         }
       });
     });
+  }
+
+  exportData(format: 'json' | 'xml'): void {
+    if (!this.user) return;
+
+    const data = this.prepareExportData();
+    let content: string;
+    let mimeType: string;
+    let extension: string;
+
+    if (format === 'json') {
+      content = JSON.stringify(data, null, 2);
+      mimeType = 'application/json';
+      extension = 'json';
+    } else {
+      content = this.convertToXml(data);
+      mimeType = 'application/xml';
+      extension = 'xml';
+    }
+
+    const blob = new Blob([content], { type: mimeType });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `user_profile_${new Date().toISOString()}.${extension}`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  private prepareExportData(): any {
+    return {
+      copyright: `© ${new Date().getFullYear()} TCorporation. All rights reserved.`,
+      exportDate: new Date().toISOString(),
+      version: '1.0',
+      user: {
+        fullName: this.user!.fullName,
+        avatarUrl: this.user!.avatarUrl,
+        dateOfBirth: this.user!.dateOfBirth,
+        emailAddress: this.user!.emailAddress,
+        city: this.user!.city,
+        resumeText: this.user!.resumeText,
+        aboutMe: this.user!.aboutMe,
+        username: this.user!.username,
+        themeId: this.user!.themeId,
+        banner: this.user!.banner,
+        background: this.user!.background,
+        educations: this.user!.educations.map(e => ({
+          institutionName: e.institutionName,
+          degree: e.degree,
+          graduationYear: e.graduationYear
+        })),
+        workExperiences: this.user!.workExperiences.map(w => ({
+          companyName: w.companyName,
+          position: w.position,
+          description: w.description,
+          startDate: w.startDate,
+          endDate: w.endDate
+        }))
+      }
+    };
+  }
+
+  private convertToXml(data: any): string {
+    const buildXml = (obj: any, indent: string): string => {
+      if (!obj || typeof obj !== 'object') return '';
+
+      let xml = '';
+      for (const [key, value] of Object.entries(obj)) {
+        if (value === undefined || value === null) continue;
+
+        if (Array.isArray(value)) {
+          xml += `${indent}<${key}>\n`;
+          value.forEach(item => {
+            xml += `${indent}  <${key.slice(0, -1)}>\n`;
+            xml += buildXml(item, `${indent}    `);
+            xml += `${indent}  </${key.slice(0, -1)}>\n`;
+          });
+          xml += `${indent}</${key}>\n`;
+        } else if (typeof value === 'object') {
+          xml += `${indent}<${key}>\n`;
+          xml += buildXml(value, `${indent}  `);
+          xml += `${indent}</${key}>\n`;
+        } else {
+          xml += `${indent}<${key}>${this.escapeXml(value.toString())}</${key}>\n`;
+        }
+      }
+      return xml;
+    };
+
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<userData>\n';
+    xml += buildXml(data, '  ');
+    xml += '</userData>';
+    return xml;
+  }
+
+  private escapeXml(unsafe: string): string {
+    return unsafe.replace(/[<>&'"]/g, c => {
+      switch (c) {
+        case '<': return '&lt;';
+        case '>': return '&gt;';
+        case '&': return '&amp;';
+        case '\'': return '&apos;';
+        case '"': return '&quot;';
+        default: return c;
+      }
+    });
+  }
+
+  async importData(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+
+    const file = input.files[0];
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      try {
+        const content = e.target?.result as string;
+        const data = await this.parseImportFile(content, file.name);
+        this.applyImportedData(data);
+        this.alertService.showSnackBar('Данные успешно импортированы');
+      } catch (error) {
+        this.alertService.showSnackBar('Ошибка импорта: ' + error);
+      } finally {
+        input.value = ''; // Сбрасываем значение input
+      }
+    };
+
+    reader.readAsText(file);
+  }
+
+  private async parseImportFile(content: string, fileName: string): Promise<any> {
+    if (fileName.endsWith('.json')) {
+      return JSON.parse(content);
+    } else if (fileName.endsWith('.xml')) {
+      return this.parseXml(content);
+    }
+    throw new Error('Unsupported file format');
+  }
+
+  private async parseXml(xml: string): Promise<any> {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xml, 'application/xml');
+
+    if (doc.getElementsByTagName('parsererror').length > 0) {
+      throw new Error('Invalid XML format');
+    }
+
+    const root = doc.documentElement;
+    if (!root) throw new Error('Invalid XML structure');
+
+    const result: any = {};
+    const userNode = root.getElementsByTagName('user')[0];
+
+    if (!userNode) throw new Error('User data not found in XML');
+
+    result.User = {
+      fullName: this.getXmlValue(userNode, 'fullName'),
+      avatarUrl: this.getXmlValue(userNode, 'avatarUrl'),
+      dateOfBirth: this.getXmlValue(userNode, 'dateOfBirth'),
+      emailAddress: this.getXmlValue(userNode, 'emailAddress'),
+      city: this.getXmlValue(userNode, 'city'),
+      resumeText: this.getXmlValue(userNode, 'resumeText'),
+      aboutMe: this.getXmlValue(userNode, 'aboutMe'),
+      username: this.getXmlValue(userNode, 'username'),
+      themeId: this.getXmlValue(userNode, 'themeId'),
+      banner: this.getXmlValue(userNode, 'banner'),
+      background: this.getXmlValue(userNode, 'background'),
+      educations: this.parseXmlCollection(userNode, 'educations', 'education', node => ({
+        institutionName: this.getXmlValue(node, 'institutionName'),
+        degree: this.getXmlValue(node, 'degree'),
+        graduationYear: this.parseNumber(node, 'graduationYear')
+      })),
+      workExperiences: this.parseXmlCollection(userNode, 'workExperiences', 'workExperience', node => ({
+        companyName: this.getXmlValue(node, 'companyName'),
+        position: this.getXmlValue(node, 'position'),
+        description: this.getXmlValue(node, 'description'),
+        startDate: this.getXmlValue(node, 'startDate'),
+        endDate: this.getXmlValue(node, 'endDate')
+      }))
+    };
+
+    return result;
+  }
+
+  private parseNumber(node: Element, tagName: string): number {
+    const value = this.getXmlValue(node, tagName);
+    const num = parseInt(value, 10);
+    return isNaN(num) ? 0 : num;
+  }
+
+  private getXmlValue(parent: Element, tagName: string): string {
+    return parent.getElementsByTagName(tagName)[0]?.textContent || '';
+  }
+
+  private parseXmlCollection<T>(
+    parent: Element,
+    collectionTag: string,
+    itemTag: string,
+    mapper: (node: Element) => T
+  ): T[] {
+    const collection = parent.getElementsByTagName(collectionTag)[0];
+    if (!collection) return [];
+
+    return Array.from(collection.getElementsByTagName(itemTag)).map(mapper);
+  }
+
+  private applyImportedData(data: any): void {
+    if (!this.user || !data.user) return;
+    const newUser = data.user as User;
+    this.user = {
+      ...this.user,
+      fullName: newUser.fullName,
+      avatarUrl: newUser.avatarUrl,
+      dateOfBirth: newUser.dateOfBirth,
+      emailAddress: newUser.emailAddress,
+      city: newUser.city,
+      resumeText: newUser.resumeText,
+      aboutMe: newUser.aboutMe,
+      username: newUser.username,
+      themeId: newUser.themeId,
+      banner: newUser.banner,
+      background: newUser.background,
+      educations: newUser.educations,
+      workExperiences: newUser.workExperiences
+    };
+    this.onUserInfoChange();
   }
 
   // Метод для проверки дубликатов
@@ -437,6 +679,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
     return this.user && this.emailService.sendVerificationCode(this.user.emailAddress!).pipe(
       catchError(errorObj => {
         this.alertService.showSnackBar('Ошибка при отправке кода подтверждения.');
+        this.changesSaving = false;
         console.error(errorObj);
         return of(null);
       })
@@ -447,6 +690,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       this.alertService.openVerificationCodeDialog(this.user!.emailAddress!).afterClosed().subscribe(result => {
         if (result === 0) {
           this.alertService.showSnackBar('Почта не была подтверждена. Изменения не сохранены.');
+          this.changesSaving = false;
           return; // Пользователь закрыл диалог
         }
 
@@ -454,8 +698,10 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
         if (codeResponse.code === result?.toString())
           // Если код введен правильно, продолжаем обновление пользователя
           this.proceedWithSave();
-        else
+        else {
           this.alertService.showSnackBar('Вы ввели неверный код');
+          this.changesSaving = false;
+        }
       });
     });
   }
@@ -512,10 +758,9 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
     ).subscribe(updatedResponse => {
       this.changesSaving = false;
 
-      if (!updatedResponse) {
-        // Ошибка уже обработана в catchError
+      // Ошибка уже обработана в catchError
+      if (!updatedResponse)
         return;
-      }
 
       if (!updatedResponse.succeed) {
         this.alertService.showSnackBar(updatedResponse.message || 'Не удалось обновить данные.');

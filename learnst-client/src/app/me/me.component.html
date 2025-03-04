@@ -1,5 +1,6 @@
 <mat-card class="profile-container" appearance="outlined">
   <a mat-button color="primary" (click)="goBack()">Назад</a>
+
   <h1>Управление профилем</h1>
 
   @if (!user) {
@@ -14,14 +15,21 @@
             <img class="social-icon" [src]="SocialMediaPlatformHelper.getImagePath(user.externalLoginType)"
               [matTooltip]="SocialMediaPlatformHelper.getName(user.externalLoginType)"
               [alt]="SocialMediaPlatformHelper.getName(user.externalLoginType)"
-              placeholder="/assets/icons/placeholder.png">
+              placeholder="/assets/icons/placeholder.png" inspectable>
           }
         </h3>
 
         <div class="avatar-container">
-          <input type="file" id="avatarInput" (change)="onFileSelected($event)" class="hidden" accept="image/*">
-          <img [src]="user.avatarUrl" [alt]="user.username" class="avatar" (click)="openFilePicker()"
-            placeholder="/assets/icons/user-192x192.png" matTooltip="Изменить аватар" matTooltipPosition="below">
+          <input
+            type="file"
+            class="hidden"
+            id="avatarInput"
+            (change)="onFileSelected($event)"
+            [accept]="isPremium() ? 'image/*' : 'image/png, image/jpeg, image/jpg'"
+          >
+          <img [src]="user.avatarUrl" [alt]="user.username"
+            (click)="openFilePicker()" class="avatar" matTooltip="Изменить аватар"
+            placeholder="/assets/icons/user-192x192.png" matTooltipPosition="below">
         </div>
 
         <div class="full-width">
@@ -146,8 +154,8 @@
           @for (socialMediaProfile of user.socialMediaProfiles; track socialMediaProfile) {
           <div class="social-card">
             <a [href]="socialMediaProfile.url" target="_blank">
-              <img [src]="SocialMediaPlatformHelper.getImagePath(socialMediaProfile.platform)" alt=""
-                [title]="socialMediaProfile.url" noDownloading>
+              <img [src]="SocialMediaPlatformHelper.getImagePath(socialMediaProfile.platform)"
+                [matTooltip]="socialMediaProfile.url" noDownloading>
               <div>{{ SocialMediaPlatformHelper.getName(socialMediaProfile.platform) }}</div>
             </a>
             <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="socialMenu">
@@ -211,14 +219,47 @@
         </div>
       </mat-card>
 
-      <!-- Подписка -->
-      <div class="full-width" appearance="outlined">
-        <app-subscription />
-      </div>
-
-      <!-- Темы -->
+      <!-- Импорт/Экспорт -->
       <mat-card class="full-width" appearance="outlined">
-        <app-theme-picker />
+        <h3>Импорт и экспорт данных</h3>
+        <p>
+          Экспортируются следующие данные: ФИО, аватар, дата рождения, электронная почта, город,
+          резюме, информация о себе, имя пользователя, тема оформления, баннер, фон, образование
+          и опыт работы. Импорт заменит текущие данные на импортированные.
+        </p>
+        <div class="import-export-buttons">
+          <button
+            type="button"
+            color="accent"
+            mat-flat-button
+            (click)="exportData('json')"
+          >
+            Экспорт JSON
+          </button>
+          <button
+            type="button"
+            color="accent"
+            mat-flat-button
+            (click)="exportData('xml')"
+          >
+            Экспорт XML
+          </button>
+          <input
+            hidden
+            type="file"
+            #importFile
+            accept=".json,.xml"
+            (change)="importData($event)"
+          >
+          <button
+            type="button"
+            color="accent"
+            mat-flat-button
+            (click)="importFile.click()"
+          >
+            Импорт данных
+          </button>
+        </div>
       </mat-card>
 
       <!-- Удалить профиль -->
@@ -229,20 +270,30 @@
             type="button"
             mat-flat-button
             (click)="deleteProfile()"
-            class="full-width error with-background"
+            class="mb full-width error with-background"
           >
             Удалить мой профиль
           </button>
-          <p class="warning-text">Внимание: это действие необратимо. Все ваши данные будут удалены.</p>
+          <strong>Внимание: это действие необратимо. Все ваши данные будут удалены.</strong>
         </div>
       </mat-card>
     </div>
+
+    <!-- Подписка -->
+    <div class="full-width" appearance="outlined">
+      <app-subscription />
+    </div>
+
+    <!-- Темы -->
+    <mat-card class="full-width" appearance="outlined">
+      <app-theme-picker />
+    </mat-card>
 
     @if (unsavedChanges) {
     <div class="save-button-wrapper">
       <button type="button" mat-flat-button color="primary" class="save-button" (click)="saveChanges()">
         @if (changesSaving) {
-          <mat-spinner color="white" diameter="20"></mat-spinner>
+          <mat-spinner diameter="20"></mat-spinner>
         } @else {
           Сохранить изменения
         }

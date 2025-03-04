@@ -24,26 +24,25 @@
 
   @if (ticket) {
     <mat-card appearance="outlined">
-      <mat-card-title class="m" [ngClass]="{ 'center': isMediumScreen }">
+      <mat-card-title class="m" [class.center]="isMediumScreen">
         {{ ticket.title }}
-        <span [matTooltip]="TicketStatusHelper.getName(ticket.status)" class="status-icon">
-          <mat-icon>{{ TicketStatusHelper.getStatusIcon(ticket.status) }}</mat-icon>
+        <span [matTooltip]="TicketStatusHelper.getName(ticket.status)"
+          class="status-icon">
+          <mat-icon>
+            {{ TicketStatusHelper.getStatusIcon(ticket.status) }}
+          </mat-icon>
         </span>
       </mat-card-title>
       <mat-card-content>
-        <p [ngClass]="{ 'center': isMediumScreen }">{{ ticket.description }}</p>
+        <p [class.center]="isMediumScreen">{{ ticket.description }}</p>
         <div class="ticket-info">
             @if (ticket.author) {
               <a class="author-info" [routerLink]="['/user', ticket.authorId]">
-                <img [src]="ticket.author.avatarUrl" placeholder="/assets/icons/user-192x192.png"
-                  alt="Аватар" class="avatar" noDownloading>
+                <img class="avatar" [src]="ticket.author.avatarUrl"
+                  [alt]="ticket.author.username" noDownloading
+                  placeholder="/assets/icons/user-192x192.png">
                 <span>{{ ticket.author.username }}</span>
               </a>
-            } @else {
-              <div class="author-info">
-                <img placeholder="/assets/icons/user-192x192.png" alt="Аватар" class="avatar closed" noDownloading>
-                <span>Удалённый пользователь</span>
-              </div>
             }
           <p class="created-at">{{ ticket.createdAt | ruDateTime: 'relative' }}</p>
         </div>

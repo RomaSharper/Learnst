@@ -1,4 +1,6 @@
-<h2 mat-dialog-title>{{ data.infoCard ? 'Редактировать инфокарту' : 'Добавить инфокарту' }}</h2>
+<h2 mat-dialog-title>{{ data.infoCard ? 'Редактировать инфокарту'
+  : 'Добавить инфокарту' }}</h2>
+
 <mat-dialog-content>
   <form [formGroup]="infoCardForm">
     <!-- Поле "Текст инфокарты" -->
@@ -15,9 +17,11 @@
       <button type="button" mat-flat-button (click)="openFilePicker()">
         Выбрать иконку
       </button>
-      <input type="file" id="iconInput" accept="image/*" (change)="onFileSelected($event)" class="hidden">
+      <input type="file" id="iconInput" accept="image/png, image/jpeg, image/jpg"
+        (change)="onFileSelected($event)" class="hidden">
       @if (previewIconUrl) {
-        <img [src]="previewIconUrl" alt="Превью иконки" class="icon-preview">
+        <img [src]="previewIconUrl" alt="Превью иконки" class="icon-preview"
+          inspectable>
       }
       @if (infoCardForm.get('iconUrl')?.invalid && infoCardForm.get('iconUrl')?.touched) {
         <mat-error>Иконка обязательна для добавления</mat-error>
@@ -40,5 +44,6 @@
 </mat-dialog-content>
 <mat-dialog-actions>
   <button type="button" mat-button (click)="onCancel()">Отмена</button>
-  <button type="button" mat-button [disabled]="infoCardForm.invalid" (click)="onSave()">Сохранить</button>
+  <button type="button" mat-button [disabled]="infoCardForm.invalid"
+    (click)="onSave()">Сохранить</button>
 </mat-dialog-actions>

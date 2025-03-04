@@ -32,7 +32,7 @@ export class SocialMediaPlatformHelper {
     }
   }
 
-  static getImagePath(platform: SocialMediaPlatform): string {
+  static getImagePath(platform: SocialMediaPlatform | string): string {
     const base = '/assets/icons/socials/';
     switch (platform) {
       case SocialMediaPlatform.Bluesky: return base + 'bluesky.png';

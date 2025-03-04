@@ -123,13 +123,11 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
 
     const user: User = {
       tickets: [],
-      authCodes: [],
       educations: [],
       userLessons: [],
       userAnswers: [],
       role: Role.User,
       themeId: 'light',
-      applications: [],
       ticketAnswers: [],
       userActivities: [],
       workExperiences: [],

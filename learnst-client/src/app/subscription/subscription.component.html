@@ -31,13 +31,14 @@
   <!-- Выбор плана -->
   <mat-card class="plan-selection" appearance="outlined">
     <mat-card-header>
-      <mat-card-title>Выберите тарифный план</mat-card-title>
+      <h3>Выберите тарифный план</h3>
     </mat-card-header>
 
     <mat-card-content>
       <div class="plan-cards">
         @for (plan of subscriptionPlans; track plan) {
           <mat-card
+            inspectable
             class="plan-card"
             appearance="outlined"
             (click)="selectPlan(plan.duration)"
@@ -70,9 +71,9 @@
       </div>
 
       <button
+        mat-button
         type="button"
         color="primary"
-        mat-raised-button
         class="purchase-button"
         (click)="purchaseSubscription()"
         [disabled]="!selectedPlan() || isLoading()"

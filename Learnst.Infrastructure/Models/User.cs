@@ -73,16 +73,16 @@ public class User : IEntity
     #region Деятельность в поддержке
     public ICollection<Ticket> Tickets { get; set; } = [];
     
-    [DeleteBehavior(DeleteBehavior.NoAction)]
     public ICollection<TicketAnswer> TicketAnswers { get; set; } = [];
     #endregion
 
-    #region Отношения пользователя
+    #region Сообщество
     public ICollection<Follow> Followers { get; set; } = [];
 
     public ICollection<Follow> Followings { get; set; } = [];
     #endregion
 
+    #region Отношения пользователя
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public ICollection<UserActivity> UserActivities { get; set; } = [];
 
@@ -93,4 +93,5 @@ public class User : IEntity
     public ICollection<UserLesson> UserLessons { get; set; } = [];
 
     public ICollection<UserSubscription> UserSubscriptions { get; set; } = [];
+    #endregion
 }

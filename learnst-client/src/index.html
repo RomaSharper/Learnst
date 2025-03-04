@@ -56,16 +56,6 @@
 </head>
 <body class="mat-typography">
   <app-root></app-root>
-  <script>
-    window.onloadTurnstileCallback = function () {
-      turnstile.render("#example-container", {
-        sitekey: "<YOUR_SITE_KEY>",
-        callback: function (token) {
-          console.log(`Challenge Success ${token}`);
-        },
-      });
-    };
-  </script>
   <noscript class="error">Пожалуйста, включите JavaScript, чтобы использовать приложение.</noscript>
 </body>
 </html>

@@ -39,6 +39,7 @@ import { ValidationService } from '../../services/validation.service';
 import { InfoCardDialogComponent } from './info.card.dialog/info.card.dialog.component';
 import { TopicDialogComponent } from './topic.dialog/topic.dialog.component';
 import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
+import { InspectableDirective } from '../../pipes/inspectable.pipe';
 
 @Return()
 @Component({
@@ -61,6 +62,7 @@ import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDire
     MatFormFieldModule,
     ReactiveFormsModule,
     MatDatepickerModule,
+    InspectableDirective,
     MatSlideToggleModule,
     MatAutocompleteModule,
     NoDownloadingDirective,

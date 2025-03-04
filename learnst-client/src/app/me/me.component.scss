@@ -21,31 +21,19 @@
     cursor: pointer;
     font-size: 18px;
     padding: 4px * 3 4px * 6;
-    color: var(--mat-sys-on-primary);
+    color: var(--mat-sys-on-tertiary);
     box-shadow: var(--mat-sys-level2);
     transition: background-color 0.3s ease;
-    background-color: var(--mat-sys-primary);
+    background-color: var(--mat-sys-tertiary);
 
     @media (max-width: 767px) {
-      padding: 4px * 4 4px * 8;
+      padding: 16px 32px;
     }
   }
 
   .delete-profile-wrapper {
+    margin-top: 16px;
     text-align: center;
-    margin-top: 4px * 4;
-
-    button {
-      margin-bottom: 4px;
-      // color: var(--mat-sys-on-error);
-      box-shadow: var(--mat-sys-level2);
-      // background-color: var(--mat-sys-error);
-    }
-
-    .warning-text {
-      font-size: 0.9em;
-      // color: @not-found-error;
-    }
   }
 }
 
@@ -69,4 +57,16 @@
   width: 32px;
   height: 32px;
   vertical-align: middle;
+}
+
+.import-export-buttons {
+  gap: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+
+  button {
+    flex: 1 1 auto;
+    min-width: 200px;
+  }
 }

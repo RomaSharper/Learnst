@@ -278,11 +278,9 @@ public class UsersController(
             existingUser.UserLessons = user.UserLessons;
             existingUser.UserAnswers = user.UserAnswers;
             existingUser.Tickets = user.Tickets;
-            existingUser.TicketAnswers = user.TicketAnswers;
+            // existingUser.TicketAnswers = user.TicketAnswers;
             // existingUser.Followers = user.Followers;
             // existingUser.Followings = user.Followings;
-            // existingUser.SendedFriendships = user.SendedFriendships;
-            // existingUser.ReceivedFriendships = user.ReceivedFriendships;
 
             await repository.SaveAsync();
 

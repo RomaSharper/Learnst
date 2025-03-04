@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Learnst.Domain.Enums;
 using Learnst.Infrastructure.Exceptions;
 using Learnst.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
@@ -12,12 +11,14 @@ public class UsersRepository(ApplicationDbContext context, IMapper mapper) : Asy
 {
     public override async Task DeleteAsync(Guid id)
     {
-        var user = await GetByIdAsync(id, includes: [
-            u => u.UserActivities,
-            u => u.UserAnswers,
-            u => u.UserLessons,
-            u => u.TicketAnswers
-        ]) ?? throw new NotFoundException<User>(id);
+        var user = await DbSet
+            .Include(u => u.Educations)
+            .Include(u => u.UserActivities)
+            .Include(u => u.UserLessons)
+            .Include(u => u.UserAnswers)
+            .Include(u => u.TicketAnswers)
+            .SingleOrDefaultAsync(u => u.Id == id)
+            ?? throw new NotFoundException<User>(id);
         context.UserActivities.RemoveRange(user.UserActivities);
         context.UserAnswers.RemoveRange(user.UserAnswers);
         context.UserLessons.RemoveRange(user.UserLessons);

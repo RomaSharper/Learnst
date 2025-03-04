@@ -35,8 +35,6 @@ export interface User {
   externalLoginType?: SocialMediaPlatform;
   themeId: string;
   theme?: Theme;
-  authCodes: string[];
-  applications: string[];
   userSubscriptions: UserSubscription[];
   banner: string;
   background: string;

@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { formatDistanceToNow, parseISO } from 'date-fns';
-import { format, toZonedTime } from 'date-fns-tz';
+import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import { ru } from 'date-fns/locale';
 
 @Pipe({
@@ -8,88 +8,53 @@ import { ru } from 'date-fns/locale';
   standalone: true
 })
 export class RuDateTimePipe implements PipeTransform {
-  private readonly timezoneRegex = /(GMT[+-]\d{4}|\([A-Za-zа-яА-Я\s,]+\))/;
-  private readonly dateFormats = [
-    'EEE MMM dd yyyy HH:mm:ss', // Формат типа "Tue Feb 25 2025 23:23:03"
-    'yyyy-MM-dd',               // ISO форматы
-    'dd.MM.yyyy',               // Русский формат
-    'MM/dd/yyyy'                // Американский формат
-  ];
-
-  transform(value: string | Date | number | undefined | null, type: 'relative' | 'absolute' = 'absolute'): string | null {
+  transform(
+    value: string | Date | number | undefined | null,
+    type: 'relative' | 'absolute' = 'absolute'
+  ): string | null {
     if (!value) return null;
+    if (value === 'Только что') return value;
 
-    const parsedDate = this.parseDate(value);
-    if (!parsedDate) return null;
-
-    const localDate = this.convertToLocalTime(parsedDate);
+    const date = this.parseDate(value);
+    if (!date) return null;
 
     return type === 'relative'
-      ? this.formatRelative(localDate)
-      : this.formatAbsolute(localDate);
+      ? this.formatRelative(date)
+      : this.formatAbsolute(date);
   }
 
   private parseDate(value: string | Date | number): Date | null {
-    if (value instanceof Date) return value;
-    if (typeof value === 'number') return new Date(value);
-
-    // Обработка строковых форматов
-    if (this.isTimezonePresent(value)) {
-      return this.parseWithTimezone(value);
-    }
-
-    // Попытка парсинга разными методами
-    return this.safeDateParse(value);
-  }
-
-  private isTimezonePresent(value: string): boolean {
-    return this.timezoneRegex.test(value);
-  }
-
-  private parseWithTimezone(value: string): Date | null {
     try {
-      // Удаляем информацию о временной зоне в скобках
-      const cleanedDateString = value.replace(/\s*\([^)]+\)$/, '');
-      return new Date(cleanedDateString);
+      let parsed: Date;
+
+      if (typeof value === 'number') {
+        parsed = new Date(value);
+      } else if (typeof value === 'string') {
+        // Добавляем Z для UTC, если его нет
+        const dateString = value.endsWith('Z') ? value : `${value}Z`;
+        parsed = new Date(dateString);
+      } else {
+        parsed = new Date(value);
+      }
+
+      return isNaN(parsed.getTime()) ? null : parsed;
     } catch {
       return null;
     }
   }
 
-  private safeDateParse(value: string): Date | null {
-    // Пробуем разные форматы дат
-    for (const _fmt of this.dateFormats) {
-      try {
-        const parsed = parseISO(value);
-        if (!isNaN(parsed.getTime())) return parsed;
-      } catch {
-
-      }
-    }
-
-    // Пробуем стандартный парсинг
-    try {
-      const timestamp = Date.parse(value);
-      if (!isNaN(timestamp)) return new Date(timestamp);
-    } catch {}
-
-    return null;
-  }
-
-  private convertToLocalTime(date: Date): Date {
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    return toZonedTime(date, timeZone);
-  }
-
   private formatRelative(date: Date): string {
-    return formatDistanceToNow(date, {
-      addSuffix: true,
+    // Используем оригинальный Date для расчета относительного времени
+    return format(date, 'PPPpp', {
       locale: ru,
-      includeSeconds: true
-    }); //.replace(/^примерно /, '');
+    }).replace(/^в /, '');
   }
 
   private formatAbsolute(date: Date): string {
-    return format(date, "d MMMM yyyy 'г.' HH:mm", { locale: ru });
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    return formatInTimeZone(date, timeZone, "d MMMM yyyy 'г.' HH:mm (zzz)", {
+      locale: ru,
+    });
   }
 }
