@@ -1,12 +1,12 @@
 <mat-card class="container" appearance="outlined">
-  <a mat-button color="primary" (click)="goBack()">Назад</a>
+  <a mat-button color="primary" (click)="goBack()" class="mb">Назад</a>
 
   <!-- @if (isMediumScreen) {
     <button type="button" mat-fab class="main-button" aria-label="Добавить" (click)="openCreateTicketDialog()">
       <mat-icon>add</mat-icon>
     </button>
   } @else { -->
-    <a type="button" mat-button color="primary"
+    <a type="button" mat-button color="primary" class="mb"
       (click)="openCreateTicketDialog()">
       Добавить
     </a>

@@ -57,16 +57,18 @@
   background: var(--mat-sys-primary);
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
+html {
+  overflow-y: scroll;
 }
 
 body {
-  height: 100%;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
   font-size: 18px;
   line-height: 1.4;
-  min-height: 100vh;
+  position: relative;
+  isolation: isolate;
   overflow-x: hidden;
   background: var(--background) fixed;
   color: var(--mat-sys-on-secondary-container);
@@ -145,6 +147,23 @@ img {
 }
 
 // 6. Переопределение компонентов Material
+// Отдельный слой для диалогов
+.cdk-overlay-container {
+  z-index: 1000;
+  position: fixed;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+
+  // Исправление для вложенных диалогов
+  .cdk-global-overlay-wrapper {
+    align-items: safe center;
+    justify-content: safe center;
+  }
+}
+
 mat-list-item {
   height: fit-content !important;
 }
@@ -323,6 +342,12 @@ mat-date-range-input {
   position: absolute !important;
 }
 
+.activity-more-button {
+  top: 20px;
+  right: 12px;
+  position: absolute !important;
+}
+
 .upload-button {
   top: 8px;
   right: 0;
@@ -413,6 +438,10 @@ mat-date-range-input {
 .mh-2 {
   margin-left: 24px !important;
   margin-right: 24px !important;
+}
+
+.mr-3 {
+  margin-right: 32px !important;
 }
 
 .mb-3 {
