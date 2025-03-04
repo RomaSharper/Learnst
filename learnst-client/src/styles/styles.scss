@@ -172,6 +172,10 @@ mat-progress-spinner {
   margin: 0 8px;
 }
 
+.cdk-global-scrollblock {
+  top: 0 !important;
+}
+
 .mat-mdc-menu-panel {
   min-width: 200px !important;
   border-radius: 20px !important;
