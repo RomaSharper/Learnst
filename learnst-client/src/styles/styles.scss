@@ -243,36 +243,35 @@ p {
 table {
   width: 100%;
   margin: 2rem 0;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: var(--mat-sys-color-surface-container);
-  border-radius: var(--mat-sys-corner-medium);
-  box-shadow:
-    0 1px 3px rgba(0,0,0,0.1),
-    inset 0 0 0 1px var(--mat-sys-color-outline-variant);
+  cursor: default;
   overflow: hidden;
+  border-spacing: 0;
   position: relative;
+  border-collapse: separate;
+  box-shadow: var(--mat-sys-level2);
+  border-radius: var(--mat-sys-corner-medium);
+  background: var(--mat-sys-surface-container);
 
   th, td {
-    padding: 1rem 1.5rem;
     text-align: left;
-    border-bottom: 1px solid var(--mat-sys-color-outline-variant);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
 
     &:not(:last-child) {
-      border-right: 1px solid var(--mat-sys-color-outline-variant);
+      border-right: 1px solid var(--mat-sys-outline-variant);
     }
   }
 
   thead {
-    background: var(--mat-sys-color-surface-container-high);
+    background: var(--mat-sys-surface-container-high);
 
     th {
-      color: var(--mat-sys-color-on-surface-variant);
-      font: var(--mat-sys-title-medium);
-      padding: 1.25rem 1.5rem;
-      position: sticky;
       top: 0;
+      position: sticky;
+      padding: 1.25rem 1.5rem;
       backdrop-filter: blur(4px);
+      font: var(--mat-sys-title-medium);
+      color: var(--mat-sys-on-surface-variant);
     }
   }
 
@@ -281,15 +280,11 @@ table {
       transition: background-color 0.2s ease;
 
       &:nth-child(even) {
-        background: rgba(var(--mat-sys-color-primary-fixed), 0.03);
+        background: var(--mat-sys-surface-container-high);
       }
 
       &:hover {
-        background: rgba(var(--mat-sys-color-primary), 0.05);
-
-        td:first-child {
-          padding-left: 1.75rem;
-        }
+        background: var(--mat-sys-surface-container-high);
       }
 
       &:last-child td {
@@ -298,15 +293,15 @@ table {
     }
 
     td {
-      color: var(--mat-sys-color-on-surface);
-      font: var(--mat-sys-body-medium);
       transition: padding 0.2s ease;
+      color: var(--mat-sys-on-surface);
+      font: var(--mat-sys-title-medium);
     }
   }
 
   .numeric-column {
+    color: var(--mat-sys-primary);
     font-family: var(--mat-sys-typescale-label-medium-font);
-    color: var(--mat-sys-color-primary);
   }
 
   @media (max-width: 600px) {
@@ -322,20 +317,20 @@ table {
       margin: 0.5rem 0;
       box-shadow: var(--mat-sys-level1);
       border-radius: var(--mat-sys-corner-small);
-      background: var(--mat-sys-color-surface-container-lowest);
+      background: var(--mat-sys-surface-container-lowest);
     }
 
     td {
       display: flex;
-      justify-content: space-between;
       padding: 0.75rem 0;
       border: none !important;
+      justify-content: space-between;
 
       &::before {
         margin-right: 1rem;
         content: attr(data-label);
+        color: var(--mat-sys-primary);
         font: var(--mat-sys-label-medium);
-        color: var(--mat-sys-color-primary);
       }
     }
   }

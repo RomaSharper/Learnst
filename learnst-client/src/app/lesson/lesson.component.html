@@ -1,11 +1,8 @@
-@if (loading) {
-  <div class="loading-container">
+<mat-card class="container" appearance="outlined">
+  <a mat-button (click)="goBack()" class="mb nav-btn">Назад</a>
+  @if (loading) {
     <mat-spinner diameter="40"></mat-spinner>
-  </div>
-} @else if (lesson) {
-  <mat-card class="container" appearance="outlined">
-    <a mat-button (click)="goBack()" class="mb nav-btn">Назад</a>
-
+  } @else if (lesson) {
     @switch (lesson.lessonType) {
       @case (LessonType.LongRead) {
         <div class="md-container" [innerHTML]="innerHTML"></div>
@@ -13,7 +10,7 @@
       @case (LessonType.Video) {
         <h1>{{lesson.title}}</h1>
         <media-theme-sutro
-          style="--media-secondary-color: #616161; --media-accent-color: #007bff;"
+          style="--media-secondary-color: var(--mat-sys-secondary-container); --media-accent-color: var(--mat-sys-primary-container);"
         >
           <video
             slot="media"
@@ -30,7 +27,7 @@
         <app-questions [questions]="lesson.questions"></app-questions>
       }
     }
-  </mat-card>
-} @else {
-  <div class="error">Урок не найден</div>
-}
+  } @else {
+    <div class="error">Урок не найден</div>
+  }
+</mat-card>
