@@ -64,7 +64,7 @@ html {
 body {
   margin: 0;
   padding: 0;
-  height: 100vh;
+  // height: 100vh;
   font-size: 18px;
   line-height: 1.4;
   position: relative;
@@ -760,7 +760,6 @@ mat-date-range-input {
   .loading {
     font-size: 18px;
     text-align: center;
-    // color: @primary-color;
   }
 
   .profile-grid {

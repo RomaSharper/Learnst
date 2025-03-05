@@ -1,12 +1,8 @@
 <div class="loading-screen" [class.visible]="loading()">
   <div class="loading-content">
-    <img class="loading-logo" alt="Learnst" src="/assets/icons/favicon.png" noDownloading>
-    <h1 class="loading-title">Learnst</h1>
-    @if (welcomeMessage()) {
-      <p class="welcome-message">{{ welcomeMessage() }}</p>
-    } @else {
-      <mat-spinner class="loading-spinner" diameter="50"></mat-spinner>
-    }
+    <img class="loading-background" noDownloading alt="Welcome to Learnst" [src]="isMediumScreen
+      ? '/assets/gifs/niko-loading-small.gif'
+      : '/assets/gifs/niko-loading-large.gif'">
   </div>
 </div>
 

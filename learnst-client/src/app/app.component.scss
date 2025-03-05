@@ -10,41 +10,39 @@
   overflow: hidden;
   align-items: center;
   justify-content: center;
+  background-color: #171730;
   transition: opacity 0.3s ease-in;
-  background-color: var(--mat-sys-secondary-container);
 
   &.visible {
     opacity: 1;
     z-index: 6;
     transition: opacity 2s ease-out;
-  }
 
-  .loading-content {
-    text-align: center;
-
-    .loading-logo {
-      width: 80px;
-      height: auto;
-      margin-bottom: 16px;
+    .loading-content {
+      text-align: center;
     }
 
-    .loading-title {
-      font-size: 24px;
-      margin: 0 0 24px;
-      font-weight: bold;
+    @media (max-width: 767px) {
+      img.loading-background {
+        width: 100%;
+        opacity: 0.8;
+        max-width: 400px;
+      }
     }
 
-    .loading-spinner {
-      margin: 16px auto 0;
-    }
-
-    .welcome-message {
-      font-size: 18px;
-      margin-top: 16px;
-      color: var(--mat-sys-on-surface);
+    @media (min-width: 768px) {
+      img.loading-background {
+        top: 0;
+        left: 0;
+        width: auto; /* Измените на auto */
+        height: 100%; /* Высота равна 100% */
+        max-width: none; /* Убираем любые ограничения по ширине */
+        position: absolute;
+      }
     }
   }
 }
+
 
 .content {
   opacity: 0;
@@ -231,6 +229,7 @@
           cursor: pointer;
           position: relative;
           text-decoration: none;
+          color: var(--mat-sys-primary);
 
           &::after {
             bottom: 0;
@@ -247,59 +246,6 @@
           &:hover::after {
             opacity: 1;
           }
-        }
-
-        .submenu {
-          left: 0;
-          right: 0;
-          z-index: 2;
-          opacity: 0;
-          display: none;
-          position: absolute;
-          pointer-events: none;
-          transform: translateY(-142px);
-          background: var(--mat-sys-secondary-container);
-
-          .columns {
-            display: flex;
-            padding: 16px;
-            margin: 0 auto;
-            max-width: 1200px;
-            justify-content: space-evenly;
-
-            > div {
-              flex: 1;
-              padding: 0 8px;
-
-              h3 {
-                font-size: 28px;
-                margin-bottom: 8px;
-              }
-
-              ul {
-                margin: 0;
-                padding: 0;
-                list-style: none;
-
-                li {
-                  margin-bottom: 4px;
-
-                  a {
-                    width: fit-content;
-                    text-decoration: none;
-                    transition: color 0.3s ease;
-                  }
-                }
-              }
-            }
-          }
-        }
-
-        &:hover .submenu {
-          opacity: 1;
-          display: block;
-          pointer-events: auto;
-          transform: translateY(5px);
         }
       }
     }

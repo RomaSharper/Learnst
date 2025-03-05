@@ -9,11 +9,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MediumScreenSupport } from '../helpers/MediumScreenSupport';
 import { ThemeService } from '../services/theme.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatMenuModule } from '@angular/material/menu';
 import { UserMenuComponent } from './user-menu/user-menu.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { EllipsisPipe } from '../pipes/ellipsis.pipe';
+import { User } from '../models/User';
+import { AlertService } from '../services/alert.service';
 
 @Component({
   selector: 'app-root',
@@ -36,28 +37,32 @@ import { EllipsisPipe } from '../pipes/ellipsis.pipe';
   ],
 })
 export class AppComponent extends MediumScreenSupport {
+  authService = inject(AuthService);
+  alertService = inject(AlertService);
+  themeService = inject(ThemeService);
+
   loading = signal(true);
   isMenuOpen = signal(false);
-  authService = inject(AuthService);
-  user = toSignal(this.authService.getUser());
-  welcomeMessage = signal<string | null>(null);
+  user = signal<User | null>(null);
 
-  private excludedRoutes = ['/login', '/register'];
-
-  constructor(
-    private router: Router,
-    private themeService: ThemeService,
-  ) {
+  constructor(public router: Router) {
     super();
     effect(() => {
-      this.themeService.setTheme(this.user()?.themeId || 'light');
-      this.updateWelcomeMessage();
+      this.authService.getUser().subscribe({
+        next: user => {
+          this.user.set(user);
+          this.themeService.setTheme(this.user()?.themeId || 'light').subscribe({
+            next: () => this.loading.set(false),
+            error: _err => this.loading.set(false)
+          });
+        },
+        error: err => {
+          this.alertService.showSnackBar(err);
+        }
+      });
     });
   }
-
-  isExcludedRoute(): boolean {
-    return this.excludedRoutes.includes(this.router.url);
-  }
+  
 
   // Метод для переключения состояния меню
   toggleMenu(event: Event): void {
@@ -70,17 +75,6 @@ export class AppComponent extends MediumScreenSupport {
     event.stopPropagation();
     if (this.isMenuOpen())
       this.isMenuOpen.set(false);
-  }
-
-  updateWelcomeMessage(): void {
-    const userName = this.user()?.username || null;
-
-    if (this.isExcludedRoute()) {
-      this.loading.set(false);
-    } else {
-      setTimeout(() => this.welcomeMessage.set(userName ? `Добро пожаловать, ${userName}!` : null), 300);
-      setTimeout(() => this.loading.set(false), 1500);
-    }
   }
 
   // Обработчик кликов вне меню

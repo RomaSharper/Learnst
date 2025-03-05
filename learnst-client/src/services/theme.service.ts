@@ -8,6 +8,7 @@ import { environment } from '../environments/environment';
 import { AlertService } from './alert.service';
 import { SignalRService } from './signalr.service';
 import { filter } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -204,25 +205,39 @@ export class ThemeService {
     return this.themes;
   }
 
-  setTheme(themeId: string, isInitialLoad = false): void {
-    if (!this.user?.id) return;
-
+  setTheme(themeId: string, isInitialLoad = false): Observable<void> {
+    const themeChangeSubject = new Subject<void>(); // Создаем новый Subject
+  
+    if (!this.user?.id) {
+      themeChangeSubject.error('Нет пользователя'); // Вызов ошибки, если нет пользователя
+      return themeChangeSubject.asObservable();
+    }
+  
     const theme = this.themes.find(t => t.id === themeId);
-    if (!theme) return;
-
+    if (!theme) {
+      themeChangeSubject.error('Тема не найдена'); // Вызов ошибки, если тема не найдена
+      return themeChangeSubject.asObservable();
+    }
+  
     this.http.post<any>(
       `${environment.apiBaseUrl}/theme/${this.user.id}/${themeId}`, null
     ).subscribe({
       next: () => {
         this.currentTheme.set(theme);
-        if (!isInitialLoad)
+        if (!isInitialLoad) {
           this.sendThemeUpdate(themeId);
+        }
+        themeChangeSubject.next(); // Успешное изменение темы
+        themeChangeSubject.complete(); // Завершаем Subject
       },
       error: error => {
         console.error(error);
         this.alertService.showSnackBar('Не удалось обновить тему');
+        themeChangeSubject.error(error); // Вызов ошибки
       }
     });
+  
+    return themeChangeSubject.asObservable(); // Возвращаем Observable
   }
 
   updateThemeClass = effect(() => {
