@@ -167,7 +167,7 @@
     <div class="form-section">
       <h3>Справочные карты</h3>
       @for (infoCard of infoCards; track infoCard; let i = $index) {
-        <div class="info-card">
+        <mat-card class="info-card" appearance="outlined">
           <div class="info-card-content">
             <div class="preview-container" inspectable>
               <img [src]="infoCard.iconUrl" placeholder="/assets/icons/placeholder.png"
@@ -183,7 +183,7 @@
             <button type="button" mat-menu-item (click)="editInfoCard(i)">Изменить</button>
             <button type="button" mat-menu-item (click)="removeInfoCard(i)">Удалить</button>
           </mat-menu>
-        </div>
+        </mat-card>
       }
       <button type="button" mat-stroked-button (click)="addInfoCard()">Добавить инфокарту</button>
     </div>
@@ -192,7 +192,7 @@
   <div class="form-section">
     <h3>Темы</h3>
     @for (topic of topics; track topic; let i = $index) {
-      <div class="topic">
+      <mat-card class="topic" appearance="outlined">
         <div class="topic-content">
           <p><strong>{{ topic.title }}</strong></p>
         </div>
@@ -203,7 +203,7 @@
           <button type="button" mat-menu-item (click)="editTopic(i)">Изменить</button>
           <button type="button" mat-menu-item (click)="removeTopic(i)">Удалить</button>
         </mat-menu>
-      </div>
+      </mat-card>
     }
     <button type="button" mat-stroked-button (click)="addTopic()">
       Добавить тему

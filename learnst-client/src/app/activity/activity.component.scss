@@ -50,9 +50,10 @@ ul {
 }
 
 .info-cards {
-  gap: 16px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px), 1fr);
+  gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .info-card {
@@ -105,13 +106,6 @@ ul {
       transform: scale(1.1);
     }
   }
-}
-
-.info-cards {
-  gap: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
 .loading {
