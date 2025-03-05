@@ -32,14 +32,12 @@
       cursor: pointer;
       overflow: hidden;
       min-width: 200px;
-      max-width: 400px;
       position: relative;
       text-align: center;
       perspective: 1000px;
       border-radius: 20px;
       transform-style: preserve-3d;
       box-shadow: var(--mat-sys-level2);
-      background: var(--mat-sys-secondary-container);
       transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 
       &::before {
