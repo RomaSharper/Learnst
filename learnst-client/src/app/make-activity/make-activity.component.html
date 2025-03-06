@@ -24,10 +24,10 @@
 
     <!-- Поле для выбора файла -->
     <div class="avatar-section">
-      <div class="avatar-preview-container" inspectable>
+      <div class="avatar-preview-container">
         @if (previewAvatarUrl) {
           <img [src]="previewAvatarUrl" alt="Аватар активности"
-            class="avatar-preview" noDownloading>
+            class="avatar-preview" noDownloading inspectable>
         }
       </div>
       <button type="button" mat-stroked-button class="choose-preview-button" (click)="openFilePicker()"
@@ -169,9 +169,9 @@
       @for (infoCard of infoCards; track infoCard; let i = $index) {
         <mat-card class="info-card" appearance="outlined">
           <div class="info-card-content">
-            <div class="preview-container" inspectable>
+            <div class="preview-container">
               <img [src]="infoCard.iconUrl" placeholder="/assets/icons/placeholder.png"
-                noDownloading>
+                noDownloading inspectable>
             </div>
             <p><strong>{{ InfoTypeHelper.getName(infoCard.infoType) }}</strong></p>
             <p>{{ infoCard.text }}</p>

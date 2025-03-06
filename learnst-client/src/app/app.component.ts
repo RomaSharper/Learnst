@@ -51,18 +51,25 @@ export class AppComponent extends MediumScreenSupport {
       this.authService.getUser().subscribe({
         next: user => {
           this.user.set(user);
-          this.themeService.setTheme(this.user()?.themeId || 'light').subscribe({
-            next: () => this.loading.set(false),
-            error: _err => this.loading.set(false)
-          });
+          const themeId = user?.themeId || 'light';
+
+          if (user?.id)
+            this.themeService.setTheme(themeId).subscribe({
+              next: () => this.loading.set(false),
+              error: _err => this.loading.set(false)
+            });
+          else {
+            this.themeService.setLocalTheme(themeId);
+            this.loading.set(false);
+          }
         },
         error: err => {
           this.alertService.showSnackBar(err);
+          this.loading.set(false);
         }
       });
     });
   }
-  
 
   // Метод для переключения состояния меню
   toggleMenu(event: Event): void {

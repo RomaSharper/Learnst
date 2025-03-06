@@ -31,11 +31,7 @@ export class ContactsComponent {
       type: 'text/plain',
       blob: new Blob([value], { type: 'text/plain' })
     })
-    .then(() =>
-      this.alertService.showSnackBar(`${label} успешно скопировано`)
-    )
-    .catch(err =>
-      console.error('Копирование в буфер обмена не удалось: ', err)
-    );
+    .then(() => this.alertService.showSnackBar(`Поле ${label} успешно скопировано`))
+    .catch(err => console.error('Копирование в буфер обмена не удалось: ', err));
   }
 }

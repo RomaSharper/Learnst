@@ -22,7 +22,7 @@
     scale: 1.05;
   }
 
-  &[hidden] {
+  &[hidden]:not(.loading-screen) {
     scale: .95;
     opacity: 0;
     display: none !important;
@@ -64,7 +64,7 @@ html {
 body {
   margin: 0;
   padding: 0;
-  // height: 100vh;
+  height: 100vh;
   font-size: 18px;
   line-height: 1.4;
   position: relative;
@@ -317,37 +317,6 @@ table {
     color: var(--mat-sys-primary);
     font-family: var(--mat-sys-typescale-label-medium-font);
   }
-
-  @media (max-width: 600px) {
-    border-radius: var(--mat-sys-corner-small);
-
-    thead {
-      display: none;
-    }
-
-    tr {
-      display: block;
-      padding: 1rem;
-      margin: 0.5rem 0;
-      box-shadow: var(--mat-sys-level1);
-      border-radius: var(--mat-sys-corner-small);
-      background: var(--mat-sys-surface-container-lowest);
-    }
-
-    td {
-      display: flex;
-      padding: 0.75rem 0;
-      border: none !important;
-      justify-content: space-between;
-
-      &::before {
-        margin-right: 1rem;
-        content: attr(data-label);
-        color: var(--mat-sys-primary);
-        font: var(--mat-sys-label-medium);
-      }
-    }
-  }
 }
 
 .update-date {
@@ -575,7 +544,7 @@ mat-date-range-input {
 }
 
 .full-width {
-  width: 100%;
+  width: 100% !important;
 }
 
 .full-height {
@@ -891,7 +860,6 @@ mat-date-range-input {
 // Урок
 .md-container {
   padding: 20px;
-  margin: 8px auto;
   max-width: 800px;
   line-height: 1.6;
   font-family: 'JetBrains Mono', monospace;

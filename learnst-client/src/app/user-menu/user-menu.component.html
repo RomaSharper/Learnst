@@ -1,95 +1,111 @@
 <div class="user-menu">
-  <div
-    class="banner"
-    [style.background]="user.banner"
-  >
-    @if (!redirectOnly) {
-      <button type="button" mat-icon-button matTooltip="Изменить баннер"
-        (click)="openChangeBannerDialog()">
-        <mat-icon>edit</mat-icon>
-      </button>
-    }
-  </div>
-
-  <div class="profile-info" (click)="$event.stopPropagation()">
-    <img [src]="user.avatarUrl" class="avatar" [alt]="user.username | ellipsis:8" noDownloading
-      placeholder="/assets/icons/user-192x192.png">
-    <div class="names">
-      <h3>{{ user.fullName }}</h3>
-      <span>{{ user.username }}</span>
+  @if (loading()) {
+    <mat-spinner class="m-2" diameter="40" />
+  } @else if (user) {
+    <div
+      class="banner"
+      [style.background]="user.banner"
+    >
+      @if (!redirectOnly) {
+        <button type="button" mat-icon-button matTooltip="Изменить баннер"
+          (click)="openChangeBannerDialog()">
+          <mat-icon>edit</mat-icon>
+        </button>
+      }
     </div>
-    <p class="about-me">{{ user.aboutMe }}</p>
-  </div>
 
-  @if (redirectOnly) {
-    <div class="stats full-width">
-      <p class="followers-count">
-        {{ followersCount() | plural:'подписчик':'подписчика':'подписчиков' }}
-      </p>
+    <div class="profile-info" (click)="$event.stopPropagation()">
+      <img [src]="user.avatarUrl" class="avatar" [alt]="user.username | ellipsis:8"
+        noDownloading placeholder="/assets/icons/user-192x192.png">
+      <div class="names">
+        <h3>{{ user.fullName }}</h3>
+        <span>
+          {{ user.username }}
+          @if (isPremium()) {
+            <mat-icon
+              color="primary"
+              matTooltip="Обладатель премиум подписки"
+            >
+              verified
+            </mat-icon>
+          }
+        </span>
+      </div>
+      <p class="about-me">{{ user.aboutMe }}</p>
     </div>
-    <div class="actions full-width">
-      @if (user.id !== currentUser()?.id) {
+
+    @if (redirectOnly) {
+      <div class="stats full-width">
+        <p class="followers-count">
+          {{ followersCount() | plural:'подписчик':'подписчика':'подписчиков' }}
+        </p>
+      </div>
+      <div class="actions full-width">
+        @if (user.id !== currentUser()?.id) {
+          <button
+            type="button"
+            color="primary"
+            mat-flat-button
+            class="follow-button"
+            [disabled]="loading()"
+            (click)="handleFollow()"
+          >
+            <mat-icon>{{ isFollowing() ? 'person_remove' : 'person_add' }}</mat-icon>
+            {{ isFollowing() ? 'Отписаться' : 'Подписаться' }}
+          </button>
+        }
         <button
           type="button"
-          color="primary"
-          mat-flat-button
-          class="follow-button"
-          [disabled]="loading()"
-          (click)="handleFollow()"
+          class="profile-button"
+          mat-stroked-button
+          [routerLink]="['/user/', user.id]"
         >
-          <mat-icon>{{ isFollowing() ? 'person_remove' : 'person_add' }}</mat-icon>
-          {{ isFollowing() ? 'Отписаться' : 'Подписаться' }}
+          <mat-icon>person</mat-icon>
+          Перейти к профилю
         </button>
-      }
-      <button
-        type="button"
-        class="profile-button"
-        mat-stroked-button
-        [routerLink]="['/user/', user.id]"
-      >
-        <mat-icon>person</mat-icon>
-        Перейти к профилю
+      </div>
+    } @else {
+      <button type="button" mat-menu-item routerLink="/me">
+        <mat-icon>edit</mat-icon>
+        Редактировать профиль
       </button>
-    </div>
+
+      <mat-menu #accountsMenu="matMenu" class="accounts-menu">
+        @for (acc of accounts(); track acc.id) {
+          <button class="account-btn" type="button" mat-menu-item
+            [class.current]="acc.isCurrent" (click)="switchAccount(acc.id)">
+            <img [src]="acc.avatarUrl" class="account-avatar" noDownloading
+              placeholder="/assets/icons/user-192x192.png">
+            <span class="account-username">{{ acc.username | ellipsis:8 }}</span>
+            <div class="account-actions">
+              @if (acc.isCurrent) {
+                <mat-icon matTooltip="Ваш текущий аккаунт">person_check</mat-icon>
+              } @else {
+                <mat-icon matTooltip="Выйти из аккаунта"
+                  (click)="deleteAccount(acc.id, $event)">
+                  logout
+                </mat-icon>
+              }
+            </div>
+          </button>
+        }
+        <button type="button" class="account-btn" mat-menu-item routerLink="/login">
+          <mat-icon>person_add</mat-icon>
+          <span class="account-username">Добавить аккаунт</span>
+        </button>
+      </mat-menu>
+
+      <button type="button" mat-menu-item [matMenuTriggerFor]="accountsMenu">
+        <mat-icon>switch_account</mat-icon>
+        Сменить аккаунт
+      </button>
+
+      <button type="button" mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Выйти
+      </button>
+    }
   } @else {
-    <button type="button" mat-menu-item routerLink="/me">
-      <mat-icon>edit</mat-icon>
-      Редактировать профиль
-    </button>
-
-    <mat-menu #accountsMenu="matMenu" class="accounts-menu">
-      @for (acc of accounts(); track acc.id) {
-        <button class="account-btn" type="button" mat-menu-item
-          [class.current]="acc.isCurrent" (click)="switchAccount(acc.id)">
-          <img [src]="acc.avatarUrl" class="account-avatar" noDownloading
-            placeholder="/assets/icons/user-192x192.png">
-          <span class="account-username">{{ acc.username | ellipsis:8 }}</span>
-          <div class="account-actions">
-            @if (acc.isCurrent) {
-              <mat-icon matTooltip="Ваш текущий аккаунт">person_check</mat-icon>
-            } @else {
-              <mat-icon matTooltip="Выйти из аккаунта"
-                (click)="deleteAccount(acc.id, $event)">
-                logout
-              </mat-icon>
-            }
-          </div>
-        </button>
-      }
-      <button type="button" class="account-btn" mat-menu-item routerLink="/login">
-        <mat-icon>person_add</mat-icon>
-        <span class="account-username">Добавить аккаунт</span>
-      </button>
-    </mat-menu>
-
-    <button type="button" mat-menu-item [matMenuTriggerFor]="accountsMenu">
-      <mat-icon>switch_account</mat-icon>
-      Сменить аккаунт
-    </button>
-
-    <button type="button" mat-menu-item (click)="logout()">
-      <mat-icon>logout</mat-icon>
-      Выйти
-    </button>
+    <div class="error">Пользователь не был загружен</div>
   }
 </div>

@@ -93,15 +93,15 @@ export class ActivityComponent implements OnInit {
   hasChild = (_: number, node: ActivityNode) => !!node.children && node.children.length > 0;
 
   constructor(
+    public router: Router,
+    public location: Location,
+    private route: ActivatedRoute,
     private authService: AuthService,
-    private activitiesService: ActivitiesService,
+    private alertService: AlertService,
     private answersService: AnswersService,
     private lessonsService: LessonsService,
-    private route: ActivatedRoute,
-    private alertService: AlertService,
-    private certificateService: CertificateService,
-    public location: Location,
-    public router: Router
+    private activitiesService: ActivitiesService,
+    private certificateService: CertificateService
   ) { }
 
   ngOnInit(): void {

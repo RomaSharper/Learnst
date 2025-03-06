@@ -206,19 +206,24 @@ export class ThemeService {
   }
 
   setTheme(themeId: string, isInitialLoad = false): Observable<void> {
-    const themeChangeSubject = new Subject<void>(); // Создаем новый Subject
-  
-    if (!this.user?.id) {
-      themeChangeSubject.error('Нет пользователя'); // Вызов ошибки, если нет пользователя
-      return themeChangeSubject.asObservable();
-    }
-  
+    const themeChangeSubject = new Subject<void>();
+
+    // Убрали проверку на пользователя здесь
     const theme = this.themes.find(t => t.id === themeId);
     if (!theme) {
-      themeChangeSubject.error('Тема не найдена'); // Вызов ошибки, если тема не найдена
+      themeChangeSubject.error('Тема не найдена');
       return themeChangeSubject.asObservable();
     }
-  
+
+    // Если нет пользователя - сразу применяем тему локально
+    if (!this.user?.id) {
+      this.setLocalTheme(themeId);
+      themeChangeSubject.next();
+      themeChangeSubject.complete();
+      return themeChangeSubject.asObservable();
+    }
+
+    // Остальной код метода без изменений
     this.http.post<any>(
       `${environment.apiBaseUrl}/theme/${this.user.id}/${themeId}`, null
     ).subscribe({
@@ -227,17 +232,26 @@ export class ThemeService {
         if (!isInitialLoad) {
           this.sendThemeUpdate(themeId);
         }
-        themeChangeSubject.next(); // Успешное изменение темы
-        themeChangeSubject.complete(); // Завершаем Subject
+        themeChangeSubject.next();
+        themeChangeSubject.complete();
       },
       error: error => {
         console.error(error);
         this.alertService.showSnackBar('Не удалось обновить тему');
-        themeChangeSubject.error(error); // Вызов ошибки
+        themeChangeSubject.error(error);
       }
     });
-  
-    return themeChangeSubject.asObservable(); // Возвращаем Observable
+
+    return themeChangeSubject.asObservable();
+  }
+
+  setLocalTheme(themeId: string): void {
+    const theme = this.themes.find(t => t.id === themeId);
+    if (theme) {
+      this.currentTheme.set(theme);
+      document.body.classList.remove(...this.themes.map(t => `${t.id}-theme`));
+      document.body.classList.add(`${theme.id}-theme`);
+    }
   }
 
   updateThemeClass = effect(() => {
@@ -294,7 +308,8 @@ export class ThemeService {
         if (user?.id) {
           this.joinUserGroup(user.id);
           if (user.theme) this.setTheme(user.theme.id, true);
-        }
+        } else
+          this.setLocalTheme('light'); // Устанавливаем светлую тему по умолчанию
       });
   }
 }
