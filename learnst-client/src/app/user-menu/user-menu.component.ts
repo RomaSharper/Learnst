@@ -12,8 +12,9 @@ import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDire
 import { UsersService } from '../../services/users.service';
 import { FileService } from '../../services/file.service';
 import { MatButtonModule } from '@angular/material/button';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { PluralPipe } from '../../pipes/plural.pipe';
-import { forkJoin, switchMap } from 'rxjs';
+import { finalize } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
@@ -34,8 +35,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   ]
 })
 export class UserMenuComponent implements OnInit {
-  @Input() redirectOnly = true;
   @Input() user: User | null = null;
+  @Input() redirectOnly: boolean | null = null;
 
   private router = inject(Router);
   private fileService = inject(FileService);
@@ -43,69 +44,62 @@ export class UserMenuComponent implements OnInit {
   private usersService = inject(UsersService);
   private alertService = inject(AlertService);
 
+  currentUser = toSignal(this.authService.getUser());
 
   loading = signal(true);
   isPremium = signal(false);
   followersCount = signal(0);
   isFollowing = signal(false);
-  currentUser = signal<User | null>(null);
   isBannerImage = signal(false);
   accounts = this.authService.accounts;
 
   ngOnInit(): void {
-    this.initializeData();
-  }
-
-  private initializeData(): void {
-    if (!this.user?.id) {
+    if (!this.user || !this.user.id) {
       this.loading.set(false);
       return;
     }
 
-    // Загружаем данные параллельно
-    forkJoin([
-      this.authService.getUser(),
-      this.usersService.isPremium(this.user.id),
-      this.usersService.getFollowers(this.user.id),
-      this.usersService.getFollowersCount(this.user.id)
-    ]).subscribe({
-      next: ([currentUser, premiumResponse, followers, followersCount]) => {
-        this.currentUser.set(currentUser);
-        this.isPremium.set(premiumResponse.premium);
-        this.isBannerImage.set(this.user!.banner?.startsWith('http') && this.isPremium());
-        this.isFollowing.set(followers.some(f => f.id === this.currentUser()?.id));
-        this.followersCount.set(followersCount);
-        this.loading.set(false);
+    this.usersService.isPremium(this.user.id).subscribe({
+      next: response => {
+        if (!this.user) return;
+        this.isPremium.set(response.premium);
+        this.isBannerImage.set(this.user.banner.startsWith('http') && this.isPremium());
       },
-      error: (err) => {
-        this.loading.set(false);
-        console.error('Ошибка загрузки данных:', err);
-        this.alertService.showSnackBar('Не удалось загрузить данные');
-      }
+      error: error => console.error(error)
     });
+
+    this.usersService.getFollowers(this.user.id!).subscribe(followers =>
+      this.isFollowing.set(followers.some(f => f.id === this.currentUser()!.id))
+    );
+
+    // Обновить счетчики
+    this.updateCounters(this.user.id!);
+    this.loading.set(false);
   }
 
   handleFollow(): void {
-    const currentUserId = this.currentUser()?.id;
-    const targetUserId = this.user?.id;
-    if (!currentUserId || !targetUserId) return;
+    if (!this.currentUser() || !this.user) return;
 
-    this.loading.set(true);
+    const currentUserId = this.currentUser()!.id;
+    const targetUserId = this.user.id;
+
+    if (!currentUserId || !targetUserId) return;
 
     const action = this.isFollowing()
       ? this.usersService.unfollowUser(currentUserId, targetUserId)
       : this.usersService.followUser(currentUserId, targetUserId);
 
     action.pipe(
-      switchMap(() => this.usersService.getFollowers(targetUserId))
-    ).subscribe({
-      next: (followers) => {
-        this.isFollowing.set(followers.some(f => f.id === currentUserId));
+      finalize(() => {
         this.updateCounters(targetUserId);
-        this.loading.set(false);
+        this.refreshUserData(); // Добавляем обновление данных
+      })
+    ).subscribe({
+      next: () => {
+        this.isFollowing.update(v => !v);
         this.alertService.showSnackBar('Успешно обновлено');
       },
-      error: (err) => {
+      error: err => {
         console.error(err);
         this.alertService.showSnackBar('Ошибка обновления');
       }
@@ -132,35 +126,43 @@ export class UserMenuComponent implements OnInit {
       'Выход из текущего аккаунта',
       'Вы уверены, что хотите выйти из текущего аккаунта?'
     ).afterClosed().subscribe(result => {
-      const userId = this.user?.id;
-      if (!result || !userId) return;
-      this.authService.removeAccount(userId);
+      if (!result) return;
+      this.authService.removeAccount(this.user?.id!);
       this.router.navigate(['/login']);
     });
   }
 
   openChangeBannerDialog(): void {
-    this.alertService.openChangeBannerDialog(
-      this.isPremium(),
-      this.user?.banner
-    ).afterClosed().subscribe({
+    this.alertService.openChangeBannerDialog(this.isPremium(), this.user!.banner).afterClosed().subscribe({
       next: response => {
         if (!response || !this.user) return;
 
         const { bannerType, color, imageUrl, imageFile } = response;
 
-        if (bannerType === 'color')
+        if (bannerType === 'color') {
           this.user.banner = color; // Устанавливаем цвет
-        else if (bannerType === 'image')
+        } else if (bannerType === 'image') {
           if (imageUrl)
             this.user.banner = imageUrl; // Если URL, обновляем баннер
           else if (imageFile)
             this.uploadImageFile(imageFile, this.user); // Если файл, загружаем его
+        }
 
         // Обновляем данные пользователя
         this.updateUser(this.user);
       },
-      error: error => console.error(error)
+      error: error => {
+        console.error(error);
+      }
+    });
+  }
+
+  private refreshUserData(): void {
+    const userId = this.user?.id;
+    if (!userId) return;
+    this.usersService.getUserById(userId).subscribe(user => {
+      this.user = user;
+      this.updateCounters(userId);
     });
   }
 
@@ -187,9 +189,7 @@ export class UserMenuComponent implements OnInit {
 
   // Метод для обновления пользователя
   private updateUser(user: User): void {
-    const userId = user.id;
-    if (!userId) return;
-    this.usersService.updateUser(userId, user).subscribe({
+    this.usersService.updateUser(user.id!, user).subscribe({
       next: (response) => {
         console.log(response);
         this.alertService.showSnackBar('Баннер успешно обновлен.');
@@ -205,8 +205,12 @@ export class UserMenuComponent implements OnInit {
   // Метод для удаления старого баннера
   private deleteOriginalBanner(originalBannerUrl: string): void {
     this.fileService.delete(originalBannerUrl).subscribe({
-      next: () => console.log('Старый баннер удалён успешно.'),
-      error: (error) => console.error('Ошибка при удалении старого баннера:', error)
+      next: () => {
+        console.log('Старый баннер удалён успешно.');
+      },
+      error: (error) => {
+        console.error('Ошибка при удалении старого баннера:', error);
+      }
     });
   }
 }
