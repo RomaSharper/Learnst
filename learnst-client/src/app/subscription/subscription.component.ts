@@ -7,7 +7,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { DatePipe } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../services/auth.service';
 import { lastValueFrom } from 'rxjs';
 import { RoundPipe } from '../../pipes/round.pipe';
@@ -39,8 +38,10 @@ export class SubscriptionsComponent {
 
   constructor() {
     effect(() => {
-      const user = toSignal(this.authService.getUser());
-      if (user) this.loadSubscription(user()?.id!);
+      this.authService.getUser().subscribe(user => {
+        if (user?.id)
+          this.loadSubscription(user.id)
+      })
     });
   }
 
@@ -59,16 +60,16 @@ export class SubscriptionsComponent {
 
   async purchaseSubscription() {
     const duration = this.selectedPlan();
-    const userId = toSignal(this.authService.getUser())()?.id;
-
-    if (!duration || !userId) return;
-
-    this.isLoading.set(true);
     try {
-      const { confirmationUrl } = await lastValueFrom(
-        this.subService.createSubscriptionPayment(duration, userId)
-      );
-      window.location.href = confirmationUrl;
+      this.authService.getUser().subscribe(async user => {
+        const userId = user?.id;
+        if (!duration || !userId) return;
+        this.isLoading.set(true);
+        const { confirmationUrl } = await lastValueFrom(
+          this.subService.createSubscriptionPayment(duration, userId)
+        );
+        window.location.href = confirmationUrl;
+      });
     } catch (error) {
       this.alertService.showSnackBar('Ошибка оплаты');
       this.isLoading.set(false);
@@ -76,7 +77,8 @@ export class SubscriptionsComponent {
   }
 
   // Добавляем метод для вычисления оставшихся дней
-  getDaysRemaining(endDate: string): number {
+  getDaysRemaining(endDate?: string): number {
+    if (!endDate) return 0;
     const end = new Date(endDate);
     const now = new Date();
     return Math.ceil((end.getTime() - now.getTime()) / (1000 * 3600 * 24));

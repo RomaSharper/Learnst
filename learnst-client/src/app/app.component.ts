@@ -96,9 +96,13 @@ export class AppComponent extends MediumScreenSupport {
       || el.closest('.cdk-overlay-backdrop');
     const clickedOnAlerts = el.closest('.mat-mdc-dialog-actions')
       || el.closest('.cdk-overlay-container');
+    const clickedOnBannerEditBtn = el.classList.contains('edit-banner-btn');
+    const clickedOnMenuItem = el.classList.contains('user-menu-item');
 
     if (this.isMenuOpen() && !clickedOnOverlay && !clickedInsideMenu
-      && !clickedOnAlerts || clickedOnLink)
+      && !clickedOnAlerts && !clickedOnBannerEditBtn
+      || clickedOnLink
+      || clickedOnMenuItem)
       this.closeMenu(event);
   }
 }

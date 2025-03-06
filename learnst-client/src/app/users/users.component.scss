@@ -24,6 +24,7 @@
       .avatar {
         width: 96px;
         aspect-ratio: 1;
+        object-fit: cover;
         margin-right: 12px;
         border-radius: 50%;
         transition: border-color 0.3s;
@@ -59,18 +60,6 @@
         top: 8px;
         right: 8px;
         position: absolute;
-      }
-
-      &:hover {
-        // background-color: @card-hover-color;
-
-        .avatar {
-          // border-color: @secondary-color;
-        }
-      }
-
-      &:active {
-        // background-color: @card-active-color;
       }
 
       @media (max-width: 767px) {

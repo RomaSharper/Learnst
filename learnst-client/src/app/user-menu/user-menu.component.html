@@ -8,7 +8,7 @@
     >
       @if (!redirectOnly) {
         <button type="button" mat-icon-button matTooltip="Изменить баннер"
-          (click)="openChangeBannerDialog()">
+          (click)="openChangeBannerDialog($event)" class="edit-banner-btn">
           <mat-icon>edit</mat-icon>
         </button>
       }
@@ -56,8 +56,8 @@
         }
         <button
           type="button"
-          class="profile-button"
           mat-stroked-button
+          class="profile-button"
           [routerLink]="['/user/', user.id]"
         >
           <mat-icon>person</mat-icon>
@@ -65,7 +65,7 @@
         </button>
       </div>
     } @else {
-      <button type="button" mat-menu-item routerLink="/me">
+      <button type="button" class="user-menu-item" mat-menu-item routerLink="/me">
         <mat-icon>edit</mat-icon>
         Редактировать профиль
       </button>
@@ -89,7 +89,8 @@
             </div>
           </button>
         }
-        <button type="button" class="account-btn" mat-menu-item routerLink="/login">
+        <button type="button" class="account-btn user-menu-item"
+          mat-menu-item routerLink="/login">
           <mat-icon>person_add</mat-icon>
           <span class="account-username">Добавить аккаунт</span>
         </button>
@@ -100,7 +101,7 @@
         Сменить аккаунт
       </button>
 
-      <button type="button" mat-menu-item (click)="logout()">
+      <button type="button" class="user-menu-item" mat-menu-item (click)="logout()">
         <mat-icon>logout</mat-icon>
         Выйти
       </button>

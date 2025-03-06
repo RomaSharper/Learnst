@@ -49,7 +49,7 @@ import { Level } from '../../enums/Level';
   ]
 })
 export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
-  pageSize = 5;
+  pageSize = 6;
   pageIndex = 0;
   loading = true;
   now = new Date();
@@ -59,7 +59,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
   user: User | null = null;
   level: string | null = null;
   activities: Activity[] = [];
-  pageSizeOptions = [5, 10, 20];
+  pageSizeOptions = [6, 12, 24];
   paginatedActivities: Activity[] = [];
 
   Role = Role;

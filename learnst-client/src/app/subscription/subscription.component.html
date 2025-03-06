@@ -12,14 +12,14 @@
             <mat-list-item>
               <span matListItemTitle>Осталось дней</span>
               <span matListItemLine class="highlight">
-                {{ getDaysRemaining(currentSubscription()!.endDate.toString()) }}
+                {{ getDaysRemaining(currentSubscription()?.endDate?.toString()) }}
               </span>
             </mat-list-item>
 
             <mat-list-item>
               <span matListItemTitle>Дата окончания</span>
               <span matListItemLine class="highlight">
-                {{ currentSubscription()!.endDate | date: 'dd.MM.yyyy' }}
+                {{ currentSubscription()?.endDate | date: 'dd.MM.yyyy' }}
               </span>
             </mat-list-item>
           </mat-list>
@@ -71,9 +71,9 @@
       </div>
 
       <button
-        mat-button
         type="button"
         color="primary"
+        mat-flat-button
         class="purchase-button"
         (click)="purchaseSubscription()"
         [disabled]="!selectedPlan() || isLoading()"

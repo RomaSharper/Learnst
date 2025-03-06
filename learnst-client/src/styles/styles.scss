@@ -215,6 +215,10 @@ mat-chip-row {
   text-overflow: ellipsis;
 }
 
+.mat-step-header .mat-step-icon {
+  background-color: transparent !important;
+}
+
 // 7. Свойства
 [inspectable] {
   contain: paint;
@@ -254,7 +258,7 @@ p {
   text-wrap: pretty;
 }
 
-table {
+table:not(.mat-calendar-table) {
   width: 100%;
   margin: 2rem 0;
   cursor: default;
@@ -536,7 +540,7 @@ mat-date-range-input {
 }
 
 .mb-4 {
-  margin-bottom: 8px5 !important;
+  margin-bottom: 40px !important;
 }
 
 .cursor-default {
@@ -860,6 +864,7 @@ mat-date-range-input {
 // Урок
 .md-container {
   padding: 20px;
+  margin: 0 auto;
   max-width: 800px;
   line-height: 1.6;
   font-family: 'JetBrains Mono', monospace;

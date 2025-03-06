@@ -130,13 +130,13 @@ export class ActivityComponent implements OnInit {
           return of(undefined);
         })
       ).subscribe(activity => {
-        if (!activity) {
+        if (!activity || !user.id) {
           this.goBack();
           return;
         }
 
         // Проверяем условия для доступа
-        const isUserEnrolled = this.activitiesService.isUserActivityExists(user.id!, activityId).pipe(
+        const isUserEnrolled = this.activitiesService.isUserActivityExists(user.id, activityId).pipe(
           catchError(() => of(false)) // В случае ошибки считаем, что пользователь не записан
         );
 

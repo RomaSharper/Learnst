@@ -15,7 +15,7 @@
             <img class="social-icon" [src]="SocialMediaPlatformHelper.getImagePath(user.externalLoginType)"
               [matTooltip]="SocialMediaPlatformHelper.getName(user.externalLoginType)"
               [alt]="SocialMediaPlatformHelper.getName(user.externalLoginType)"
-              placeholder="/assets/icons/placeholder.png" inspectable>
+              placeholder="/assets/icons/placeholder.png" noDownloading inspectable>
           }
         </h3>
 
@@ -27,7 +27,7 @@
             (change)="onFileSelected($event)"
             [accept]="isPremium() ? 'image/*' : 'image/png, image/jpeg, image/jpg'"
           >
-          <img [src]="user.avatarUrl" [alt]="user.username"
+          <img [src]="user.avatarUrl" [alt]="user.username" noDownloading
             (click)="openFilePicker()" class="avatar" matTooltip="Изменить аватар"
             placeholder="/assets/icons/user-192x192.png" matTooltipPosition="below">
         </div>
@@ -261,22 +261,6 @@
           </button>
         </div>
       </mat-card>
-
-      <!-- Удалить профиль -->
-      <mat-card class="full-width" appearance="outlined">
-        <div class="delete-profile-wrapper">
-          <button
-            color="warn"
-            type="button"
-            mat-flat-button
-            (click)="deleteProfile()"
-            class="mb full-width error with-background"
-          >
-            Удалить мой профиль
-          </button>
-          <strong>Внимание: это действие необратимо. Все ваши данные будут удалены.</strong>
-        </div>
-      </mat-card>
     </div>
 
     <!-- Подписка -->
@@ -287,6 +271,22 @@
     <!-- Темы -->
     <mat-card class="full-width" appearance="outlined">
       <app-theme-picker />
+    </mat-card>
+
+    <!-- Удалить профиль -->
+    <mat-card class="full-width" appearance="outlined">
+      <div class="delete-profile-wrapper">
+        <button
+          color="warn"
+          type="button"
+          mat-flat-button
+          (click)="deleteProfile()"
+          class="mb full-width error with-background"
+        >
+          Удалить мой профиль
+        </button>
+        <strong>Внимание: это действие необратимо. Все ваши данные будут удалены.</strong>
+      </div>
     </mat-card>
 
     @if (unsavedChanges) {

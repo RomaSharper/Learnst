@@ -36,6 +36,7 @@
   img {
     width: 100%;
     height: auto;
+    aspect-ratio: 1;
     max-width: 400px;
     object-fit: cover;
     border-radius: 4px;
@@ -230,6 +231,7 @@ ul {
   .user-avatar {
     width: 32px;
     height: 32px;
+    object-fit: cover;
     border-radius: 50%;
     vertical-align: middle;
     transition: transform 0.2s ease;

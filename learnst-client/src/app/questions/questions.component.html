@@ -1,108 +1,171 @@
 <div class="container">
   @if (questions && userAnswers) {
-    @for (question of questions; track question) {
-      <mat-card class="question-card" [ngClass]="{
-        'answered': isQuestionAnswered(question.id),
-        'correct': isAnswerCorrect(question.id),
-        'incorrect': isQuestionAnswered(question.id) && !isAnswerCorrect(question.id)
-      }">
-        <mat-card-header>
-          <mat-card-title>{{ question.text }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          @if (isLoading(question.id)) {
-            <!-- Спиннер загрузки -->
-            <mat-spinner [diameter]="30"></mat-spinner>
-          } @else {
-            @if (isQuestionAnswered(question.id)) {
-              <p>Вы ответили {{ isAnswerCorrect(question.id) ? 'правильно' : 'неправильно' }} на этот вопрос</p>
-              @if (question.answers && question.answers.length > 0) {
-                @switch (question.answerType) {
-                  @case (AnswerType.Single) {
-                    <mat-radio-group [disabled]="true">
-                      @for (answer of question.answers; track answer) {
-                        <label>
-                          <mat-radio-button
-                            [value]="answer.id"
-                            [checked]="isAnswerSelected(answer.id, question.id)"
-                            [ngClass]="{
-                              'correct-answer': answer.isCorrect,
-                              'incorrect-answer': isAnswerSelected(answer.id, question.id) && !answer.isCorrect
-                            }">
-                            {{ answer.text }}
-                          </mat-radio-button>
-                        </label>
-                        <br>
-                      }
-                    </mat-radio-group>
-                  }
-                  @case (AnswerType.Multiple) {
-                    @for (answer of question.answers; track answer) {
-                      <label>
-                        <mat-checkbox
-                          [disabled]="true"
-                          [value]="answer.id.toString()"
-                          [checked]="isAnswerSelected(answer.id, question.id)"
-                          [ngClass]="{
-                            'correct-answer': answer.isCorrect,
-                            'incorrect-answer': isAnswerSelected(answer.id, question.id) && !answer.isCorrect
-                          }">
-                          {{ answer.text }}
-                        </mat-checkbox>
-                      </label>
-                      <br>
-                    }
-                  }
-                }
-              }
-            } @else {
-              @if (question.answers && question.answers.length > 0) {
-                @switch (question.answerType) {
-                  @case (AnswerType.Single) {
-                    <mat-radio-group>
-                      @for (answer of question.answers; track answer) {
-                        <label>
-                          <mat-radio-button
-                            [value]="answer.id"
-                            (change)="selectAnswer(answer.id, question.id, $event.source.checked)">
-                            {{ answer.text }}
-                          </mat-radio-button>
-                        </label>
-                        <br>
-                      }
-                    </mat-radio-group>
-                  }
-                  @case (AnswerType.Multiple) {
-                    @for (answer of question.answers; track answer) {
-                      <label>
-                        <mat-checkbox
-                          [value]="answer.id.toString()"
-                          (change)="selectAnswer(answer.id, question.id, $event.checked)">
-                          {{ answer.text }}
-                        </mat-checkbox>
-                      </label>
-                      <br>
-                    }
-                  }
-                }
+    <mat-horizontal-stepper
+      linear
+      #stepper
+      [selectedIndex]="selectedStepIndex"
+      (selectionChange)="onStepChange($event)"
+    >
+      <!-- Шаги с вопросами -->
+      @for (question of questions; track question.id; let i = $index) {
+        <mat-step
+          [editable]="!isTestEnded"
+          [aria-label]="'Вопрос ' + (i + 1)"
+          [completed]="isQuestionAnswered(question.id)"
+        >
+          <ng-template matStepLabel>
+            <span
+              [class.correct-step]="isAnswerCorrect(question.id)"
+              [class.incorrect-step]="isQuestionAnswered(question.id) && !isAnswerCorrect(question.id)"
+            >
+              Вопрос {{i + 1}}
+            </span>
+          </ng-template>
+
+          <mat-card
+            class="question-card"
+            [class.correct]="isAnswerCorrect(question.id)"
+            [class.answered]="isQuestionAnswered(question.id)"
+            [class.incorrect]="isQuestionAnswered(question.id) && !isAnswerCorrect(question.id)"
+          >
+            <mat-card-header>
+              <mat-card-title>{{ question.text }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              @if (isLoading(question.id)) {
+                <mat-spinner diameter="28"></mat-spinner>
               } @else {
-                <p>Ответы отсутствуют.</p>
+                @if (isQuestionAnswered(question.id)) {
+                  <p>Вы ответили {{
+                    isAnswerCorrect(question.id)
+                      ? 'правильно'
+                      : 'неправильно' }} на этот вопрос</p>
+                  @if (question.answers && question.answers.length > 0) {
+                    @switch (question.answerType) {
+                      @case (AnswerType.Single) {
+                        <mat-radio-group [disabled]="true">
+                          @for (answer of question.answers; track answer) {
+                            <label>
+                              <mat-radio-button
+                                [value]="answer.id"
+                                [class.correct-answer]="answer.isCorrect"
+                                [checked]="isAnswerSelected(answer.id, question.id)"
+                                [class.incorrect-answer]="isAnswerSelected(answer.id, question.id) && !answer.isCorrect"
+                              >
+                                {{ answer.text }}
+                              </mat-radio-button>
+                            </label>
+                            <br>
+                          }
+                        </mat-radio-group>
+                      }
+                      @case (AnswerType.Multiple) {
+                        @for (answer of question.answers; track answer) {
+                          <label>
+                            <mat-checkbox
+                              [disabled]="true"
+                              [value]="answer.id.toString()"
+                              [class.correct-answer]="answer.isCorrect"
+                              [checked]="isAnswerSelected(answer.id, question.id)"
+                              [class.incorrect-answer]="isAnswerSelected(answer.id, question.id) && !answer.isCorrect"
+                            >
+                              {{ answer.text }}
+                            </mat-checkbox>
+                          </label>
+                          <br>
+                        }
+                      }
+                    }
+                  }
+                } @else {
+                  @if (question.answers && question.answers.length > 0) {
+                    @switch (question.answerType) {
+                      @case (AnswerType.Single) {
+                        <mat-radio-group>
+                          @for (answer of question.answers; track answer) {
+                            <label>
+                              <mat-radio-button
+                                [value]="answer.id"
+                                (change)="selectAnswer(answer.id, question.id, $event.source.checked)"
+                              >
+                                {{ answer.text }}
+                              </mat-radio-button>
+                            </label>
+                            <br>
+                          }
+                        </mat-radio-group>
+                      }
+                      @case (AnswerType.Multiple) {
+                        @for (answer of question.answers; track answer) {
+                          <label>
+                            <mat-checkbox
+                              [value]="answer.id.toString()"
+                              (change)="selectAnswer(answer.id, question.id, $event.checked)"
+                            >
+                              {{ answer.text }}
+                            </mat-checkbox>
+                          </label>
+                          <br>
+                        }
+                      }
+                    }
+                  } @else {
+                    <p class="error">Ответы отсутствуют.</p>
+                  }
+                }
               }
-            }
-          }
-        </mat-card-content>
-      </mat-card>
-    } @empty {
-      <p>Вопросы отсутствуют.</p>
-    }
-    <button
-      type="button"
-      mat-raised-button
-      color="primary"
-      (click)="submitAnswers()"
-      [disabled]="isTestEnded">
-      {{ isTestEnded ? 'Вы ответили на все вопросы' : 'Отправить' }}
-    </button>
+            </mat-card-content>
+          </mat-card>
+
+          <div class="stepper-buttons">
+            <button
+              mat-button
+              type="button"
+              matStepperPrevious
+              [disabled]="selectedStepIndex === 0"
+            >
+              Назад
+            </button>
+            <button
+              type="button"
+              matStepperNext
+              color="primary"
+              mat-raised-button
+              (click)="handleNextOrComplete()"
+              [disabled]="!isCurrentStepValid()"
+            >
+              {{isLastQuestion() ? 'Завершить' : 'Далее'}}
+            </button>
+          </div>
+        </mat-step>
+      }
+
+      <!-- Финальный шаг -->
+      <mat-step>
+        <ng-template matStepLabel>Результаты</ng-template>
+        <mat-card class="result-card">
+          <mat-card-header>
+            <mat-card-title>Результаты теста</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <h2>Правильных ответов: {{correctAnswersCount}} из {{questions.length}}</h2>
+            <p>Процент правильных ответов: {{ (correctAnswersCount / questions.length * 100).toFixed(1) }}%</p>
+            <mat-divider></mat-divider>
+            <div class="detailed-results">
+              @for (question of questions; track question.id; let i = $index) {
+                <div
+                  class="result-item"
+                  [class.correct]="isAnswerCorrect(question.id)"
+                  [class.incorrect]="!isAnswerCorrect(question.id)"
+                >
+                  Вопрос {{i + 1}}: {{ isAnswerCorrect(question.id) ? '✓' : '✗' }}
+                </div>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </mat-step>
+    </mat-horizontal-stepper>
   } @else {
     <mat-spinner></mat-spinner>
   }
