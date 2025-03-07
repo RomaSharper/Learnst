@@ -1,6 +1,6 @@
 <div class="subscription-widget">
   <!-- Текущая подписка -->
-  @if (currentSubscription() && !isLoading()) {
+  @if (currentSubscription() && currentSubscription()?.endDate && !loading()) {
     <mat-card class="current-subscription" appearance="outlined">
       <mat-card-header>
         <mat-card-title>Ваша подписка активна</mat-card-title>
@@ -12,18 +12,24 @@
             <mat-list-item>
               <span matListItemTitle>Осталось дней</span>
               <span matListItemLine class="highlight">
-                {{ getDaysRemaining(currentSubscription()?.endDate?.toString()) }}
+                {{ getDaysRemaining(currentSubscription()!.endDate!.toString()) }}
               </span>
             </mat-list-item>
 
             <mat-list-item>
               <span matListItemTitle>Дата окончания</span>
               <span matListItemLine class="highlight">
-                {{ currentSubscription()?.endDate | date: 'dd.MM.yyyy' }}
+                {{ currentSubscription()!.endDate | date: 'dd.MM.yyyy' }}
               </span>
             </mat-list-item>
           </mat-list>
         </div>
+      </mat-card-content>
+    </mat-card>
+  } @else if (!loading()) {
+    <mat-card class="no-subscription" appearance="outlined">
+      <mat-card-content>
+        <p>Активная подписка отсутствует</p>
       </mat-card-content>
     </mat-card>
   }
@@ -57,11 +63,11 @@
             <mat-card-content>
               <div class="price-container">
                 <div class="plan-price">
-                  {{ subService.calculatePrice(plan.duration) | round: 2 }}₽ @if (plan.duration == 1) { / мес }
+                  {{ calculatePrice(plan.duration) | round: 2 }}₽ @if (plan.duration == 1) { / мес }
                 </div>
                 @if (plan.duration > 1) {
                   <div class="monthly-price">
-                    {{ (subService.calculatePrice(plan.duration) / plan.duration) | round: 2 }}₽ / мес
+                    {{ (calculatePrice(plan.duration) / plan.duration) | round: 2 }}₽ / мес
                   </div>
                 }
               </div>
@@ -76,10 +82,10 @@
         mat-flat-button
         class="purchase-button"
         (click)="purchaseSubscription()"
-        [disabled]="!selectedPlan() || isLoading()"
+        [disabled]="!selectedPlan() || loading()"
       >
         <div class="button-content">
-          @if (isLoading()) {
+          @if (loading()) {
             <mat-spinner diameter="24"></mat-spinner>
           } @else {
             <span>Оформить подписку</span>

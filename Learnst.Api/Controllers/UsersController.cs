@@ -29,7 +29,7 @@ public class UsersController(
             u => u.UserLessons,
             u => u.UserAnswers,
             u => u.Tickets,
-            u => u.TicketAnswers,
+            u => u.TicketAnswers
         ]));
 
     // GET: Users/5

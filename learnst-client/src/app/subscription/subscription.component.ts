@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { SubscriptionService } from '../../services/subscription.service';
 import { UserSubscription } from '../../models/UserSubscription';
@@ -26,66 +26,71 @@ import { InspectableDirective } from '../../pipes/inspectable.pipe';
     MatProgressSpinnerModule
   ]
 })
-export class SubscriptionsComponent {
+export class SubscriptionsComponent implements OnInit {
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
+  private subService = inject(SubscriptionService);
 
-  isLoading = signal(false);
-  subService = inject(SubscriptionService);
+  loading = signal(false);
   selectedPlan = signal<number | null>(null);
   currentSubscription = signal<UserSubscription | null>(null);
   subscriptionPlans = this.subService.getSubscriptionOptions();
 
-  constructor() {
-    effect(() => {
-      this.authService.getUser().subscribe(user => {
-        if (user?.id)
-          this.loadSubscription(user.id)
-      })
-    });
+  async ngOnInit() {
+    await this.loadSubscription();
   }
 
-  private async loadSubscription(userId: string) {
-    this.isLoading.set(true);
-    try {
-      const sub = await lastValueFrom(
-        this.subService.getUserSubscriptions(userId)
-      );
-      this.currentSubscription.set(sub);
-    } catch (error) {
-      this.alertService.showSnackBar('Ошибка загрузки подписки');
-    }
-    this.isLoading.set(false);
+  private async loadSubscription() {
+    this.authService.getUser().subscribe(async user => {
+      if (!user?.id) return;
+
+      this.loading.set(true);
+      try {
+        const sub = await lastValueFrom(this.subService.getUserSubscriptions(user.id));
+        this.currentSubscription.set(sub);
+      } catch (error) {
+        this.alertService.showSnackBar('Ошибка загрузки подписки');
+      } finally {
+        this.loading.set(false);
+      }
+    });
   }
 
   async purchaseSubscription() {
     const duration = this.selectedPlan();
-    try {
-      this.authService.getUser().subscribe(async user => {
-        const userId = user?.id;
-        if (!duration || !userId) return;
-        this.isLoading.set(true);
+    this.authService.getUser().subscribe(async user => {
+      if (!duration || !user?.id) return;
+
+      try {
+        this.loading.set(true);
         const { confirmationUrl } = await lastValueFrom(
-          this.subService.createSubscriptionPayment(duration, userId)
+          this.subService.createSubscriptionPayment(duration, user.id)
         );
         window.location.href = confirmationUrl;
-      });
-    } catch (error) {
-      this.alertService.showSnackBar('Ошибка оплаты');
-      this.isLoading.set(false);
-    }
+      } catch (error) {
+        this.alertService.showSnackBar('Ошибка оплаты');
+      } finally {
+        this.loading.set(false);
+      }
+    });
   }
 
-  // Добавляем метод для вычисления оставшихся дней
   getDaysRemaining(endDate?: string): number {
     if (!endDate) return 0;
+
     const end = new Date(endDate);
+    if (isNaN(end.getTime())) return 0;
+
     const now = new Date();
-    return Math.ceil((end.getTime() - now.getTime()) / (1000 * 3600 * 24));
+    const diff = end.getTime() - now.getTime();
+    return Math.ceil(diff / (1000 * 3600 * 24));
   }
 
-  // Исправляем выбор плана
   selectPlan(duration: number) {
     this.selectedPlan.set(duration);
+  }
+
+  calculatePrice(duration: number): number {
+    return this.subService.calculatePrice(duration);
   }
 }

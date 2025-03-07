@@ -8,7 +8,7 @@
   } @else {
     <div class="profile-grid">
       <!-- Личные данные -->
-      <mat-card class="full-width">
+      <mat-card class="full-width" appearance="outlined">
         <h3>
           Личные данные
           @if (user.externalLoginType) {
@@ -269,12 +269,12 @@
     </div>
 
     <!-- Темы -->
-    <mat-card class="full-width" appearance="outlined">
+    <mat-card class="full-width mb-2" appearance="outlined">
       <app-theme-picker />
     </mat-card>
 
     <!-- Удалить профиль -->
-    <mat-card class="full-width" appearance="outlined">
+    <mat-card class="full-width p" appearance="outlined">
       <div class="delete-profile-wrapper">
         <button
           color="warn"
