@@ -53,17 +53,20 @@ body {
 }
 
 /* Интерактивные элементы */
-.mat-mdc-menu-item, .mat-mdc-snack-bar-action, .mat-mdc-button-touch-target,
-[role="button"], [role="link"], a, a *, button, button *, .mat-mdc-slide-toggle * {
+mat-select, mat-select *, mat-select + *,
+[role="button"], [role="link"], a *, button *,
+.mat-mdc-form-field, .mat-mdc-option, .mat-mdc-option *, .mat-mdc-menu-item,
+.mat-mdc-slide-toggle *, .mat-mdc-snack-bar-action, .mat-mdc-button-touch-target {
   cursor: var(--cursor-pointer) !important;
 }
 
 /* Текстовые элементы */
 [contenteditable]:not([contenteditable="false"]),
 .mat-mdc-snack-bar-label, .mat-mdc-tooltip-surface,
-.mat-mdc-text-field-wrapper, .mat-mdc-form-field-infix,
 textarea, p, h1, h2, h3, h4, h5, h6, strong, small, pre, code, mat-label,
-input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="range"]) {
+input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="range"]),
+.mat-mdc-text-field-wrapper *:not(mat-icon):not(button):not(mat-select *):not(mat-select + *),
+.mat-mdc-form-field-infix {
   cursor: var(--cursor-text) !important;
 }
 
@@ -72,7 +75,9 @@ input[type="range"] {
   cursor: var(--cursor-resize-ew) !important;
 }
 
-:disabled, [disabled], [aria-disabled="true"], .mat-mdc-button-disabled {
+:disabled, :disabled *, [disabled], [disabled] *,
+[aria-disabled="true"], [aria-disabled="true"] *,
+.mat-mdc-button-disabled * {
   cursor: var(--cursor-disabled) !important;
 }
 
