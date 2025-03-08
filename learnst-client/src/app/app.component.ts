@@ -1,20 +1,20 @@
-import { Component, signal, effect, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { NoDownloadingDirective } from '../directives/NoDownloadingDirective';
-import { PlaceholderImageDirective } from '../directives/PlaceholderImageDirective';
-import { AuthService } from '../services/auth.service';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, effect, HostListener, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MediumScreenSupport } from '../helpers/MediumScreenSupport';
-import { ThemeService } from '../services/theme.service';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { UserMenuComponent } from './user-menu/user-menu.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { EllipsisPipe } from '../pipes/ellipsis.pipe';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NoDownloadingDirective } from '../directives/no-downloading.directive';
+import { PlaceholderImageDirective } from '../directives/placeholder-image.directive';
+import { MediumScreenSupport } from '../helpers/MediumScreenSupport';
 import { User } from '../models/User';
+import { EllipsisPipe } from '../pipes/ellipsis.pipe';
 import { AlertService } from '../services/alert.service';
+import { AuthService } from '../services/auth.service';
+import { ThemeService } from '../services/theme.service';
+import { UserMenuComponent } from './user-menu/user-menu.component';
 
 @Component({
   selector: 'app-root',

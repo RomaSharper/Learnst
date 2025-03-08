@@ -1,21 +1,21 @@
-import { MatIconModule } from '@angular/material/icon';
-import { User } from './../../models/User';
 import { Component, DestroyRef, inject, Input, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
+import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
+import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
+import { EllipsisPipe } from '../../pipes/ellipsis.pipe';
+import { PluralPipe } from '../../pipes/plural.pipe';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
-import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { EllipsisPipe } from '../../pipes/ellipsis.pipe';
-import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
-import { UsersService } from '../../services/users.service';
 import { FileService } from '../../services/file.service';
-import { MatButtonModule } from '@angular/material/button';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { PluralPipe } from '../../pipes/plural.pipe';
-import { finalize } from 'rxjs';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { UsersService } from '../../services/users.service';
+import { User } from './../../models/User';
 
 @Component({
   selector: 'app-user-menu',

@@ -21,6 +21,10 @@ export class ThemeService {
   private alertService = inject(AlertService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly hubUrl = `${environment.apiBaseUrl}/themehub`;
+  private readonly CURSOR_STORAGE_KEY = 'customCursorsEnabled';
+  private readonly cursorsEnabled = signal<boolean>(
+    localStorage.getItem(this.CURSOR_STORAGE_KEY) === 'true'
+  );
 
   private readonly themes: FrontendTheme[] = [
     {
@@ -198,6 +202,7 @@ export class ThemeService {
   constructor() {
     this.hubUrl = `${environment.apiBaseUrl}/themehub`.toLowerCase();
     this.initializeSignalR();
+    this.setupCursorsEffect();
     this.setupUserSubscription();
   }
 
@@ -259,6 +264,29 @@ export class ThemeService {
     document.body.classList.remove(...this.themes.map(t => `${t.id}-theme`));
     document.body.classList.add(`${theme.id}-theme`);
   });
+
+  private setupCursorsEffect(): void {
+    effect(() => {
+      const enabled = this.cursorsEnabled();
+      document.body.classList.toggle('custom-cursors', enabled);
+      this.forceCursorUpdate();
+      localStorage.setItem(this.CURSOR_STORAGE_KEY, enabled.toString());
+    });
+  }
+
+  toggleCursors(enabled: boolean): void {
+    this.cursorsEnabled.set(enabled);
+  }
+
+  isCursorsEnabled(): boolean {
+    return this.cursorsEnabled();
+  }
+
+  private forceCursorUpdate(): void {
+    const { style } = document.documentElement;
+    style.setProperty('cursor', 'inherit', 'important');
+    setTimeout(() => style.removeProperty('cursor'));
+  }
 
   private initializeSignalR(): void {
     this.signalr.createConnection(this.hubUrl)

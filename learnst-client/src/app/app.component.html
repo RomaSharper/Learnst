@@ -1,9 +1,7 @@
 <div class="loading-screen" [class.visible]="loading()">
-  <div class="loading-content">
-    <img class="loading-background" noDownloading alt="Welcome to Learnst" [src]="isMediumScreen
-      ? '/assets/gifs/niko-loading-small.gif'
-      : '/assets/gifs/niko-loading-large.gif'">
-  </div>
+  <img class="loading-background" noDownloading alt="Welcome to Learnst" [src]="isMediumScreen
+    ? '/assets/gifs/niko-loading-small.gif'
+    : '/assets/gifs/niko-loading-large.gif'">
 </div>
 
 <div class="content" [class.visible]="!loading()">
@@ -19,7 +17,17 @@
     @if (isMediumScreen) {
       <ul class="mobile-menu" [class.active]="isMenuOpen()">
         @if (user()) {
-          <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
+          <li>
+            <a
+              routerLink="/"
+              class="logo-link"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              <img src="assets/icons/favicon.png" alt="Learnst">
+              <span>Learnst</span>
+            </a>
+          </li>
           <li><a routerLink="/activities" routerLinkActive="active">Обучение</a></li>
           <li><a routerLink="/community" routerLinkActive="active">Сообщество</a></li>
           <li><a routerLink="/support" routerLinkActive="active">Поддержка</a></li>
@@ -53,7 +61,7 @@
           <li>
             <a class="logo-link" routerLink="/">
               <img src="assets/icons/favicon.png" alt="Learnst">
-              <span>Learnst</span>
+              <span class="link-label">Learnst</span>
             </a>
           </li>
           <li><a routerLink="/activities" routerLinkActive="active">Активности</a></li>

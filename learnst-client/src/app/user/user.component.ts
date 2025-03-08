@@ -4,23 +4,23 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
-import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
+import { finalize } from 'rxjs';
+import { InspectableDirective } from '../../directives/inspectable.directive';
+import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
+import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
+import { Return } from '../../helpers/Return';
 import { SocialMediaPlatformHelper } from '../../helpers/SocialMediaPlatformHelper';
 import { User } from '../../models/User';
 import { DateRangePipe } from '../../pipes/date.range.pipe';
+import { PluralPipe } from '../../pipes/plural.pipe';
+import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
 import { UsersService } from '../../services/users.service';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { AlertService } from '../../services/alert.service';
-import { Return } from '../../helpers/Return';
-import { finalize } from 'rxjs';
-import { PluralPipe } from '../../pipes/plural.pipe';
-import { InspectableDirective } from '../../pipes/inspectable.pipe';
 
 @Return()
 @Component({

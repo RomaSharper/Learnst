@@ -20,12 +20,6 @@
   background: var(--mat-sys-surface-container);
   box-shadow: var(--mdc-fab-container-elevation-shadow, var(--mat-sys-level2));
 
-  &:hover {
-    .activity-title {
-      // color: var(--hover-text-color);
-    }
-  }
-
   &:active {
     // background: var(--card-active-bg);
     box-shadow: var(--mat-sys-level4);
@@ -37,9 +31,8 @@
 
   // Применяем эффекты только к карточкам, которые НЕ имеют класса .closed-activity
   &:not(.closed-activity) {
-    cursor: pointer;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out,
-      background 0.3s ease-in-out;
+    cursor: var(--cursor-pointer) !important;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, background 0.3s ease-in-out;
 
     &:hover img {
       transform: scale(0.9);
@@ -75,6 +68,20 @@
 
 .closed-activity {
   opacity: 0.5;
+
+  &, & *:not(.activity-more-button *) {
+    cursor: var(--cursor-disabled) !important;
+  }
+
+  & .activity-more-button {
+    filter: brightness(2);
+  }
+}
+
+.closed-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
 }
 
 @media (max-width: 767px) {

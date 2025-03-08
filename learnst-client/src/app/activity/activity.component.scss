@@ -60,7 +60,6 @@ ul {
 .info-card {
   flex: 1;
   padding: 8px;
-  cursor: pointer;
   overflow: hidden;
   min-width: 200px;
   max-width: 400px;
@@ -186,7 +185,6 @@ ul {
     .tree-node {
       padding: 4px;
       display: flex;
-      cursor: pointer;
       font-size: 24px;
       align-items: center;
 
@@ -208,7 +206,6 @@ ul {
 .user-btn {
   gap: 8px;
   line-height: 1;
-  cursor: pointer;
   padding: 6px 16px;
   border-radius: 20px;
   display: inline-flex;

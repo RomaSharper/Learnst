@@ -18,10 +18,6 @@
     z-index: 6;
     transition: opacity 2s ease-out;
 
-    .loading-content {
-      text-align: center;
-    }
-
     @media (max-width: 767px) {
       img.loading-background {
         width: 100%;
@@ -70,7 +66,6 @@
     height: 42px;
     padding: 8px;
     display: none;
-    cursor: pointer;
 
     @media (max-width: 767px) {
       display: flex;
@@ -211,22 +206,10 @@
       li {
         padding: 4px 8px;
 
-        .logo-link {
-          gap: 8px;
-          display: flex;
-          align-items: center;
-
-          img {
-            width: 24px;
-            border-radius: 50%;
-          }
-        }
-
         a {
           width: 100%;
           height: 100%;
           display: block;
-          cursor: pointer;
           position: relative;
           text-decoration: none;
           color: var(--mat-sys-primary);
@@ -290,5 +273,16 @@
         height: 24px;
       }
     }
+  }
+}
+
+.logo-link {
+  gap: 8px;
+  align-items: center;
+  display: flex !important;
+
+  img {
+    width: 24px;
+    border-radius: 50%;
   }
 }

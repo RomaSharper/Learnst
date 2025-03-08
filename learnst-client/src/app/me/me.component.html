@@ -268,9 +268,18 @@
       <app-subscription />
     </div>
 
-    <!-- Темы -->
+    <!-- Настройка вида сайта -->
     <mat-card class="full-width mb-2" appearance="outlined">
       <app-theme-picker />
+
+      <mat-card-content class="cursor-toggle-section">
+        <mat-slide-toggle
+          [checked]="themeService.isCursorsEnabled()"
+          (change)="themeService.toggleCursors($event.checked)">
+          Кастомные курсоры
+        </mat-slide-toggle>
+        <mat-icon class="hint-icon" matTooltip="Включите для использования анимированных курсоров">help_outline</mat-icon>
+      </mat-card-content>
     </mat-card>
 
     <!-- Удалить профиль -->

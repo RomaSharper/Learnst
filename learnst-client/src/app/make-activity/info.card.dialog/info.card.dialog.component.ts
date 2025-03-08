@@ -7,11 +7,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { InspectableDirective } from '../../../directives/inspectable.directive';
 import { InfoType } from '../../../enums/InfoType';
 import { InfoTypeHelper } from '../../../helpers/InfoTypeHelper';
 import { AlertService } from '../../../services/alert.service';
 import { FileService } from '../../../services/file.service';
-import { InspectableDirective } from '../../../pipes/inspectable.pipe';
 
 @Component({
   selector: 'app-info-card-dialog',

@@ -45,8 +45,8 @@
         @for (plan of subscriptionPlans; track plan) {
           <mat-card
             inspectable
-            class="plan-card"
             appearance="outlined"
+            class="plan-card touchable"
             (click)="selectPlan(plan.duration)"
             [class.selected]="selectedPlan() === plan.duration"
           >

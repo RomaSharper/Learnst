@@ -29,6 +29,6 @@ export const appConfig: ApplicationConfig = {
     { provide: MatPaginatorIntl, useValue: getRussianPaginatorIntl() },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 3000 } },
     provideServiceWorker('ngsw-worker.js', { enabled: !isDevMode(), registrationStrategy: 'registerWhenStable:30000' }),
-    { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: { showDelay: 250, hideDelay: 0, touchendHideDelay: 5, touchGestures: 'off' } }
+    { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: { showDelay: 250, hideDelay: 0, position: 'above', touchendHideDelay: 5, touchGestures: 'off' } }
   ]
 };

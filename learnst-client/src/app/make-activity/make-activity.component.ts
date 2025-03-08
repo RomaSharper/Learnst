@@ -18,7 +18,9 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
-import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
+import { InspectableDirective } from '../../directives/inspectable.directive';
+import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
+import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
 import { AnswerType } from '../../enums/AnswerType';
 import { InfoType } from '../../enums/InfoType';
 import { LessonType } from '../../enums/LessonType';
@@ -38,8 +40,6 @@ import { FileService } from '../../services/file.service';
 import { ValidationService } from '../../services/validation.service';
 import { InfoCardDialogComponent } from './info.card.dialog/info.card.dialog.component';
 import { TopicDialogComponent } from './topic.dialog/topic.dialog.component';
-import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
-import { InspectableDirective } from '../../pipes/inspectable.pipe';
 
 @Return()
 @Component({

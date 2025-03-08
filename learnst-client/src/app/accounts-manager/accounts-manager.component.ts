@@ -1,15 +1,15 @@
 import { Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import { AuthService } from '../../services/auth.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
+import { map } from 'rxjs';
+import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
 import { RuDateTimePipe } from '../../pipes/ru.date.time.pipe';
 import { AlertService } from '../../services/alert.service';
-import { Router } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-accounts-manager',

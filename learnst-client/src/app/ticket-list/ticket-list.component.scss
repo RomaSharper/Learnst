@@ -4,28 +4,26 @@
   flex-direction: column;
 
   mat-card {
-    cursor: pointer;
     overflow: hidden;
-    padding: 4px * 2;
+    padding: 8px;
     position: relative;
-    // background: @card-bg;
     border-radius: 4px * 5;
     transition: transform 0.3s, box-shadow 0.3s;
+    cursor: url('https://learnst.runasp.net/assets/cursors/oneshot/15-link-select.gif') 16 16, pointer !important;
 
     &:hover {
       transform: translateY(-4px);
-      // box-shadow: 0 4px * 2 4px * 6 rgba(0, 0, 0, 0.2);
+      box-shadow: var(--mat-sys-level2);
     }
 
     mat-card-title {
       font-size: 1.5em;
       font-weight: bold;
-      // color: @text-primary;
-      padding: 4px * 2 4px * 2 0 4px * 2;
+      padding: 8px 8px 0 8px;
     }
 
     mat-card-content {
-      padding: 4px * 2;
+      padding: 8px;
 
       p {
         margin: 0;
@@ -36,7 +34,7 @@
       .ticket-info {
         display: flex;
         align-items: center;
-        margin-top: 4px * 2;
+        margin-top: 8px;
         justify-content: space-between;
 
         .author-info {
@@ -66,17 +64,17 @@
         .status {
           // color: white;
           font-weight: bold;
-          padding: 4px 4px * 2;
+          padding: 4px 8px;
           border-radius: 4px * 5;
           text-transform: uppercase;
           font-size: 18px;
-          // box-shadow: 0 4px * 0.5 4px * 2 rgba(0, 0, 0, 0.1);
+          // box-shadow: 0 4px * 0.5 8px rgba(0, 0, 0, 0.1);
         }
       }
 
       .created-at {
         opacity: 0.8;
-        margin-top: 4px * 2;
+        margin-top: 8px;
         // color: @text-secondary;
         font-size: 18px;
       }

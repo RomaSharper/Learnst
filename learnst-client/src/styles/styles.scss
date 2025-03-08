@@ -1,14 +1,15 @@
-@use '@angular/material' as mat;
-@use 'sass:map';
-@import 'themes.css';
+@use "@angular/material" as mat;
+@use "sass:map";
+@use "themes.scss";
+@use "cursors.scss";
+@use "fonts.scss";
 
 * {
   // user-select: none;
   word-break: break-word;
   box-sizing: border-box;
   transition-behavior: allow-discrete !important;
-  font-family: 'Motiva Sans', 'Roboto', system-ui, 'Helvetica Neue',
-    'Builder Sans', 'Consolas', sans-serif;
+  font-family: "Terminus", "Motiva Sans", "Roboto", system-ui, "Helvetica Neue", "Consolas", sans-serif;
 
   @media (prefers-reduced-motion: no-preference) {
     transition:
@@ -58,7 +59,7 @@
 }
 
 html {
-  overflow-y: scroll;
+  overflow: hidden scroll;
 }
 
 body {
@@ -79,9 +80,17 @@ body {
   }
 }
 
+p, h1, h2, h3, h4, h5, h6 {
+  width: fit-content;
+}
+
 a {
   text-decoration: none;
   font-size: 18px !important;
+}
+
+a, button {
+  font-weight: bold !important;
 }
 
 input::-ms-clear,
@@ -136,7 +145,7 @@ img {
   &::after {
     flex: 1;
     height: 1px;
-    content: '';
+    content: "";
     background-color: var(--mdc-filled-button-container-color, var(--mat-sys-primary));
   }
 
@@ -209,10 +218,10 @@ mat-tab-body {
 }
 
 mat-chip-row {
-  cursor: pointer;
   max-width: 120px;
   white-space: nowrap;
   text-overflow: ellipsis;
+  cursor: var(--cursor-pointer) !important;
 }
 
 .mat-step-header .mat-step-icon {
@@ -426,12 +435,14 @@ mat-date-range-input {
 .more-button {
   top: 12px;
   right: 12px;
+  pointer-events: auto;
   position: absolute !important;
 }
 
 .activity-more-button {
   top: 20px;
   right: 12px;
+  pointer-events: auto;
   position: absolute !important;
 }
 
@@ -571,12 +582,10 @@ mat-date-range-input {
 
 .tab-button {
   border: none;
-  cursor: pointer;
-  // color: @text-secondary;
-  // background: @primary-bg;
-  margin-right: 8px;
   font-size: 18px;
   padding: 8px 20px;
+  margin-right: 8px;
+  cursor: var(--cursor-pointer) !important;
   transition: background 0.3s ease, color 0.3s ease;
 
   &.active {
@@ -635,7 +644,7 @@ mat-date-range-input {
 
     &::before {
       left: 0;
-      content: '';
+      content: "";
       width: 0.5em;
       height: 0.5em;
       top: 8px;
@@ -781,9 +790,9 @@ mat-date-range-input {
     .avatar {
       width: 100%;
       height: 100%;
-      cursor: pointer;
+      aspect-ratio: 1;
       object-fit: cover;
-      aspect-ratio: 1 / 1;
+      cursor: var(--cursor-pointer) !important;
     }
 
     .hidden {
@@ -863,7 +872,7 @@ mat-date-range-input {
   margin: 0 auto;
   max-width: 800px;
   line-height: 1.6;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
 
   @media (max-width: 767px) {
     margin: 16px 8px 0 8px;
@@ -929,7 +938,7 @@ mat-date-range-input {
       padding: 0.2em 0.4em;
       // border: 1px solid #555;
       // color: hsla(0, 0%, 100%, 0.8);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: "JetBrains Mono", monospace;
       // background-color: rgba(255, 255, 255, 0.05);
     }
   }

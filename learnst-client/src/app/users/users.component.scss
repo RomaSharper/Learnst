@@ -14,11 +14,10 @@
     .user-card {
       display: flex;
       padding: 12px;
-      cursor: pointer;
       position: relative;
       align-items: center;
       border-radius: 20px;
-      // border: 4px * 0.25 solid @border-color;
+      cursor: var(--cursor-pointer) !important;
       transition: background-color 0.3s, transform 0.3s;
 
       .avatar {

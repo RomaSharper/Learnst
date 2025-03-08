@@ -10,10 +10,13 @@ import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginato
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
-import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
+import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
+import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
+import { Level } from '../../enums/Level';
 import { Role } from '../../enums/Role';
 import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
 import { Return } from '../../helpers/Return';
+import { TagHelper } from '../../helpers/TagHelper';
 import { getRussianPaginatorIntl } from '../../localization/russian.paginator.intl';
 import { Activity } from '../../models/Activity';
 import { User } from '../../models/User';
@@ -21,9 +24,6 @@ import { RuDatePipe } from '../../pipes/ru.date.pipe';
 import { ActivitiesService } from '../../services/activities.service';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
-import { TagHelper } from '../../helpers/TagHelper';
-import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
-import { Level } from '../../enums/Level';
 
 @Return()
 @Component({

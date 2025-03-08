@@ -1,0 +1,161 @@
+// Определение CSS-переменных
+:root {
+  // Стандартные значения курсоров
+  --cursor-default: auto;
+  --cursor-help: help;
+  --cursor-wait: wait;
+  --cursor-progress: progress;
+  --cursor-copy: copy;
+  --cursor-text: text;
+  --cursor-crosshair: crosshair;
+  --cursor-disabled: not-allowed;
+  --cursor-resize-ns: ns-resize;
+  --cursor-resize-ew: ew-resize;
+  --cursor-resize-nwse: nwse-resize;
+  --cursor-resize-nesw: nesw-resize;
+  --cursor-move: move;
+  --cursor-grabbing: grabbing;
+  --cursor-pointer: pointer;
+}
+
+// Включение кастомных курсоров
+body.custom-cursors {
+  --cursor-default: url('https://learnst.runasp.net/assets/cursors/oneshot/01-normal-select.gif') 0 0, auto;
+  --cursor-help: url('https://learnst.runasp.net/assets/cursors/oneshot/02-help-select.gif') 0 0, help;
+  --cursor-wait: url('https://learnst.runasp.net/assets/cursors/oneshot/03-working-in-background.gif') 0 0, wait;
+  --cursor-progress: url('https://learnst.runasp.net/assets/cursors/oneshot/04-busy.gif') 0 0, progress;
+  --cursor-copy: url('https://learnst.runasp.net/assets/cursors/oneshot/05-precision-select.gif') 0 0, copy;
+  --cursor-text: url('https://learnst.runasp.net/assets/cursors/oneshot/06-text-select.gif') 0 0, text;
+  --cursor-crosshair: url('https://learnst.runasp.net/assets/cursors/oneshot/07-handwriting.gif') 0 0, crosshair;
+  --cursor-disabled: url('https://learnst.runasp.net/assets/cursors/oneshot/08-unavailable.gif') 0 0, not-allowed;
+  --cursor-resize-ns: url('https://learnst.runasp.net/assets/cursors/oneshot/09-vertical-resize.gif') 0 0, ns-resize;
+  --cursor-resize-ew: url('https://learnst.runasp.net/assets/cursors/oneshot/10-horizontal-resize.gif') 0 0, ew-resize;
+  --cursor-resize-nwse: url('https://learnst.runasp.net/assets/cursors/oneshot/11-diagonal-resize-1.gif') 0 0, nwse-resize;
+  --cursor-resize-nesw: url('https://learnst.runasp.net/assets/cursors/oneshot/12-diagonal-resize-2.gif') 0 0, nesw-resize;
+  --cursor-move: url('https://learnst.runasp.net/assets/cursors/oneshot/13-move.gif') 0 0, move;
+  --cursor-grabbing: url('https://learnst.runasp.net/assets/cursors/oneshot/14-alternate-select.gif') 0 0, grabbing;
+  --cursor-pointer: url('https://learnst.runasp.net/assets/cursors/oneshot/15-link-select.gif') 0 0, pointer;
+
+  // Адаптация для тач-устройств
+  @media (pointer: coarse) {
+    --cursor-default: url('https://learnst.runasp.net/assets/cursors/oneshot/05-precision-select.gif') 0 0, auto;
+  }
+}
+
+/* Общие стили с использованием переменных */
+body {
+  cursor: var(--cursor-default) !important;
+}
+
+/* Базовые элементы */
+*, .cdk-global-overlay-wrapper, .loading-screen:not(.visible) .loading-background {
+  cursor: var(--cursor-default) !important;
+}
+
+/* Интерактивные элементы */
+.mat-mdc-menu-item, .mat-mdc-snack-bar-action, .mat-mdc-button-touch-target,
+[role="button"], [role="link"], a, a *, button, button *, .mat-mdc-slide-toggle * {
+  cursor: var(--cursor-pointer) !important;
+}
+
+/* Текстовые элементы */
+[contenteditable]:not([contenteditable="false"]),
+.mat-mdc-snack-bar-label, .mat-mdc-tooltip-surface,
+.mat-mdc-text-field-wrapper, .mat-mdc-form-field-infix,
+textarea, p, h1, h2, h3, h4, h5, h6, strong, small, pre, code, mat-label,
+input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="range"]) {
+  cursor: var(--cursor-text) !important;
+}
+
+/* Специальные элементы */
+input[type="range"] {
+  cursor: var(--cursor-resize-ew) !important;
+}
+
+:disabled, [disabled], [aria-disabled="true"], .mat-mdc-button-disabled {
+  cursor: var(--cursor-disabled) !important;
+}
+
+[draggable="true"] {
+  cursor: var(--cursor-move) !important;
+}
+
+[draggable="true"]:active {
+  cursor: var(--cursor-grabbing) !important;
+}
+
+.dropzone.dragover {
+  cursor: var(--cursor-copy) !important;
+}
+
+.resize-vertical,
+.resize-ns {
+  cursor: var(--cursor-resize-ns) !important;
+}
+
+.resize-horizontal,
+.resize-ew {
+  cursor: var(--cursor-resize-ew) !important;
+}
+
+[aria-busy="true"], .loading,
+.loading-screen.visible .loading-background {
+  cursor: var(--cursor-progress) !important;
+}
+
+.progress, [role="progressbar"] {
+  cursor: var(--cursor-wait) !important;
+}
+
+[title]:hover, [aria-haspopup="menu"]:hover, [matTooltip]:hover {
+  cursor: var(--cursor-help) !important;
+}
+
+.signature-pad, .handwriting {
+  cursor: var(--cursor-crosshair) !important;
+}
+
+/* Resize для textarea */
+textarea {
+  resize: vertical; // Включаем стандартный resize
+
+  &:not([resize="none"]) {
+    &::-webkit-resizer {
+      cursor: var(--cursor-resize-nwse) !important;
+      background-image: url('https://learnst.runasp.net/assets/cursors/oneshot/11-diagonal-resize-1-frame-1.gif');
+      background-size: cover;
+      background-repeat: no-repeat;
+      width: 16px !important;
+      height: 16px !important;
+    }
+  }
+}
+
+/* Стрелочки в числовых инпутах */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+
+  // Для WebKit браузеров
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    margin-right: 4px;
+    transform: scale(1.2);
+    cursor: var(--cursor-pointer) !important;
+  }
+
+  // Для Firefox
+  &::-moz-number-spin-box {
+    cursor: var(--cursor-pointer) !important;
+  }
+
+  &::-moz-number-text {
+    padding-right: 24px; // Добавляем место для курсора
+  }
+}
+
+// Анимации с обновленными переменными
+@keyframes system-busy {
+  0% { cursor: var(--cursor-wait) !important; }
+  50% { cursor: var(--cursor-progress) !important; }
+}

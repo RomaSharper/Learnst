@@ -1,16 +1,16 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { SubscriptionService } from '../../services/subscription.service';
-import { UserSubscription } from '../../models/UserSubscription';
-import { AlertService } from '../../services/alert.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
-import { DatePipe } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { AuthService } from '../../services/auth.service';
 import { lastValueFrom } from 'rxjs';
+import { InspectableDirective } from '../../directives/inspectable.directive';
+import { UserSubscription } from '../../models/UserSubscription';
 import { RoundPipe } from '../../pipes/round.pipe';
-import { InspectableDirective } from '../../pipes/inspectable.pipe';
+import { AlertService } from '../../services/alert.service';
+import { AuthService } from '../../services/auth.service';
+import { SubscriptionService } from '../../services/subscription.service';
 
 @Component({
   selector: 'app-subscription',

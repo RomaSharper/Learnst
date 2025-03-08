@@ -11,16 +11,16 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
-import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
+import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
+import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
 import { TimeoutHandler } from '../../handlers/TimeoutHandler';
+import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
 import { RoleHelper } from '../../helpers/RoleHelper';
 import { User } from '../../models/User';
 import { UsersService } from '../../services/users.service';
 import { Role } from './../../enums/Role';
 import { AlertService } from './../../services/alert.service';
 import { AuthService } from './../../services/auth.service';
-import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
 
 @Component({
   selector: 'app-users',

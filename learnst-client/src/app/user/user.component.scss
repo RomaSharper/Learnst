@@ -10,8 +10,8 @@
   }
 
   .avatar {
-    cursor: default; // Аватар не кликабельный на чужой странице
     object-fit: cover;
+    cursor: var(--cursor-default) !important; // Аватар не кликабельный на чужой странице
   }
 
   .avatar-container {

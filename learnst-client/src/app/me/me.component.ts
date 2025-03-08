@@ -17,8 +17,9 @@ import bcrypt from 'bcryptjs';
 import { forkJoin, map, Observable } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
 import { catchError } from 'rxjs/internal/operators/catchError';
-import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
-import { PlaceholderImageDirective } from '../../directives/PlaceholderImageDirective';
+import { InspectableDirective } from '../../directives/inspectable.directive';
+import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
+import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
 import { SocialMediaPlatform } from '../../enums/SocialMediaPlatform';
 import { CanComponentDeactivate } from '../../helpers/CanComponentDeactivate';
 import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
@@ -29,19 +30,20 @@ import { SocialMediaProfile } from '../../models/SocialMediaProfile';
 import { User } from '../../models/User';
 import { WorkExperience } from '../../models/WorkExperience';
 import { DateRangePipe } from '../../pipes/date.range.pipe';
+import { PluralPipe } from '../../pipes/plural.pipe';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
 import { DateService } from '../../services/date.service';
 import { EmailService } from '../../services/email.service';
 import { FileService } from '../../services/file.service';
 import { UsersService } from '../../services/users.service';
+import { SubscriptionsComponent } from '../subscription/subscription.component';
 import { ThemePickerComponent } from '../theme-picker/theme-picker.component';
 import { EducationDialogComponent } from './education.dialog/education.dialog.component';
 import { SocialMediaDialogComponent } from './social.media.dialog/social.media.dialog.component';
 import { WorkExperienceDialogComponent } from './work.experience.dialog/work.experience.dialog.component';
-import { SubscriptionsComponent } from '../subscription/subscription.component';
-import { PluralPipe } from '../../pipes/plural.pipe';
-import { InspectableDirective } from '../../pipes/inspectable.pipe';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ThemeService } from '../../services/theme.service';
 
 @Return()
 @Component({
@@ -63,6 +65,7 @@ import { InspectableDirective } from '../../pipes/inspectable.pipe';
     MatDatepickerModule,
     InspectableDirective,
     ThemePickerComponent,
+    MatSlideToggleModule,
     SubscriptionsComponent,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
@@ -70,6 +73,14 @@ import { InspectableDirective } from '../../pipes/inspectable.pipe';
   ]
 })
 export class MeComponent extends MediumScreenSupport implements OnInit, CanComponentDeactivate {
+  private dialog = inject(MatDialog);
+  themeService = inject(ThemeService);
+  private fileService = inject(FileService);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private emailService = inject(EmailService);
+  private usersService = inject(UsersService);
+
   user?: User;
   userId = '';
   oldPassword = '';
@@ -90,16 +101,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
   SocialMediaPlatformHelper = SocialMediaPlatformHelper;
 
-  constructor(
-    public router: Router,
-    public location: Location,
-    private dialog: MatDialog,
-    private fileService: FileService,
-    private authService: AuthService,
-    private alertService: AlertService,
-    private emailService: EmailService,
-    private usersService: UsersService
-  ) {
+  constructor(public router: Router, public location: Location) {
     super();
   }
 

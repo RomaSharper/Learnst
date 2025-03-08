@@ -1,17 +1,17 @@
-import { catchError, of } from 'rxjs';
-import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatInputModule } from '@angular/material/input';
-import { AuthService } from '../../services/auth.service';
-import { MatButtonModule } from '@angular/material/button';
-import { AlertService } from '../../services/alert.service';
-import { ValidationService } from '../../services/validation.service';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { NoDownloadingDirective } from '../../directives/NoDownloadingDirective';
+import { Router, RouterLink } from '@angular/router';
+import { catchError, of } from 'rxjs';
+import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
+import { AlertService } from '../../services/alert.service';
+import { AuthService } from '../../services/auth.service';
+import { ValidationService } from '../../services/validation.service';
 import { AccountsManagerComponent } from '../accounts-manager/accounts-manager.component';
 
 @Component({
