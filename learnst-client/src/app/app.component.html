@@ -1,7 +1,11 @@
 <div class="loading-screen" [class.visible]="loading()">
-  <img class="loading-background" noDownloading alt="Welcome to Learnst" [src]="isMediumScreen
-    ? '/assets/gifs/niko-loading-small.gif'
-    : '/assets/gifs/niko-loading-large.gif'">
+  <img
+    noDownloading
+    alt="Welcome to Learnst"
+    class="loading-background"
+    [src]="isMediumScreen ? '/assets/gifs/niko-loading-small.gif'
+      : '/assets/gifs/niko-loading-large-3.gif'"
+  >
 </div>
 
 <div class="content" [class.visible]="!loading()">

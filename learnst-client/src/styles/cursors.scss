@@ -65,8 +65,8 @@ mat-select, mat-select *, mat-select + *,
 .mat-mdc-snack-bar-label, .mat-mdc-tooltip-surface,
 textarea, p, h1, h2, h3, h4, h5, h6, strong, small, pre, code, mat-label,
 input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="range"]),
-.mat-mdc-text-field-wrapper *:not(mat-icon):not(button):not(mat-select *):not(mat-select + *),
-.mat-mdc-form-field-infix {
+.mat-mdc-text-field-wrapper *:not(mat-icon):not(button):not(mat-select *):not(mat-select + *)
+:not(.mat-mdc-button-touch-target), .mat-mdc-form-field-infix {
   cursor: var(--cursor-text) !important;
 }
 

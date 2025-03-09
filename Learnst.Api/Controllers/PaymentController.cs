@@ -67,7 +67,7 @@ public class PaymentController(
             where: s => s.UserId == userId && s.EndDate > now);
 
         if (!subscriptions.Any()) 
-            return Ok(new UserSubscription { EndDate = now });
+            return Ok(null);
 
         var latest = subscriptions
             .OrderByDescending(s => s.UpdatedAt)

@@ -1,4 +1,3 @@
-import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -11,14 +10,17 @@ import { RoundPipe } from '../../pipes/round.pipe';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
 import { SubscriptionService } from '../../services/subscription.service';
+import { RuDatePipe } from '../../pipes/ru.date.pipe';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-subscription',
   styleUrls: ['./subscription.component.scss'],
   templateUrl: './subscription.component.html',
   imports: [
-    DatePipe,
     RoundPipe,
+    RuDatePipe,
+    MatIconModule,
     MatListModule,
     MatCardModule,
     MatButtonModule,

@@ -1,7 +1,7 @@
 <div class="subscription-widget">
   <!-- Текущая подписка -->
   @if (currentSubscription() && currentSubscription()?.endDate && !loading()) {
-    <mat-card class="current-subscription" appearance="outlined">
+    <mat-card class="current-subscription mb-2" appearance="outlined">
       <mat-card-header>
         <mat-card-title>Ваша подписка активна</mat-card-title>
       </mat-card-header>
@@ -12,14 +12,14 @@
             <mat-list-item>
               <span matListItemTitle>Осталось дней</span>
               <span matListItemLine class="highlight">
-                {{ getDaysRemaining(currentSubscription()!.endDate!.toString()) }}
+                {{ getDaysRemaining(currentSubscription()?.endDate?.toString()) }}
               </span>
             </mat-list-item>
 
             <mat-list-item>
               <span matListItemTitle>Дата окончания</span>
               <span matListItemLine class="highlight">
-                {{ currentSubscription()!.endDate | date: 'dd.MM.yyyy' }}
+                {{ currentSubscription()?.endDate | ruDate }}
               </span>
             </mat-list-item>
           </mat-list>
@@ -27,8 +27,9 @@
       </mat-card-content>
     </mat-card>
   } @else if (!loading()) {
-    <mat-card class="no-subscription" appearance="outlined">
-      <mat-card-content>
+    <mat-card class="no-subscription mb-2" appearance="outlined">
+      <mat-card-content class="no-subscription-content">
+        <mat-icon class="warning-icon">warning</mat-icon>
         <p>Активная подписка отсутствует</p>
       </mat-card-content>
     </mat-card>

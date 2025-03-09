@@ -24,7 +24,7 @@ export class SubscriptionService {
   calculatePrice(duration: number): number {
     const base = this.price * duration;
     return duration === 3 ? base * 0.9 :
-           duration === 12 ? base * 0.8 : base;
+      duration === 12 ? base * 0.8 : base;
   }
 
   getUserSubscriptions(userId: string): Observable<UserSubscription> {

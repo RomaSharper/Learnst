@@ -55,7 +55,7 @@ export class AppComponent extends MediumScreenSupport {
 
           if (user?.id)
             this.themeService.setTheme(themeId).subscribe({
-              next: () => this.loading.set(false),
+              next: () => setTimeout(() => this.loading.set(false), 1600),
               error: _err => this.loading.set(false)
             });
           else {

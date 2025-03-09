@@ -1,6 +1,30 @@
 .subscription-widget {
   margin: 2rem auto;
 
+  .no-subscription {
+    border-color: var(--mat-warn);
+    background: rgba(var(--mat-warn-rgb), 0.05);
+
+    .no-subscription-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+
+      .warning-icon {
+        margin-right: 1rem;
+        color: var(--mat-warn);
+      }
+
+      p {
+        margin: 0;
+        font-weight: 500;
+        font-size: 1.2rem;
+        color: var(--mat-warn-text);
+      }
+    }
+  }
+
   .current-subscription {
     margin-bottom: 2rem;
 

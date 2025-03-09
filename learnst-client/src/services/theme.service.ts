@@ -200,9 +200,9 @@ export class ThemeService {
   currentTheme = signal<FrontendTheme>(this.themes[0]);
 
   constructor() {
+    this.setupCursorsEffect();
     this.hubUrl = `${environment.apiBaseUrl}/themehub`.toLowerCase();
     this.initializeSignalR();
-    this.setupCursorsEffect();
     this.setupUserSubscription();
   }
 
@@ -234,9 +234,8 @@ export class ThemeService {
     ).subscribe({
       next: () => {
         this.currentTheme.set(theme);
-        if (!isInitialLoad) {
+        if (!isInitialLoad)
           this.sendThemeUpdate(themeId);
-        }
         themeChangeSubject.next();
         themeChangeSubject.complete();
       },
