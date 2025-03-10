@@ -91,3 +91,30 @@
     }
   }
 }
+
+.payment-status {
+  margin-bottom: 1rem;
+
+  .status-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+
+    .success-icon {
+      color: var(--mat-success);
+    }
+
+    .error-icon {
+      color: var(--mat-warn);
+    }
+  }
+}
+
+.payment-history {
+  margin-top: 2rem;
+
+  mat-list-item {
+    border-bottom: 1px solid var(--mat-divider);
+  }
+}

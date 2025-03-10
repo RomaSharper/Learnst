@@ -11,6 +11,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Follow> Follows { get; set; }
     public DbSet<InfoCard> InfoCards { get; set; }
     public DbSet<Lesson> Lessons { get; set; }
+    public DbSet<PaymentRecord> Payments { get; set; }
     public DbSet<Question> Questions { get; set; }
     public DbSet<SocialMediaProfile> SocialMediaProfiles { get; set; }
     public DbSet<StatusHistory> StatusHistories { get; set; }

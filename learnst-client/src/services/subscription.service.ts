@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { Observable } from 'rxjs';
 import { UserSubscription } from '../models/UserSubscription';
+import { PaymentStatus } from '../models/PaymentStatus';
+import { PaymentHistoryItem } from '../models/PaymentHistoryItem';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +13,7 @@ export class SubscriptionService {
   readonly price = environment.subscriptionPrice;
   private apiUrl = `${environment.apiBaseUrl}/payment`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getSubscriptionOptions(): { duration: number, label: string, discount: number }[] {
     return [
@@ -33,10 +35,30 @@ export class SubscriptionService {
     );
   }
 
-  createSubscriptionPayment(duration: number, userId: string): Observable<{ confirmationUrl: string }> {
-    return this.http.post<{ confirmationUrl: string }>(
+  createSubscriptionPayment(duration: number, userId: string):
+    Observable<{ confirmationUrl: string; paymentId: string }> {
+    return this.http.post<{ confirmationUrl: string; paymentId: string }>(
       `${this.apiUrl}/create-subscription`,
       { duration, userId }
+    );
+  }
+
+  checkPaymentStatus(paymentId: string): Observable<PaymentStatus> {
+    return this.http.get<PaymentStatus>(
+      `${this.apiUrl}/payment-status/${paymentId}`
+    );
+  }
+
+  cancelSubscription(userId: string): Observable<void> {
+    return this.http.post<void>(
+      `${this.apiUrl}/cancel-subscription`,
+      { userId }
+    );
+  }
+
+  getPaymentHistory(userId: string): Observable<PaymentHistoryItem[]> {
+    return this.http.get<PaymentHistoryItem[]>(
+      `${this.apiUrl}/payment-history?userId=${userId}`
     );
   }
 }

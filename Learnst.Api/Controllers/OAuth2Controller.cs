@@ -653,7 +653,7 @@ public partial class OAuth2Controller(
             $"client_id={_vkSettings.ClientId}" +
             "&scope=VALUABLE_ACCESS;GET_EMAIL" +
             "&response_type=code" +
-            $"&redirect_uri={Uri.EscapeDataString(_vkSettings.RedirectUri)}" +
+            $"&redirect_uri={Uri.EscapeDataString(_vkSettings.RedirectUrl)}" +
             $"&state={state}";
 
         return Redirect(authUrl);
@@ -680,7 +680,7 @@ public partial class OAuth2Controller(
             $"&client_secret={_vkSettings.ClientSecret}" +
             $"&code={code}" +
             "&grant_type=authorization_code" +
-            $"&redirect_uri={Uri.EscapeDataString(_vkSettings.RedirectUri.Replace("/vk", "/ok"))}" +
+            $"&redirect_uri={Uri.EscapeDataString(_vkSettings.RedirectUrl.Replace("/vk", "/ok"))}" +
             $"&sig={sig}");
 
         var tokenData = await tokenResponse.Content.ReadFromJsonAsync<OkTokenResponse>();
@@ -755,7 +755,7 @@ public partial class OAuth2Controller(
             $"response_type=code" +
             $"&response_mode=form_post" +
             $"&client_id={_appleSettings.ClientId}" +
-            $"&redirect_uri={Uri.EscapeDataString(_appleSettings.RedirectUri)}" +
+            $"&redirect_uri={Uri.EscapeDataString(_appleSettings.RedirectUrl)}" +
             $"&state={state}" +
             $"&scope=name%20email" +
             $"&nonce={nonce}";
@@ -783,7 +783,7 @@ public partial class OAuth2Controller(
             {"client_secret", clientSecret},
             {"code", response.Code},
             {"grant_type", "authorization_code"},
-            {"redirect_uri", _appleSettings.RedirectUri}
+            {"redirect_uri", _appleSettings.RedirectUrl}
             }));
 
         var tokenData = await tokenResponse.Content.ReadFromJsonAsync<AppleTokenResponse>();
@@ -850,12 +850,12 @@ public partial class OAuth2Controller(
                 throw new ArgumentException("Invalid BotToken format");
 
             var botId = botTokenParts[0];
-            var domain = new Uri(_telegramSettings.RedirectUri).Host;
+            var domain = new Uri(_telegramSettings.RedirectUrl).Host;
 
             var authUrl = $"https://oauth.telegram.org/auth?" +
                 $"bot_id={botId}" +
                 $"&origin={Uri.EscapeDataString(domain)}" +
-                $"&redirect_uri={_telegramSettings.RedirectUri}" +
+                $"&redirect_uri={_telegramSettings.RedirectUrl}" +
                 "&request_access=write";
 
             // Логирование для отладки
@@ -1470,7 +1470,7 @@ public partial class OAuth2Controller(
 
         var authUrl = "https://www.facebook.com/v12.0/dialog/oauth?" +
             $"client_id={_facebookSettings.ClientId}" +
-            $"&redirect_uri={Uri.EscapeDataString(_facebookSettings.RedirectUri)}" +
+            $"&redirect_uri={Uri.EscapeDataString(_facebookSettings.RedirectUrl)}" +
             "&response_type=code" +
             "&scope=email,public_profile" +
             $"&state={state}";
@@ -1495,7 +1495,7 @@ public partial class OAuth2Controller(
                 {"client_id", _facebookSettings.ClientId},
                 {"client_secret", _facebookSettings.ClientSecret},
                 {"code", code},
-                {"redirect_uri", _facebookSettings.RedirectUri}
+                {"redirect_uri", _facebookSettings.RedirectUrl}
             }));
 
         if (!tokenResponse.IsSuccessStatusCode)

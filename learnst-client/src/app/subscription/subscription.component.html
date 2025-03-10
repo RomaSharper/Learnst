@@ -1,4 +1,56 @@
 <div class="subscription-widget">
+  <!-- Статус платежа -->
+  @if (paymentStatus()) {
+    <mat-card class="payment-status" appearance="outlined">
+      <mat-card-content>
+        <div class="status-content">
+          @switch (paymentStatus()) {
+            @case ('pending') {
+              <mat-spinner diameter="24"></mat-spinner>
+              <span>Ожидание подтверждения платежа...</span>
+            }
+            @case ('success') {
+              <mat-icon class="success-icon">check_circle</mat-icon>
+              <span>Платёж успешно завершён!</span>
+            }
+            @case ('failed') {
+              <mat-icon class="error-icon">error</mat-icon>
+              <span>Ошибка проведения платежа</span>
+            }
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- История платежей -->
+  @if (paymentHistory().length > 0) {
+    <mat-card class="payment-history" appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>История платежей</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <mat-list>
+          @for (item of paymentHistory(); track item.id) {
+            <mat-list-item>
+              <mat-icon matListItemIcon>
+                {{ item.status === 'succeeded' ? 'check_circle' : 'cancel' }}
+              </mat-icon>
+              <span matListItemTitle>
+                {{ item.amount | currency:'RUB':'symbol':'1.2-2' }}
+                - {{ item.date | ruDate }}
+              </span>
+              <span matListItemLine>
+                Статус: {{ getStatusText(item.status) }}
+              </span>
+            </mat-list-item>
+          }
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  }
+
   <!-- Текущая подписка -->
   @if (currentSubscription() && currentSubscription()?.endDate && !loading()) {
     <mat-card class="current-subscription mb-2" appearance="outlined">
