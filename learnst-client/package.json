@@ -37,6 +37,7 @@
     "@types/crypto-js": "^4.2.2",
     "@uiw/codemirror-theme-darcula": "^4.23.8",
     "@uiw/codemirror-theme-github": "^4.23.8",
+    "angularx-qrcode": "^19.0.0",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.3",
     "crypto-js": "^4.2.0",

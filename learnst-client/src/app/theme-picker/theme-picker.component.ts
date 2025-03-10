@@ -37,7 +37,7 @@ export class ThemePickerComponent {
   selectTheme(themeId: string): void {
     if (this.user()?.theme?.id !== themeId)
       this.themeService.setTheme(themeId).subscribe({
-        error: err => this.alertService.showSnackBar(err)
+        error: err => this.alertService.showSnackBar(err.message)
       });
   }
 }

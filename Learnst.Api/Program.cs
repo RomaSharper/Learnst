@@ -15,7 +15,7 @@ const string apiName = "Learnst API v.1";
 const string swaggerUrl = "/swagger/v1/swagger.json";
 const string connectionStringName = "DefaultConnection";
 string[] trustedPaths = ["/error", "/oauth2", "/apps", "/account", "/sessions"];
-string[] trustedOrigins = ["https://learnst.runasp.net", "http://localhost:3000"];
+string[] trustedOrigins = ["https://learnst.runasp.net", "http://localhost:3000", "https://api.yookassa.ru"];
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,8 +36,8 @@ builder.Services.AddAutoMapper(cfg =>
 
 // Регистрация сервисов
 builder.Services.AddScoped<JwtService>()
+    .AddScoped<PaymentService>()
     .AddScoped<UsersRepository>()
-    .AddScoped<YookassaService>()
     .AddScoped<FollowsRepository>()
     .AddScoped<ActivitiesRepository>()
     .AddScoped<IEmailSender, SmtpEmailSender>()

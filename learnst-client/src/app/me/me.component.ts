@@ -12,9 +12,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import bcrypt from 'bcryptjs';
-import { forkJoin, map, Observable } from 'rxjs';
+import { forkJoin, lastValueFrom, map, Observable } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { InspectableDirective } from '../../directives/inspectable.directive';
@@ -44,6 +44,9 @@ import { SocialMediaDialogComponent } from './social.media.dialog/social.media.d
 import { WorkExperienceDialogComponent } from './work.experience.dialog/work.experience.dialog.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ThemeService } from '../../services/theme.service';
+import { SignalRService } from '../../services/signalr.service';
+import { environment } from '../../environments/environment';
+import { SubscriptionService } from '../../services/subscription.service';
 
 @Return()
 @Component({
@@ -75,11 +78,14 @@ import { ThemeService } from '../../services/theme.service';
 export class MeComponent extends MediumScreenSupport implements OnInit, CanComponentDeactivate {
   private dialog = inject(MatDialog);
   themeService = inject(ThemeService);
+  private route = inject(ActivatedRoute);
   private fileService = inject(FileService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private emailService = inject(EmailService);
   private usersService = inject(UsersService);
+  private signalRService = inject(SignalRService);
+  private subService = inject(SubscriptionService);
 
   user?: User;
   userId = '';
@@ -113,6 +119,13 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       this.usersService.getUserById(this.userId).subscribe(user => this.user = user);
       this.usersService.isPremium(this.userId).subscribe(data => this.isPremium.set(data.premium));
       this.usersService.getFollowersCount(this.userId).subscribe(count => this.followersCount.set(count));
+
+      this.route.queryParams.subscribe(params => {
+        if (params['paymentStatus'] === 'success') {
+          this.alertService.showSnackBar('Оплата завершена успешно');
+          this.loadSubscription();
+        }
+      });
     });
   }
 
@@ -125,6 +138,21 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   beforeUnloadHandler(event: BeforeUnloadEvent): void {
     if (!this.unsavedChanges) return;
     event.preventDefault();
+  }
+
+  async loadSubscription() {
+    const user = await lastValueFrom(this.authService.getUser());
+    this.subService.getUserSubscriptions(user?.id!).subscribe(sub => {
+      this.isPremium.set(!!sub?.endDate && new Date(sub.endDate) > new Date());
+    });
+  }
+
+  startPayment(duration: number) {
+    this.subService.createSubscriptionPayment(duration, this.userId)
+      .subscribe({
+        next: res => window.location.href = res.confirmationUrl,
+        error: () => this.alertService.showSnackBar('Не удалось завершить оплату')
+      });
   }
 
   clearDate(): void {

@@ -65,7 +65,7 @@ html {
 body {
   margin: 0;
   padding: 0;
-  height: 100vh;
+  height: 100svh;
   font-size: 18px;
   line-height: 1.4;
   position: relative;
@@ -100,7 +100,7 @@ input::-ms-reveal {
 
 video {
   min-width: calc(100vw - 40px);
-  min-height: calc(100vh - 140px);
+  min-height: calc(100svh - 140px);
 }
 
 img {
@@ -202,7 +202,7 @@ mat-progress-spinner {
 
 mat-tab-body {
   height: 100%;
-  min-height: 100vh;
+  min-height: 100svh;
 }
 
 .mat-tree {
@@ -329,6 +329,27 @@ table:not(.mat-calendar-table) {
   .numeric-column {
     color: var(--mat-sys-primary);
     font-family: var(--mat-sys-typescale-label-medium-font);
+  }
+}
+
+.qr-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1976d2;
+
+  mat-icon {
+    font-size: 24px;
+  }
+}
+
+.qr-content {
+  text-align: center;
+  padding: 20px;
+
+  p {
+    margin-top: 15px;
+    color: #666;
   }
 }
 
@@ -697,7 +718,7 @@ mat-date-range-input {
     margin: 0;
     width: 100%;
     max-width: 100%;
-    min-height: calc(100vh - 53px);
+    min-height: calc(100svh - 53px);
   }
 }
 

@@ -51,7 +51,7 @@
                 <button type="button" mat-menu-item (click)="upRole(user)">
                   @switch (user.role) {
                     @case (Role.User) {
-                      Повысить до связного
+                      Повысить до поддержки
                     }
                     @case (Role.Backup) {
                       Повысить до специалиста
@@ -63,7 +63,7 @@
                 <button type="button" mat-menu-item (click)="downRole(user)">
                   @switch (user.role) {
                     @case (Role.Specialist) {
-                      Понизить до связного
+                      Понизить до поддержки
                     }
                     @case (Role.Backup) {
                       Понизить до пользователя

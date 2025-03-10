@@ -3,8 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { Observable } from 'rxjs';
 import { UserSubscription } from '../models/UserSubscription';
-import { PaymentStatus } from '../models/PaymentStatus';
-import { PaymentHistoryItem } from '../models/PaymentHistoryItem';
 
 @Injectable({
   providedIn: 'root'
@@ -35,16 +33,20 @@ export class SubscriptionService {
     );
   }
 
-  createSubscriptionPayment(duration: number, userId: string):
-    Observable<{ confirmationUrl: string; paymentId: string }> {
-    return this.http.post<{ confirmationUrl: string; paymentId: string }>(
-      `${this.apiUrl}/create-subscription`,
-      { duration, userId }
-    );
+  createSubscriptionPayment(duration: number, userId: string): Observable<{
+    confirmationUrl: string;
+    paymentId: string;
+    qrUrl?: string // Добавляем поле для QR-кода
+  }> {
+    return this.http.post<{
+      confirmationUrl: string;
+      paymentId: string;
+      qrUrl?: string
+    }>(`${this.apiUrl}/create-subscription`, { duration, userId });
   }
 
-  checkPaymentStatus(paymentId: string): Observable<PaymentStatus> {
-    return this.http.get<PaymentStatus>(
+  checkPaymentStatus(paymentId: string): Observable<string> {
+    return this.http.get<string>(
       `${this.apiUrl}/payment-status/${paymentId}`
     );
   }
@@ -53,12 +55,6 @@ export class SubscriptionService {
     return this.http.post<void>(
       `${this.apiUrl}/cancel-subscription`,
       { userId }
-    );
-  }
-
-  getPaymentHistory(userId: string): Observable<PaymentHistoryItem[]> {
-    return this.http.get<PaymentHistoryItem[]>(
-      `${this.apiUrl}/payment-history?userId=${userId}`
     );
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
@@ -12,9 +12,10 @@ import { AuthService } from '../../services/auth.service';
 import { SubscriptionService } from '../../services/subscription.service';
 import { RuDatePipe } from '../../pipes/ru.date.pipe';
 import { MatIconModule } from '@angular/material/icon';
-import { CurrencyPipe } from '@angular/common';
-import { PaymentHistoryItem } from '../../models/PaymentHistoryItem';
-import { PaymentStatus } from '../../models/PaymentStatus';
+import { MatDialog } from '@angular/material/dialog';
+import { QrDialogComponent } from '../qr-dialog/qr-dialog.component';
+import { environment } from '../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-subscription',
@@ -23,7 +24,6 @@ import { PaymentStatus } from '../../models/PaymentStatus';
   imports: [
     RoundPipe,
     RuDatePipe,
-    CurrencyPipe,
     MatIconModule,
     MatListModule,
     MatCardModule,
@@ -33,20 +33,51 @@ import { PaymentStatus } from '../../models/PaymentStatus';
   ]
 })
 export class SubscriptionsComponent implements OnInit {
+  private http = inject(HttpClient);
+  private dialog = inject(MatDialog);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private subService = inject(SubscriptionService);
+  private readonly yookassaShopId = environment.yookassaShopId;
+  private readonly yookassaSecretKey = environment.yookassaSecretKey;
 
   loading = signal(false);
   selectedPlan = signal<number | null>(null);
-  paymentHistory = signal<PaymentHistoryItem[]>([]);
   currentSubscription = signal<UserSubscription | null>(null);
   subscriptionPlans = this.subService.getSubscriptionOptions();
-  paymentStatus = signal<'pending' | 'success' | 'failed' | null>(null);
+  paymentStatus = signal<'pending' | 'success' | 'failed' | 'qr' | null>(null);
 
   async ngOnInit() {
     await this.loadSubscription();
-    await this.loadPaymentHistory();
+  }
+
+  createPayment(duration: number, userId: string): Observable<any> {
+    const payload = {
+      amount: {
+        value: this.calculatePrice(duration),
+        currency: 'RUB'
+      },
+      confirmation: {
+        type: 'qr' // Или 'redirect' для перенаправления
+      },
+      capture: true,
+      description: `Подписка на ${duration} месяцев`,
+      metadata: {
+        userId,
+        duration
+      }
+    };
+
+    return this.http.post('https://api.yookassa.ru/v3/payments', payload, {
+      headers: {
+        'Authorization': `Basic ${btoa(`${this.yookassaShopId}:${this.yookassaSecretKey}`)}`,
+        'Idempotence-Key': this.generateIdempotenceKey()
+      }
+    });
+  }
+
+  private generateIdempotenceKey(): string {
+    return Math.random().toString(36).substring(2) + Date.now();
   }
 
   private async loadSubscription() {
@@ -85,7 +116,7 @@ export class SubscriptionsComponent implements OnInit {
   }
 
   getStatusText(status: string): string {
-    switch(status) {
+    switch (status) {
       case 'succeeded': return 'Успешно';
       case 'canceled': return 'Отменён';
       case 'pending': return 'В обработке';
@@ -93,61 +124,58 @@ export class SubscriptionsComponent implements OnInit {
     }
   }
 
-  private async loadPaymentHistory() {
-    this.authService.getUser().subscribe(async user => {
-      if (!user?.id) return;
-
-      try {
-        const history = await lastValueFrom(
-          this.subService.getPaymentHistory(user.id)
-        );
-        this.paymentHistory.set(history);
-      } catch (error) {
-        this.alertService.showSnackBar('Ошибка загрузки истории платежей');
-      }
-    });
-  }
-
   async purchaseSubscription() {
     const duration = this.selectedPlan();
-    this.authService.getUser().subscribe(async user => {
-      if (!duration || !user?.id) return;
+    if (!duration) return;
 
-      try {
-        this.loading.set(true);
-        this.paymentStatus.set('pending');
+    this.loading.set(true);
 
-        const response = await lastValueFrom(
-          this.subService.createSubscriptionPayment(duration, user.id)
-        );
+    try {
+      const user = await lastValueFrom(this.authService.getUser());
+      if (!user?.id) throw new Error('Пользователь не авторизован');
 
-        // Добавляем проверку paymentId
-        if (!response.paymentId) {
-          throw new Error('Payment ID not received');
-        }
+      const response = await lastValueFrom(
+        this.subService.createSubscriptionPayment(duration, user.id)
+      );
 
-        const checkStatus = setInterval(async () => {
-          const status = await lastValueFrom(
-            this.subService.checkPaymentStatus(response.paymentId)
-          );
+      // Устанавливаем статус для отображения QR
+      this.paymentStatus.set('qr');
 
-          if (status === 'succeeded') {
-            clearInterval(checkStatus);
-            this.paymentStatus.set('success');
-            await this.loadSubscription();
-          } else if (status === 'canceled') {
-            clearInterval(checkStatus);
+      // Открываем диалог с QR-кодом
+      const dialogRef = this.dialog.open(QrDialogComponent, {
+        data: { url: response.qrUrl || response.confirmationUrl },
+        disableClose: true
+      });
+
+      // При закрытии диалога
+      dialogRef.afterClosed().subscribe(() => {
+        this.paymentStatus.set(null);
+      });
+
+      // Проверяем статус платежа
+      const checkInterval = setInterval(() => {
+        this.subService.checkPaymentStatus(response.paymentId).subscribe({
+          next: status => {
+            console.log(status);
+            if (status === 'succeeded') {
+              clearInterval(checkInterval);
+              this.paymentStatus.set('success');
+              this.loadSubscription();
+              dialogRef.close();
+            }
+          },
+          error: (err) => {
+            console.error(err);
             this.paymentStatus.set('failed');
+            dialogRef.close();
           }
-        }, 5000);
+        });
+      }, 10000);
 
-        window.location.href = response.confirmationUrl;
-      } catch (error) {
-        this.paymentStatus.set('failed');
-        this.alertService.showSnackBar('Ошибка оплаты');
-      } finally {
-        this.loading.set(false);
-      }
-    });
+    } catch (error) {
+      this.paymentStatus.set('failed');
+    } finally {
+      this.loading.set(false);
+    }
   }
 }
