@@ -91,9 +91,5 @@ public class User : IEntity
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public ICollection<UserLesson> UserLessons { get; set; } = [];
-
-    public ICollection<UserSubscription> UserSubscriptions { get; set; } = [];
-
-    public ICollection<PaymentRecord> UserPayments { get; set; } = [];
     #endregion
 }

@@ -14,25 +14,20 @@
         </mat-form-field>
       }
       @case ('image') {
-        @if (isPremium) {
-          <mat-form-field>
-            <mat-label>URL изображения</mat-label>
-            <input matInput formControlName="imageUrl">
-            @if (form.get('imageUrl')?.hasError('required')) {
-              <mat-error>Пожалуйста, введите URL изображения.</mat-error>
-            } @else if (form.get('imageUrl')?.hasError('url')) {
-              <mat-error>Введите корректный URL.</mat-error>
-            }
-          </mat-form-field>
+        <mat-form-field>
+          <mat-label>URL изображения</mat-label>
+          <input matInput formControlName="imageUrl">
+          @if (form.get('imageUrl')?.hasError('required')) {
+            <mat-error>Пожалуйста, введите URL изображения.</mat-error>
+          } @else if (form.get('imageUrl')?.hasError('url')) {
+            <mat-error>Введите корректный URL.</mat-error>
+          }
+        </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Или загрузить файл</mat-label>
-            <input type="file" (change)="onFileSelected($event)" accept="image/*">
-          </mat-form-field>
-        } @else {
-          <p>Для загрузки изображения требуется подписка.</p>
-          <mat-icon>lock</mat-icon>
-        }
+        <mat-form-field>
+          <mat-label>Или загрузить файл</mat-label>
+          <input type="file" (change)="onFileSelected($event)" accept="image/*">
+        </mat-form-field>
       }
     }
   </form>

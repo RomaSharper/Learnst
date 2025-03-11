@@ -396,23 +396,6 @@ public class UsersController(
         }
     }
 
-    [HttpGet("{id:guid}/IsPremium")]
-    public async Task<ActionResult<bool>> IsPremium(Guid id)
-    {
-        try
-        {
-            return await repository.IsPremium(id);
-        }
-        catch (NotFoundException<User> nfe)
-        {
-            return NotFound(new ErrorResponse(nfe));
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new ErrorResponse(ex));
-        }
-    }
-
     [HttpGet("{userId:guid}/Followers")]
     public async Task<IActionResult> GetFollowers(Guid userId)
         => Ok(await followsRepository.GetFollowersAsync(userId));

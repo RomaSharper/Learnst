@@ -36,7 +36,6 @@ builder.Services.AddAutoMapper(cfg =>
 
 // Регистрация сервисов
 builder.Services.AddScoped<JwtService>()
-    .AddScoped<PaymentService>()
     .AddScoped<UsersRepository>()
     .AddScoped<FollowsRepository>()
     .AddScoped<ActivitiesRepository>()

@@ -157,8 +157,8 @@
           #checklistInput
           placeholder="Новый пункт..."
           [matChipInputFor]="checklistGrid"
-          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
           (matChipInputTokenEnd)="addChecklistItem($event)"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
         >
       </mat-form-field>
     </div>
@@ -170,8 +170,8 @@
         <mat-card class="info-card" appearance="outlined">
           <div class="info-card-content">
             <div class="preview-container">
-              <img [src]="infoCard.iconUrl" placeholder="/assets/icons/placeholder.png"
-                noDownloading inspectable>
+              <img [src]="infoCard.iconUrl" noDownloading inspectable
+                placeholder="/assets/icons/placeholder.png">
             </div>
             <p><strong>{{ InfoTypeHelper.getName(infoCard.infoType) }}</strong></p>
             <p>{{ infoCard.text }}</p>

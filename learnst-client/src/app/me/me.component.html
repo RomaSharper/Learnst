@@ -24,8 +24,8 @@
             type="file"
             class="hidden"
             id="avatarInput"
+            accept="image/*"
             (change)="onFileSelected($event)"
-            [accept]="isPremium() ? 'image/*' : 'image/png, image/jpeg, image/jpg'"
           >
           <img [src]="user.avatarUrl" [alt]="user.username" noDownloading
             (click)="openFilePicker()" class="avatar" matTooltip="Изменить аватар"
@@ -261,11 +261,6 @@
           </button>
         </div>
       </mat-card>
-    </div>
-
-    <!-- Подписка -->
-    <div class="full-width" appearance="outlined">
-      <app-subscription />
     </div>
 
     <!-- Настройка вида сайта -->

@@ -37,7 +37,6 @@ import { DateService } from '../../services/date.service';
 import { EmailService } from '../../services/email.service';
 import { FileService } from '../../services/file.service';
 import { UsersService } from '../../services/users.service';
-import { SubscriptionsComponent } from '../subscription/subscription.component';
 import { ThemePickerComponent } from '../theme-picker/theme-picker.component';
 import { EducationDialogComponent } from './education.dialog/education.dialog.component';
 import { SocialMediaDialogComponent } from './social.media.dialog/social.media.dialog.component';
@@ -45,8 +44,6 @@ import { WorkExperienceDialogComponent } from './work.experience.dialog/work.exp
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ThemeService } from '../../services/theme.service';
 import { SignalRService } from '../../services/signalr.service';
-import { environment } from '../../environments/environment';
-import { SubscriptionService } from '../../services/subscription.service';
 
 @Return()
 @Component({
@@ -69,7 +66,6 @@ import { SubscriptionService } from '../../services/subscription.service';
     InspectableDirective,
     ThemePickerComponent,
     MatSlideToggleModule,
-    SubscriptionsComponent,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
     PlaceholderImageDirective,
@@ -78,14 +74,11 @@ import { SubscriptionService } from '../../services/subscription.service';
 export class MeComponent extends MediumScreenSupport implements OnInit, CanComponentDeactivate {
   private dialog = inject(MatDialog);
   themeService = inject(ThemeService);
-  private route = inject(ActivatedRoute);
   private fileService = inject(FileService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private emailService = inject(EmailService);
   private usersService = inject(UsersService);
-  private signalRService = inject(SignalRService);
-  private subService = inject(SubscriptionService);
 
   user?: User;
   userId = '';
@@ -98,7 +91,6 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   changesSaving = false;
   unsavedChanges = false;
   passwordChanging = false;
-  isPremium = signal(false);
   followersCount = signal(0);
   readonly maxDate = new Date();
   readonly minDate = new Date(1900, 0, 1);
@@ -117,15 +109,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       this.userId = user.id!;
       this.originalUser = JSON.parse(JSON.stringify(user));
       this.usersService.getUserById(this.userId).subscribe(user => this.user = user);
-      this.usersService.isPremium(this.userId).subscribe(data => this.isPremium.set(data.premium));
       this.usersService.getFollowersCount(this.userId).subscribe(count => this.followersCount.set(count));
-
-      this.route.queryParams.subscribe(params => {
-        if (params['paymentStatus'] === 'success') {
-          this.alertService.showSnackBar('Оплата завершена успешно');
-          this.loadSubscription();
-        }
-      });
     });
   }
 
@@ -138,21 +122,6 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   beforeUnloadHandler(event: BeforeUnloadEvent): void {
     if (!this.unsavedChanges) return;
     event.preventDefault();
-  }
-
-  async loadSubscription() {
-    const user = await lastValueFrom(this.authService.getUser());
-    this.subService.getUserSubscriptions(user?.id!).subscribe(sub => {
-      this.isPremium.set(!!sub?.endDate && new Date(sub.endDate) > new Date());
-    });
-  }
-
-  startPayment(duration: number) {
-    this.subService.createSubscriptionPayment(duration, this.userId)
-      .subscribe({
-        next: res => window.location.href = res.confirmationUrl,
-        error: () => this.alertService.showSnackBar('Не удалось завершить оплату')
-      });
   }
 
   clearDate(): void {

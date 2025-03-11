@@ -21,14 +21,6 @@
         <h3>{{ user.fullName }}</h3>
         <span>
           {{ user.username }}
-          @if (isPremium()) {
-            <mat-icon
-              color="primary"
-              matTooltip="Обладатель премиум подписки"
-            >
-              verified
-            </mat-icon>
-          }
         </span>
       </div>
       <p class="about-me">{{ user.aboutMe }}</p>

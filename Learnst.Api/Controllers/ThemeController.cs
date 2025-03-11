@@ -14,27 +14,13 @@ public class ThemeController(
     IAsyncRepository<Theme, string> themesRepository
 ) : ControllerBase
 {
-    private readonly string[] _freeThemes = ["light", "dark"];
-
     [HttpPost("{userId:guid}/{themeId}")]
     public async Task<ActionResult<User>> SetTheme(Guid userId, string themeId)
     {
         try
         {
-            var user = await usersRepository.GetByIdAsync(userId, noTracking: false, includes: [
-                u => u.UserSubscriptions,
-                u => u.Educations,
-                u => u.SocialMediaProfiles,
-                u => u.WorkExperiences,
-                u => u.UserActivities,
-                u => u.UserLessons,
-                u => u.UserAnswers,
-                u => u.Tickets,
-                u => u.Theme
-            ]) ?? throw new NotFoundException<User>(userId);
-
-            if (!_freeThemes.Contains(themeId) && !await usersRepository.IsPremium(userId))
-                throw new AccessViolationException("Пользователь не обладает премиум-подпиской.");
+            var user = await usersRepository.GetByIdAsync(userId, noTracking: false)
+                ?? throw new NotFoundException<User>(userId);
 
             if (!await themesRepository.ExistsAsync(t => t.Id == themeId))
                 throw new NotFoundException<Theme, string>(themeId);

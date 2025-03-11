@@ -2,7 +2,6 @@
   <div class="theme-grid">
     @for (theme of themes; track theme.id) {
       <div
-        [class.closed]="theme.premium"
         class="theme-preview touchable"
         (click)="selectTheme(theme.id)"
         [matTooltip]="theme.displayName"

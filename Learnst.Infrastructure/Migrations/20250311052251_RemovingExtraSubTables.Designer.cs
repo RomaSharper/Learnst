@@ -4,6 +4,7 @@ using Learnst.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Learnst.Domain.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250311052251_RemovingExtraSubTables")]
+    partial class RemovingExtraSubTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -300,6 +303,9 @@ namespace Learnst.Domain.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("Premium")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.ToTable("Themes");
@@ -307,99 +313,108 @@ namespace Learnst.Domain.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "light"
+                            Id = "light",
+                            Premium = false
                         },
                         new
                         {
-                            Id = "dark"
+                            Id = "dark",
+                            Premium = false
                         },
                         new
                         {
-                            Id = "mint-apple"
+                            Id = "aurora",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "citrus-sherbet"
+                            Id = "blurple-twilight",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "retro-raincloud"
+                            Id = "chroma-glow",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "hanami"
+                            Id = "citrus-sherbet",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "sunrise"
+                            Id = "cotton-candy",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "cotton-candy"
+                            Id = "crimson-moon",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "lofi-vibes"
+                            Id = "desert-khaki",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "desert-khaki"
+                            Id = "dusk",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "sunset"
+                            Id = "forest",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "chroma-glow"
+                            Id = "hanami",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "forest"
+                            Id = "lofi-vibes",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "crimson-moon"
+                            Id = "mars",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "midnight-blurple"
+                            Id = "midnight-blurple",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "mars"
+                            Id = "mint-apple",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "dusk"
+                            Id = "neon-nights",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "under-the-sea"
+                            Id = "retro-raincloud",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "retro-storm"
+                            Id = "retro-storm",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "neon-nights"
+                            Id = "sepia",
+                            Premium = true
                         },
                         new
                         {
-                            Id = "strawberry-lemonade"
-                        },
-                        new
-                        {
-                            Id = "aurora"
-                        },
-                        new
-                        {
-                            Id = "sepia"
-                        },
-                        new
-                        {
-                            Id = "blurple-twilight"
+                            Id = "strawberry-lemonade",
+                            Premium = true
                         });
                 });
 

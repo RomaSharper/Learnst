@@ -24,18 +24,16 @@ import { AlertService } from "../../../services/alert.service";
 })
 export class ChangeBannerDialogComponent {
   form: FormGroup;
-  isPremium: boolean;
 
   private fb = inject(FormBuilder);
   private alertService = inject(AlertService);
   private dialogRef = inject(MatDialogRef<ChangeBannerDialogComponent>);
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { isPremium: boolean, banner?: string }) {
-    this.isPremium = data.isPremium;
     const isBannerImage = data.banner?.startsWith('http');
     this.form = this.fb.group({
       bannerType: ['color', Validators.required], // 'color' or 'image'
-      color: ['#000000'], // Для цвета
+      color: [data.banner || '#000000'], // Для цвета
       imageUrl: [''], // Для URL изображения
       imageFile: [null] // Для файла
     });

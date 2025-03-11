@@ -28,11 +28,12 @@ import { FileService } from '../../../services/file.service';
   ]
 })
 export class InfoCardDialogComponent {
-  infoCardForm: FormGroup;
-  infoTypes = InfoTypeHelper.getInfoTypes();
-  selectedFile?: File;
-  previewIconUrl?: string;
   oldIconUrl?: string;
+  selectedFile?: File;
+  infoCardForm: FormGroup;
+  previewIconUrl?: string;
+  infoTypes = InfoTypeHelper.getInfoTypes();
+  private readonly MAX_FILE_SIZE = 5 * 1024 * 1024;
 
   constructor(
     private fb: FormBuilder,
@@ -64,16 +65,24 @@ export class InfoCardDialogComponent {
   // Метод для обработки выбора файла
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
+    const file = input.files?.[0];
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.previewIconUrl = e.target!.result as string; // Временное отображение новой иконки
-        this.infoCardForm.patchValue({ iconUrl: 'file_selected' }); // Устанавливаем значение для валидации
-      };
-      reader.readAsDataURL(this.selectedFile);
+    if (!file) return;
+
+    if (file.size > this.MAX_FILE_SIZE) {
+      this.alertService.showSnackBar('Файл слишком большой. Максимальный размер 5 МБ.');
+      return;
     }
+
+    this.selectedFile = file;
+    this.readFile(file);
+    this.infoCardForm.patchValue({ iconUrl: 'file_selected' }); // Устанавливаем значение для валидации
+  }
+
+  private readFile(file: File): void {
+    const reader = new FileReader();
+    reader.onload = (e) => this.previewIconUrl = e.target!.result as string;
+    reader.readAsDataURL(file);
   }
 
   onCancel(): void {
@@ -90,6 +99,11 @@ export class InfoCardDialogComponent {
     // Если это новая инфокарта и файл не выбран
     if (!this.data.infoCard && !this.selectedFile) {
       this.alertService.showSnackBar('Пожалуйста, выберите иконку.');
+      return;
+    }
+
+    if (this.selectedFile?.size && this.selectedFile.size > this.MAX_FILE_SIZE) {
+      this.alertService.showSnackBar('Файл слишком большой. Максимальный размер 5 МБ.');
       return;
     }
 

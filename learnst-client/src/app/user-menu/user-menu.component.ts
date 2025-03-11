@@ -46,7 +46,6 @@ export class UserMenuComponent implements OnInit {
   private alertService = inject(AlertService);
 
   loading = signal(true);
-  isPremium = signal(false);
   followersCount = signal(0);
   isFollowing = signal(false);
   isBannerImage = signal(false);
@@ -117,7 +116,7 @@ export class UserMenuComponent implements OnInit {
 
   openChangeBannerDialog(event: Event): void {
     event.stopPropagation();
-    this.alertService.openChangeBannerDialog(this.isPremium(), this.user!.banner).afterClosed().subscribe({
+    this.alertService.openChangeBannerDialog(this.user!.banner).afterClosed().subscribe({
       next: response => {
         if (!response || !this.user) return;
 
@@ -150,9 +149,6 @@ export class UserMenuComponent implements OnInit {
         const userId = this.user?.id;
 
         if (!userId) return;
-        this.usersService.isPremium(userId).subscribe(status => {
-          this.isPremium.set(status.premium);
-        });
         this.usersService.getFollowers(userId).subscribe(followers => {
           this.isFollowing.set(followers.some(f => f.id === user?.id));
           this.followersCount.set(followers.length);

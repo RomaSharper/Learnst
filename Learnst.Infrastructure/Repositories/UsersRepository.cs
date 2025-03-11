@@ -25,16 +25,4 @@ public class UsersRepository(ApplicationDbContext context, IMapper mapper) : Asy
         context.TicketAnswers.RemoveRange(user.TicketAnswers);
         DbSet.Remove(user);
     }
-
-    public async Task<bool> IsPremium(Guid id)
-    {
-        var user = await GetByIdAsync(id) ?? throw new NotFoundException<User>(id);
-        return user.UserSubscriptions.Any(us => us.EndDate > DateTime.UtcNow);
-    }
-
-    public async Task Subscribe(Guid id, UserSubscription subscription)
-    {
-        var user = await GetByIdAsync(id) ?? throw new NotFoundException<User>(id);
-        user.UserSubscriptions.Add(subscription);
-    }
 }
