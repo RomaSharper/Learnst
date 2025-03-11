@@ -154,14 +154,11 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
       'Подтверждение',
       'Вы уверены, что хотите удалить этот тикет?'
     ).afterClosed().subscribe(confirmed => {
-      if (confirmed) {
-        this.ticketService.deleteTicket(this.ticketId).subscribe({
-          next: () => {
-            this.router.navigate(['/tickets']);
-          },
-          error: err => console.error(err)
-        });
-      }
+      if (!confirmed) return;
+      this.ticketService.deleteTicket(this.ticketId).subscribe({
+        next: () => this.router.navigate(['/community']),
+        error: err => console.error(err)
+      });
     });
   }
 }
