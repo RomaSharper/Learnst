@@ -1,4 +1,4 @@
-import { Component, inject, Inject } from "@angular/core";
+import { Component, inject, Inject, OnInit } from "@angular/core";
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
@@ -7,33 +7,14 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatRadioModule } from "@angular/material/radio";
 import { AlertService } from "../../../services/alert.service";
+import { FileService } from "../../../services/file.service";
+import { lastValueFrom } from "rxjs";
+import { InspectableDirective } from "../../../directives/inspectable.directive";
 
 @Component({
   selector: 'app-change-banner-dialog',
   templateUrl: './change-banner-dialog.component.html',
-  styles: `
-  .file-input-container {
-    margin: 16px 0;
-
-    .file-label {
-      display: inline-block;
-      padding: 8px 16px;
-      background: #3f51b5;
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s;
-
-      &:hover {
-        background: #2c3e8f;
-      }
-    }
-
-    .file-input {
-      display: none;
-    }
-  }
-  `,
+  styleUrls: ['./change-banner-dialog.component.scss'],
   imports: [
     MatIconModule,
     MatInputModule,
@@ -41,54 +22,98 @@ import { AlertService } from "../../../services/alert.service";
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    InspectableDirective
   ]
 })
-export class ChangeBannerDialogComponent {
-  form: FormGroup;
-
+export class ChangeBannerDialogComponent implements OnInit {
   private fb = inject(FormBuilder);
+  private fileService = inject(FileService);
   private alertService = inject(AlertService);
   private dialogRef = inject(MatDialogRef<ChangeBannerDialogComponent>);
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { banner?: string }) {
-    const isBannerImage = data.banner?.startsWith('http');
-    this.form = this.fb.group({
-      bannerType: ['color', Validators.required], // 'color' or 'image'
-      color: [isBannerImage ? '#000000' : data.banner], // Для цвета
-      imageUrl: [isBannerImage ? data.banner : '', [Validators.required, Validators.pattern(/^(http|https):/)]], // Для URL изображения
-      imageFile: [null] // Для файла
-    });
+  form: FormGroup;
+  previewUrl: string | null = null;
+  private currentFile: File | null = null;
 
-    if (isBannerImage)
-      this.form.patchValue({ color: data.banner });
-    else
-      this.form.patchValue({ imageUrl: data.banner });
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { banner?: string }) {
+    const bannerIsColor = data.banner?.startsWith('#');
+    this.previewUrl = data.banner || null;
+
+    this.form = this.fb.group({
+      bannerType: [bannerIsColor ? 'color' : 'image', Validators.required],
+      color: [bannerIsColor ? data.banner || '#ffffff' : '#ffffff', Validators.required],
+      imageFile: [null, Validators.required]
+    });
+  }
+
+  ngOnInit() {
+    this.form.get('bannerType')?.valueChanges.subscribe(value => {
+      if (value === 'color') {
+        this.form.get('color')?.setValidators(Validators.required);
+        this.form.get('imageFile')?.clearValidators();
+        this.previewUrl = null;
+      } else {
+        this.form.get('color')?.clearValidators();
+        this.form.get('imageFile')?.setValidators(Validators.required);
+        this.previewUrl = this.data.banner || null;
+      }
+      this.form.get('color')?.updateValueAndValidity();
+      this.form.get('imageFile')?.updateValueAndValidity();
+    });
   }
 
   onColorSelected(target: EventTarget | null) {
     const color = (target as HTMLInputElement).value;
     this.form.patchValue({ color });
+    this.previewUrl = color;
   }
 
   onFileSelected(event: Event) {
     const fileInput = event.target as HTMLInputElement;
     const file = fileInput.files?.[0];
-    if (file && file.size <= 5 * 1024 * 1024) {// Ограничение на 5 МБ
-      this.form.patchValue({
-        imageFile: file,
-        imageUrl: null
-      });
-      this.form.get('imageUrl')?.clearValidators();
-      this.form.get('imageUrl')?.updateValueAndValidity();
+
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        this.alertService.showSnackBar('Нельзя загружать файлы больше 5 МБ!');
+        fileInput.value = '';
+        return;
+      }
+
+      this.currentFile = file;
+      this.previewUrl = URL.createObjectURL(file);
+      this.form.patchValue({ imageFile: file });
     }
-    else
-      this.alertService.showSnackBar('Нельзя загружать файлы больше 5 МБ!');
   }
 
-  confirm() {
-    if (this.form.valid) {
-      this.dialogRef.close(this.form.value);
+  async confirm() {
+    if (this.form.invalid) return;
+
+    const formValue = this.form.value;
+    let resultBanner = '';
+
+    try {
+      // Удаление старого изображения в двух случаях:
+      // 1. Переключение на цвет и был изображение
+      // 2. Загрузка нового изображения поверх старого
+      const oldBannerIsImage = this.data.banner && !this.data.banner.startsWith('#');
+
+      if (formValue.bannerType === 'color' && oldBannerIsImage
+        || formValue.bannerType === 'image' && this.currentFile && oldBannerIsImage) {
+        await lastValueFrom(this.fileService.delete(this.data.banner!));
+      }
+
+      // Обработка нового контента
+      if (formValue.bannerType === 'image' && this.currentFile) {
+        const uploadResponse = await lastValueFrom(this.fileService.upload(this.currentFile));
+        resultBanner = uploadResponse.fileUrl;
+      } else
+        resultBanner = formValue.color;
+
+      this.dialogRef.close(resultBanner);
+    } catch (error) {
+      this.alertService.showSnackBar('Ошибка при обновлении баннера');
+      console.error(error);
     }
   }
 

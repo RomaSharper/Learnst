@@ -4,7 +4,7 @@
   } @else if (user) {
     <div
       class="banner"
-      [style.background]="user.banner"
+      [style.background]="getBannerStyle(user.banner)"
     >
       @if (!redirectOnly) {
         <button type="button" mat-icon-button matTooltip="Изменить баннер"

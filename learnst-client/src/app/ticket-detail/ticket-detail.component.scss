@@ -1,24 +1,20 @@
 mat-card {
-  // color: white;
-  padding: 4px * 4;
-  // background: #2a2a2a;
-  border-radius: 4px * 3;
-  // box-shadow: 0 4px 4px * 3 rgba(0, 0, 0, 0.2);
+  padding: 16px;
 
   @media (max-width: 767px) {
-    padding: 4px * 2;
+    padding: 8px;
   }
 }
 
 mat-card-title {
   display: flex;
-  gap: 4px * 2;
+  gap: 8px;
   align-items: center;
 
   .status-icon {
     display: flex;
-    width: 4px * 6;
-    height: 4px * 6;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
   }
 
@@ -28,8 +24,8 @@ mat-card-title {
     align-items: flex-start;
 
     .status-icon {
-      width: 4px * 4;
-      height: 4px * 4;
+      width: 16px;
+      height: 16px;
 
       mat-icon {
         font-size: 14px;
@@ -40,8 +36,7 @@ mat-card-title {
 
 mat-card-content {
   p {
-    margin: 4px * 2 0;
-    // color: @text-primary;
+    margin: 8px 0;
     font-size: 18px;
 
     @media (max-width: 767px) {
@@ -54,13 +49,13 @@ mat-card-content {
   display: inline;
 
   @media (max-width: 767px) {
-    margin-bottom: 4px * 2;
+    margin-bottom: 8px;
   }
 }
 
 .status-actions {
+  gap: 8px;
   display: flex;
-  gap: 4px * 2;
 
   @media (max-width: 767px) {
     gap: 4px;
@@ -69,12 +64,12 @@ mat-card-content {
 
 .ticket-info {
   display: flex;
+  margin-top: 8px;
   align-items: center;
-  margin-top: 4px * 2;
   justify-content: space-between;
 
   @media (max-width: 767px) {
-    gap: 4px * 2;
+    gap: 8px;
     flex-direction: column;
     align-items: flex-start;
   }
@@ -85,27 +80,25 @@ mat-card-content {
     align-items: center;
 
     .avatar {
-      width: 4px * 10;
+      width: 40px;
+      height: 40px;
       object-fit: cover;
-      height: 4px * 10;
       border-radius: 50%;
-      // border: 4px * 0.5 solid @primary-color;
+      border: 2px solid var(--mat-sys-primary);
 
       @media (max-width: 767px) {
-        width: 4px * 8;
-        height: 4px * 8;
+        width: 32px;
+        height: 32px;
       }
     }
 
     span {
       font-weight: 500;
-      // color: @text-primary;
     }
   }
 
   .created-at {
     opacity: 0.8;
-    // color: @text-secondary;
     font-size: 18px;
 
     @media (max-width: 767px) {
@@ -115,14 +108,13 @@ mat-card-content {
 }
 
 .answer-info {
+  gap: 8px;
   width: 100%;
+  padding: 8px;
   display: flex;
-  gap: 4px * 2;
-  padding: 4px * 2;
-  // background: #3a3a3a;
+  border-radius: 8px;
+  margin-bottom: 8px;
   flex-direction: column;
-  border-radius: 4px * 2;
-  margin-bottom: 4px * 2;
 
   @media (max-width: 767px) {
     padding: 4px;
@@ -131,7 +123,7 @@ mat-card-content {
 
   .author-info {
     display: flex;
-    gap: 4px * 2;
+    gap: 8px;
     align-items: center;
 
     @media (max-width: 767px) {
@@ -139,28 +131,27 @@ mat-card-content {
     }
 
     .avatar {
-      width: 4px * 8;
-      height: 4px * 8;
+      width: 32px;
+      height: 32px;
       object-fit: cover;
       border-radius: 50%;
-      // border: 4px * 0.5 solid @primary-color;
+      border: 2px solid var(--mat-sys-primary);
 
       @media (max-width: 767px) {
-        width: 4px * 6;
-        height: 4px * 6;
+        width: 24px;
+        height: 24px;
       }
     }
 
     .author-details {
       flex: 1;
+      gap: 2px;
       display: flex;
-      gap: 4px * 0.5;
       flex-direction: column;
 
       .username {
-        font-weight: 500;
-        // color: @text-primary;
         font-size: 18px;
+        font-weight: 500;
 
         @media (max-width: 767px) {
           font-size: 14px;
@@ -169,7 +160,6 @@ mat-card-content {
 
       .created-at {
         opacity: 0.8;
-        // color: @text-secondary;
         font-size: 14px;
 
         @media (max-width: 767px) {
@@ -184,55 +174,41 @@ mat-card-content {
       @media (max-width: 767px) {
         font-size: 14px;
       }
-
-      &.admin-icon {
-        // color: #ffd700; // Золотой цвет для администратора
-      }
-
-      &.backup-icon {
-        // color: @online; // Зелёный цвет для поддержки
-      }
-
-      &.specialist-icon {
-        // color: #eff7f6; // Синий цвет для специалиста
-      }
     }
   }
 
   .answer-content {
     margin: 0;
-    line-height: 1.6;
-    // color: @text-primary;
-    padding-left: 4px * 10; // Отступ для выравнивания текста под аватаром
     font-size: 18px;
+    line-height: 1.6;
+    padding-left: 40px; // Отступ для выравнивания текста под аватаром
 
     @media (max-width: 767px) {
-      padding-left: 4px * 8;
       font-size: 14px;
+      padding-left: 32px;
     }
   }
 }
 
 .empty-state {
-  // color: #666;
-  padding: 4px * 4;
+  padding: 16px;
   font-style: italic;
   text-align: center;
 
   @media (max-width: 767px) {
-    padding: 4px * 2;
+    padding: 8px;
   }
 }
 
 .status-history {
+  gap: 8px;
   display: flex;
-  gap: 4px * 2;
-  margin-top: 4px * 2;
+  margin-top: 8px;
   flex-direction: column;
 
   .status-node {
+    gap: 8px;
     display: flex;
-    gap: 4px * 2;
     position: relative;
     align-items: center;
 
@@ -243,29 +219,23 @@ mat-card-content {
     .status-icon {
       z-index: 1;
       display: flex;
-      width: 4px * 10;
-      height: 4px * 10;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       align-items: center;
       justify-content: center;
       // background: @primary-color;
 
       @media (max-width: 767px) {
-        width: 4px * 8;
-        height: 4px * 8;
-      }
-
-      mat-icon {
-        // color: white;
+        width: 32px;
+        height: 32px;
       }
     }
 
     .status-content {
       flex: 1;
-      padding: 4px * 2;
-      // background: #3a3a3a;
-      border-radius: 4px * 2;
-      // box-shadow: 0 4px * 0.5 4px * 2 rgba(0, 0, 0, 0.1);
+      padding: 8px;
+      border-radius: 8px;
 
       @media (max-width: 767px) {
         padding: 4px;
@@ -273,7 +243,6 @@ mat-card-content {
 
       p {
         margin: 0;
-        // color: @text-primary;
 
         @media (max-width: 767px) {
           font-size: 14px;

@@ -1,0 +1,42 @@
+.preview-image {
+  max-width: 100%;
+  margin-top: 16px;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.file-input-container {
+  margin: 16px 0;
+
+  .file-label {
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 4px;
+    display: inline-block;
+    background: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+    transition: background-color 0.3s var(--mat-sys-motion-standard);
+
+    &:hover {
+      background-color: var(--mat-sys-primary-hover);
+    }
+
+    &:active {
+      background-color: var(--mat-sys-primary-pressed);
+    }
+  }
+
+  .file-input {
+    display: none;
+  }
+}
+
+.preview-image {
+  max-width: 100%;
+  margin-top: 16px;
+  max-height: 200px;
+  object-fit: cover;
+  box-shadow: var(--mat-sys-elevation-level2);
+  border-radius: var(--mat-sys-shape-corner-extra-large);
+}

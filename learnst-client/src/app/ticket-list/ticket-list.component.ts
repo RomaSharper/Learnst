@@ -1,5 +1,5 @@
 import { CommonModule, Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -17,6 +17,7 @@ import { UsersService } from './../../services/users.service';
 import { CreateTicketDialogComponent } from './create-ticket-dialog/create-ticket-dialog.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RuDateTimePipe } from '../../pipes/ru.date.time.pipe';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @Return()
 @Component({
@@ -30,39 +31,52 @@ import { RuDateTimePipe } from '../../pipes/ru.date.time.pipe';
     RuDateTimePipe,
     MatButtonModule,
     MatTooltipModule,
+    MatPaginatorModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule
   ]
 })
 export class TicketListComponent extends MediumScreenSupport implements OnInit {
+  private dialog = inject(MatDialog);
+  private usersService = inject(UsersService);
+  private ticketService = inject(TicketService);
+
+  pageSize = 5;
+  pageIndex = 0;
   loading = true;
   goBack!: () => void;
   tickets: Ticket[] = [];
+  pageSizeOptions = [5, 10, 20];
+  paginatedTickets: Ticket[] = [];
 
   TicketStatus = TicketStatus;
   TicketStatusHelper = TicketStatusHelper;
 
-  constructor(
-    private usersService: UsersService,
-    private ticketService: TicketService,
-    private dialog: MatDialog,
-    private router: Router,
-    public location: Location
-  ) {
-    super();
-  }
+  constructor(private router: Router, public location: Location) { super(); }
 
-  ngOnInit(): void {
-    this.loadTickets();
+  ngOnInit(): void { this.loadTickets(); }
+
+  onPageChange(event: any): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    const startIndex = event.pageIndex * event.pageSize;
+    const endIndex = startIndex + event.pageSize;
+    this.paginatedTickets = this.tickets.slice(startIndex, endIndex);
   }
 
   loadTickets(): void {
     this.loading = true;
     this.ticketService.getTickets().subscribe(data => {
-      this.tickets = data.sort((a: Ticket, b: Ticket) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()); // Сортировка по дате
-      for (const ticket of this.tickets) {
+      this.tickets = data.sort((a: Ticket, b: Ticket) =>
+        new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
+
+      this.paginatedTickets = this.tickets.slice(0, this.pageSize);
+
+      // Загрузка авторов
+      this.tickets.forEach(ticket => {
         this.usersService.getUserById(ticket.authorId).subscribe(data => ticket.author = data);
-      }
+      });
+
       this.loading = false;
     });
   }
@@ -74,8 +88,11 @@ export class TicketListComponent extends MediumScreenSupport implements OnInit {
 
     dialogRef.afterClosed().subscribe((newTicket: Ticket) => {
       if (newTicket) {
-        this.usersService.getUserById(newTicket.authorId).subscribe(user => newTicket.author = user);
-        this.tickets.unshift(newTicket); // Добавляем новый тикет в начало списка
+        this.usersService.getUserById(newTicket.authorId).subscribe(user => {
+          newTicket.author = user;
+          this.tickets.unshift(newTicket);
+          this.paginatedTickets = this.tickets.slice(0, this.pageSize);
+        });
       }
     });
   }

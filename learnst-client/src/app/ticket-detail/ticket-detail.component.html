@@ -13,7 +13,7 @@
       </button>
       <button type="button" mat-icon-button [disabled]="ticket.status === TicketStatus.InProgress"
         (click)="updateStatus(TicketStatus.InProgress)" matTooltip="В процессе">
-        <mat-icon>pending</mat-icon>
+        <mat-icon>build</mat-icon>
       </button>
       <button type="button" mat-icon-button [disabled]="ticket.status === TicketStatus.Closed"
         (click)="updateStatus(TicketStatus.Closed)" matTooltip="Закрыть">

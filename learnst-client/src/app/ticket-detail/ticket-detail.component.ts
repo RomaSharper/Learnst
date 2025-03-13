@@ -147,7 +147,7 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
     ).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
       this.ticketService.deleteTicket(this.ticketId).subscribe({
-        next: () => this.router.navigate(['/community']),
+        next: () => this.router.navigate(['/support']),
         error: err => console.error(err)
       });
     });

@@ -76,7 +76,7 @@ export class AlertService {
     });
   }
 
-  openChangeBannerDialog(banner?: string): MatDialogRef<ChangeBannerDialogComponent, any> {
+  openChangeBannerDialog(banner?: string): MatDialogRef<ChangeBannerDialogComponent, string> {
     return this.dialog.open(ChangeBannerDialogComponent, {
       width: '400px',
       data: { banner }

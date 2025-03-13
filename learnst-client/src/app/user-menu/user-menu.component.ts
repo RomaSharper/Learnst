@@ -16,6 +16,7 @@ import { AuthService } from '../../services/auth.service';
 import { FileService } from '../../services/file.service';
 import { UsersService } from '../../services/users.service';
 import { User } from './../../models/User';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-user-menu',
@@ -40,7 +41,7 @@ export class UserMenuComponent implements OnInit {
 
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
-  private fileService = inject(FileService);
+  private sanitizer = inject(DomSanitizer);
   private authService = inject(AuthService);
   private usersService = inject(UsersService);
   private alertService = inject(AlertService);
@@ -117,29 +118,39 @@ export class UserMenuComponent implements OnInit {
   openChangeBannerDialog(event: Event): void {
     event.stopPropagation();
     this.alertService.openChangeBannerDialog(this.user!.banner).afterClosed().subscribe({
-      next: response => {
-        if (!response || !this.user) return;
+      next: (newBanner: string | undefined) => {
+        if (!newBanner || !this.user) return;
 
-        const { bannerType, color, imageUrl, imageFile } = response;
+        // Обновляем баннер локально
+        this.user.banner = newBanner;
 
-        if (bannerType === 'color')
-          this.user.banner = color; // Устанавливаем цвет
-        else if (bannerType === 'image')
-          if (imageUrl)
-            this.user.banner = imageUrl; // Если URL, обновляем баннер
-          else if (imageFile)
-            this.uploadImageFile(imageFile, this.user); // Если файл, загружаем его
-
-        // Обновляем данные пользователя
-        this.updateUser({
-          ...this.currentUser(),
-          ...this.user
+        // Отправляем изменения на сервер
+        this.usersService.updateUser(this.user.id!, this.user).subscribe({
+          next: response => {
+            this.alertService.showSnackBar('Баннер успешно обновлен.');
+            this.authService.setUser(response.user!); // Обновляем пользователя в вашем сервисе аутентификации
+          },
+          error: error => {
+            this.alertService.showSnackBar('Не удалось обновить данные пользователя.');
+            console.error('Ошибка при обновлении данных:', error);
+          }
         });
       },
       error: error => {
         console.error(error);
+        this.alertService.showSnackBar('Ошибка при изменении баннера');
       }
     });
+  }
+
+  getBannerStyle(value: string): SafeStyle {
+    if (value.startsWith('#')) {
+      return this.sanitizer.bypassSecurityTrustStyle(value);
+    }
+
+    // Заменяем обратные слеши и экранируем специальные символы
+    const safeUrl = value.replace(/\\/g, '/').replace(/'/g, "\\'");
+    return this.sanitizer.bypassSecurityTrustStyle(`url('${safeUrl}')`);
   }
 
   private loadData(): void {
@@ -161,46 +172,5 @@ export class UserMenuComponent implements OnInit {
     } finally {
       this.loading.set(false);
     }
-  }
-
-  // Метод для загрузки файла изображения
-  private uploadImageFile(file: File, user: User): void {
-    this.fileService.upload(file).subscribe({
-      next: response => {
-        if (user.banner?.startsWith('http'))
-          this.deleteOriginalBanner(user.banner); // Удаляем старый баннер, если он есть
-        this.updateUser({
-          ...this.currentUser(),
-          ...user,
-          banner: response.fileUrl // Обновляем URL с загруженного файла
-        }); // Обновляем данные пользователя на сервере
-      },
-      error: error => {
-        this.alertService.showSnackBar('Не удалось загрузить файл.');
-        console.error('Ошибка при загрузке файла:', error);
-      }
-    });
-  }
-
-  // Метод для обновления пользователя
-  private updateUser(user: User): void {
-    this.usersService.updateUser(user.id!, user).subscribe({
-      next: _response => {
-        this.alertService.showSnackBar('Баннер успешно обновлен.');
-        this.authService.setUser(user); // Обновляем пользователя в вашем сервисе аутентификации
-      },
-      error: error => {
-        this.alertService.showSnackBar('Не удалось обновить данные пользователя.');
-        console.error('Ошибка при обновлении данных:', error);
-      }
-    });
-  }
-
-  // Метод для удаления старого баннера
-  private deleteOriginalBanner(originalBannerUrl: string): void {
-    this.fileService.delete(originalBannerUrl).subscribe({
-      next: () => console.log('Старый баннер удалён успешно.'),
-      error: error => console.error('Ошибка при удалении старого баннера:', error)
-    });
   }
 }

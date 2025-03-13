@@ -1,22 +1,16 @@
 <mat-card class="container" appearance="outlined">
   <a mat-button color="primary" (click)="goBack()" class="mb">Назад</a>
 
-  <!-- @if (isMediumScreen) {
-    <button type="button" mat-fab class="main-button" aria-label="Добавить" (click)="openCreateTicketDialog()">
-      <mat-icon>add</mat-icon>
-    </button>
-  } @else { -->
-    <a type="button" mat-button color="primary" class="mb"
-      (click)="openCreateTicketDialog()">
-      Добавить
-    </a>
-  <!-- } -->
+  <a type="button" mat-button color="primary" class="mb"
+    (click)="openCreateTicketDialog()">
+    Добавить
+  </a>
 
   <div class="ticket-list mt">
     @if (loading) {
       <mat-spinner></mat-spinner>
     } @else {
-      @for (ticket of tickets; track ticket.id) {
+      @for (ticket of paginatedTickets; track ticket.id) {
         <mat-card (click)="navigateToTicketDetails(ticket.id!)" appearance="outlined">
           <mat-card-title>{{ ticket.title }}</mat-card-title>
           <mat-card-content>
@@ -46,4 +40,12 @@
       }
     }
   </div>
+
+  <mat-paginator
+    showFirstLastButtons
+    [pageSize]="pageSize"
+    [length]="tickets.length"
+    (page)="onPageChange($event)"
+    [pageSizeOptions]="pageSizeOptions"
+  />
 </mat-card>

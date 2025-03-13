@@ -9,8 +9,8 @@
   .banner {
     height: 96px;
     position: relative;
-    background-size: cover;
-    background-position: center;
+    background-size: contain !important;
+    background-position: center !important;
 
     button {
       top: 8px;

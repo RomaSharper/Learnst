@@ -19,19 +19,9 @@
         </mat-form-field>
       }
       @case ('image') {
-        <mat-form-field>
-          <mat-label>URL изображения</mat-label>
-          <input matInput formControlName="imageUrl">
-          @if (form.get('imageUrl')?.hasError('required')) {
-            <mat-error>Пожалуйста, введите URL изображения.</mat-error>
-          } @else if (form.get('imageUrl')?.hasError('url')) {
-            <mat-error>Введите корректный URL.</mat-error>
-          }
-        </mat-form-field>
-
         <div class="file-input-container">
           <label>
-            <span class="file-label">Или загрузить файл</span>
+            <span class="file-label">Загрузить файл</span>
             <input
               type="file"
               accept="image/*"
@@ -40,6 +30,14 @@
             >
           </label>
         </div>
+
+        @if (previewUrl) {
+          <img
+            inspectable
+            [src]="previewUrl"
+            class="preview-image"
+          >
+        }
       }
     }
   </form>

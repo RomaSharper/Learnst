@@ -7,6 +7,7 @@ using Learnst.Domain.Enums;
 using Learnst.Infrastructure.Models;
 using Learnst.Infrastructure.Exceptions;
 using Learnst.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Learnst.Api.Controllers;
 
@@ -29,7 +30,9 @@ public class UsersController(
             u => u.UserLessons,
             u => u.UserAnswers,
             u => u.Tickets,
-            u => u.TicketAnswers
+            u => u.TicketAnswers,
+            u => u.Followers,
+            u => u.Followings
         ]));
 
     // GET: Users/5
@@ -224,20 +227,18 @@ public class UsersController(
         try
         {
             NotEqualsException.ThrowIfNotEquals(id, user.Id);
-            var existingUser = await repository.GetByIdAsync(id,
-                noTracking: false,
-                includes: [
-                    u => u.Educations,
-                    u => u.SocialMediaProfiles,
-                    u => u.WorkExperiences,
-                    u => u.UserActivities,
-                    u => u.UserLessons,
-                    u => u.UserAnswers,
-                    u => u.Tickets,
-                    u => u.TicketAnswers,
-                    u => u.Followers,
-                    u => u.Followings
-                ]) ?? throw new NotFoundException<User>(id);
+            var existingUser = await repository.GetByIdAsync(id, noTracking: false, includes: [
+                u => u.Educations,
+                u => u.SocialMediaProfiles,
+                u => u.WorkExperiences,
+                u => u.UserActivities,
+                u => u.UserLessons,
+                u => u.UserAnswers,
+                u => u.Tickets,
+                u => u.TicketAnswers,
+                u => u.Followers,
+                u => u.Followings
+            ]) ?? throw new NotFoundException<User>(id);;
 
             // Валидация имени пользователя
             var usernameValidation = await validationService.ValidateUsername(user.Username, user.Id);
@@ -277,10 +278,6 @@ public class UsersController(
             existingUser.UserActivities = user.UserActivities;
             existingUser.UserLessons = user.UserLessons;
             existingUser.UserAnswers = user.UserAnswers;
-            existingUser.Tickets = user.Tickets;
-            // existingUser.TicketAnswers = user.TicketAnswers;
-            // existingUser.Followers = user.Followers;
-            // existingUser.Followings = user.Followings;
 
             await repository.SaveAsync();
 

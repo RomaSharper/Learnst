@@ -43,7 +43,6 @@ import { SocialMediaDialogComponent } from './social.media.dialog/social.media.d
 import { WorkExperienceDialogComponent } from './work.experience.dialog/work.experience.dialog.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ThemeService } from '../../services/theme.service';
-import { SignalRService } from '../../services/signalr.service';
 
 @Return()
 @Component({
