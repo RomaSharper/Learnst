@@ -9,7 +9,6 @@
     position: relative;
     border-radius: 4px * 5;
     transition: transform 0.3s, box-shadow 0.3s;
-    cursor: url('https://learnst.runasp.net/assets/cursors/oneshot/15-link-select.gif') 16 16, pointer !important;
 
     &:hover {
       transform: translateY(-4px);

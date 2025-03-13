@@ -36,6 +36,19 @@
           <li><a routerLink="/community" routerLinkActive="active">Сообщество</a></li>
           <li><a routerLink="/support" routerLinkActive="active">Поддержка</a></li>
           <li><a routerLink="/manuals" routerLinkActive="active">Информация</a></li>
+          <li class="mt">
+            <a
+              target="_blank"
+              mat-raised-button
+              class="donate-btn"
+              rel="noopener noreferrer"
+              matTooltip="Поддержать разработчика ♡"
+              href="https://www.donationalerts.com/r/romasharper"
+            >
+              <img src="./assets/icons/donation_alerts.png">
+              Донат
+            </a>
+          </li>
           <li class="user-area">
             <button type="button" mat-stroked-button class="user-btn" routerLinkActive="active"
               [matTooltip]="user()?.username" [matMenuTriggerFor]="userMenu">
@@ -72,6 +85,18 @@
           <li><a routerLink="/support" routerLinkActive="active">Поддержка</a></li>
           <li><a routerLink="/community" routerLinkActive="active">Сообщество</a></li>
           <li><a routerLink="/manuals" routerLinkActive="active">Информация</a></li>
+          <li>
+            <a
+              target="_blank"
+              mat-raised-button
+              class="donate-btn"
+              rel="noopener noreferrer"
+              matTooltip="Поддержать разработчика ♡"
+              href="https://www.donationalerts.com/r/romasharper"
+            >
+              <img src="./assets/icons/donation_alerts.png">
+            </a>
+          </li>
         </ul>
 
         @if (user()) {

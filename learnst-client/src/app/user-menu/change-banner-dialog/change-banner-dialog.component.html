@@ -10,7 +10,12 @@
       @case('color') {
         <mat-form-field>
           <mat-label>Выберите цвет</mat-label>
-          <input matInput type="color" (input)="onColorSelected($event.target)">
+          <input
+            matInput
+            type="color"
+            formControlName="color"
+            (input)="onColorSelected($event.target)"
+          >
         </mat-form-field>
       }
       @case ('image') {
@@ -24,15 +29,35 @@
           }
         </mat-form-field>
 
-        <mat-form-field>
-          <mat-label>Или загрузить файл</mat-label>
-          <input type="file" (change)="onFileSelected($event)" accept="image/*">
-        </mat-form-field>
+        <div class="file-input-container">
+          <label>
+            <span class="file-label">Или загрузить файл</span>
+            <input
+              type="file"
+              accept="image/*"
+              class="file-input"
+              (change)="onFileSelected($event)"
+            >
+          </label>
+        </div>
       }
     }
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button type="button" mat-button (click)="cancel()">Отменить</button>
-  <button type="button" mat-button (click)="confirm()" [disabled]="!form.valid">Сохранить</button>
+  <button
+    mat-button
+    type="button"
+    (click)="cancel()"
+  >
+    Отменить
+  </button>
+  <button
+    mat-button
+    type="button"
+    (click)="confirm()"
+    [disabled]="!form.valid"
+  >
+    Сохранить
+  </button>
 </mat-dialog-actions>

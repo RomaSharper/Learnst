@@ -1,5 +1,4 @@
-import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,7 +10,6 @@ import { NoDownloadingDirective } from '../../directives/no-downloading.directiv
 import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
 import { TimeoutHandler } from '../../handlers/TimeoutHandler';
 import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
-import { Return } from '../../helpers/Return';
 import { Ticket } from '../../models/Ticket';
 import { TicketAnswer } from '../../models/TicketAnswer';
 import { RuDateTimePipe } from '../../pipes/ru.date.time.pipe';
@@ -25,7 +23,6 @@ import { User } from './../../models/User';
 import { AlertService } from './../../services/alert.service';
 import { AddAnswerDialogComponent } from './add-answer-dialog/add-answer-dialog.component';
 
-@Return()
 @Component({
   selector: 'app-ticket-detail',
   templateUrl: './ticket-detail.component.html',
@@ -44,79 +41,73 @@ import { AddAnswerDialogComponent } from './add-answer-dialog/add-answer-dialog.
   ]
 })
 export class TicketDetailComponent extends MediumScreenSupport implements OnInit {
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private usersService = inject(UsersService);
+  private alertService = inject(AlertService);
+  private ticketService = inject(TicketService);
+
   user!: User;
   ticket!: Ticket;
   ticketId!: string;
   canAnswer = false;
-  canAnswerOrDelete = false;
-  goBack!: () => void;
   canChangeStatus = false;
+  errorMessage = signal('');
+  canAnswerOrDelete = false;
 
   Role = Role;
   TicketStatus = TicketStatus;
   TicketStatusHelper = TicketStatusHelper;
 
-  constructor(
-    private router: Router,
-    public location: Location,
-    private route: ActivatedRoute,
-    private authService: AuthService,
-    private usersService: UsersService,
-    private alertService: AlertService,
-    private ticketService: TicketService,
-  ) {
-    super();
-  }
-
   ngOnInit(): void {
     this.route.paramMap.subscribe(paramMap => {
       this.ticketId = paramMap.get('ticketId')!;
-      if (this.ticketId) {
-        this.ticketService.getTicket(this.ticketId).subscribe({
-          next: ticket => {
-            this.ticket = ticket;
+      if (!this.ticketId) return;
+      this.ticketService.getTicket(this.ticketId).subscribe({
+        next: ticket => {
+          this.ticket = ticket;
 
-            this.authService.getUser().subscribe({
-              next: data => {
-                this.user = data as User;
-                this.canChangeStatus = this.user.role !== Role.User;
-                this.canAnswerOrDelete = this.canChangeStatus || this.user.id === this.ticket.authorId;
-              }
-            })
+          this.authService.getUser().subscribe({
+            next: data => {
+              this.user = data as User;
+              this.canChangeStatus = this.user.role !== Role.User;
+              this.canAnswerOrDelete = this.canChangeStatus || this.user.id === this.ticket.authorId;
+            }
+          })
 
-            // Загружаем текущего пользователя
-            this.usersService.getUserById(ticket.authorId).subscribe({
-              next: data => {
-                const currentUser = data as User;
-                this.ticket.author = currentUser;
+          // Загружаем текущего пользователя
+          this.usersService.getUserById(ticket.authorId).subscribe({
+            next: data => {
+              const currentUser = data as User;
+              this.ticket.author = currentUser;
 
-                this.ticket.ticketAnswers = this.ticket.ticketAnswers.sort(
-                  (a, b) => new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime());
+              this.ticket.ticketAnswers = this.ticket.ticketAnswers.sort(
+                (a, b) => new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime());
 
-                this.ticket.statusHistories = this.ticket.statusHistories.sort(
-                  (a, b) => new Date(a.changedAt!).getTime() - new Date(b.changedAt!).getTime());
+              this.ticket.statusHistories = this.ticket.statusHistories.sort(
+                (a, b) => new Date(a.changedAt!).getTime() - new Date(b.changedAt!).getTime());
 
-                for (const answer of this.ticket.ticketAnswers)
-                  this.usersService.getUserById(answer.authorId).pipe(TimeoutHandler.retryOnCodes([500, 504])).subscribe({
-                    next: data => answer.author = data as User,
-                    error: err => {
-                      this.alertService.showSnackBar('Не удалось загрузить автора ответа');
-                      console.error(err);
-                    }
-                  });
-              },
-              error: err => {
-                this.alertService.showSnackBar('Не удалось загрузить текущего пользователя');
-                console.error(err);
-              }
-            });
-          },
-          error: err => {
-            this.alertService.showSnackBar('Не удалось загрузить тикет');
-            console.error(err);
-          }
-        });
-      }
+              for (const answer of this.ticket.ticketAnswers)
+                this.usersService.getUserById(answer.authorId).pipe(TimeoutHandler.retryOnCodes([500, 504])).subscribe({
+                  next: data => answer.author = data as User,
+                  error: err => {
+                    this.alertService.showSnackBar('Не удалось загрузить автора ответа');
+                    console.error(err);
+                  }
+                });
+            },
+            error: err => {
+              this.alertService.showSnackBar('Не удалось загрузить текущего пользователя');
+              console.error(err);
+            }
+          });
+        },
+        error: err => {
+          this.errorMessage.set('Не удалось загрузить тикет');
+          console.error(err);
+        }
+      });
     });
   }
 

@@ -43,10 +43,26 @@
   }
 }
 
-.desktop-notifications {
-  top: 4px;
-  right: 56px;
-  position: absolute;
+.donate-btn {
+  gap: 8px;
+  margin: 0 8px;
+  align-items: center;
+  display: flex !important;
+  transition: all 0.3s ease;
+  color: white !important;
+  width: calc(100% - 16px) !important;
+  background: linear-gradient(45deg, #FF5722 0%, #FF9800 100%);
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
+  }
+
+  img {
+    width: 24px;
+    aspect-ratio: 1;
+    vertical-align: middle;
+  }
 }
 
 .main-navigation {
@@ -199,15 +215,17 @@
       li {
         padding: 4px 8px;
 
-        a {
+        a:not(.donate-btn) {
           width: 100%;
           height: 100%;
           display: block;
           position: relative;
           text-decoration: none;
           color: var(--mat-sys-primary);
+          cursor: var(--cursor-pointer) !important;
 
           &::after {
+            left: 0;
             bottom: 0;
             opacity: 0;
             width: 100%;

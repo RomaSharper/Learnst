@@ -1,5 +1,5 @@
 <mat-card class="container" appearance="outlined">
-  <a mat-button color="primary" class="mb" (click)="goBack()">Назад</a>
+  <a mat-button color="primary" class="mb" routerLink="/support">Назад</a>
 
   @if (canAnswerOrDelete) {
     <a mat-button (click)="deleteTicket()" class="mb">Удалить</a>
@@ -108,6 +108,8 @@
       </div>
     </mat-card-content>
   </mat-card>
+} @else if (errorMessage()) {
+  <div class="error with-background p">{{ errorMessage() }}</div>
 } @else {
   <mat-spinner></mat-spinner>
 }
