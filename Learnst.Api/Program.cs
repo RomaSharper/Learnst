@@ -55,18 +55,11 @@ builder.Services.Configure<VkSettings>(builder.Configuration.GetSection("Vk"))
     .Configure<SftpSettings>(builder.Configuration.GetSection("Sftp"))
     .Configure<SteamSettings>(builder.Configuration.GetSection("Steam"))
     .Configure<GithubSettings>(builder.Configuration.GetSection("Github"))
-    .Configure<MailRuSettings>(builder.Configuration.GetSection("MailRu"))
-    .Configure<TikTokSettings>(builder.Configuration.GetSection("TikTok"))
     .Configure<TwitchSettings>(builder.Configuration.GetSection("Twitch"))
     .Configure<GoogleSettings>(builder.Configuration.GetSection("Google"))
     .Configure<YandexSettings>(builder.Configuration.GetSection("Yandex"))
     .Configure<DiscordSettings>(builder.Configuration.GetSection("Discord"))
-    .Configure<TelegramSettings>(builder.Configuration.GetSection("Telegram"))
-    .Configure<FacebookSettings>(builder.Configuration.GetSection("Facebook"))
-    .Configure<YookassaSettings>(builder.Configuration.GetSection("Yookassa"))
-    .Configure<MicrosoftSettings>(builder.Configuration.GetSection("Microsoft"))
-    .Configure<EpicGamesSettings>(builder.Configuration.GetSection("EpicGames"))
-    .Configure<SubscriptionSettings>(builder.Configuration.GetSection("Subscription"));
+    .Configure<EpicGamesSettings>(builder.Configuration.GetSection("EpicGames"));
 
 // Настройка базы данных и аутентификации
 builder.Services.AddRequestTimeout(TimeSpan.FromSeconds(100))
@@ -99,7 +92,7 @@ app.UseWebSockets()
     .UseHttpsRedirection()
     .UseStaticFiles()
     .UseSession()
-    .UseCustomSecurity(onError: async (context, _, origin) =>
+    .UseCustomSecurity(trustedOrigins, trustedPaths, onError: async (context, _, origin) =>
     {
         await LogService.WriteLine($"** Запрещен доступ источнику \"{(
             string.IsNullOrEmpty(origin) ? "null" : origin

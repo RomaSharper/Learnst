@@ -28,7 +28,6 @@ public class FollowsRepository(ApplicationDbContext context, IMapper mapper)
     public async Task RemoveFollowerAsync(Guid userToUnfollowId, Guid followerId)
     {
         var follow = await GetFollowAsync(userToUnfollowId, followerId);
-        if (follow is not null)
-            DbSet.Remove(follow);
+        DbSet.Remove(follow);
     }
 }

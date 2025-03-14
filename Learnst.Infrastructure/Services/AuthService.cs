@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Learnst.Domain.Services;
+namespace Learnst.Infrastructure.Services;
 
 public static class AuthService
 {

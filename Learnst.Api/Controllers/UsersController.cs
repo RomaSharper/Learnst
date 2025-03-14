@@ -7,7 +7,6 @@ using Learnst.Domain.Enums;
 using Learnst.Infrastructure.Models;
 using Learnst.Infrastructure.Exceptions;
 using Learnst.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace Learnst.Api.Controllers;
 
@@ -238,7 +237,7 @@ public class UsersController(
                 u => u.TicketAnswers,
                 u => u.Followers,
                 u => u.Followings
-            ]) ?? throw new NotFoundException<User>(id);;
+            ]) ?? throw new NotFoundException<User>(id);
 
             // Валидация имени пользователя
             var usernameValidation = await validationService.ValidateUsername(user.Username, user.Id);

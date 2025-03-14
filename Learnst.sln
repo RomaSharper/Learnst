@@ -4,8 +4,6 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "learnst-client", "learnst-c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learnst.Api", "Learnst.Api\Learnst.Api.csproj", "{75B6300B-AB42-6249-421A-BE35B19A87A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learnst.Domain", "Learnst.Domain\Learnst.Domain.csproj", "{952974E3-CDE7-AD5D-D5C1-B476F51A9C66}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{089100B1-113F-4E66-888A-E83F3999EAFD}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -28,10 +26,6 @@ Global
 		{75B6300B-AB42-6249-421A-BE35B19A87A2}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{75B6300B-AB42-6249-421A-BE35B19A87A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75B6300B-AB42-6249-421A-BE35B19A87A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{952974E3-CDE7-AD5D-D5C1-B476F51A9C66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{952974E3-CDE7-AD5D-D5C1-B476F51A9C66}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{952974E3-CDE7-AD5D-D5C1-B476F51A9C66}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{952974E3-CDE7-AD5D-D5C1-B476F51A9C66}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F12A5BA8-2073-6125-7D89-3A602B9DBB6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F12A5BA8-2073-6125-7D89-3A602B9DBB6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F12A5BA8-2073-6125-7D89-3A602B9DBB6F}.Release|Any CPU.ActiveCfg = Release|Any CPU

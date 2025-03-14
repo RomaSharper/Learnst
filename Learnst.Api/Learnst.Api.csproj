@@ -37,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Learnst.Domain\Learnst.Domain.csproj" />
     <ProjectReference Include="..\Learnst.Infrastructure\Learnst.Infrastructure.csproj" />
   </ItemGroup>
 
