@@ -38,8 +38,7 @@
         <div class="ticket-info">
             @if (ticket.author) {
               <a class="author-info" [routerLink]="['/user', ticket.authorId]">
-                <img class="avatar" [src]="ticket.author.avatarUrl"
-                  [alt]="ticket.author.username" noDownloading
+                <img class="avatar" [src]="ticket.author.avatarUrl!" [alt]="ticket.author.username" noDownloading
                   placeholder="/assets/icons/user-192x192.png">
                 <span>{{ ticket.author.username }}</span>
               </a>
@@ -54,8 +53,8 @@
               <div class="answer-info">
                 @if (answer.author) {
                   <a class="author-info" [routerLink]="['/user', answer.authorId]">
-                    <img [src]="answer.author.avatarUrl" placeholder="/assets/icons/user-192x192.png"
-                      alt="Аватар" class="avatar" noDownloading>
+                    <img [src]="answer.author.avatarUrl!" placeholder="/assets/icons/user-192x192.png"
+                         alt="Аватар" class="avatar" noDownloading>
                     <div class="author-details">
                       <span class="username">{{ answer.author.username }}</span>
                       <span class="created-at">{{ answer.createdAt | ruDateTime: 'relative' }}</span>
@@ -68,12 +67,6 @@
                       <mat-icon class="role-icon specialist-icon" matTooltip="Специалист">build</mat-icon>
                     }
                   </a>
-                } @else {
-                  <div class="author-details author-info">
-                    <img placeholder="/assets/icons/user-192x192.png" alt="Аватар"
-                      class="avatar" noDownloading>
-                    <span class="username">Неизвестный пользователь</span>
-                  </div>
                 }
                 <p class="answer-content">{{ answer.content }}</p>
               </div>

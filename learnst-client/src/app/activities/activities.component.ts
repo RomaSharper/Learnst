@@ -101,27 +101,6 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
     this.filterActivities();
   }
 
-  searchQueryKeyPress(event: KeyboardEvent) {
-    if (event.key === 'Enter')
-      this.navigateTo(this.searchQuery);
-  }
-
-  navigateTo(query: string): void {
-    if (query)
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: {
-          search_query: query
-        },
-        queryParamsHandling: 'merge'
-      });
-    else
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: {}
-      });
-  }
-
   loadActivities(): void {
     this.loading = true; // Начало загрузки
     this.activitiesService.getActivities().subscribe(activities => {

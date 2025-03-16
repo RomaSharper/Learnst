@@ -92,7 +92,8 @@
 }
 
 /* Меню аккаунтов */
-.accounts-menu.mat-menu-panel {
+//noinspection ALL
+.accounts-menu {
   margin-top: 8px !important;
   min-width: 280px !important;
   border-radius: 16px !important;
@@ -152,12 +153,12 @@
 }
 
 /* Ховер-эффекты */
-.account-btn.mat-menu-item:hover,
-.add-account-btn.mat-menu-item:hover {
+//noinspection CssUnusedSymbol
+.account-btn:hover {
   background: var(--mat-sys-hover-state-layer-opacity) !important;
 }
 
-.account-btn.mat-menu-item:hover .account-actions mat-icon {
+.account-btn:hover .account-actions mat-icon {
   color: var(--mat-sys-primary) !important;
 }
 
@@ -169,9 +170,4 @@
 
 .account-btn.current mat-icon {
   color: var(--mat-sys-primary) !important;
-}
-
-/* Кнопка добавления аккаунта */
-.add-account-btn.mat-menu-item {
-  font-weight: 500 !important;
 }

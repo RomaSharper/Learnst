@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 import { ClientInfo } from '../models/ClientInfo';
 
+// noinspection JSUnusedGlobalSymbols
 @Injectable({
   providedIn: 'root'
 })

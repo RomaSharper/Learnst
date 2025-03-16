@@ -82,19 +82,6 @@ export class SignalRService {
     return connection.invoke<T>(methodName, ...args);
   }
 
-  destroyConnection(hubUrl: string): void {
-    const normalizedUrl = this.normalizeUrl(hubUrl);
-    const connection = this.connections.get(normalizedUrl);
-
-    if (connection) {
-      connection.stop()
-        .then(() => console.log(`Connection ${normalizedUrl} stopped`))
-        .catch(error => console.error(`Error stopping connection ${normalizedUrl}: ${error}`));
-
-      this.cleanupConnection(normalizedUrl);
-    }
-  }
-
   private async startConnection(connection: HubConnection, subject: ReplaySubject<HubConnection>): Promise<void> {
     try {
       await connection.start();
@@ -112,7 +99,7 @@ export class SignalRService {
       const timeout = setTimeout(() => {
         connection.off('close');
         connection.off('reconnected');
-        reject(new Error('Connection timeout'));
+        reject(new Error('Время подключения истекло.'));
       }, 5000);
 
       const successHandler = () => {

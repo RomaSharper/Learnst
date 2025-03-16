@@ -270,7 +270,7 @@ export class ThemeService {
         filter(connection => !!connection)
       )
       .subscribe({
-        next: connection => {
+        next: _connection => {
           this.signalr.on(this.hubUrl, 'ReceiveThemeUpdate',
             (themeId: string) => this.applyRemoteTheme(themeId)
           );

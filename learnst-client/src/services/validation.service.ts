@@ -1,12 +1,11 @@
 import { AbstractControl, AsyncValidatorFn, FormControl, ValidationErrors } from "@angular/forms";
 import { SocialMediaPlatform } from "../enums/SocialMediaPlatform";
 import { SocialMediaPlatformHelper } from "../helpers/SocialMediaPlatformHelper";
-import { switchMap, debounceTime, distinctUntilChanged, skip, startWith, takeUntil } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import { Observable, of, map, catchError } from "rxjs";
 import { UsersService } from "./users.service";
 
 export class ValidationService {
-  static fullNamePattern = /^[A-Za-zА-Яа-яЁё\s]+$/;
   static emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   static passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
   static usernamePattern = /^(?!_)[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*(?<!_)$/;

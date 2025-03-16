@@ -77,10 +77,9 @@
         .preview-container {
           width: 160px;
           height: 160px;
-          margin: 0 auto;
           overflow: hidden;
           border-radius: 8px;
-          margin-bottom: 8px;
+          margin: 0 auto 8px;
           box-shadow: var(--mat-sys-level2);
 
           img {

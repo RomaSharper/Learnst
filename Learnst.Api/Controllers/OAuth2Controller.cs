@@ -46,8 +46,10 @@ public partial class OAuth2Controller(
         string? avatar = null,
         string? usernameBase = null,
         string? fullName = null,
-        DateOnly? dateOfBirth = null)
+        DateOnly? dateOfBirth = null,
+        string? ipAddress = null)
     {
+        var realIp = HttpContext.GetRemoteIPAddress()?.ToString() ?? ipAddress ?? "unknown";
         var user = await context.Users.FirstOrDefaultAsync(u =>
             u.EmailAddress == email ||
             (u.ExternalLoginId == externalLoginId &&
@@ -57,6 +59,7 @@ public partial class OAuth2Controller(
         {
             user = new User
             {
+                Ip = realIp,
                 AvatarUrl = avatar,
                 FullName = fullName,
                 EmailAddress = email,
@@ -71,6 +74,7 @@ public partial class OAuth2Controller(
         }
         else
         {
+            user.Ip = realIp;
             user.AvatarUrl = avatar ?? user.AvatarUrl;
             user.FullName = fullName ?? user.FullName;
             user.DateOfBirth = dateOfBirth ?? user.DateOfBirth;
@@ -110,7 +114,7 @@ public partial class OAuth2Controller(
         {
             var username = string.IsNullOrEmpty(baseName)
                 ? GenerateUsernameCandidate(random)
-                : $"{baseName}_{GenerateUsernameCandidate(random, 20 - baseName.Length, false)}";
+                : $"{baseName}_{GenerateUsernameCandidate(random, 19 - baseName.Length, false)}";
             var exists = await context.Users.AnyAsync(u => u.Username == username);
             if (!exists) return username;
         }
@@ -318,7 +322,8 @@ public partial class OAuth2Controller(
 
         // Поиск/создание пользователя
         var user = await FindOrCreateUser(userInfo.DefaultEmail, userInfo.Id, SocialMediaPlatform.Google,
-            $"https://avatars.yandex.net/get-yapic/{userInfo.DefaultAvatarId}/islands-200");
+            $"https://avatars.yandex.net/get-yapic/{userInfo.DefaultAvatarId}/islands-200", 
+            ipAddress: HttpContext.GetRemoteIPAddress()?.ToString());
 
         return RedirectWithToken(user);
     }
@@ -421,7 +426,8 @@ public partial class OAuth2Controller(
             SocialMediaPlatform: SocialMediaPlatform.VK,
             avatar: userInfo?.Photo200,
             dateOfBirth: birthDate,
-            fullName: $"{userInfo?.FirstName} {userInfo?.LastName}".Trim());
+            fullName: $"{userInfo?.FirstName} {userInfo?.LastName}".Trim(),
+            ipAddress: HttpContext.GetRemoteIPAddress()?.ToString());
 
         return RedirectWithToken(user);
     }
@@ -522,7 +528,8 @@ public partial class OAuth2Controller(
                 externalLoginId: userInfo.Id.ToString(),
                 SocialMediaPlatform: SocialMediaPlatform.Github,
                 avatar: userInfo.AvatarUrl,
-                fullName: userInfo.Name);
+                fullName: userInfo.Name,
+                ipAddress: HttpContext.GetRemoteIPAddress()?.ToString());
 
             return RedirectWithToken(user);
         }
@@ -636,7 +643,8 @@ public partial class OAuth2Controller(
                 externalLoginId: userInfo.Id,
                 SocialMediaPlatform: SocialMediaPlatform.Discord,
                 avatar: avatarUrl,
-                fullName: $"{userInfo.Username}#{userInfo.Discriminator}");
+                fullName: $"{userInfo.Username}#{userInfo.Discriminator}",
+                ipAddress: HttpContext.GetRemoteIPAddress()?.ToString());
 
             return RedirectWithToken(user);
         }
@@ -721,7 +729,8 @@ public partial class OAuth2Controller(
                 avatar: userInfo.AvatarFull,
                 fullName: userInfo.PersonaName,
                 SocialMediaPlatform: SocialMediaPlatform.Steam,
-                usernameBase: SanitizeUsername(userInfo.PersonaName));
+                usernameBase: SanitizeUsername(userInfo.PersonaName),
+                ipAddress: HttpContext.GetRemoteIPAddress()?.ToString());
 
             return RedirectWithToken(user);
         }
@@ -845,13 +854,14 @@ public partial class OAuth2Controller(
                 SocialMediaPlatform: SocialMediaPlatform.Twitch,
                 avatar: userData.ProfileImageUrl,
                 fullName: userData.DisplayName,
-                usernameBase: userData.Login);
+                usernameBase: userData.Login,
+                ipAddress: HttpContext.GetRemoteIPAddress()?.ToString());
 
             return RedirectWithToken(user);
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new ErrorResponse(ex));
+            return StatusCode(500, new ErrorResponse(ex.InnerException));
         }
     }
 

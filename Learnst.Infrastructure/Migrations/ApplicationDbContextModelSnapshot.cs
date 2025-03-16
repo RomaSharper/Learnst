@@ -530,6 +530,10 @@ namespace Learnst.Domain.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Ip")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");

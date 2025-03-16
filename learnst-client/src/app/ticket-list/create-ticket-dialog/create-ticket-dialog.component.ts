@@ -1,4 +1,4 @@
-import { AlertService } from './../../../services/alert.service';
+import { AlertService } from '../../../services/alert.service';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';

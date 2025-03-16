@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanDeactivate } from '@angular/router';
-import { Observable } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../app/confirm-dialog/confirm-dialog.component';
 import { CanComponentDeactivate } from '../helpers/CanComponentDeactivate';
@@ -11,13 +11,13 @@ import { CanComponentDeactivate } from '../helpers/CanComponentDeactivate';
 export class ConfirmGuard implements CanDeactivate<CanComponentDeactivate> {
   constructor(private dialog: MatDialog) { }
 
-  canDeactivate(component: CanComponentDeactivate): Observable<boolean> | Promise<boolean> | boolean {
+  async canDeactivate(component: CanComponentDeactivate): Promise<boolean> {
     if (component.canDeactivate && !component.canDeactivate())
-      return this.showConfirmDialog();
+      return await this.showConfirmDialog();
     return true;
   }
 
-  private showConfirmDialog(): Promise<boolean> {
+  private async showConfirmDialog(): Promise<boolean> {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
       data: {
@@ -28,6 +28,6 @@ export class ConfirmGuard implements CanDeactivate<CanComponentDeactivate> {
       },
     });
 
-    return dialogRef.afterClosed().toPromise();
+    return await lastValueFrom(dialogRef.afterClosed());
   }
 }

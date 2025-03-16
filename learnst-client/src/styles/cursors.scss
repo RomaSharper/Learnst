@@ -19,6 +19,7 @@
 }
 
 // Включение кастомных курсоров
+//noinspection ALL
 body.custom-cursors {
   --cursor-default: url('https://learnst.runasp.net/assets/cursors/oneshot/01-normal-select.gif') 0 0, auto;
   --cursor-help: url('https://learnst.runasp.net/assets/cursors/oneshot/02-help-select.gif') 0 0, help;
@@ -48,11 +49,13 @@ body {
 }
 
 /* Базовые элементы */
+//noinspection ALL
 *, .cdk-global-overlay-wrapper, .loading-screen:not(.visible) .loading-background {
   cursor: var(--cursor-default) !important;
 }
 
 /* Интерактивные элементы */
+//noinspection ALL
 mat-select, mat-select *, mat-select + *,
 [role="button"], [role="link"], a *, button *,
 .mat-mdc-form-field, .mat-mdc-option, .mat-mdc-option *, .mat-mdc-menu-item,
@@ -61,6 +64,7 @@ mat-select, mat-select *, mat-select + *,
 }
 
 /* Текстовые элементы */
+//noinspection ALL
 [contenteditable]:not([contenteditable="false"]),
 .mat-mdc-snack-bar-label, .mat-mdc-tooltip-surface,
 textarea, p, h1, h2, h3, h4, h5, h6, strong, small, pre, code, mat-label,
@@ -89,20 +93,24 @@ input[type="range"] {
   cursor: var(--cursor-grabbing) !important;
 }
 
+//noinspection ALL
 .dropzone.dragover {
   cursor: var(--cursor-copy) !important;
 }
 
+//noinspection ALL
 .resize-vertical,
 .resize-ns {
   cursor: var(--cursor-resize-ns) !important;
 }
 
+//noinspection ALL
 .resize-horizontal,
 .resize-ew {
   cursor: var(--cursor-resize-ew) !important;
 }
 
+//noinspection ALL
 [aria-busy="true"], .loading,
 .loading-screen.visible .loading-background {
   cursor: var(--cursor-progress) !important;
@@ -116,6 +124,7 @@ input[type="range"] {
   cursor: var(--cursor-help) !important;
 }
 
+//noinspection ALL
 .signature-pad, .handwriting {
   cursor: var(--cursor-crosshair) !important;
 }

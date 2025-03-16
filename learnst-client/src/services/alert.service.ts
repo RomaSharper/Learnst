@@ -17,16 +17,6 @@ export class AlertService {
    */
   static CONFIRM_TITLE = 'Требуется подтверждение';
 
-  /**
-   * Заголовок для диалога с ошибкой.
-   */
-  static ERROR_TITLE = 'Возникла ошибка';
-
-  /**
-   * Заголовок для диалога с сообщением об успехе.
-   */
-  static SUCCESS_TITLE = 'Успех операции';
-
   getDialog() {
     return this.dialog;
   }

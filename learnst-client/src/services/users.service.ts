@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 import { UpdatedResponse } from '../models/UpdatedResponse';
 import { UpdatePasswordRequest } from '../models/UpdatePasswordRequest';
@@ -26,10 +26,6 @@ export class UsersService {
 
   getUserByName(username: string): Observable<User | null> {
     return this.http.get<User | null>(`${this.apiUrl}/username/${username}`);
-  }
-
-  getUserByPhone(phone: string): Observable<User | null> {
-    return this.http.get<User | null>(`${this.apiUrl}/phone/${phone}`);
   }
 
   getUserByEmail(email: string): Observable<User | null> {
@@ -66,25 +62,6 @@ export class UsersService {
     return this.http.get<boolean>(`${this.apiUrl}/checkEmail`, {
       params: { emailAddress }
     });
-  }
-
-  sendFriendRequest(currentUserId: string, friendId: string): Observable<any> {
-    return this.http.post(
-      `${this.apiUrl}/${currentUserId}/Friendships/${friendId}`,
-      {}
-    ).pipe(
-      catchError(error => {
-        console.error('Ошибка отправки запроса:', error);
-        throw error;
-      })
-    );
-}
-
-  acceptFriendRequest(currentUserId: string, friendId: string): Observable<any> {
-    return this.http.post(
-      `${this.apiUrl}/${currentUserId}/Friendships/${friendId}/Accept`,
-      {}
-    );
   }
 
   getFollowers(userId: string): Observable<User[]> {

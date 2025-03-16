@@ -1,45 +1,52 @@
-import { ENTER } from '@angular/cdk/keycodes';
-import { CommonModule, Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { catchError, of } from 'rxjs';
-import { InspectableDirective } from '../../directives/inspectable.directive';
-import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
-import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
-import { AnswerType } from '../../enums/AnswerType';
-import { InfoType } from '../../enums/InfoType';
-import { LessonType } from '../../enums/LessonType';
-import { Level } from '../../enums/Level';
-import { InfoTypeHelper } from '../../helpers/InfoTypeHelper';
-import { LevelHelper } from '../../helpers/LevelHelper';
-import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
-import { Return } from '../../helpers/Return';
-import { Activity } from '../../models/Activity';
-import { InfoCard } from '../../models/InfoCard';
-import { Topic } from '../../models/Topic';
-import { ActivitiesService } from '../../services/activities.service';
-import { AlertService } from '../../services/alert.service';
-import { AuthService } from '../../services/auth.service';
-import { DateService } from '../../services/date.service';
-import { FileService } from '../../services/file.service';
-import { ValidationService } from '../../services/validation.service';
-import { InfoCardDialogComponent } from './info.card.dialog/info.card.dialog.component';
-import { TopicDialogComponent } from './topic.dialog/topic.dialog.component';
+import {ENTER} from '@angular/cdk/keycodes';
+import {CommonModule, Location} from '@angular/common';
+import {Component, OnInit} from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators
+} from '@angular/forms';
+import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatSelectModule} from '@angular/material/select';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {catchError, of} from 'rxjs';
+import {InspectableDirective} from '../../directives/inspectable.directive';
+import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
+import {PlaceholderImageDirective} from '../../directives/placeholder-image.directive';
+import {AnswerType} from '../../enums/AnswerType';
+import {LessonType} from '../../enums/LessonType';
+import {Level} from '../../enums/Level';
+import {InfoTypeHelper} from '../../helpers/InfoTypeHelper';
+import {LevelHelper} from '../../helpers/LevelHelper';
+import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
+import {Return} from '../../helpers/Return';
+import {Activity} from '../../models/Activity';
+import {InfoCard} from '../../models/InfoCard';
+import {Topic} from '../../models/Topic';
+import {ActivitiesService} from '../../services/activities.service';
+import {AlertService} from '../../services/alert.service';
+import {AuthService} from '../../services/auth.service';
+import {DateService} from '../../services/date.service';
+import {FileService} from '../../services/file.service';
+import {ValidationService} from '../../services/validation.service';
+import {InfoCardDialogComponent} from './info.card.dialog/info.card.dialog.component';
+import {TopicDialogComponent} from './topic.dialog/topic.dialog.component';
 
 @Return()
 @Component({
@@ -145,7 +152,6 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
     'Фаервол', 'VPN', 'Цифровые подписи', 'Wi-Fi', 'Roblox'
   ];
 
-  InfoType = InfoType;
   InfoTypeHelper = InfoTypeHelper;
 
   constructor(
@@ -190,7 +196,7 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
         this.router.navigate(['/activities']);
         return of(null);
       })
-    ).subscribe((activity: Activity | null) => {
+    ).subscribe(activity => {
       if (!activity) return;
 
       this.activityForm.patchValue({
@@ -286,7 +292,7 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
   addInfoCard(): void {
     const dialogRef = this.alertService.getDialog().open(InfoCardDialogComponent, {
       width: '500px',
-      data: { infoCard: null } // Передаём null для создания новой карточки
+      data: {infoCard: null} // Передаём null для создания новой карточки
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -299,7 +305,7 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
   editInfoCard(index: number): void {
     const dialogRef = this.alertService.getDialog().open(InfoCardDialogComponent, {
       width: '500px',
-      data: { infoCard: this.infoCards[index] } // Передаём текущую карточку для редактирования
+      data: {infoCard: this.infoCards[index]} // Передаём текущую карточку для редактирования
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -318,7 +324,7 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
   addTopic(): void {
     const dialogRef = this.alertService.getDialog().open(TopicDialogComponent, {
       width: '500px',
-      data: { topic: null } // Передаём null для создания новой темы
+      data: {topic: null} // Передаём null для создания новой темы
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -337,7 +343,7 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
   editTopic(index: number): void {
     const dialogRef = this.alertService.getDialog().open(TopicDialogComponent, {
       width: '500px',
-      data: { topic: this.topics[index] } // Передаём текущую тему для редактирования
+      data: {topic: this.topics[index]} // Передаём текущую тему для редактирования
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -394,7 +400,7 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
   private maxScoreValidator(control: AbstractControl): ValidationErrors | null {
     const totalQuestions = this.getTotalQuestionsCount();
     if (control.value > totalQuestions)
-      return { maxScore: { max: totalQuestions, actual: control.value } };
+      return {maxScore: {max: totalQuestions, actual: control.value}};
     return null;
   }
 
@@ -487,7 +493,7 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
       next: (response) => {
         if (this.oldAvatarUrl)
           this.deleteOldAvatar(this.oldAvatarUrl);
-        this.activityForm.patchValue({ avatarUrl: response.fileUrl });
+        this.activityForm.patchValue({avatarUrl: response.fileUrl});
         this.saveActivity();
       },
       error: error => this.handleError('Не удалось загрузить файл:', error)

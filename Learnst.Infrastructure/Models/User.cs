@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Learnst.Domain.Enums;
 using Learnst.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,8 @@ public class User : IEntity
     [StringLength(50)] public string ThemeId { get; set; } = "light";
 
     public Theme? Theme { get; set; }
+
+    [JsonIgnore] public string Ip { get; set; } = "unknown";
 
     #endregion
 

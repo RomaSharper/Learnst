@@ -25,7 +25,8 @@
     @for (user of displayedUsers; track user) {
       <mat-card [routerLink]="['/user', user.id]" appearance="outlined">
         <mat-card-content class="user-card">
-          <img [src]="user.avatarUrl" alt="Avatar" class="avatar" placeholder="/assets/icons/user-192x192.png" loading="lazy" noDownloading>
+          <img [src]="user.avatarUrl!" alt="Avatar" class="avatar" placeholder="/assets/icons/user-192x192.png"
+               loading="lazy" noDownloading>
           <div class="user-info">
             <p [matTooltip]="RoleHelper.getName(user.role)" [matTooltipDisabled]="user.role === Role.User">
               {{ user.username }}
@@ -47,7 +48,7 @@
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
-              @if (![Role.Specialist, Role.Admin].includes(user.role)) {
+              @if (user.role === Role.User || user.role === Role.Backup) {
                 <button type="button" mat-menu-item (click)="upRole(user)">
                   @switch (user.role) {
                     @case (Role.User) {

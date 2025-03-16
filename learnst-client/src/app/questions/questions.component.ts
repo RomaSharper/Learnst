@@ -1,19 +1,20 @@
-import { MatStepper, MatStepperModule } from '@angular/material/stepper';
-import { Component, inject, Input, OnInit, ViewChild } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatRadioModule } from '@angular/material/radio';
-import { Return } from '../../helpers/Return';
-import { Question } from '../../models/Question';
-import { UserAnswer } from '../../models/UserAnswer';
-import { AnswersService } from '../../services/answers.service';
-import { AuthService } from '../../services/auth.service';
-import { AnswerType } from './../../enums/AnswerType';
-import { MatDividerModule } from '@angular/material/divider';
-import { StepperSelectionEvent } from '@angular/cdk/stepper';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import {MatStepper, MatStepperModule} from '@angular/material/stepper';
+import {Component, inject, Input, OnInit, ViewChild} from '@angular/core';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatRadioModule} from '@angular/material/radio';
+import {Return} from '../../helpers/Return';
+import {Question} from '../../models/Question';
+import {UserAnswer} from '../../models/UserAnswer';
+import {AnswersService} from '../../services/answers.service';
+import {AuthService} from '../../services/auth.service';
+import {AnswerType} from '../../enums/AnswerType';
+import {MatDividerModule} from '@angular/material/divider';
+import {StepperSelectionEvent} from '@angular/cdk/stepper';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {lastValueFrom} from 'rxjs';
 
 @Return()
 @Component({
@@ -95,7 +96,7 @@ export class QuestionsComponent implements OnInit {
     }));
 
     try {
-      const responses = await this.answersService.answerQuestions(userAnswers).toPromise();
+      const responses = await lastValueFrom(this.answersService.answerQuestions(userAnswers));
       this.userAnswers = [...this.userAnswers, ...responses!];
       this.selectedAnswers = [];
 
@@ -164,8 +165,7 @@ export class QuestionsComponent implements OnInit {
       return false;
 
     // Проверяем, ответил ли пользователь на все вопросы
-    const allAnswered = this.questions.every(question => this.isQuestionAnswered(question.id));
-    return allAnswered;
+    return this.questions.every(question => this.isQuestionAnswered(question.id));
   }
 
   onStepChange(event: StepperSelectionEvent): void {
@@ -230,7 +230,7 @@ export class QuestionsComponent implements OnInit {
     if (this.isLastQuestion() && this.isTestCompleted()) {
       this.isTestEnded = true;
     } else {
-      this.moveToNextUnanswered();
+      await this.moveToNextUnanswered();
     }
   }
 

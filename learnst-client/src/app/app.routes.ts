@@ -8,7 +8,6 @@ import { ActivityComponent } from './activity/activity.component';
 import { HomeComponent } from './home/home.component';
 import { LessonComponent } from './lesson/lesson.component';
 import { LoginComponent } from './login/login.component';
-import { LogoutComponent } from './logout/logout.component';
 import { MakeActivityComponent } from './make-activity/make-activity.component';
 import { MeComponent } from './me/me.component';
 import { NotFoundComponent } from './not-found/not-found.component';
@@ -23,6 +22,7 @@ import { OfferAgreementComponent } from './manuals/offer-agreement/offer-agreeme
 import { ContactsComponent } from './manuals/contacts/contacts.component';
 import { DeliveryInfoComponent } from './manuals/delivery-info/delivery-info.component';
 import { ManualsComponent } from './manuals/manuals.component';
+import {SettingsComponent} from './settings/settings.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -33,10 +33,10 @@ export const routes: Routes = [
   { path: 'manuals/contacts', component: ContactsComponent },
   { path: 'manuals/subscription', component: DeliveryInfoComponent },
   { path: 'manuals', component: ManualsComponent },
+  { path: 'settings', component: SettingsComponent },
 
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'logout', component: LogoutComponent, canActivate: [AuthGuard] },
   { path: 'me', component: MeComponent, canActivate: [AuthGuard], canDeactivate: [ConfirmGuard] },
   { path: 'user/:userId', component: UserComponent, canActivate: [AuthGuard] },
   { path: 'community', component: UsersComponent, canActivate: [AuthGuard] },

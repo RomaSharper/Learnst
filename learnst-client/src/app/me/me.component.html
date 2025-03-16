@@ -13,9 +13,9 @@
           Личные данные
           @if (user.externalLoginType) {
             <img class="social-icon" [src]="SocialMediaPlatformHelper.getImagePath(user.externalLoginType)"
-              [matTooltip]="SocialMediaPlatformHelper.getName(user.externalLoginType)"
-              [alt]="SocialMediaPlatformHelper.getName(user.externalLoginType)"
-              placeholder="/assets/icons/placeholder.png" noDownloading inspectable>
+                 [matTooltip]="SocialMediaPlatformHelper.getName(user.externalLoginType)"
+                 [alt]="SocialMediaPlatformHelper.getName(user.externalLoginType)"
+                 placeholder="/assets/icons/placeholder.png" noDownloading inspectable>
           }
         </h3>
 
@@ -27,9 +27,9 @@
             accept="image/*"
             (change)="onFileSelected($event)"
           >
-          <img [src]="user.avatarUrl" [alt]="user.username" noDownloading
-            (click)="openFilePicker()" class="avatar" matTooltip="Изменить аватар"
-            placeholder="/assets/icons/user-192x192.png" matTooltipPosition="below">
+          <img [src]="user.avatarUrl!" [alt]="user.username" noDownloading
+               (click)="openFilePicker()" class="avatar" matTooltip="Изменить аватар"
+               placeholder="/assets/icons/user-192x192.png" matTooltipPosition="below">
         </div>
 
         <div class="full-width">
@@ -155,7 +155,7 @@
           <div class="social-card">
             <a [href]="socialMediaProfile.url" target="_blank">
               <img [src]="SocialMediaPlatformHelper.getImagePath(socialMediaProfile.platform)"
-                [matTooltip]="socialMediaProfile.url" noDownloading>
+                   [matTooltip]="socialMediaProfile.url" alt="Social Media" noDownloading>
               <div>{{ SocialMediaPlatformHelper.getName(socialMediaProfile.platform) }}</div>
             </a>
             <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="socialMenu">
@@ -266,15 +266,6 @@
     <!-- Настройка вида сайта -->
     <mat-card class="full-width mb-2" appearance="outlined">
       <app-theme-picker />
-
-      <mat-card-content class="cursor-toggle-section">
-        <mat-slide-toggle
-          [checked]="themeService.isCursorsEnabled()"
-          (change)="themeService.toggleCursors($event.checked)">
-          Кастомные курсоры
-        </mat-slide-toggle>
-        <mat-icon class="hint-icon" matTooltip="Включите для использования анимированных курсоров">help_outline</mat-icon>
-      </mat-card-content>
     </mat-card>
 
     <!-- Удалить профиль -->

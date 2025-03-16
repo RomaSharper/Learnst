@@ -14,14 +14,14 @@
             Личные данные
             @if (user()!.externalLoginType) {
               <img class="social-icon" [src]="SocialMediaPlatformHelper.getImagePath(user()!.externalLoginType!)"
-                [matTooltip]="SocialMediaPlatformHelper.getName(user()!.externalLoginType!)"
-                [alt]="SocialMediaPlatformHelper.getName(user()!.externalLoginType!)"
-                placeholder="/assets/icons/placeholder.png">
+                   [matTooltip]="SocialMediaPlatformHelper.getName(user()!.externalLoginType!)"
+                   [alt]="SocialMediaPlatformHelper.getName(user()!.externalLoginType!)"
+                   placeholder="/assets/icons/placeholder.png">
             }
           </h3>
           <div class="avatar-container">
-            <img [src]="user()!.avatarUrl" [alt]="user()!.username" class="avatar"
-              placeholder="/assets/icons/user-192x192.png" loading="lazy" noDownloading>
+            <img [src]="user()?.avatarUrl!" [alt]="user()!.username" class="avatar"
+                 placeholder="/assets/icons/user-192x192.png" loading="lazy" noDownloading>
           </div>
           <div class="full-width">
             <p>{{ followersCount() | plural:'подписчик':'подписчика':'подписчиков' }}</p>
@@ -95,7 +95,7 @@
             <div class="social-card">
               <a [href]="socialMediaProfile.url" target="_blank">
                 <img [src]="SocialMediaPlatformHelper.getImagePath(socialMediaProfile.platform)" alt=""
-                  [title]="socialMediaProfile.url" noDownloading inspectable>
+                     [title]="socialMediaProfile.url" noDownloading inspectable>
                 <div>{{ SocialMediaPlatformHelper.getName(socialMediaProfile.platform) }}</div>
               </a>
             </div>

@@ -97,18 +97,6 @@
   }
 }
 
-.no-accounts {
-  padding: 2rem;
-  font-size: 0.9rem;
-  text-align: center;
-  color: var(--mat-sys-on-secondary-container);
-
-  p {
-    margin: 0;
-    opacity: 0.7;
-  }
-}
-
 @media (max-width: 767px) {
   .account-item {
     gap: 0.75rem;

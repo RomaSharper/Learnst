@@ -13,9 +13,8 @@ import { EllipsisPipe } from '../../pipes/ellipsis.pipe';
 import { PluralPipe } from '../../pipes/plural.pipe';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
-import { FileService } from '../../services/file.service';
 import { UsersService } from '../../services/users.service';
-import { User } from './../../models/User';
+import { User } from '../../models/User';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 @Component({
@@ -49,7 +48,6 @@ export class UserMenuComponent implements OnInit {
   loading = signal(true);
   followersCount = signal(0);
   isFollowing = signal(false);
-  isBannerImage = signal(false);
   accounts = this.authService.accounts;
   currentUser = signal<User | null>(null);
 

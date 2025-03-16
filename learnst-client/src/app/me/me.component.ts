@@ -1,48 +1,52 @@
-import { Location } from '@angular/common';
-import { Component, ElementRef, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormField } from '@angular/material/form-field';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router } from '@angular/router';
+import {DeviceType} from '../../models/DeviceType';
+import {Location} from '@angular/common';
+import {Component, ElementRef, HostListener, inject, OnInit, signal, ViewChild} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatDatepicker, MatDatepickerModule} from '@angular/material/datepicker';
+import {MatDialog} from '@angular/material/dialog';
+import {MatFormField} from '@angular/material/form-field';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {Router} from '@angular/router';
 import bcrypt from 'bcryptjs';
-import { forkJoin, lastValueFrom, map, Observable } from 'rxjs';
-import { of } from 'rxjs/internal/observable/of';
-import { catchError } from 'rxjs/internal/operators/catchError';
-import { InspectableDirective } from '../../directives/inspectable.directive';
-import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
-import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
-import { SocialMediaPlatform } from '../../enums/SocialMediaPlatform';
-import { CanComponentDeactivate } from '../../helpers/CanComponentDeactivate';
-import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
-import { Return } from '../../helpers/Return';
-import { SocialMediaPlatformHelper } from '../../helpers/SocialMediaPlatformHelper';
-import { Education } from '../../models/Education';
-import { SocialMediaProfile } from '../../models/SocialMediaProfile';
-import { User } from '../../models/User';
-import { WorkExperience } from '../../models/WorkExperience';
-import { DateRangePipe } from '../../pipes/date.range.pipe';
-import { PluralPipe } from '../../pipes/plural.pipe';
-import { AlertService } from '../../services/alert.service';
-import { AuthService } from '../../services/auth.service';
-import { DateService } from '../../services/date.service';
-import { EmailService } from '../../services/email.service';
-import { FileService } from '../../services/file.service';
-import { UsersService } from '../../services/users.service';
-import { ThemePickerComponent } from '../theme-picker/theme-picker.component';
-import { EducationDialogComponent } from './education.dialog/education.dialog.component';
-import { SocialMediaDialogComponent } from './social.media.dialog/social.media.dialog.component';
-import { WorkExperienceDialogComponent } from './work.experience.dialog/work.experience.dialog.component';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { ThemeService } from '../../services/theme.service';
+import {forkJoin, map, Observable} from 'rxjs';
+import {of} from 'rxjs/internal/observable/of';
+import {catchError} from 'rxjs/internal/operators/catchError';
+import {InspectableDirective} from '../../directives/inspectable.directive';
+import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
+import {PlaceholderImageDirective} from '../../directives/placeholder-image.directive';
+import {SocialMediaPlatform} from '../../enums/SocialMediaPlatform';
+import {CanComponentDeactivate} from '../../helpers/CanComponentDeactivate';
+import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
+import {Return} from '../../helpers/Return';
+import {SocialMediaPlatformHelper} from '../../helpers/SocialMediaPlatformHelper';
+import {Education} from '../../models/Education';
+import {SocialMediaProfile} from '../../models/SocialMediaProfile';
+import {User} from '../../models/User';
+import {WorkExperience} from '../../models/WorkExperience';
+import {DateRangePipe} from '../../pipes/date.range.pipe';
+import {PluralPipe} from '../../pipes/plural.pipe';
+import {AlertService} from '../../services/alert.service';
+import {AuthService} from '../../services/auth.service';
+import {DateService} from '../../services/date.service';
+import {EmailService} from '../../services/email.service';
+import {FileService} from '../../services/file.service';
+import {UsersService} from '../../services/users.service';
+import {ThemePickerComponent} from '../theme-picker/theme-picker.component';
+import {EducationDialogComponent} from './education.dialog/education.dialog.component';
+import {SocialMediaDialogComponent} from './social.media.dialog/social.media.dialog.component';
+import {WorkExperienceDialogComponent} from './work.experience.dialog/work.experience.dialog.component';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {ThemeService} from '../../services/theme.service';
+import {DeviceService} from '../../services/device.service';
+import {AudioService} from '../../services/audio.service';
+import {MatSliderModule} from '@angular/material/slider';
 
 @Return()
 @Component({
@@ -59,6 +63,7 @@ import { ThemeService } from '../../services/theme.service';
     DateRangePipe,
     MatInputModule,
     MatButtonModule,
+    MatSliderModule,
     MatTooltipModule,
     MatGridListModule,
     MatDatepickerModule,
@@ -67,23 +72,25 @@ import { ThemeService } from '../../services/theme.service';
     MatSlideToggleModule,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
-    PlaceholderImageDirective,
+    PlaceholderImageDirective
   ]
 })
 export class MeComponent extends MediumScreenSupport implements OnInit, CanComponentDeactivate {
-  private dialog = inject(MatDialog);
+  audioService = inject(AudioService);
   themeService = inject(ThemeService);
+
+  private dialog = inject(MatDialog);
   private fileService = inject(FileService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private emailService = inject(EmailService);
   private usersService = inject(UsersService);
+  private deviceService = inject(DeviceService);
 
   user?: User;
   userId = '';
   oldPassword = '';
   newPassword = '';
-  goBack!: () => void;
   selectedFile?: File;
   originalUser?: User;
   hidePassword = true;
@@ -91,10 +98,15 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   unsavedChanges = false;
   passwordChanging = false;
   followersCount = signal(0);
+  isDesktop = signal(this.deviceService.getDeviceType() === DeviceType.Desktop);
+
   readonly maxDate = new Date();
   readonly minDate = new Date(1900, 0, 1);
+
   @ViewChild('importFile') importFileInput!: ElementRef<HTMLInputElement>;
   @ViewChild(MatDatepicker<Date | null>) picker!: MatDatepicker<Date | null>;
+
+  goBack!: () => void;
 
   SocialMediaPlatformHelper = SocialMediaPlatformHelper;
 
@@ -218,7 +230,15 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   openEducationModal(education?: Education): void {
     const dialogRef = this.dialog.open(EducationDialogComponent, {
       width: '500px',
-      data: { education: education || { id: 0, institutionName: '', degree: '', graduationYear: new Date().getFullYear(), userId: this.userId } }
+      data: {
+        education: education || {
+          id: 0,
+          institutionName: '',
+          degree: '',
+          graduationYear: new Date().getFullYear(),
+          userId: this.userId
+        }
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -234,7 +254,17 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   openWorkExperienceModal(workExperience?: WorkExperience): void {
     const dialogRef = this.dialog.open(WorkExperienceDialogComponent, {
       width: '500px',
-      data: { workExperience: workExperience || { id: 0, companyName: '', position: '', description: '', startDate: '', endDate: '', userId: this.userId } }
+      data: {
+        workExperience: workExperience || {
+          id: 0,
+          companyName: '',
+          position: '',
+          description: '',
+          startDate: '',
+          endDate: '',
+          userId: this.userId
+        }
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -250,7 +280,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   openSocialMediaModal(socialMedia?: SocialMediaProfile): void {
     const dialogRef = this.dialog.open(SocialMediaDialogComponent, {
       width: '500px',
-      data: { socialMedia: socialMedia || { id: 0, url: '', platform: SocialMediaPlatform.Bluesky, userId: this.userId } }
+      data: {socialMedia: socialMedia || {id: 0, url: '', platform: SocialMediaPlatform.Bluesky, userId: this.userId}}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -352,7 +382,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
     this.changesSaving = true;
 
-    this.checkDuplicates(this.user!).subscribe(({ emailTaken, usernameTaken }) => {
+    this.checkDuplicates(this.user!).subscribe(({emailTaken, usernameTaken}) => {
       if (emailTaken) {
         this.alertService.showSnackBar('Эта почта уже занята');
         this.changesSaving = false;
@@ -417,7 +447,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       extension = 'xml';
     }
 
-    const blob = new Blob([content], { type: mimeType });
+    const blob = new Blob([content], {type: mimeType});
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -496,12 +526,18 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   private escapeXml(unsafe: string): string {
     return unsafe.replace(/[<>&'"]/g, c => {
       switch (c) {
-        case '<': return '&lt;';
-        case '>': return '&gt;';
-        case '&': return '&amp;';
-        case '\'': return '&apos;';
-        case '"': return '&quot;';
-        default: return c;
+        case '<':
+          return '&lt;';
+        case '>':
+          return '&gt;';
+        case '&':
+          return '&amp;';
+        case '\'':
+          return '&apos;';
+        case '"':
+          return '&quot;';
+        default:
+          return c;
       }
     });
   }
@@ -529,13 +565,17 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
     reader.readAsText(file);
   }
 
+  setVolumeFromEvent(event: Event): void {
+    this.audioService.setVolume(parseFloat((event.target as HTMLInputElement).value));
+  }
+
   private async parseImportFile(content: string, fileName: string): Promise<any> {
     if (fileName.endsWith('.json')) {
       return JSON.parse(content);
     } else if (fileName.endsWith('.xml')) {
       return this.parseXml(content);
     }
-    throw new Error('Unsupported file format');
+    throw new Error('Неподдерживаемый формат файла');
   }
 
   private async parseXml(xml: string): Promise<any> {
@@ -543,16 +583,16 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
     const doc = parser.parseFromString(xml, 'application/xml');
 
     if (doc.getElementsByTagName('parsererror').length > 0) {
-      throw new Error('Invalid XML format');
+      throw new Error('Неверный формат XML');
     }
 
     const root = doc.documentElement;
-    if (!root) throw new Error('Invalid XML structure');
+    if (!root) throw new Error('Неверная структура XML');
 
     const result: any = {};
     const userNode = root.getElementsByTagName('user')[0];
 
-    if (!userNode) throw new Error('User data not found in XML');
+    if (!userNode) throw new Error('Данные о пользователе не были найдены в XML');
 
     result.User = {
       fullName: this.getXmlValue(userNode, 'fullName'),

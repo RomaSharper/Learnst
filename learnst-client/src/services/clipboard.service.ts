@@ -11,6 +11,7 @@ interface ClipboardError extends Error {
   originalError?: unknown;
 }
 
+// noinspection JSUnusedGlobalSymbols
 @Injectable({
   providedIn: 'root'
 })
@@ -31,7 +32,7 @@ export class ClipboardService {
 
     const clipboardItem = new ClipboardItem({ [content.type]: content.blob });
 
-    this.ngZone.runOutsideAngular(async () =>
+    await this.ngZone.runOutsideAngular(async () =>
       await this.clipboard.write([clipboardItem])
     );
   }
@@ -43,7 +44,7 @@ export class ClipboardService {
     let clipboardItems = null;
 
     try {
-      this.ngZone.runOutsideAngular(async () =>
+      await this.ngZone.runOutsideAngular(async () =>
         clipboardItems = await this.clipboard.read()
       );
 

@@ -1,11 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
-import { map } from 'rxjs';
 import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
 import { RuDateTimePipe } from '../../pipes/ru.date.time.pipe';
 import { AlertService } from '../../services/alert.service';
@@ -29,9 +27,6 @@ export class AccountsManagerComponent {
   private alertService = inject(AlertService);
 
   authService = inject(AuthService);
-  currentAccountId = toSignal(this.authService.currentUser$.pipe(
-    map(user => user?.openid)
-  ));
 
   switchAccount(accountId: string, event?: MouseEvent): void {
     event?.stopPropagation();

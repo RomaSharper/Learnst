@@ -45,14 +45,6 @@ mat-card-content {
   }
 }
 
-.ticket-actions {
-  display: inline;
-
-  @media (max-width: 767px) {
-    margin-bottom: 8px;
-  }
-}
-
 .status-actions {
   gap: 8px;
   display: flex;

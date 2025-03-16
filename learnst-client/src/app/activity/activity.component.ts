@@ -32,8 +32,8 @@ import { AuthService } from '../../services/auth.service';
 import { CertificateService } from '../../services/certificate.service';
 import { LessonsService } from '../../services/lessons.service';
 import { UserMenuComponent } from '../user-menu/user-menu.component';
-import { TagHelper } from './../../helpers/TagHelper';
-import { InfoCard } from './../../models/InfoCard';
+import { TagHelper } from '../../helpers/TagHelper';
+import { InfoCard } from '../../models/InfoCard';
 
 interface ActivityNode {
   id: string;
@@ -72,7 +72,6 @@ export class ActivityComponent implements OnInit {
   loading = true;
   totalPoints = 0;
   earnedPoints = 0;
-  InfoType = InfoType;
   activity?: Activity;
   goBack!: () => void;
   totalLessonsCount = 0;
@@ -174,7 +173,7 @@ export class ActivityComponent implements OnInit {
     });
   }
 
-  navigateToTag(tag: string) {
+  navigateToTag(tag: string): void {
     this.router.navigate(['/activities'], {
       queryParams: { tags: TagHelper.toUrlFormat(tag) }
     })

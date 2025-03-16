@@ -3,18 +3,17 @@
     noDownloading
     alt="Welcome to Learnst"
     class="loading-background"
-    [src]="isMediumScreen ? '/assets/gifs/niko-loading-small.gif'
-      : '/assets/gifs/niko-loading-large-3.gif'"
+    [src]="isMediumScreen ? '/assets/gifs/niko-loading-small.gif' : '/assets/gifs/niko-loading-large-3.gif'"
   >
 </div>
 
 <div class="content" [class.visible]="!loading()">
   <nav class="main-navigation">
     <div class="background-overlay" [class.active]="isMenuOpen()"
-      (click)="closeMenu($event)"></div>
+         (click)="closeMenu($event)"></div>
 
     <button type="button" class="hamburger" mat-icon-button
-      (click)="toggleMenu($event)">
+            (click)="toggleMenu($event)">
       <mat-icon>menu</mat-icon>
     </button>
 
@@ -24,7 +23,7 @@
           <li>
             <a
               routerLink="/"
-              class="logo-link"
+              class="img-link"
               routerLinkActive="active"
               [routerLinkActiveOptions]="{ exact: true }"
             >
@@ -32,10 +31,36 @@
               <span>Learnst</span>
             </a>
           </li>
-          <li><a routerLink="/activities" routerLinkActive="active">Обучение</a></li>
-          <li><a routerLink="/community" routerLinkActive="active">Сообщество</a></li>
-          <li><a routerLink="/support" routerLinkActive="active">Поддержка</a></li>
-          <li><a routerLink="/manuals" routerLinkActive="active">Информация</a></li>
+          <li>
+            <a routerLink="/activities" routerLinkActive="active" class="img-link">
+              <img src="assets/icons/books.png" alt="Обучение">
+              <span>Обучение</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/community" routerLinkActive="active" class="img-link">
+              <img src="assets/icons/community.png" alt="Сообщество">
+              <span>Сообщество</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/support" routerLinkActive="active" class="img-link">
+              <img src="assets/icons/support.png" alt="Поддержка">
+              <span>Поддержка</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/manuals" routerLinkActive="active" class="img-link">
+              <img src="assets/icons/documents.png" alt="Информация">
+              <span>Информация</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/manuals" routerLinkActive="active" class="img-link">
+              <img src="assets/icons/settings.png" alt="Настройки">
+              <span>Настройки</span>
+            </a>
+          </li>
           <li class="mt">
             <a
               target="_blank"
@@ -45,15 +70,15 @@
               matTooltip="Поддержать разработчика ♡"
               href="https://www.donationalerts.com/r/romasharper"
             >
-              <img src="./assets/icons/donation_alerts.png">
+              <img src="./assets/icons/donation_alerts.png" alt="Donation Alerts">
               Донат
             </a>
           </li>
           <li class="user-area">
             <button type="button" mat-stroked-button class="user-btn" routerLinkActive="active"
-              [matTooltip]="user()?.username" [matMenuTriggerFor]="userMenu">
+                    [matTooltip]="user()?.username" [matMenuTriggerFor]="userMenu">
               <img [alt]="user()?.username" [src]="user()?.avatarUrl" noDownloading
-                placeholder="/assets/icons/user-192x192.png">
+                   placeholder="/assets/icons/user-192x192.png">
               <span class="user-name">{{ user()!.username | ellipsis: 10 }}</span>
             </button>
 
@@ -76,15 +101,31 @@
       <div class="desktop-panel">
         <ul class="desktop-menu">
           <li>
-            <a class="logo-link" routerLink="/">
+            <a class="img-link" routerLink="/">
               <img src="assets/icons/favicon.png" alt="Learnst">
               <span class="link-label">Learnst</span>
             </a>
           </li>
-          <li><a routerLink="/activities" routerLinkActive="active">Активности</a></li>
-          <li><a routerLink="/support" routerLinkActive="active">Поддержка</a></li>
-          <li><a routerLink="/community" routerLinkActive="active">Сообщество</a></li>
-          <li><a routerLink="/manuals" routerLinkActive="active">Информация</a></li>
+          <li>
+            <a routerLink="/activities" routerLinkActive="active">
+              <span>Обучение</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/community" routerLinkActive="active">
+              <span>Сообщество</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/support" routerLinkActive="active">
+              <span>Поддержка</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/manuals" routerLinkActive="active">
+              <span>Информация</span>
+            </a>
+          </li>
           <li>
             <a
               target="_blank"
@@ -94,16 +135,20 @@
               matTooltip="Поддержать разработчика ♡"
               href="https://www.donationalerts.com/r/romasharper"
             >
-              <img src="./assets/icons/donation_alerts.png">
+              <img src="./assets/icons/donation_alerts.png" alt="Donation Alerts">
             </a>
           </li>
         </ul>
 
         @if (user()) {
           <div class="user-area">
+            <a matTooltip="Настройки" mat-icon-button routerLink="/settings">
+              <mat-icon>settings</mat-icon>
+            </a>
+
             <button type="button" [matTooltip]="user()?.username" mat-icon-button [matMenuTriggerFor]="userMenu">
               <img [src]="user()?.avatarUrl" [alt]="user()?.username" class="user-avatar"
-                placeholder="/assets/icons/user-192x192.png">
+                   placeholder="/assets/icons/user-192x192.png">
             </button>
 
             <mat-menu #userMenu="matMenu" class="user-menu-container">
@@ -117,5 +162,6 @@
     }
   </nav>
 
+  <app-mascot/>
   <router-outlet></router-outlet>
 </div>

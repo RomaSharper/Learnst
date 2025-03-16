@@ -13,14 +13,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
 import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
-import { TimeoutHandler } from '../../handlers/TimeoutHandler';
 import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
 import { RoleHelper } from '../../helpers/RoleHelper';
 import { User } from '../../models/User';
 import { UsersService } from '../../services/users.service';
-import { Role } from './../../enums/Role';
-import { AlertService } from './../../services/alert.service';
-import { AuthService } from './../../services/auth.service';
+import { Role } from '../../enums/Role';
+import { AlertService } from '../../services/alert.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-users',
@@ -278,9 +277,7 @@ export class UsersComponent extends MediumScreenSupport implements OnInit {
       `Вы уверены, что хотите удалить пользователя с ником ${user.username}?`
     ).afterClosed().subscribe(confirmed => {
       if (!confirmed) return;
-      this.usersService.deleteUser(user.id!).pipe(
-        TimeoutHandler.retryOnCodes([500, 504])
-      ).subscribe({
+      this.usersService.deleteUser(user.id!).subscribe({
         next: () => {
           this.alertService.showSnackBar(`Вы успешно удалили пользователя ${user.username}`);
           this.loadUsers();

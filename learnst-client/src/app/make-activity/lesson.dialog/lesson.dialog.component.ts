@@ -18,8 +18,8 @@ import { Question } from '../../../models/Question';
 import { AlertService } from '../../../services/alert.service';
 import { FileService } from '../../../services/file.service';
 import { ValidationService } from '../../../services/validation.service';
-import { AnswerType } from './../../../enums/AnswerType';
-import { LessonType } from './../../../enums/LessonType';
+import { AnswerType } from '../../../enums/AnswerType';
+import { LessonType } from '../../../enums/LessonType';
 
 @Component({
   selector: 'app-lesson-dialog',
@@ -46,7 +46,6 @@ export class LessonDialogComponent {
   answerTypes = AnswerTypeHelper.getAnswerTypes();
   lessonTypes = LessonTypeHelper.getLessonTypes();
 
-  AnswerType = AnswerType;
   LessonType = LessonType;
 
   constructor(

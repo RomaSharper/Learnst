@@ -1,27 +1,26 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
-import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
-import { TimeoutHandler } from '../../handlers/TimeoutHandler';
-import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
-import { Ticket } from '../../models/Ticket';
-import { TicketAnswer } from '../../models/TicketAnswer';
-import { RuDateTimePipe } from '../../pipes/ru.date.time.pipe';
-import { AuthService } from '../../services/auth.service';
-import { TicketService } from '../../services/tickets.service';
-import { UsersService } from '../../services/users.service';
-import { Role } from './../../enums/Role';
-import { TicketStatus } from './../../enums/TicketStatus';
-import { TicketStatusHelper } from './../../helpers/TicketStatusHelper';
-import { User } from './../../models/User';
-import { AlertService } from './../../services/alert.service';
-import { AddAnswerDialogComponent } from './add-answer-dialog/add-answer-dialog.component';
+import {Component, inject, OnInit, signal} from '@angular/core';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatIconModule} from '@angular/material/icon';
+import {MatListModule} from '@angular/material/list';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
+import {PlaceholderImageDirective} from '../../directives/placeholder-image.directive';
+import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
+import {Ticket} from '../../models/Ticket';
+import {TicketAnswer} from '../../models/TicketAnswer';
+import {RuDateTimePipe} from '../../pipes/ru.date.time.pipe';
+import {AuthService} from '../../services/auth.service';
+import {TicketService} from '../../services/tickets.service';
+import {UsersService} from '../../services/users.service';
+import {Role} from '../../enums/Role';
+import {TicketStatus} from '../../enums/TicketStatus';
+import {TicketStatusHelper} from '../../helpers/TicketStatusHelper';
+import {User} from '../../models/User';
+import {AlertService} from '../../services/alert.service';
+import {AddAnswerDialogComponent} from './add-answer-dialog/add-answer-dialog.component';
 
 @Component({
   selector: 'app-ticket-detail',
@@ -51,10 +50,9 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
   user!: User;
   ticket!: Ticket;
   ticketId!: string;
-  canAnswer = false;
   canChangeStatus = false;
-  errorMessage = signal('');
   canAnswerOrDelete = false;
+  errorMessage = signal('');
 
   Role = Role;
   TicketStatus = TicketStatus;
@@ -79,8 +77,7 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
           // Загружаем текущего пользователя
           this.usersService.getUserById(ticket.authorId).subscribe({
             next: data => {
-              const currentUser = data as User;
-              this.ticket.author = currentUser;
+              this.ticket.author = data as User;
 
               this.ticket.ticketAnswers = this.ticket.ticketAnswers.sort(
                 (a, b) => new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime());
@@ -89,8 +86,8 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
                 (a, b) => new Date(a.changedAt!).getTime() - new Date(b.changedAt!).getTime());
 
               for (const answer of this.ticket.ticketAnswers)
-                this.usersService.getUserById(answer.authorId).pipe(TimeoutHandler.retryOnCodes([500, 504])).subscribe({
-                  next: data => answer.author = data as User,
+                this.usersService.getUserById(answer.authorId).subscribe({
+                  next: data => answer.author = data,
                   error: err => {
                     this.alertService.showSnackBar('Не удалось загрузить автора ответа');
                     console.error(err);

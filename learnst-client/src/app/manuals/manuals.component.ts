@@ -21,8 +21,8 @@ export class ManualsComponent {
   links = [
     { path: '/manuals/privacypolicy', title: 'Конфиденциальность' },
     { path: '/manuals/termsofuse', title: 'Условия использования' },
-    { path: '/manuals/oferta', title: 'Публичная оферта' },
+    /*{ path: '/manuals/oferta', title: 'Публичная оферта' },
     { path: '/manuals/subscription', title: 'О подписке' },
-    { path: '/manuals/contacts', title: 'Контакты' }
+    { path: '/manuals/contacts', title: 'Контакты' }*/
   ];
 }

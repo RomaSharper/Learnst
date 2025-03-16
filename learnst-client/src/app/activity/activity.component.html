@@ -13,8 +13,8 @@
             <div class="activity-details">
               <div class="activity-left">
                 <div class="activity-avatar">
-                  <img [src]="activity.avatarUrl" [alt]="activity.title" inspectable
-                    noDownloading placeholder="/assets/icons/placeholder.png">
+                  <img [src]="activity.avatarUrl!" [alt]="activity.title" inspectable
+                       noDownloading placeholder="/assets/icons/placeholder.png">
                 </div>
                 <p>{{ activity.description }}</p>
                 <div class="tags-container">
@@ -27,7 +27,7 @@
                 <div class="author-container">
                   <a mat-stroked-button [matMenuTriggerFor]="userMenu"
                     [matTooltip]="activity.author?.username" class="user-btn">
-                    <img [src]="activity.author?.avatarUrl" class="user-avatar"
+                    <img [src]="activity.author?.avatarUrl!" class="user-avatar"
                       [alt]="activity.author?.username" noDownloading
                       placeholder="/assets/icons/user-192x192.png">
                     <span class="username">{{ (activity.author?.username || '') | ellipsis:8 }}</span>
@@ -111,7 +111,7 @@
               <div class="info-cards">
                 @for (card of benefits; track card) {
                   <div class="info-card" inspectable>
-                    <img [alt]="card.text" [src]="card.iconUrl" noDownloading>
+                    <img [alt]="card.text" [src]="card.iconUrl!" noDownloading>
                     <p>{{ card.text }}</p>
                   </div>
                 }
@@ -122,7 +122,7 @@
               <div class="info-cards">
                 @for (card of waysToLearn; track card) {
                   <div class="info-card" inspectable>
-                    <img [alt]="card.text" [src]="card.iconUrl" noDownloading>
+                    <img [alt]="card.text" [src]="card.iconUrl!" noDownloading>
                     <p>{{ card.text }}</p>
                   </div>
                 }

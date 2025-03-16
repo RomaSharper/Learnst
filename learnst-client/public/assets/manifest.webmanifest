@@ -36,7 +36,7 @@
       "name": "Пользователи",
       "short_name": "Пользователи",
       "description": "Просмотр списка пользователей",
-      "url": "/users",
+      "url": "/community",
       "icons": [
         {
           "src": "/assets/icons/users-192x192.png",

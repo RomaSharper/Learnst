@@ -4,19 +4,15 @@ import { Directive, ElementRef, HostListener, Renderer2 } from '@angular/core';
   selector: '[inspectable]'
 })
 export class InspectableDirective {
-  private lightSpot: HTMLElement;
-  private readonly sensitivity = 18;
   private readonly element: HTMLElement;
+  private readonly sensitivity = 18;
+  private readonly lightSpot: HTMLElement;
   private readonly transitionTime = '0.25s';
 
   constructor(el: ElementRef, private renderer: Renderer2) {
     this.element = el.nativeElement;
     this.lightSpot = this.createLightSpot();
     this.initStyles();
-  }
-
-  private getRandomClicks(): number {
-    return Math.floor(Math.random() * 8) + 3;
   }
 
   private initStyles(): void {

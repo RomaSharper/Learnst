@@ -100,16 +100,6 @@
   color: black; // Цвет текста Yandex
 }
 
-.mailru-btn {
-  background: linear-gradient(145deg, #168de2 0%, #1669bc 100%); // Используем цвета Mail.ru, добавил переменные
-  color: white; // Цвет текста Mail.ru
-}
-
-.telegram-btn {
-  background: linear-gradient(145deg, #0088cc 0%, #0077b5 100%); // Используем цвета Telegram, добавил переменные
-  color: white; // Цвет текста Telegram
-}
-
 .github-btn {
   background: linear-gradient(145deg, #24292e 0%, #1a1e22 100%); // Используем цвета GitHub, добавил переменные
   color: white; // Цвет текста GitHub
@@ -128,21 +118,6 @@
 .twitch-btn {
   background: linear-gradient(145deg, #6441a5 0%, #4b2e83 100%); // Используем цвета Twitch, добавил переменные
   color: white; // Цвет текста Twitch
-}
-
-.epicgames-btn {
-  background: linear-gradient(145deg, #323232 0%, #282828 100%); // Используем цвета Epic Games, добавил переменные
-  color: white; // Цвет текста Epic Games
-}
-
-.facebook-btn {
-  background: linear-gradient(145deg, #1877f2 0%, #1877f2 100%); // Используем цвета Facebook, добавил переменные
-  color: white; // Цвет текста Facebook
-}
-
-.tiktok-btn {
-  background: linear-gradient(145deg, #fe2c55 0%, #c51852 100%); // Используем цвета TikTok, добавил переменные
-  color: white; // Цвет текста TikTok
 }
 
 // Адаптивность

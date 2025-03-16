@@ -8,8 +8,8 @@
       @for (account of authService.accounts(); track account) {
         <mat-list-item (click)="switchAccount(account.id)">
           <div class="account-item">
-            <img mat-list-avatar [src]="account.avatarUrl" [alt]="account.username"
-              placeholder="/assets/icons/user-192x192.png">
+            <img mat-list-avatar [src]="account.avatarUrl!" [alt]="account.username"
+                 placeholder="/assets/icons/user-192x192.png">
             <div class="account-info">
               <span>{{ account.username }}</span>
               @if (account.lastLogin) {

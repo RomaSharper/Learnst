@@ -24,10 +24,10 @@ export class RoleGuard implements CanActivate {
       tap(user => {
         // Если определена роль и не совпадает с пользователем
         if (role && user?.role !== role)
-            this.router.navigate(['/']);
+            this.router.navigate(['/']).then();
         // Если роли являются массивом и ни одна из них не совпадает с пользователем
         else if (roles && roles.length > 0 && !roles.includes(user?.role!))
-            this.router.navigate(['/']);
+            this.router.navigate(['/']).then();
       }),
       map(user => {
         // Проверяем соответствие роли или одной из ролей

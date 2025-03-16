@@ -23,6 +23,7 @@
     scale: 1.05;
   }
 
+  //noinspection CssUnusedSymbol
   &[hidden]:not(.loading-screen) {
     scale: .95;
     opacity: 0;
@@ -59,7 +60,8 @@
 }
 
 html {
-  overflow: hidden scroll;
+  overflow: hidden;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -106,6 +108,98 @@ video {
 img {
   transform: translateZ(30px);
   transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.link {
+  font-weight: 500;
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.375rem;
+  color: var(--mat-sys-primary);
+  cursor: var(--cursor-pointer) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Анимированное подчёркивание
+  &::after {
+    left: 0;
+    width: 100%;
+    height: 2px;
+    content: '';
+    bottom: -2px;
+    position: absolute;
+    transform: scaleX(0);
+    transform-origin: right;
+    background: currentColor;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    color: var(--mat-sys-primary);
+
+    &::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+  }
+
+  // Активное состояние
+  &:active {
+    filter: brightness(0.9);
+    transform: translateY(0);
+  }
+
+  // Состояние фокуса
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--mat-sys-primary);
+  }
+
+  // Дополнительный эффект для иконок
+  &.with-icon {
+    gap: 0.5rem;
+    align-items: center;
+    display: inline-flex;
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      transition: transform .2s ease;
+    }
+
+    &:hover svg {
+      transform: translateX(2px);
+    }
+  }
+
+  // Вариант для тёмного фона
+  &.inverted {
+    color: var(--mat-sys-on-primary);
+
+    &:hover {
+      filter: brightness(1.1);
+    }
+
+    &::after {
+      background: var(--mat-sys-on-primary);
+    }
+  }
+
+  // Вариант с пунктирным подчёркиванием
+  &.dashed {
+    &::after {
+      height: 1px;
+      background: repeating-linear-gradient(
+          90deg,
+          currentColor 0,
+          currentColor 2px,
+          transparent 2px,
+          transparent 4px
+      );
+    }
+  }
 }
 
 .error {
@@ -156,6 +250,7 @@ img {
 }
 
 // 6. Переопределение компонентов Material
+//noinspection CssUnusedSymbol
 .cdk-overlay-container {
   z-index: 1000;
   position: fixed;
@@ -166,6 +261,7 @@ img {
   width: 100%;
 
   // Исправление для вложенных диалогов
+  //noinspection CssUnusedSymbol
   .cdk-global-overlay-wrapper {
     align-items: safe center;
     justify-content: safe center;
@@ -180,21 +276,25 @@ mat-progress-spinner {
   margin: 0 8px;
 }
 
+//noinspection CssUnusedSymbol
 .cdk-global-scrollblock {
   top: 0 !important;
 }
 
+//noinspection CssUnusedSymbol
 .mat-mdc-menu-panel {
   min-width: 200px !important;
   border-radius: 20px !important;
   box-shadow: var(--mat-sys-level3);
 }
 
+//noinspection CssUnusedSymbol
 .mat-mdc-menu-content {
   padding: 0 !important;
   background: var(--mat-sys-secondary-container);
 }
 
+//noinspection CssUnusedSymbol
 .mat-mdc-card {
   box-shadow: var(--mat-sys-level2);
   background: var(--mat-sys-secondary);
@@ -205,11 +305,14 @@ mat-tab-body {
   min-height: 100svh;
 }
 
+//noinspection CssUnusedSymbol
 .mat-tree {
   background: var(--mat-sys-secondary-container) !important;
 }
 
+//noinspection CssUnusedSymbol
 .mat-mdc-standard-chip {
+  //noinspection CssUnusedSymbol
   .mdc-evolution-chip__cell--primary,
   .mdc-evolution-chip__action--primary,
   .mat-mdc-chip-action-label {
@@ -224,6 +327,7 @@ mat-chip-row {
   cursor: var(--cursor-pointer) !important;
 }
 
+//noinspection CssUnusedSymbol
 .mat-step-header .mat-step-icon {
   background-color: transparent !important;
 }
@@ -267,6 +371,7 @@ p {
   text-wrap: pretty;
 }
 
+//noinspection CssUnusedSymbol
 table:not(.mat-calendar-table) {
   width: 100%;
   margin: 2rem 0;
@@ -325,32 +430,6 @@ table:not(.mat-calendar-table) {
       font: var(--mat-sys-title-medium);
     }
   }
-
-  .numeric-column {
-    color: var(--mat-sys-primary);
-    font-family: var(--mat-sys-typescale-label-medium-font);
-  }
-}
-
-.qr-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #1976d2;
-
-  mat-icon {
-    font-size: 24px;
-  }
-}
-
-.qr-content {
-  text-align: center;
-  padding: 20px;
-
-  p {
-    margin-top: 15px;
-    color: #666;
-  }
 }
 
 .update-date {
@@ -392,30 +471,6 @@ mat-paginator {
   margin-top: 20px;
   // background-color: @background-color;
 
-  .mat-paginator-page-size {
-    select {
-      // color: @text-color;
-      // background-color: @background-color;
-      // border: 4px * 0.25 solid @border-color;
-    }
-  }
-
-  .mat-paginator-range-actions {
-    button {
-      // color: @text-color;
-      // background-color: @background-color;
-      // border: 4px * 0.25 solid @border-color;
-
-      &:hover {
-        // background-color: @card-hover-color;
-      }
-
-      &:active {
-        // background-color: @card-active-color;
-      }
-    }
-  }
-
   @media (max-width: 767px) {
     margin: 12px;
   }
@@ -430,13 +485,9 @@ mat-date-range-input {
   width: 100%;
 }
 
+//noinspection CssUnusedSymbol
 .mat-calendar-body-cell {
   border-radius: 20px;
-}
-
-.disabled-btn {
-  opacity: 0.6;
-  pointer-events: none;
 }
 
 .container {
@@ -473,19 +524,6 @@ mat-date-range-input {
   position: absolute !important;
 }
 
-.main-button {
-  left: 24px;
-  scale: 1.5;
-  z-index: 2;
-  bottom: 24px;
-  font-size: 24px;
-  position: fixed !important;
-}
-
-.question-button {
-  margin-right: 12px.5;
-}
-
 .flex-column {
   display: flex !important;
   flex-direction: column !important;
@@ -519,15 +557,6 @@ mat-date-range-input {
   margin-bottom: 12px !important;
 }
 
-.ml {
-  margin-left: 12px !important;
-}
-
-.mv {
-  margin-top: 12px !important;
-  margin-bottom: 12px !important;
-}
-
 .mh {
   margin-left: 12px !important;
   margin-right: 12px !important;
@@ -549,15 +578,6 @@ mat-date-range-input {
   margin-bottom: 24px !important;
 }
 
-.ml-2 {
-  margin-left: 24px !important;
-}
-
-.mv-2 {
-  margin-top: 24px !important;
-  margin-bottom: 24px !important;
-}
-
 .mh-2 {
   margin-left: 24px !important;
   margin-right: 24px !important;
@@ -565,14 +585,6 @@ mat-date-range-input {
 
 .mr-3 {
   margin-right: 32px !important;
-}
-
-.mb-3 {
-  margin-bottom: 32px !important;
-}
-
-.mb-4 {
-  margin-bottom: 40px !important;
 }
 
 .cursor-default {
@@ -587,38 +599,8 @@ mat-date-range-input {
   height: 100%;
 }
 
-.search-group {
-  margin: 20px 4px * 4;
-}
-
 .hidden {
   display: none;
-}
-
-.tabs {
-  display: flex;
-  margin-bottom: 20px;
-  // border-bottom: 4px * 0.5 solid @border-color;
-}
-
-.tab-button {
-  border: none;
-  font-size: 18px;
-  padding: 8px 20px;
-  margin-right: 8px;
-  cursor: var(--cursor-pointer) !important;
-  transition: background 0.3s ease, color 0.3s ease;
-
-  &.active {
-    // background: @highlight;
-    // color: @text-high-emphasis;
-    // border-bottom: 4px * 0.5 solid @accent;
-  }
-
-  &:hover {
-    // background: @hover-bg;
-    // color: @text-high-emphasis;
-  }
 }
 
 .center-control {
@@ -636,23 +618,8 @@ mat-date-range-input {
   text-align: right;
 }
 
-.closed {
-  opacity: 0.6;
-}
-
-.muted {
-  // color: @muted;
-  font-style: italic;
-}
-
 .fit {
   width: fit-content;
-}
-
-.mobile-only {
-  @media(min-width: 768px) {
-    display: none !important;
-  }
 }
 
 .list {
@@ -665,39 +632,15 @@ mat-date-range-input {
 
     &::before {
       left: 0;
+      top: 8px;
       content: "";
       width: 0.5em;
       height: 0.5em;
-      top: 8px;
       position: absolute;
       border-radius: 50%;
-      // background-color: @info;
+      background: var(--mat-sys-primary);
     }
   }
-}
-
-.chevron {
-  width: 20px;
-  right: 12px;
-  height: 12px;
-  position: absolute;
-  top: calc(50% - 6px);
-  background-size: 100% 100%;
-  transition: transform 0.2s;
-}
-
-// Components
-.overlay {
-  top: 0;
-  left: 0;
-  z-index: 2;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  position: absolute;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.5); // Затемнение
 }
 
 // Авторизация-регистрация
@@ -722,6 +665,7 @@ mat-date-range-input {
   }
 }
 
+//noinspection CssUnusedSymbol
 .mat-mdc-dialog-content {
   padding: var(--mat-dialog-with-actions-content-padding, 20px 24px 0) !important;
 }
@@ -735,15 +679,6 @@ mat-date-range-input {
   padding: 8px;
   margin-top: 20px;
   flex-direction: column !important;
-}
-
-.link {
-  // color: #00b3ff;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
 }
 
 .profile-container {

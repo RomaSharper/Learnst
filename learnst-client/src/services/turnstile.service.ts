@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import { Injectable } from '@angular/core';
 
 declare global {
@@ -13,7 +15,7 @@ export class TurnstileService {
   init(container: string, siteKey: string, callback: (token: string) => void) {
     this.widgetId = window.turnstile.render(`.${container}`, {
       sitekey: siteKey,
-      callback: (token: string) => callback(token),
+      'callback': (token: string) => callback(token),
       'error-callback': () => callback(''),
     });
   }

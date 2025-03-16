@@ -9,11 +9,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
 import { Return } from '../../helpers/Return';
-import { TicketStatusHelper } from '../../helpers/TicketStatusHelper';
 import { Ticket } from '../../models/Ticket';
 import { TicketService } from '../../services/tickets.service';
-import { TicketStatus } from './../../enums/TicketStatus';
-import { UsersService } from './../../services/users.service';
+import { TicketStatus } from '../../enums/TicketStatus';
+import { UsersService } from '../../services/users.service';
 import { CreateTicketDialogComponent } from './create-ticket-dialog/create-ticket-dialog.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RuDateTimePipe } from '../../pipes/ru.date.time.pipe';
@@ -50,7 +49,6 @@ export class TicketListComponent extends MediumScreenSupport implements OnInit {
   paginatedTickets: Ticket[] = [];
 
   TicketStatus = TicketStatus;
-  TicketStatusHelper = TicketStatusHelper;
 
   constructor(private router: Router, public location: Location) { super(); }
 
@@ -99,18 +97,5 @@ export class TicketListComponent extends MediumScreenSupport implements OnInit {
 
   navigateToTicketDetails(ticketId: string): void {
     this.router.navigate(['/ticket', ticketId]);
-  }
-
-  getStatusColor(status: TicketStatus): string {
-    switch (status) {
-      case TicketStatus.Open:
-        return 'green';
-      case TicketStatus.InProgress:
-        return 'blue';
-      case TicketStatus.Closed:
-        return 'red';
-      default:
-        return 'gray';
-    }
   }
 }

@@ -8,7 +8,6 @@ import { UserAnswer } from "./UserAnswer";
 import { Ticket } from "./Ticket";
 import { TicketAnswer } from "./TicketAnswer";
 import { Theme } from "./Theme";
-import { UserSubscription } from "./UserSubscription";
 import { SocialMediaPlatform } from "../enums/SocialMediaPlatform";
 
 export interface User {
@@ -35,7 +34,7 @@ export interface User {
   externalLoginType?: SocialMediaPlatform;
   themeId: string;
   theme?: Theme;
-  userSubscriptions: UserSubscription[];
   banner: string;
   background: string;
+  ip: string;
 }

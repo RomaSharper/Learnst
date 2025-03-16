@@ -1,16 +1,16 @@
-import { CertificateRequest } from './../models/CertificateRequest';
+import { CertificateRequest } from '../models/CertificateRequest';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 
+// noinspection JSUnusedGlobalSymbols
 @Injectable({
   providedIn: 'root',
 })
 export class CertificateService {
+  private http = inject(HttpClient);
   private apiUrl = `${environment.apiBaseUrl}/certificate`;
-
-  constructor(private http: HttpClient) {}
 
   generateCertificate(userId: string, activityId: string): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/generate`, {

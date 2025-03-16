@@ -37,12 +37,6 @@
 
 .avatar-container {
   position: relative;
-
-  .external-icon {
-    right: 8px;
-    bottom: 8px;
-    position: absolute;
-  }
 }
 
 .clear-date-btn {
@@ -69,11 +63,12 @@
   }
 }
 
-.cursor-toggle-section {
+.toggle-section {
   gap: 12px;
   display: flex;
   padding: 16px;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   border-top: 1px solid var(--mat-sys-outline-variant);
 
   .hint-icon {

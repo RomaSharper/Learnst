@@ -2,10 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
-import { Marked, marked } from 'marked';
+import { Marked } from 'marked';
 import hljs from 'highlight.js';
 import { markedHighlight } from "marked-highlight";
 
+// noinspection JSUnusedGlobalSymbols
 @Injectable({
   providedIn: 'root'
 })

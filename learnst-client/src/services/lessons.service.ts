@@ -13,24 +13,8 @@ export class LessonsService {
 
   constructor(private http: HttpClient) { }
 
-  getLessons(topicId: string): Observable<Lesson[]> {
-    return this.http.get<Lesson[]>(`${this.apiUrl}/topics/${topicId}/lessons`);
-  }
-
   getLessonById(lessonId: string): Observable<Lesson> {
     return this.http.get<Lesson>(`${this.apiUrl}/lessons/${lessonId}`);
-  }
-
-  createLesson(lesson: Lesson): Observable<Lesson> {
-    return this.http.post<Lesson>(`${this.apiUrl}/lessons`, lesson);
-  }
-
-  updateLesson(lessonId: string, lesson: Lesson): Observable<Lesson> {
-    return this.http.put<Lesson>(`${this.apiUrl}/lessons/${lessonId}`, lesson);
-  }
-
-  deleteLesson(lessonId: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/lessons/${lessonId}`);
   }
 
   // Новые методы для работы с UserLesson
@@ -50,17 +34,5 @@ export class LessonsService {
 
   createUserLesson(userLesson: UserLesson): Observable<UserLesson> {
     return this.http.post<UserLesson>(`${this.apiUrl}/userLessons`, userLesson);
-  }
-
-  updateUserLesson(userId: string, lessonId: string, userLesson: UserLesson): Observable<UserLesson> {
-    return this.http.put<UserLesson>(`${this.apiUrl}/userLessons/${userId}/${lessonId}`, userLesson);
-  }
-
-  updateLessonTestStatus(lessonId: string, isTestEnded: boolean): Observable<Lesson> {
-    return this.http.put<Lesson>(`${this.apiUrl}/lessons/${lessonId}/test-status`, { isTestEnded });
-  }
-
-  deleteUserLesson(userId: string, lessonId: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/userLessons/${userId}/${lessonId}`);
   }
 }

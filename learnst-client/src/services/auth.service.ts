@@ -1,16 +1,16 @@
-import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, of } from 'rxjs';
-import { tap, catchError, map, switchMap } from 'rxjs/operators';
-import { environment } from '../environments/environment';
-import { UserDao } from '../models/UserDao';
-import { UsersService } from './users.service';
-import { StoredUser } from '../models/StoredUser';
-import { Role } from '../enums/Role';
-import { User } from '../models/User';
-import { AES, enc } from 'crypto-js';
-import { toSignal } from '@angular/core/rxjs-interop';
+import {inject, Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Router} from '@angular/router';
+import {Observable, BehaviorSubject, of} from 'rxjs';
+import {tap, catchError, map, switchMap} from 'rxjs/operators';
+import {environment} from '../environments/environment';
+import {UserDao} from '../models/UserDao';
+import {UsersService} from './users.service';
+import {StoredUser} from '../models/StoredUser';
+import {Role} from '../enums/Role';
+import {User} from '../models/User';
+import {AES, enc} from 'crypto-js';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root'
@@ -35,9 +35,9 @@ export class AuthService {
   }
 
   login(login: string, password: string): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(`${this.apiUrl}/auth`, { login, password })
+    return this.http.post<{ token: string }>(`${this.apiUrl}/auth`, {login, password})
       .pipe(
-        tap(({ token }) => this.handleAuthenticationSuccess(token)),
+        tap(({token}) => this.handleAuthenticationSuccess(token)),
         catchError(error => {
           console.error('Login error:', error);
           throw error;
@@ -125,7 +125,7 @@ export class AuthService {
   private updateAccountInfo(user: User): void {
     const accounts: StoredUser[] = this.accountsSubject.value.map(a => {
       if (a.id === user.id)
-        return { ...a, username: user.username, avatarUrl: user.avatarUrl };
+        return {...a, username: user.username, avatarUrl: user.avatarUrl};
       return a;
     });
     this.saveAccounts(accounts);
@@ -163,7 +163,7 @@ export class AuthService {
         }
       }
     } catch (error) {
-      console.error('Session restore error:', error);
+      console.error('Ошибка восстановления сессии:', error);
       this.clearAuthData();
     }
   }
@@ -217,7 +217,6 @@ export class AuthService {
       username: payload.username,
       avatarUrl: payload.avatarUrl || '/assets/default-avatar.png',
       accessToken: encryptedToken,
-      refreshToken: '',
       isCurrent: true,
       lastLogin: new Date()
     };
@@ -238,7 +237,7 @@ export class AuthService {
         localStorage.setItem(this.TOKEN_KEY, current.accessToken);
       }
     } catch (error) {
-      console.error('Failed to load accounts:', error);
+      console.error('Не удалось загрузить аккаунты:', error);
     }
   }
 
@@ -268,7 +267,7 @@ export class AuthService {
       }
       return null;
     } catch (error) {
-      console.error('Token decoding failed:', error);
+      console.error('Ошибка обработки токена:', error);
       return null;
     }
   }

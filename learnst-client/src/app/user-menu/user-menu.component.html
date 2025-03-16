@@ -15,8 +15,8 @@
     </div>
 
     <div class="profile-info" (click)="$event.stopPropagation()">
-      <img [src]="user.avatarUrl" class="avatar" [alt]="user.username | ellipsis:8"
-        noDownloading placeholder="/assets/icons/user-192x192.png">
+      <img [src]="user.avatarUrl!" class="avatar" [alt]="user.username | ellipsis:8"
+           noDownloading placeholder="/assets/icons/user-192x192.png">
       <div class="names">
         <h3>{{ user.fullName }}</h3>
         <span>
@@ -66,8 +66,8 @@
         @for (acc of accounts(); track acc.id) {
           <button class="account-btn" type="button" mat-menu-item
             [class.current]="acc.isCurrent" (click)="switchAccount(acc.id)">
-            <img [src]="acc.avatarUrl" class="account-avatar" noDownloading
-              placeholder="/assets/icons/user-192x192.png">
+            <img [src]="acc.avatarUrl!" class="account-avatar" noDownloading
+                 placeholder="/assets/icons/user-192x192.png" alt="Avatar">
             <span class="account-username">{{ acc.username | ellipsis:8 }}</span>
             <div class="account-actions">
               @if (acc.isCurrent) {

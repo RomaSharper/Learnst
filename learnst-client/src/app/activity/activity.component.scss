@@ -120,37 +120,11 @@ ul {
   padding: 8px 20px;
 }
 
-.topic-card {
-  padding: 16px;
-  border-radius: 4px;
-  margin-bottom: 16px;
-  transition: box-shadow 0.3s ease;
-  box-shadow: var(--mat-sys-level2);
-
-  &:hover {
-    // box-shadow: 0 4px 8px @card-shadow;
-  }
-}
-
 .tags-container {
   gap: 8px;
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 16px;
-
-  .tag-card {
-    // background: @card-bg;
-    border-radius: 16px;
-    font-size: 18px;
-    padding: 6px 12px;
-    transition: box-shadow 0.3s ease;
-    // box-shadow: 0 4px * 0.25 4px * 0.5 @card-shadow;
-
-    @media (max-width: 767px) {
-      width: 100%;
-      text-align: center;
-    }
-  }
 }
 
 @media (min-width: 768px) {
@@ -195,10 +169,6 @@ ul {
       button {
         margin-right: 4px;
       }
-    }
-
-    .tree-node-hidden {
-      display: none;
     }
   }
 }

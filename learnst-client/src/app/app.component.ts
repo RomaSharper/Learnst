@@ -15,6 +15,8 @@ import { AlertService } from '../services/alert.service';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { UserMenuComponent } from './user-menu/user-menu.component';
+import { MascotComponent } from './mascot/mascot.component';
+import {AudioService} from '../services/audio.service';
 
 @Component({
   selector: 'app-root',
@@ -28,6 +30,7 @@ import { UserMenuComponent } from './user-menu/user-menu.component';
     MatMenuModule,
     MatIconModule,
     MatButtonModule,
+    MascotComponent,
     RouterLinkActive,
     MatTooltipModule,
     UserMenuComponent,
@@ -37,6 +40,7 @@ import { UserMenuComponent } from './user-menu/user-menu.component';
   ],
 })
 export class AppComponent extends MediumScreenSupport {
+  private audioService = inject(AudioService);
   authService = inject(AuthService);
   alertService = inject(AlertService);
   themeService = inject(ThemeService);
@@ -47,6 +51,7 @@ export class AppComponent extends MediumScreenSupport {
 
   constructor(public router: Router) {
     super();
+    this.audioService.initialize();
     effect(() => {
       this.authService.getUser().subscribe({
         next: user => {
@@ -71,7 +76,6 @@ export class AppComponent extends MediumScreenSupport {
     });
   }
 
-  // Метод для переключения состояния меню
   toggleMenu(event: Event): void {
     event.stopPropagation();
     this.isMenuOpen.update((value) => !value);
@@ -84,7 +88,6 @@ export class AppComponent extends MediumScreenSupport {
       this.isMenuOpen.set(false);
   }
 
-  // Обработчик кликов вне меню
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent): void {
     const el = event.target as HTMLElement;
@@ -101,8 +104,7 @@ export class AppComponent extends MediumScreenSupport {
 
     if (this.isMenuOpen() && !clickedOnOverlay && !clickedInsideMenu
       && !clickedOnAlerts && !clickedOnBannerEditBtn
-      || clickedOnLink
-      || clickedOnMenuItem)
+      || clickedOnLink || clickedOnMenuItem)
       this.closeMenu(event);
   }
 }

@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class RoundPipe implements PipeTransform {
   transform(input: number, digits: number | null): number | null {
-    if (typeof input !== 'number' || isNaN(input))
+    if (isNaN(input))
       return null;
 
     if (typeof digits !== 'number' || digits < 0)

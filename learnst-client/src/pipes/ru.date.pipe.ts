@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'ruDate'
@@ -13,8 +13,7 @@ export class RuDatePipe implements PipeTransform {
   transform(inputDate?: number | string | Date | null): string {
     if (!inputDate) return '';
     const date = new Date(inputDate);
-    const dateFormatted = date ? date.toLocaleDateString('ru-RU', this.options) : '';
-    return dateFormatted;
+    return date ? date.toLocaleDateString('ru-RU', this.options) : '';
   }
 }
 

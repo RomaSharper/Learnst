@@ -10,7 +10,7 @@ import { LessonTypeHelper } from '../../../helpers/LessonTypeHelper';
 import { Topic } from '../../../models/Topic';
 import { ValidationService } from '../../../services/validation.service';
 import { LessonDialogComponent } from '../lesson.dialog/lesson.dialog.component';
-import { AlertService } from './../../../services/alert.service';
+import { AlertService } from '../../../services/alert.service';
 
 @Component({
   selector: 'app-topic-dialog',

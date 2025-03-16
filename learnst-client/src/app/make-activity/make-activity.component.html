@@ -30,8 +30,8 @@
             class="avatar-preview" noDownloading inspectable>
         }
       </div>
-      <button type="button" mat-stroked-button class="choose-preview-button" (click)="openFilePicker()"
-        class="full-width">
+      <button type="button" mat-stroked-button class="choose-preview-button full-width"
+              (click)="openFilePicker()">
         Выбрать превью</button>
       <input type="file" id="avatarInput" accept="image/png, image/jpeg, image/jpg"
         (change)="onFileSelected($event)" class="hidden">
@@ -127,7 +127,6 @@
         <input
           matInput
           maxlength="50"
-          #audienceInput
           placeholder="Новая аудитория..."
           [matChipInputFor]="audienceGrid"
           (matChipInputTokenEnd)="addAudience($event)"
@@ -154,7 +153,6 @@
         <input
           matInput
           maxlength="100"
-          #checklistInput
           placeholder="Новый пункт..."
           [matChipInputFor]="checklistGrid"
           (matChipInputTokenEnd)="addChecklistItem($event)"
@@ -170,8 +168,8 @@
         <mat-card class="info-card" appearance="outlined">
           <div class="info-card-content">
             <div class="preview-container">
-              <img [src]="infoCard.iconUrl" noDownloading inspectable
-                placeholder="/assets/icons/placeholder.png">
+              <img [src]="infoCard.iconUrl!" noDownloading inspectable
+                   placeholder="/assets/icons/placeholder.png" alt="Icon">
             </div>
             <p><strong>{{ InfoTypeHelper.getName(infoCard.infoType) }}</strong></p>
             <p>{{ infoCard.text }}</p>

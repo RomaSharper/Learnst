@@ -1,0 +1,34 @@
+<mat-card class="settings-container" appearance="outlined">
+  <h1>Настройки сайта</h1>
+
+  <mat-card class="full-width mb-2" appearance="outlined">
+    <mat-card-content class="toggle-section">
+      @if (isDesktop) {
+        <mat-slide-toggle
+          [checked]="themeService.isCursorsEnabled()"
+          (change)="themeService.toggleCursors($event.checked)">
+          Кастомные курсоры
+        </mat-slide-toggle>
+      }
+
+      <mat-slide-toggle
+        [checked]="audioService.isEnabled"
+        (change)="audioService.toggleMusic($event.checked)">
+        Фоновая музыка
+      </mat-slide-toggle>
+
+      <div>Громкость</div>
+      <mat-slider
+        min="0"
+        max="1"
+        discrete
+        step="0.01"
+        showTickMarks
+        class="full-width"
+        (change)="setVolumeFromEvent($event)"
+      >
+        <input matSliderThumb [(ngModel)]="audioService.targetVolume">
+      </mat-slider>
+    </mat-card-content>
+  </mat-card>
+</mat-card>

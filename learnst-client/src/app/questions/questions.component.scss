@@ -52,11 +52,13 @@
 }
 
 ::ng-deep {
+  //noinspection CssUnusedSymbol
   .correct-step .mat-step-label {
     font-weight: bold;
     color: light-dark(#2e7d32, #4CAF50) !important;
   }
 
+  //noinspection CssUnusedSymbol
   .mat-horizontal-stepper-header-container {
     overflow: auto hidden;
 
@@ -67,10 +69,12 @@
     }
   }
 
+  //noinspection CssUnusedSymbol
   .incorrect-step .mat-step-label {
     color: var(--mat-sys-on-error) !important;
   }
 
+  //noinspection CssUnusedSymbol
   .mat-step-header .mat-step-icon {
     color: var(--mat-sys-on-secondary-container);
     background-color: var(--mat-sys-secondary-container) !important;

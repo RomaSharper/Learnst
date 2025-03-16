@@ -1,4 +1,4 @@
-import { LessonType } from './../../enums/LessonType';
+import { LessonType } from '../../enums/LessonType';
 import { Location } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth.service';
 import { DocumentService } from '../../services/document.service';
 import { LessonsService } from '../../services/lessons.service';
 import { QuestionsComponent } from '../questions/questions.component';
-import { AlertService } from './../../services/alert.service';
+import { AlertService } from '../../services/alert.service';
 import { MatCardModule } from '@angular/material/card';
 
 @Return()

@@ -1,0 +1,112 @@
+<div class="mascot-container">
+  <div class="mascot-avatar" (click)="toggleChat()">
+    <div class="avatar-wrapper">
+      <img
+        alt="Nico"
+        class="nico-avatar"
+        matTooltip="Поговори со мной!"
+        [@avatarBounce]="currentMood()"
+        [src]="'assets/niko/' + currentMood() + '.webp'"
+      >
+      <div
+        class="status-indicator"
+        [class.active]="isTyping()"
+      ></div>
+    </div>
+  </div>
+
+  @if (isChatOpen()) {
+    <div class="chat-box" [@chatWindow]="isChatOpen()" [class.mobile]="isMediumScreen">
+      <div class="chat-content">
+        <div class="chat-header">
+          <div class="title-group">
+            @if (isMediumScreen) {
+              <div class="header-avatar">
+                <img
+                  alt="Nico"
+                  class="nico-avatar"
+                  [@avatarScale]="isChatOpen()"
+                  [src]="'assets/niko/' + currentMood() + '.webp'"
+                >
+              </div>
+            }
+            <h3 class="title">Нико (твой друг)</h3>
+            <button
+              mat-icon-button
+              class="action-button"
+              matTooltip="Очистить историю"
+              (click)="clearChatHistoryHandle($event)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              class="action-button"
+              matTooltip="Экспорт истории"
+              (click)="exportHistoryHandle($event)"
+            >
+              <mat-icon>download</mat-icon>
+            </button>
+          </div>
+
+          @if (isTyping()) {
+            <div class="typing-indicator">
+              <span>Печатает</span>
+              <div class="dots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="messages">
+          @for (msg of messages(); track $index) {
+            <div class="message" [class.bot]="msg.isBot" [@messageAppear]>
+              @if (msg.isBot && $index === messages().length - 1 && isTyping()) {
+                <div class="typing-bubble">
+                  <div class="wave">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                  </div>
+                </div>
+              } @else {
+                <div class="bubble" [innerHTML]="getSafeHtml(msg.text)"></div>
+              }
+            </div>
+          } @empty {
+            <div class="message">
+              <div class="empty">
+                Здесь пусто... Начните общение!
+              </div>
+            </div>
+          }
+          @if (isMediumScreen) {
+            <div [class.mobile-overlay]="isChatOpen()"></div>
+          }
+        </div>
+      </div>
+
+      <div class="input-box">
+        <div class="input-wrapper">
+          <input
+            class="material-input"
+            [disabled]="isTyping()"
+            [(ngModel)]="userInput"
+            (keyup.enter)="sendMessage()"
+            placeholder="Напишите сообщение..."
+          >
+          <button
+            class="send-button"
+            (click)="sendMessage()"
+            [disabled]="isTyping()"
+          >
+            <span class="icon" [class.animated]="!isTyping()">➤</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

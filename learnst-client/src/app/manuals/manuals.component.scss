@@ -10,15 +10,6 @@
       background-color: rgba(var(--palette-primary-500), 0.1);
       transform: translateX(4px);
     }
-
-    &.active-link {
-      background-color: rgba(var(--palette-primary-500), 0.15);
-      border-left: 4px solid var(--mat-primary);
-
-      mat-icon {
-        color: var(--mat-primary);
-      }
-    }
   }
 
   .hint {

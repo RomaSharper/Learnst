@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink } from '@angular/router';
-import { catchError, of } from 'rxjs';
+import {catchError, lastValueFrom, of} from 'rxjs';
 import { Role } from '../../enums/Role';
 import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
 import { Return } from '../../helpers/Return';
@@ -25,6 +25,7 @@ import { UsersService } from '../../services/users.service';
 import { User } from '../../models/User';
 import { ColorsService } from '../../services/colors.service';
 import { TurnstileService } from '../../services/turnstile.service';
+import {IpService} from '../../services/ip.service';
 
 @Return()
 @Component({
@@ -48,25 +49,21 @@ import { TurnstileService } from '../../services/turnstile.service';
   ]
 })
 export class RegisterComponent extends MediumScreenSupport implements AfterViewInit {
-  @ViewChild('turnstileContainer') turnstileContainer!: ElementRef;
-
-  form: FormGroup;
-  loading = signal(false);
-  hidePassword = signal(true);
-  readonly maxDate = new Date();
-  readonly minDate = new Date(1900, 0, 1);
-  emailDomains = ValidationService.emailDomains;
-
+  private ipService = inject(IpService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private emailService = inject(EmailService);
   private usersService = inject(UsersService);
   private turnstile = inject(TurnstileService);
 
-  constructor(
-    private router: Router,
-    public location: Location
-  ) {
+  form: FormGroup;
+  loading = signal(false);
+  hidePassword = signal(true);
+
+  @ViewChild('turnstileContainer') turnstileContainer!: ElementRef;
+
+
+  constructor(private router: Router, public location: Location) {
     super();
     this.form = new FormGroup({
       username: new FormControl('', [
@@ -97,7 +94,7 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
     setTimeout(() => this.initTurnstile(), 0); // Даём Angular время на рендеринг
   }
 
-  onSubmit() {
+  async onSubmit() {
     Object.values(this.form.controls).forEach(control => {
       control.markAsTouched();
       control.updateValueAndValidity();
@@ -131,14 +128,14 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
       ticketAnswers: [],
       userActivities: [],
       workExperiences: [],
-      userSubscriptions: [],
       socialMediaProfiles: [],
       dateOfBirth: dateOfBirth!,
       username: formValue.username,
       emailAddress: formValue.email,
       passwordHash: formValue.password,
       banner: ColorsService.generateColor(),
-      background: ColorsService.generateColor()
+      background: ColorsService.generateColor(),
+      ip: await lastValueFrom(this.ipService.getIp())
     };
 
     // Шаг 1: Отправляем код подтверждения
@@ -228,12 +225,5 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
       console.error('Turnstile init error:', error);
       this.alertService.showSnackBar('Ошибка инициализации защиты. Перезагрузите страницу.');
     }
-  }
-
-  private markAllAsTouched() {
-    Object.values(this.form.controls).forEach(control => {
-      control.markAsTouched();
-      control.updateValueAndValidity();
-    });
   }
 }

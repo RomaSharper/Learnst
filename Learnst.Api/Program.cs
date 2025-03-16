@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 const string policy = "CORS";
 const string apiName = "Learnst API v.1";
 const string swaggerUrl = "/swagger/v1/swagger.json";
-const string connectionStringName = "DefaultConnection";
+const string connectionStringName = "InnerConnection";
 string[] trustedPaths = ["/error", "/oauth2", "/apps", "/account", "/sessions"];
 string[] trustedOrigins = ["https://learnst.runasp.net", "http://localhost:3000", "https://api.yookassa.ru"];
 

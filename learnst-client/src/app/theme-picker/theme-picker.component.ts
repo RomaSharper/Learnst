@@ -1,4 +1,4 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
@@ -24,11 +24,6 @@ export class ThemePickerComponent {
   currentTheme = this.themeService.currentTheme;
 
   themes = this.themeService.getThemes();
-
-  // Эффект для принудительного обновления при изменении темы
-  private themeEffect = effect(() => {
-    this.currentTheme(); // Принудительно триггерим изменение
-  });
 
   isThemeSelected(themeId: string): boolean {
     return this.currentTheme().id === themeId;
