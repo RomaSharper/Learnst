@@ -218,28 +218,15 @@ public partial class OAuth2Controller(
             return RedirectWithToken(existingUser);
 
         // Создание нового пользователя
-        User newUser = new()
-        {
-            Role = Role.User,
-            AvatarUrl = userInfo.Picture,
-            EmailAddress = userInfo.Email,
-            ExternalLoginId = userInfo.Id,
-            ExternalLoginType = SocialMediaPlatform.Google,
-            Username = await GenerateUniqueUsernameAsync(),
-        };
+        var user = await FindOrCreateUser(
+        email: userInfo.Email,
+        externalLoginId: userInfo.Id,
+        SocialMediaPlatform: SocialMediaPlatform.Google,
+        avatar: userInfo.Picture,
+        fullName: userInfo.Name,
+        ipAddress: HttpContext.GetRemoteIPAddress()?.ToString());
 
-        try
-        {
-            await context.Users.AddAsync(newUser);
-            await context.SaveChangesAsync();
-        }
-        catch (DbUpdateException ex)
-        {
-            // Логирование ошибки
-            return StatusCode(500, new { message = "Ошибка при создании пользователя", stack_trace = ex.ToString() });
-        }
-
-        return RedirectWithToken(newUser);
+        return RedirectWithToken(user);
     }
 
     private async Task<HttpResponseMessage> GetGoogleToken(string code)
@@ -322,7 +309,7 @@ public partial class OAuth2Controller(
 
         // Поиск/создание пользователя
         var user = await FindOrCreateUser(userInfo.DefaultEmail, userInfo.Id, SocialMediaPlatform.Google,
-            $"https://avatars.yandex.net/get-yapic/{userInfo.DefaultAvatarId}/islands-200", 
+            $"https://avatars.yandex.net/get-yapic/{userInfo.DefaultAvatarId}/islands-200",
             ipAddress: HttpContext.GetRemoteIPAddress()?.ToString());
 
         return RedirectWithToken(user);
@@ -377,7 +364,7 @@ public partial class OAuth2Controller(
             $"&redirect_uri={Uri.EscapeDataString(_vkSettings.RedirectUri)}" +
             "&response_type=code" +
             "&scope=email" +
-            "&v=5.131" +
+            "&v=5.243" +
             $"&state={state}";
 
         return Redirect(authUrl);
@@ -861,7 +848,7 @@ public partial class OAuth2Controller(
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new ErrorResponse(ex.InnerException));
+            return StatusCode(500, new ErrorResponse(ex.InnerException ?? ex));
         }
     }
 

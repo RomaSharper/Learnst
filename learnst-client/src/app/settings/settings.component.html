@@ -12,7 +12,7 @@
       }
 
       <mat-slide-toggle
-        [checked]="audioService.isEnabled"
+        [checked]="audioService.isEnabled()"
         (change)="audioService.toggleMusic($event.checked)">
         Фоновая музыка
       </mat-slide-toggle>

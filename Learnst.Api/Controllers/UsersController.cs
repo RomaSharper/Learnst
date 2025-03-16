@@ -268,7 +268,6 @@ public class UsersController(
             existingUser.ResumeText = user.ResumeText;
             existingUser.AboutMe = user.AboutMe;
             existingUser.Banner = user.Banner;
-            existingUser.Background = user.Background;
 
             // Обновляем коллекции
             existingUser.Educations = user.Educations;
@@ -307,7 +306,7 @@ public class UsersController(
                 u => u.Id == request.AdminId && u.Role == Role.Admin))
                 return BadRequest();
 
-            var existingUser = await repository.GetByIdAsync(request.UserId)
+            var existingUser = await repository.GetByIdAsync(request.UserId, noTracking: false)
                 ?? throw new NotFoundException<User>(request.UserId);
 
             existingUser.Role = request.Role;
@@ -348,7 +347,7 @@ public class UsersController(
                     validatePassword.Message
                 });
 
-            var existingUser = await repository.GetByIdAsync(request.UserId)
+            var existingUser = await repository.GetByIdAsync(request.UserId, noTracking: false)
                 ?? throw new NotFoundException<User>(request.UserId);
 
             var hash = bcrypt.HashPassword(request.Password);

@@ -18,8 +18,6 @@ public class User : IEntity
 
     [StringLength(2048)] public string Banner { get; set; } = "#333333";
 
-    [StringLength(2048)] public string Background { get; set; } = "#333333";
-
     public DateOnly? DateOfBirth { get; set; }
 
     [StringLength(20, ErrorMessage = "Имя пользователя должно быть не длиннее 20 символов")]

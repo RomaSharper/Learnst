@@ -35,6 +35,5 @@ export interface User {
   themeId: string;
   theme?: Theme;
   banner: string;
-  background: string;
   ip: string;
 }

@@ -51,7 +51,12 @@ export class AppComponent extends MediumScreenSupport {
 
   constructor(public router: Router) {
     super();
-    this.audioService.initialize();
+
+    setTimeout(() => {
+      console.clear();
+      this.audioService.initialize();
+    }, 2000);
+
     effect(() => {
       this.authService.getUser().subscribe({
         next: user => {

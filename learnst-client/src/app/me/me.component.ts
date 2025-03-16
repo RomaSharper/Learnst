@@ -470,9 +470,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
         resumeText: this.user!.resumeText,
         aboutMe: this.user!.aboutMe,
         username: this.user!.username,
-        themeId: this.user!.themeId,
         banner: this.user!.banner,
-        background: this.user!.background,
         educations: this.user!.educations.map(e => ({
           institutionName: e.institutionName,
           degree: e.degree,
@@ -603,7 +601,6 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       resumeText: this.getXmlValue(userNode, 'resumeText'),
       aboutMe: this.getXmlValue(userNode, 'aboutMe'),
       username: this.getXmlValue(userNode, 'username'),
-      themeId: this.getXmlValue(userNode, 'themeId'),
       banner: this.getXmlValue(userNode, 'banner'),
       background: this.getXmlValue(userNode, 'background'),
       educations: this.parseXmlCollection(userNode, 'educations', 'education', node => ({
@@ -658,9 +655,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       resumeText: newUser.resumeText,
       aboutMe: newUser.aboutMe,
       username: newUser.username,
-      themeId: newUser.themeId,
       banner: newUser.banner,
-      background: newUser.background,
       educations: newUser.educations,
       workExperiences: newUser.workExperiences
     };

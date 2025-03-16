@@ -134,7 +134,6 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
       emailAddress: formValue.email,
       passwordHash: formValue.password,
       banner: ColorsService.generateColor(),
-      background: ColorsService.generateColor(),
       ip: await lastValueFrom(this.ipService.getIp())
     };
 
