@@ -348,6 +348,10 @@ mat-chip-row {
 }
 
 // 8. Общие стили
+img {
+  vertical-align: middle !important;
+}
+
 input,
 textarea {
   width: 100%;
