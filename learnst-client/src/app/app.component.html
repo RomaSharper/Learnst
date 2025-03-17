@@ -56,7 +56,7 @@
             </a>
           </li>
           <li>
-            <a routerLink="/manuals" routerLinkActive="active" class="img-link">
+            <a routerLink="/settings" routerLinkActive="active" class="img-link">
               <img src="assets/icons/settings.png" alt="Настройки">
               <span>Настройки</span>
             </a>
@@ -140,24 +140,27 @@
           </li>
         </ul>
 
-        @if (user()) {
-          <div class="user-area">
+        <div class="user-area">
+          @if (user()) {
             <a matTooltip="Настройки" mat-icon-button routerLink="/settings">
               <mat-icon>settings</mat-icon>
             </a>
 
             <button type="button" [matTooltip]="user()?.username" mat-icon-button [matMenuTriggerFor]="userMenu">
               <img [src]="user()?.avatarUrl" [alt]="user()?.username" class="user-avatar"
-                   placeholder="/assets/icons/user-192x192.png">
+                    placeholder="/assets/icons/user-192x192.png">
             </button>
 
             <mat-menu #userMenu="matMenu" class="user-menu-container">
               <app-user-menu [user]="user()" [redirectOnly]="false" />
             </mat-menu>
-          </div>
-        } @else {
-          <a mat-stroked-button class="login-btn" routerLink="/login">Войти</a>
-        }
+          } @else {
+            <a matTooltip="Настройки" mat-icon-button routerLink="/settings">
+              <mat-icon>settings</mat-icon>
+            </a>
+            <a mat-stroked-button routerLink="/login">Войти</a>
+          }
+        </div>
       </div>
     }
   </nav>
