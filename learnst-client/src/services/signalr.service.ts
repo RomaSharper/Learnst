@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, IHttpConnectionOptions, IRetryPolicy, RetryContext } from '@microsoft/signalr';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, Subject } from 'rxjs';
+import { Status } from '../enums/Status';
+import { environment } from '../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class SignalRService {
-  private connections: Map<string, HubConnection> = new Map();
-  private connectionSubjects: Map<string, ReplaySubject<HubConnection>> = new Map();
+  private connection?: HubConnection;
+  private themeUpdates = new Subject<string>();
+  private connectionSubject = new ReplaySubject<HubConnection>(1);
+  private statusUpdates = new Subject<{ userId: string, status: Status }>();
 
   private retryPolicy: IRetryPolicy = {
     nextRetryDelayInMilliseconds(retryContext: RetryContext): number {
@@ -19,109 +23,74 @@ export class SignalRService {
     transport: HttpTransportType.WebSockets | HttpTransportType.LongPolling
   };
 
-  createConnection(hubUrl: string, customOptions: IHttpConnectionOptions = {}): ReplaySubject<HubConnection> {
-    const normalizedUrl = this.normalizeUrl(hubUrl);
+  constructor() {
+    this.initializeConnection();
+  }
 
-    if (this.connectionSubjects.has(normalizedUrl)) {
-      return this.connectionSubjects.get(normalizedUrl)!;
-    }
+  private initializeConnection(): void {
+    const options = { ...this.defaultHttpOptions };
 
-    const subject = new ReplaySubject<HubConnection>(1);
-    const options = { ...this.defaultHttpOptions, ...customOptions };
-
-    const connection = new HubConnectionBuilder()
-      .withUrl(normalizedUrl, options)
+    this.connection = new HubConnectionBuilder()
+      .withUrl(`${environment.apiBaseUrl}/commonhub`, options)
       .withAutomaticReconnect(this.retryPolicy)
       .build();
 
-    this.connections.set(normalizedUrl, connection);
-    this.connectionSubjects.set(normalizedUrl, subject);
+    this.connection.start()
+      .then(() => {
+        console.log('Подключение к SignalR установлено');
+        this.connectionSubject.next(this.connection!);
+      })
+      .catch(err => console.error('Ошибка при подключении к SignalR:', err));
 
-    connection.onreconnected(() => {
-      subject.next(connection);
-      console.log(`Reconnected to ${normalizedUrl}`);
+    // Подписка на события
+    this.connection.on('ReceiveStatus', (userId: string, status: Status) => {
+      this.statusUpdates.next({ userId, status });
     });
 
-    connection.onclose(error => {
-      if (error) {
-        console.error(`Connection closed for ${normalizedUrl}: ${error}`);
-        subject.error(error);
-      }
-      this.cleanupConnection(normalizedUrl);
-      subject.complete();
+    this.connection.on('ReceiveThemeUpdate', (themeId: string) => {
+      this.themeUpdates.next(themeId);
     });
-
-    this.startConnection(connection, subject);
-    return subject;
   }
 
-  on(hubUrl: string, eventName: string, callback: (...args: any[]) => void): void {
-    const normalizedUrl = this.normalizeUrl(hubUrl);
-    const connection = this.connections.get(normalizedUrl);
-    connection?.on(eventName, callback);
+  onStatusUpdate() {
+    return this.statusUpdates.asObservable();
   }
 
-  off(hubUrl: string, eventName: string): void {
-    const normalizedUrl = this.normalizeUrl(hubUrl);
-    const connection = this.connections.get(normalizedUrl);
-    connection?.off(eventName);
+  onThemeUpdate() {
+    return this.themeUpdates.asObservable();
   }
 
-  async invoke<T>(hubUrl: string, methodName: string, ...args: any[]): Promise<T> {
-    const normalizedUrl = this.normalizeUrl(hubUrl);
-    const connection = this.connections.get(normalizedUrl);
-
-    if (!connection) {
-      throw new Error(`Connection for ${normalizedUrl} not found`);
+  async invoke(methodName: string, ...args: any[]): Promise<void> {
+    if (!this.connection) {
+      throw new Error('Подключение к SignalR не инициализировано');
     }
 
-    if (connection.state !== HubConnectionState.Connected) {
-      await this.waitForConnection(connection);
+    if (this.connection.state !== HubConnectionState.Connected) {
+      await this.waitForConnection();
     }
 
-    return connection.invoke<T>(methodName, ...args);
-  }
-
-  private async startConnection(connection: HubConnection, subject: ReplaySubject<HubConnection>): Promise<void> {
     try {
-      await connection.start();
-      subject.next(connection);
-      console.log(`Connected to ${connection.baseUrl}`);
-    } catch (error) {
-      console.error(`Connection error for ${connection.baseUrl}: ${error}`);
-      subject.error(error);
-      this.cleanupConnection(connection.baseUrl);
+      await this.connection.invoke(methodName, ...args);
+    } catch (err) {
+      console.error('Ошибка при вызове метода SignalR:', err);
+      throw new Error('Ошибка на сервере. Пожалуйста, попробуйте позже.');
     }
   }
 
-  private async waitForConnection(connection: HubConnection): Promise<void> {
+  private async waitForConnection(): Promise<void> {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
-        connection.off('close');
-        connection.off('reconnected');
         reject(new Error('Время подключения истекло.'));
       }, 5000);
 
-      const successHandler = () => {
+      this.connection!.onreconnected(() => {
         clearTimeout(timeout);
         resolve();
-      };
+      });
 
-      connection.onreconnected = successHandler;
-      connection.onclose = reject;
-
-      if (connection.state === HubConnectionState.Connected) {
-        successHandler();
+      if (this.connection!.state === HubConnectionState.Connected) {
+        resolve();
       }
     });
-  }
-
-  private normalizeUrl(url: string): string {
-    return url.toLowerCase().trim().replace(/\/+$/, '');
-  }
-
-  private cleanupConnection(normalizedUrl: string): void {
-    this.connections.delete(normalizedUrl);
-    this.connectionSubjects.delete(normalizedUrl);
   }
 }

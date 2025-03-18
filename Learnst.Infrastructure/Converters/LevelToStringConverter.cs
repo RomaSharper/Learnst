@@ -1,4 +1,4 @@
-﻿using Learnst.Domain.Enums;
+﻿using Learnst.Infrastructure.Enums;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Learnst.Infrastructure.Converters;

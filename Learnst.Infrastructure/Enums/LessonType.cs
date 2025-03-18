@@ -1,4 +1,4 @@
-﻿namespace Learnst.Domain.Enums;
+﻿namespace Learnst.Infrastructure.Enums;
 
 public enum LessonType
 {

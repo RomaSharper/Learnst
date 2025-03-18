@@ -1,5 +1,5 @@
-﻿using Learnst.Domain.Enums;
-using Learnst.Infrastructure.Converters;
+﻿using Learnst.Infrastructure.Converters;
+using Learnst.Infrastructure.Enums;
 using Learnst.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -22,5 +22,8 @@ public class UserConfig : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.ExternalLoginType)
             .HasConversion(new EnumToStringConverter<SocialMediaPlatform>());
+
+        builder.Property(u => u.Status)
+            .HasConversion(new EnumToStringConverter<Status>());
     }
 }

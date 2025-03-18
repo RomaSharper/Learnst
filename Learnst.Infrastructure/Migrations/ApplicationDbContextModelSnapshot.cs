@@ -541,6 +541,10 @@ namespace Learnst.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ThemeId")
                         .IsRequired()
                         .HasMaxLength(50)

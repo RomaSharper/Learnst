@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using Learnst.Domain.Enums;
+using Learnst.Infrastructure.Enums;
 using Learnst.Infrastructure.Interfaces;
 
 namespace Learnst.Infrastructure.Models;

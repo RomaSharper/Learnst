@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Learnst.Domain.Extensions;
+using Learnst.Infrastructure.Extensions;
 using Learnst.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 

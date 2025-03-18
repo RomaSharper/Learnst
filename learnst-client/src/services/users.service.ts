@@ -7,6 +7,7 @@ import { UpdatePasswordRequest } from '../models/UpdatePasswordRequest';
 import { UpdateRoleRequest } from '../models/UpdateRoleRequest';
 import { UpdateUserResponse } from '../models/UpdateUserResponse';
 import { User } from '../models/User';
+import {Status} from '../enums/Status';
 
 @Injectable({
   providedIn: 'root'
@@ -78,5 +79,13 @@ export class UsersService {
 
   unfollowUser(userId: string, targetUserId: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${userId}/Follow/${targetUserId}`);
+  }
+
+  getStatus(userId: string) {
+    return this.http.get<Status>(`${this.apiUrl}/${userId}/status`);
+  }
+
+  updateStatus(userId: string, status: Status) {
+    return this.http.put(`${this.apiUrl}/${userId}/status`, status);
   }
 }

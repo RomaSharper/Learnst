@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using Learnst.Api.Models;
-using Learnst.Domain.Enums;
+using Learnst.Infrastructure.Enums;
 using Learnst.Infrastructure.Exceptions;
 using Learnst.Infrastructure.Interfaces;
 using Learnst.Infrastructure.Models;

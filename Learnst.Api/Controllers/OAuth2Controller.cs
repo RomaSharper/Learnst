@@ -3,8 +3,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Learnst.Api.Models;
 using Learnst.Api.Services;
-using Learnst.Domain.Enums;
 using Learnst.Infrastructure;
+using Learnst.Infrastructure.Enums;
 using Learnst.Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -364,7 +364,7 @@ public partial class OAuth2Controller(
             $"&redirect_uri={Uri.EscapeDataString(_vkSettings.RedirectUri)}" +
             "&response_type=code" +
             "&scope=email" +
-            "&v=5.243" +
+            "&v=5.243" +    // Версия может меняться, нужно следить, чтобы не было ошибок
             $"&state={state}";
 
         return Redirect(authUrl);

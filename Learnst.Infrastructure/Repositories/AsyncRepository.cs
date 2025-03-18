@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
-using Learnst.Domain.Extensions;
 using Learnst.Infrastructure.Exceptions;
+using Learnst.Infrastructure.Extensions;
 using Learnst.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 

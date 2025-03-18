@@ -7,7 +7,6 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { AlertService } from './alert.service';
 import { SignalRService } from './signalr.service';
-import { filter } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
 
 @Injectable({
@@ -20,9 +19,8 @@ export class ThemeService {
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly hubUrl = `${environment.apiBaseUrl}/themehub`;
   private readonly CURSOR_STORAGE_KEY = 'customCursorsEnabled';
-  private readonly cursorsEnabled = signal<boolean>(
+  private readonly cursorsEnabled = signal(
     localStorage.getItem(this.CURSOR_STORAGE_KEY) === 'true'
   );
 
@@ -177,7 +175,6 @@ export class ThemeService {
 
   constructor() {
     this.setupCursorsEffect();
-    this.hubUrl = `${environment.apiBaseUrl}/themehub`.toLowerCase();
     this.initializeSignalR();
     this.setupUserSubscription();
   }
@@ -189,14 +186,12 @@ export class ThemeService {
   setTheme(themeId: string, isInitialLoad = false): Observable<void> {
     const themeChangeSubject = new Subject<void>();
 
-    // Убрали проверку на пользователя здесь
     const theme = this.themes.find(t => t.id === themeId);
     if (!theme) {
       themeChangeSubject.error('Тема не найдена');
       return themeChangeSubject.asObservable();
     }
 
-    // Если нет пользователя - сразу применяем тему локально
     if (!this.user?.id) {
       this.setLocalTheme(themeId);
       themeChangeSubject.next();
@@ -204,7 +199,6 @@ export class ThemeService {
       return themeChangeSubject.asObservable();
     }
 
-    // Остальной код метода без изменений
     this.http.post<any>(
       `${environment.apiBaseUrl}/theme/${this.user.id}/${themeId}`, null
     ).subscribe({
@@ -264,35 +258,23 @@ export class ThemeService {
   }
 
   private initializeSignalR(): void {
-    this.signalr.createConnection(this.hubUrl)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        filter(connection => !!connection)
-      )
-      .subscribe({
-        next: _connection => {
-          this.signalr.on(this.hubUrl, 'ReceiveThemeUpdate',
-            (themeId: string) => this.applyRemoteTheme(themeId)
-          );
-        },
-        error: err => console.error('SignalR connection error:', err)
-      });
+    this.signalr.onThemeUpdate().subscribe((themeId: string) => {
+      this.applyRemoteTheme(themeId);
+    });
   }
 
   private async joinUserGroup(userId: string): Promise<void> {
     try {
-      await this.signalr.invoke(this.hubUrl, 'JoinUserGroup', userId);
+      await this.signalr.invoke('JoinUserGroup', userId);
     } catch (err) {
-      // Добавим повторную попытку через 2 секунды
       setTimeout(() => this.joinUserGroup(userId), 2000);
     }
   }
 
   private sendThemeUpdate(themeId: string): void {
     if (this.user?.id)
-      this.signalr.invoke(this.hubUrl, 'SendThemeUpdate',
-        this.user.id, themeId
-      ).catch(() => {});
+      this.signalr.invoke('SendThemeUpdate', this.user.id, themeId)
+        .catch(() => {});
   }
 
   private applyRemoteTheme(themeId: string): void {
@@ -312,7 +294,7 @@ export class ThemeService {
           this.joinUserGroup(user.id);
           if (user.theme) this.setTheme(user.theme.id, true);
         } else
-          this.setLocalTheme('light'); // Устанавливаем светлую тему по умолчанию
+          this.setLocalTheme('light');
       });
   }
 }

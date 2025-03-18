@@ -1,22 +1,22 @@
-import { CommonModule } from '@angular/common';
-import { Component, effect, HostListener, inject, signal } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { NoDownloadingDirective } from '../directives/no-downloading.directive';
-import { PlaceholderImageDirective } from '../directives/placeholder-image.directive';
-import { MediumScreenSupport } from '../helpers/MediumScreenSupport';
-import { User } from '../models/User';
-import { EllipsisPipe } from '../pipes/ellipsis.pipe';
-import { AlertService } from '../services/alert.service';
-import { AuthService } from '../services/auth.service';
-import { ThemeService } from '../services/theme.service';
-import { UserMenuComponent } from './user-menu/user-menu.component';
-import { MascotComponent } from './mascot/mascot.component';
-import {AudioService} from '../services/audio.service';
+import {CommonModule} from '@angular/common';
+import {Component, effect, HostListener, inject, OnInit, signal} from '@angular/core';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {NoDownloadingDirective} from '../directives/no-downloading.directive';
+import {PlaceholderImageDirective} from '../directives/placeholder-image.directive';
+import {MediumScreenSupport} from '../helpers/MediumScreenSupport';
+import {User} from '../models/User';
+import {EllipsisPipe} from '../pipes/ellipsis.pipe';
+import {AlertService} from '../services/alert.service';
+import {AuthService} from '../services/auth.service';
+import {ThemeService} from '../services/theme.service';
+import {UserMenuComponent} from './user-menu/user-menu.component';
+import {MascotComponent} from './mascot/mascot.component';
+import {UserStatusService} from '../services/user.status.service';
 
 @Component({
   selector: 'app-root',
@@ -40,40 +40,39 @@ import {AudioService} from '../services/audio.service';
   ],
 })
 export class AppComponent extends MediumScreenSupport {
-  private audioService = inject(AudioService);
+  router = inject(Router);
   authService = inject(AuthService);
   alertService = inject(AlertService);
   themeService = inject(ThemeService);
+  private userStatusService = inject(UserStatusService);
 
   loading = signal(true);
   isMenuOpen = signal(false);
   user = signal<User | null>(null);
 
-  constructor(public router: Router) {
+  constructor() {
     super();
-
-    setTimeout(() => {
-      console.clear();
-      this.audioService.initialize();
-    }, 2000);
-
     effect(() => {
+      console.log('Effect triggered');
       this.authService.getUser().subscribe({
         next: user => {
+          console.log('User data received:', user);
           this.user.set(user);
           const themeId = user?.themeId || 'light';
 
-          if (user?.id)
+          if (user?.id) {
+            this.userStatusService.initialize(user.id);
             this.themeService.setTheme(themeId).subscribe({
               next: () => setTimeout(() => this.loading.set(false), 1600),
               error: _err => this.loading.set(false)
             });
-          else {
+          } else {
             this.themeService.setLocalTheme(themeId);
             this.loading.set(false);
           }
         },
         error: err => {
+          console.error('Error fetching user data:', err);
           this.alertService.showSnackBar(err);
           this.loading.set(false);
         }
@@ -86,7 +85,6 @@ export class AppComponent extends MediumScreenSupport {
     this.isMenuOpen.update((value) => !value);
   }
 
-  // Метод для закрытия меню
   closeMenu(event: Event): void {
     event.stopPropagation();
     if (this.isMenuOpen())
@@ -98,17 +96,13 @@ export class AppComponent extends MediumScreenSupport {
     const el = event.target as HTMLElement;
     const clickedOnLink = el.closest('a');
     const clickedInsideMenu = el.closest('.main-navigation');
-    const clickedOnOverlay = el.classList.contains('background-overlay')
-      || el.classList.contains('cdk-overlay-backdrop')
-      || el.closest('.background-overlay')
-      || el.closest('.cdk-overlay-backdrop');
-    const clickedOnAlerts = el.closest('.mat-mdc-dialog-actions')
-      || el.closest('.cdk-overlay-container');
+    const clickedOnOverlay = el.classList.contains('background-overlay') || el.closest('.cdk-overlay-backdrop')
+      || el.classList.contains('cdk-overlay-backdrop') || el.closest('.background-overlay');
+    const clickedOnAlerts = el.closest('.mat-mdc-dialog-actions') || el.closest('.cdk-overlay-container');
     const clickedOnBannerEditBtn = el.classList.contains('edit-banner-btn');
     const clickedOnMenuItem = el.classList.contains('user-menu-item');
 
-    if (this.isMenuOpen() && !clickedOnOverlay && !clickedInsideMenu
-      && !clickedOnAlerts && !clickedOnBannerEditBtn
+    if (this.isMenuOpen() && !clickedOnOverlay && !clickedInsideMenu && !clickedOnAlerts && !clickedOnBannerEditBtn
       || clickedOnLink || clickedOnMenuItem)
       this.closeMenu(event);
   }

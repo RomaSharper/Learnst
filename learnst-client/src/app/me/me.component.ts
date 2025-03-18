@@ -1,5 +1,5 @@
 import {DeviceType} from '../../models/DeviceType';
-import {Location} from '@angular/common';
+import {Location, NgClass} from '@angular/common';
 import {Component, ElementRef, HostListener, inject, OnInit, signal, ViewChild} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
@@ -47,6 +47,8 @@ import {ThemeService} from '../../services/theme.service';
 import {DeviceService} from '../../services/device.service';
 import {AudioService} from '../../services/audio.service';
 import {MatSliderModule} from '@angular/material/slider';
+import {StatusHelper} from '../../helpers/StatusHelper';
+import {Status} from '../../enums/Status';
 
 @Return()
 @Component({
@@ -72,7 +74,8 @@ import {MatSliderModule} from '@angular/material/slider';
     MatSlideToggleModule,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
-    PlaceholderImageDirective
+    PlaceholderImageDirective,
+    NgClass
   ]
 })
 export class MeComponent extends MediumScreenSupport implements OnInit, CanComponentDeactivate {
@@ -815,4 +818,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   private deleteOriginalAvatar(originalAvatarUrl: string): void {
     this.fileService.delete(originalAvatarUrl).subscribe();
   }
+
+  protected readonly StatusHelper = StatusHelper;
+  protected readonly Status = Status;
 }

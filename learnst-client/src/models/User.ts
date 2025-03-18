@@ -9,6 +9,7 @@ import { Ticket } from "./Ticket";
 import { TicketAnswer } from "./TicketAnswer";
 import { Theme } from "./Theme";
 import { SocialMediaPlatform } from "../enums/SocialMediaPlatform";
+import {Status} from '../enums/Status';
 
 export interface User {
   id?: string;
@@ -36,4 +37,5 @@ export interface User {
   theme?: Theme;
   banner: string;
   ip: string;
+  status: Status;
 }

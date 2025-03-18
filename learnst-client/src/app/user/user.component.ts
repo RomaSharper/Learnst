@@ -1,4 +1,4 @@
-import { Location } from '@angular/common';
+import {Location, NgClass} from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,6 +21,8 @@ import { PluralPipe } from '../../pipes/plural.pipe';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
 import { UsersService } from '../../services/users.service';
+import {StatusHelper} from '../../helpers/StatusHelper';
+import {Status} from '../../enums/Status';
 
 @Return()
 @Component({
@@ -40,7 +42,8 @@ import { UsersService } from '../../services/users.service';
     InspectableDirective,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
-    PlaceholderImageDirective
+    PlaceholderImageDirective,
+    NgClass
   ]
 })
 export class UserComponent implements OnInit {
@@ -125,4 +128,7 @@ export class UserComponent implements OnInit {
     this.usersService.getFollowersCount(userId).subscribe(count =>
       this.followersCount.set(count));
   }
+
+  protected readonly StatusHelper = StatusHelper;
+  protected readonly Status = Status;
 }

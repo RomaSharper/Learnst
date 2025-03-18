@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using Learnst.Domain.Enums;
+using Learnst.Infrastructure.Enums;
 using Learnst.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +17,8 @@ public class User : IEntity
     [StringLength(2048)] public string? AvatarUrl { get; set; }
 
     [StringLength(2048)] public string Banner { get; set; } = "#333333";
+
+    public Status Status { get; set; } = Status.Online;
 
     public DateOnly? DateOfBirth { get; set; }
 
@@ -41,7 +43,7 @@ public class User : IEntity
 
     public Theme? Theme { get; set; }
 
-    [JsonIgnore] public string Ip { get; set; } = "unknown";
+    [JsonIgnore, StringLength(20)] public string Ip { get; set; } = "unknown";
 
     #endregion
 

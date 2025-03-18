@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
-using Learnst.Domain.Extensions;
 using Learnst.Infrastructure.Exceptions;
+using Learnst.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Learnst.Infrastructure.Interfaces;

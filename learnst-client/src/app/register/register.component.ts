@@ -26,6 +26,7 @@ import { User } from '../../models/User';
 import { ColorsService } from '../../services/colors.service';
 import { TurnstileService } from '../../services/turnstile.service';
 import {IpService} from '../../services/ip.service';
+import { Status } from '../../enums/Status';
 
 @Return()
 @Component({
@@ -128,6 +129,7 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
       ticketAnswers: [],
       userActivities: [],
       workExperiences: [],
+      status: Status.Online,
       socialMediaProfiles: [],
       dateOfBirth: dateOfBirth!,
       username: formValue.username,

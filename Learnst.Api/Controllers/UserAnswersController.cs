@@ -1,5 +1,5 @@
-﻿using Learnst.Domain.Enums;
-using Learnst.Infrastructure;
+﻿using Learnst.Infrastructure;
+using Learnst.Infrastructure.Enums;
 using Learnst.Infrastructure.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

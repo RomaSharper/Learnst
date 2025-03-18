@@ -268,6 +268,19 @@ img {
   }
 }
 
+mat-paginator {
+  align-items: flex-start;
+  display: flex !important;
+}
+
+.mat-mdc-paginator-container {
+  justify-content: flex-start !important;
+}
+
+.mat-mdc-paginator-range-label {
+  margin: 8px;
+}
+
 mat-list-item {
   height: fit-content !important;
 }
@@ -433,6 +446,42 @@ table:not(.mat-calendar-table) {
       color: var(--mat-sys-on-surface);
       font: var(--mat-sys-title-medium);
     }
+  }
+}
+
+.avatar-container {
+  position: relative;
+  display: inline-block;
+}
+
+.status-badge {
+  right: 0;
+  bottom: 0;
+  padding: 4px;
+  display: flex;
+  background: white;
+  position: absolute;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--mat-sys-level2);
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+
+  &.online {
+   color: green;
+  }
+
+  &.active {
+    color: blue;
+  }
+
+  &.offline {
+    color: gray;
   }
 }
 

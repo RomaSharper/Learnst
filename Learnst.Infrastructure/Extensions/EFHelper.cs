@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
-namespace Learnst.Domain.Extensions;
+namespace Learnst.Infrastructure.Extensions;
 
 public static class EFHelper
 {

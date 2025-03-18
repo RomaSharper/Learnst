@@ -1,4 +1,4 @@
-﻿using Learnst.Domain.Enums;
+﻿using Learnst.Infrastructure.Enums;
 
 namespace Learnst.Api.Models;
 

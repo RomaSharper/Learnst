@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using Learnst.Domain.Enums;
+using Learnst.Infrastructure.Enums;
 using Learnst.Infrastructure.Interfaces;
 
 namespace Learnst.Infrastructure.Models;

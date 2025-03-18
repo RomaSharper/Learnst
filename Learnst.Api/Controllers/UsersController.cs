@@ -2,8 +2,8 @@
 using bcrypt = BCrypt.Net.BCrypt;
 #pragma warning restore CS8981
 using Learnst.Api.Models;
+using Learnst.Infrastructure.Enums;
 using Microsoft.AspNetCore.Mvc;
-using Learnst.Domain.Enums;
 using Learnst.Infrastructure.Models;
 using Learnst.Infrastructure.Exceptions;
 using Learnst.Infrastructure.Repositories;
@@ -21,7 +21,8 @@ public class UsersController(
     // GET: Users
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
-        => Ok(await repository.GetAsync(includes: [
+        => Ok(await repository.GetAsync(includes:
+        [
             u => u.Educations,
             u => u.SocialMediaProfiles,
             u => u.WorkExperiences,
@@ -40,7 +41,8 @@ public class UsersController(
     {
         try
         {
-            return await repository.GetByIdAsync(id, includes: [
+            return await repository.GetByIdAsync(id, includes:
+            [
                 u => u.Educations,
                 u => u.SocialMediaProfiles,
                 u => u.WorkExperiences,
@@ -69,19 +71,21 @@ public class UsersController(
     {
         try
         {
-            return await repository.GetFirstAsync(where: u => !string.IsNullOrEmpty(u.EmailAddress) && u.EmailAddress.ToLower() == email.ToLower(),
-                includes: [
-                u => u.Educations,
-                u => u.SocialMediaProfiles,
-                u => u.WorkExperiences,
-                u => u.UserActivities,
-                u => u.UserLessons,
-                u => u.UserAnswers,
-                u => u.Tickets,
-                u => u.TicketAnswers,
-                u => u.Followers,
-                u => u.Followings
-            ]) ?? throw new NotFoundException<User>("Пользователь с такой почтой не найден");
+            return await repository.GetFirstAsync(
+                where: u => !string.IsNullOrEmpty(u.EmailAddress) && u.EmailAddress.ToLower() == email.ToLower(),
+                includes:
+                [
+                    u => u.Educations,
+                    u => u.SocialMediaProfiles,
+                    u => u.WorkExperiences,
+                    u => u.UserActivities,
+                    u => u.UserLessons,
+                    u => u.UserAnswers,
+                    u => u.Tickets,
+                    u => u.TicketAnswers,
+                    u => u.Followers,
+                    u => u.Followings
+                ]) ?? throw new NotFoundException<User>("Пользователь с такой почтой не найден");
         }
         catch (NotFoundException<User> nfe)
         {
@@ -99,7 +103,8 @@ public class UsersController(
     {
         try
         {
-            return await repository.GetFirstAsync(where: u => u.Username == username, includes: [
+            return await repository.GetFirstAsync(where: u => u.Username == username, includes:
+            [
                 u => u.Educations,
                 u => u.SocialMediaProfiles,
                 u => u.WorkExperiences,
@@ -122,14 +127,37 @@ public class UsersController(
         }
     }
 
+    // GET: Users/5/Status
+    [HttpGet("{id:guid}/Status")]
+    public async Task<ActionResult<Status>> GetUserStatus(Guid id)
+    {
+        try
+        {
+            var user = await repository.GetByIdAsync(id)
+                       ?? throw new NotFoundException<User>(id);
+
+            return Ok(user.Status);
+        }
+        catch (NotFoundException<User> nfe)
+        {
+            return NotFound(new ErrorResponse(nfe));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ErrorResponse(ex));
+        }
+    }
+
     // POST: Users/Auth
     [HttpPost("Auth")]
     public async Task<ActionResult<User>> Authenticate([FromBody] LoginRequest request)
     {
         try
         {
-            var user = await repository.GetFirstAsync(where: u => u.Username == request.Login || u.EmailAddress == request.Login,
-                includes: [
+            var user = await repository.GetFirstAsync(
+                where: u => u.Username == request.Login || u.EmailAddress == request.Login,
+                includes:
+                [
                     u => u.Educations,
                     u => u.SocialMediaProfiles,
                     u => u.WorkExperiences,
@@ -179,7 +207,8 @@ public class UsersController(
                 throw new DuplicateException<User>(id);
 
             if (!string.IsNullOrEmpty(user.EmailAddress) && await repository.ExistsAsync(
-                    u => !string.IsNullOrEmpty(u.EmailAddress) && u.EmailAddress.ToLower() == user.EmailAddress.ToLower()))
+                    u => !string.IsNullOrEmpty(u.EmailAddress) &&
+                         u.EmailAddress.ToLower() == user.EmailAddress.ToLower()))
                 throw new DuplicateException<User>("Пользователь с такой почтой уже существует");
 
             if (user.Role is not Role.User)
@@ -226,7 +255,8 @@ public class UsersController(
         try
         {
             NotEqualsException.ThrowIfNotEquals(id, user.Id);
-            var existingUser = await repository.GetByIdAsync(id, noTracking: false, includes: [
+            var existingUser = await repository.GetByIdAsync(id, noTracking: false, includes:
+            [
                 u => u.Educations,
                 u => u.SocialMediaProfiles,
                 u => u.WorkExperiences,
@@ -268,6 +298,7 @@ public class UsersController(
             existingUser.ResumeText = user.ResumeText;
             existingUser.AboutMe = user.AboutMe;
             existingUser.Banner = user.Banner;
+            existingUser.Status = user.Status;
 
             // Обновляем коллекции
             existingUser.Educations = user.Educations;
@@ -303,11 +334,11 @@ public class UsersController(
         try
         {
             if (request.Role is Role.Admin || !await repository.ExistsAsync(
-                u => u.Id == request.AdminId && u.Role == Role.Admin))
+                    u => u.Id == request.AdminId && u.Role == Role.Admin))
                 return BadRequest();
 
             var existingUser = await repository.GetByIdAsync(request.UserId, noTracking: false)
-                ?? throw new NotFoundException<User>(request.UserId);
+                               ?? throw new NotFoundException<User>(request.UserId);
 
             existingUser.Role = request.Role;
 
@@ -348,7 +379,7 @@ public class UsersController(
                 });
 
             var existingUser = await repository.GetByIdAsync(request.UserId, noTracking: false)
-                ?? throw new NotFoundException<User>(request.UserId);
+                               ?? throw new NotFoundException<User>(request.UserId);
 
             var hash = bcrypt.HashPassword(request.Password);
             existingUser.PasswordHash = hash;
@@ -365,9 +396,33 @@ public class UsersController(
         {
             return BadRequest(new
             {
-                ex.Message,
-                Succeed = false
+                Succeed = false,
+                ex.Message
             });
+        }
+    }
+
+    // PUT: Users/5/Status
+    [HttpPut("{id:guid}/Status")]
+    public async Task<ActionResult> UpdateUserStatus(Guid id, [FromBody] Status status)
+    {
+        try
+        {
+            var user = await repository.GetByIdAsync(id, noTracking: false)
+                       ?? throw new NotFoundException<User>(id);
+
+            user.Status = status;
+            await repository.SaveAsync();
+
+            return Ok();
+        }
+        catch (NotFoundException<User> nfe)
+        {
+            return NotFound(new ErrorResponse(nfe));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new ErrorResponse(ex));
         }
     }
 

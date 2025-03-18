@@ -20,6 +20,9 @@ import { UsersService } from '../../services/users.service';
 import { Role } from '../../enums/Role';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
+import {NgClass} from '@angular/common';
+import {StatusHelper} from '../../helpers/StatusHelper';
+import {Status} from '../../enums/Status';
 
 @Component({
   selector: 'app-users',
@@ -39,7 +42,8 @@ import { AuthService } from '../../services/auth.service';
     MatAutocompleteModule,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
-    PlaceholderImageDirective
+    PlaceholderImageDirective,
+    NgClass
   ],
 })
 export class UsersComponent extends MediumScreenSupport implements OnInit {
@@ -295,4 +299,7 @@ export class UsersComponent extends MediumScreenSupport implements OnInit {
       });
     });
   }
+
+  protected readonly StatusHelper = StatusHelper;
+  protected readonly Status = Status;
 }
