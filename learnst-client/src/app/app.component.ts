@@ -42,11 +42,11 @@ import {AudioService} from '../services/audio.service';
 })
 export class AppComponent extends MediumScreenSupport {
   router = inject(Router);
+  audioService = inject(AudioService);
   themeService = inject(ThemeService);
 
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
-  private audioService = inject(AudioService);
   private userStatusService = inject(UserStatusService);
 
   loading = signal(true);
@@ -56,7 +56,6 @@ export class AppComponent extends MediumScreenSupport {
   constructor() {
     super();
     effect(() => {
-      this.audioService.initialize();
       this.authService.getUser().subscribe({
         next: user => {
           this.user.set(user);

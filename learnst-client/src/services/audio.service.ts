@@ -66,18 +66,14 @@ export class AudioService {
     this.setupUserInteractionListener();
   }
 
-  initialize(): void {
-    if (!this.isEnabled()) return;
-    this.scheduleNextTrack();
-    this.fadeIn();
-  }
-
   toggleMusic(state?: boolean): void {
-    this.isEnabled.set(state !== undefined ? state : !this.isEnabled());
+    const newState = state !== undefined ? state : !this.isEnabled();
+    if (newState === this.isEnabled()) return;
+
+    this.isEnabled.set(newState);
     this.saveState();
 
-    if (this.isEnabled()) {
-      this.fadeIn();
+    if (this.isEnabled() && this.userInteracted) {
       this.scheduleNextTrack();
     } else {
       this.fadeOut();
@@ -109,9 +105,12 @@ export class AudioService {
   }
 
   private setupAudioHandlers(): void {
-    this.audioElement.addEventListener('ended', () => {
+    const schedule = () => {
       if (this.isEnabled()) this.scheduleNextTrack();
-    });
+    }
+
+    schedule();
+    this.audioElement.addEventListener('ended', schedule);
     this.audioElement.volume = 0;
   }
 
@@ -125,10 +124,15 @@ export class AudioService {
   private scheduleNextTrack(): void {
     this.clearSchedule();
 
+    if (!this.isEnabled()) {
+      console.log('Музыка отключена, планирование трека отменено.');
+      return;
+    }
+
     const delay = this.getRandomDelay();
     const nextTrack = this.selectNextTrack();
 
-    console.log(`Следующий трек "${this.getTrackName(nextTrack)}" через ${delay/1000} сек.`);
+    console.log(`Следующий трек "${this.getTrackName(nextTrack)}" через ${delay / 1000} сек.`);
 
     this.nextTrackTimeout = setTimeout(() => {
       this.playSpecificTrack(nextTrack);
@@ -136,13 +140,23 @@ export class AudioService {
   }
 
   private playSpecificTrack(track: string): void {
-    this.currentTrackIndex = this.tracks.indexOf(track);
+    if (!this.isEnabled()) {
+      console.log('Музыка отключена, воспроизведение отменено.');
+      return;
+    }
 
     if (!this.userInteracted) {
       console.log('Пользователь еще не взаимодействовал с документом.');
       return;
     }
 
+    // Если трек уже играет, не выбираем его снова
+    if (this.audioElement.src === track && !this.audioElement.paused) {
+      console.log('Трек уже играет.');
+      return;
+    }
+
+    this.currentTrackIndex = this.tracks.indexOf(track);
     this.audioElement.src = track;
 
     // Сбрасываем громкость перед воспроизведением
@@ -153,7 +167,13 @@ export class AudioService {
         console.log(`Сейчас играет: ${this.getTrackName(track)}`);
         this.fadeIn(); // Добавляем fade-in при старте трека
       })
-      .catch(console.error);
+      .catch((error) => {
+        if (error.name === 'AbortError') {
+          console.log('Воспроизведение прервано, музыка отключена.');
+        } else {
+          console.error('Ошибка воспроизведения:', error);
+        }
+      });
   }
 
   private selectNextTrack(): string {
@@ -182,6 +202,11 @@ export class AudioService {
     const step = delta / (this.fadeDuration / 100);
 
     const fade = setInterval(() => {
+      if (!this.isEnabled()) {
+        clearInterval(fade);
+        return;
+      }
+
       const newVolume = this.audioElement.volume + step;
       if (newVolume >= this.targetVolume()) {
         this.audioElement.volume = this.targetVolume();
@@ -210,10 +235,13 @@ export class AudioService {
 
   private setupUserInteractionListener(): void {
     document.addEventListener('click', () => {
-      this.userInteracted = true;
-      console.debug('Пользователь провзаимодействовал с документом, воспроизведение музыки возможно.');
-      if (this.isEnabled()) {
-        this.playSpecificTrack(this.tracks[this.currentTrackIndex]);
+      if (!this.userInteracted) {
+        this.userInteracted = true;
+        console.debug('Пользователь провзаимодействовал с документом, воспроизведение музыки возможно.');
+        if (this.isEnabled()) {
+          // Если музыка включена, начинаем воспроизведение
+          this.playSpecificTrack(this.selectNextTrack());
+        }
       }
     }, { once: true });
   }
