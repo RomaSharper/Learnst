@@ -36,10 +36,9 @@ export class UserStatusService {
       return;
     }
 
+    console.log(`Updating status for user ${this.userId} to ${status}`); // Логирование
     try {
-      this.usersService.updateStatus(this.userId, status);
-
-      // Уведомление других клиентов через SignalR
+      await this.usersService.updateStatus(this.userId, status).toPromise();
       await this.signalRService.invoke('SendStatusUpdate', this.userId, status);
     } catch (err) {
       console.error('Ошибка при обновлении статуса:', err);
@@ -49,6 +48,7 @@ export class UserStatusService {
 
   private resetActivityTimeout(): void {
     clearTimeout(this.activityTimeout);
+    console.log('Resetting activity timeout'); // Логирование
     this.activityTimeout = setTimeout(() => {
       this.updateStatus(Status.Offline);
     }, 300000);

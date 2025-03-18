@@ -69,6 +69,7 @@ export class SignalRService {
       await this.waitForConnection();
     }
 
+    console.log(`Invoking SignalR method ${methodName} with args:`, args); // Логирование
     try {
       await this.connection.invoke(methodName, ...args);
     } catch (err) {
