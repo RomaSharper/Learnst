@@ -86,7 +86,6 @@ export class UsersService {
   }
 
   updateStatus(userId: string, status: Status): Observable<any> {
-    console.log(`Updating status for user ${userId} to ${status}`); // Логирование
-    return this.http.put(`${this.apiUrl}/${userId}/status`, { status });
+    return this.http.put(`${this.apiUrl}/${userId}/status`, status);
   }
 }

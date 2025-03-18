@@ -25,21 +25,12 @@
     @for (user of displayedUsers; track user) {
       <mat-card [routerLink]="['/user', user.id]" appearance="outlined">
         <mat-card-content class="user-card">
-          <img [src]="user.avatarUrl!" alt="Avatar" class="avatar" placeholder="/assets/icons/user-192x192.png"
-               loading="lazy" noDownloading>
-          <!-- Бейджик статуса -->
-          <div class="status-badge" [ngClass]="StatusHelper.getStatusClass(user.status)">
-            @switch (user.status) {
-              @case (Status.Offline) {
-                <mat-icon>cancel</mat-icon>
-              }
-              @case (Status.Online) {
-                <mat-icon>circle</mat-icon>
-              }
-              @case (Status.Activity) {
-                <mat-icon>play_circle</mat-icon>
-              }
-            }
+          <div class="avatar-container">
+            <img [src]="user.avatarUrl!" alt="Avatar" class="avatar" placeholder="/assets/icons/user-192x192.png"
+                 loading="lazy" noDownloading>
+            <!-- Бейджик статуса -->
+            <div class="status-badge" [ngClass]="StatusHelper.getStatusClass(user.status)"
+                 [matTooltip]="StatusHelper.getStatusName(user.status)"></div>
           </div>
           <div class="user-info">
             <p [matTooltip]="RoleHelper.getName(user.role)" [matTooltipDisabled]="user.role === Role.User">

@@ -298,7 +298,6 @@ public class UsersController(
             existingUser.ResumeText = user.ResumeText;
             existingUser.AboutMe = user.AboutMe;
             existingUser.Banner = user.Banner;
-            existingUser.Status = user.Status;
 
             // Обновляем коллекции
             existingUser.Educations = user.Educations;

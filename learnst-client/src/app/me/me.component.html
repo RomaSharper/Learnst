@@ -31,19 +31,8 @@
                (click)="openFilePicker()" class="avatar" matTooltip="Изменить аватар"
                placeholder="/assets/icons/user-192x192.png" matTooltipPosition="below">
           <!-- Бейджик статуса -->
-          <div class="status-badge" [ngClass]="StatusHelper.getStatusClass(user.status)">
-            @switch (user.status) {
-              @case (Status.Offline) {
-                <mat-icon>cancel</mat-icon>
-              }
-              @case (Status.Online) {
-                <mat-icon>circle</mat-icon>
-              }
-              @case (Status.Activity) {
-                <mat-icon>play_circle</mat-icon>
-              }
-            }
-          </div>
+          <div class="status-badge" [ngClass]="StatusHelper.getStatusClass(user.status)"
+               [matTooltip]="StatusHelper.getStatusName(user.status)"></div>
         </div>
 
         <div class="full-width">

@@ -107,9 +107,6 @@ export class LessonComponent extends MediumScreenSupport implements OnInit {
             lessonId: lessonId
           };
           this.lessonsService.createUserLesson(newUserLesson).subscribe({
-            next: () => {
-              console.log('Запись в UserLessons создана');
-            },
             error: (err) => {
               console.error('Ошибка при создании записи в UserLessons:', err);
             }

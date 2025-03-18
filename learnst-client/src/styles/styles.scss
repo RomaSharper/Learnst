@@ -12,10 +12,9 @@
   font-family: "MyFont", "Motiva Sans", "Roboto", system-ui, "Helvetica Neue", "Consolas", sans-serif;
 
   @media (prefers-reduced-motion: no-preference) {
-    transition:
-      opacity .2s ease-in,
-      scale   .2s ease-in,
-      display .2s ease-in;
+    transition: opacity .2s ease-in,
+    scale .2s ease-in,
+    display .2s ease-in;
   }
 
   @starting-style:not(.loading-screen) {
@@ -451,37 +450,107 @@ table:not(.mat-calendar-table) {
 
 .avatar-container {
   position: relative;
-  display: inline-block;
+  margin-right: 12px;
+
+  .status-badge {
+    right: 0;
+    bottom: 0;
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+    display: flex;
+    background: white;
+    position: absolute;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: var(--mat-sys-level2);
+    border: 2px solid rgba(255, 255, 255, 0.5); /* Полупрозрачная обводка */
+
+    &.online {
+      animation: pulse 1.5s infinite;
+      background: linear-gradient(145deg, #66bb6a, #4caf50);
+      opacity: 1; /* Полностью непрозрачная */
+    }
+
+    &.offline {
+      background: linear-gradient(145deg, #616161, #424242); /* Более темный градиент */
+      opacity: 1; /* Полностью непрозрачная */
+
+      &::after {
+        top: 50%;
+        left: 50%;
+        width: 12px;
+        height: 12px;
+        content: '';
+        position: absolute;
+        background-color: transparent;
+        border: 2px solid white;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      &::before {
+        top: 50%;
+        left: 50%;
+        width: 8px;
+        height: 2px;
+        content: '';
+        position: absolute;
+        background-color: white;
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+    }
+
+    &.activity {
+      background: linear-gradient(145deg, #ffa726, #fb8c00);
+      opacity: 1; /* Полностью непрозрачная */
+      animation: pulse 1.5s infinite;
+
+      &::before {
+        content: '';
+        width: 12px;
+        height: 12px;
+        background-color: white;
+        clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        position: absolute;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .status-badge {
+      width: 18px;
+      height: 18px;
+      padding: 3px;
+      border-width: 1.5px;
+
+      &.offline::after {
+        width: 8px;
+        height: 8px;
+      }
+
+      &.activity::before {
+        width: 8px;
+        height: 8px;
+      }
+    }
+  }
 }
 
-.status-badge {
-  right: 0;
-  bottom: 0;
-  padding: 4px;
-  display: flex;
-  background: white;
-  position: absolute;
-  border-radius: 50%;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--mat-sys-level2);
-
-  mat-icon {
-    width: 16px;
-    height: 16px;
-    font-size: 16px;
+@keyframes pulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.85;
   }
-
-  &.online {
-   color: green;
+  50% {
+    transform: scale(1);
+    opacity: 1;
   }
-
-  &.active {
-    color: blue;
-  }
-
-  &.offline {
-    color: gray;
+  100% {
+    transform: scale(0.9);
+    opacity: 0.85;
   }
 }
 
@@ -705,7 +774,7 @@ mat-date-range-input {
   // background-color: #232527;
   // box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 
-  form>*:not(:last-child) {
+  form > *:not(:last-child) {
     margin-bottom: 4px * 4;
   }
 
@@ -819,14 +888,14 @@ mat-date-range-input {
     border-radius: 20px;
     // border: 4px * 0.25 solid @border-color;
 
-    >a {
+    > a {
       gap: 16px;
       width: 100%;
       display: flex;
       align-items: center;
       flex-direction: row;
 
-      >div {
+      > div {
         flex: 1;
         overflow: hidden;
         white-space: nowrap;
@@ -834,7 +903,7 @@ mat-date-range-input {
       }
     }
 
-    >div:not(:last-child) {
+    > div:not(:last-child) {
       margin-bottom: 4px;
       padding-right: 40px;
     }
@@ -879,7 +948,7 @@ mat-date-range-input {
 .md-container {
   padding: 20px;
   margin: 0 auto;
-  max-width: 800px;
+  max-width: 100%;
   line-height: 1.6;
   font-family: "JetBrains Mono", monospace;
 
@@ -983,10 +1052,4 @@ mat-date-range-input {
       text-decoration: underline;
     }
   }
-}
-
-@keyframes pulse {
-  0% { opacity: 0.5; }
-  50% { opacity: 1; }
-  100% { opacity: 0.5; }
 }

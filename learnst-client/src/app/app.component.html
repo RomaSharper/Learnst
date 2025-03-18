@@ -87,8 +87,29 @@
             </mat-menu>
           </li>
         } @else {
-          <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Главная</a></li>
-          <li><a routerLink="/manuals" routerLinkActive="active">Информация</a></li>
+          <li>
+            <a
+              routerLink="/"
+              class="img-link"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              <img src="assets/icons/favicon.png" alt="Learnst">
+              <span>Learnst</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/manuals" routerLinkActive="active" class="img-link">
+              <img src="assets/icons/documents.png" alt="Информация">
+              <span>Информация</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/settings" routerLinkActive="active" class="img-link">
+              <img src="assets/icons/settings.png" alt="Настройки">
+              <span>Настройки</span>
+            </a>
+          </li>
           <li class="user-area">
             <a mat-stroked-button routerLink="/login">
               <mat-icon class="scale-1-5">login</mat-icon>

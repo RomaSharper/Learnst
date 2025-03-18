@@ -9,9 +9,9 @@ namespace Learnst.Api.Hubs;
 public class CommonHub(UsersRepository usersRepository) : Hub
 {
     // Метод для обновления статуса пользователя
-    public async Task SendStatusUpdate(string userId, Status status)
+    public async Task SendStatusUpdate(string userId, int status)
     {
-        await Clients.OthersInGroup(userId).SendAsync("ReceiveStatusUpdate", status);
+        await Clients.OthersInGroup(userId).SendAsync("ReceiveStatusUpdate", (Status)status);
     }
 
     // Метод для обновления темы пользователя

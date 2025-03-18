@@ -1,21 +1,26 @@
-import {inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Router} from '@angular/router';
-import {Observable, BehaviorSubject, of} from 'rxjs';
-import {tap, catchError, map, switchMap} from 'rxjs/operators';
-import {environment} from '../environments/environment';
-import {UserDao} from '../models/UserDao';
-import {UsersService} from './users.service';
-import {StoredUser} from '../models/StoredUser';
-import {Role} from '../enums/Role';
-import {User} from '../models/User';
-import {AES, enc} from 'crypto-js';
-import {toSignal} from '@angular/core/rxjs-interop';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { tap, catchError, map, switchMap } from 'rxjs/operators';
+import { environment } from '../environments/environment';
+import { UserDao } from '../models/UserDao';
+import { UsersService } from './users.service';
+import { StoredUser } from '../models/StoredUser';
+import { Role } from '../enums/Role';
+import { User } from '../models/User';
+import { AES, enc } from 'crypto-js';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { UserStatusService } from './user.status.service'; // Импортируем UserStatusService
+import { Status } from '../enums/Status'; // Импортируем Status
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private usersService = inject(UsersService);
+  private userStatusService = inject(UserStatusService);
+
   private readonly TOKEN_KEY = 'auth_token';
   private readonly ACCOUNTS_KEY = 'user_accounts';
   private readonly ENCRYPTION_KEY = environment.encryptionKey;
@@ -30,16 +35,16 @@ export class AuthService {
 
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private usersService: UsersService) {
+  constructor() {
     this.initializeAuthState();
   }
 
   login(login: string, password: string): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(`${this.apiUrl}/auth`, {login, password})
+    return this.http.post<{ token: string }>(`${this.apiUrl}/auth`, { login, password })
       .pipe(
-        tap(({token}) => this.handleAuthenticationSuccess(token)),
+        tap(({ token }) => this.handleAuthenticationSuccess(token)),
         catchError(error => {
-          console.error('Login error:', error);
+          console.error('Ошибка входа:', error);
           throw error;
         })
       );
@@ -51,8 +56,12 @@ export class AuthService {
       localStorage.removeItem(this.ACCOUNTS_KEY);
       this.accountsSubject.next([]);
       this.router.navigate(['/login']);
-    } else
+    } else {
       this.clearAuthData();
+    }
+
+    // Устанавливаем статус Offline при выходе
+    this.userStatusService.updateStatus(Status.Offline);
   }
 
   switchAccount(accountId: string): void {
@@ -61,11 +70,21 @@ export class AuthService {
       isCurrent: acc.id === accountId
     }));
 
+    const previousCurrent = this.accountsSubject.value.find(acc => acc.isCurrent);
     const newCurrent = accounts.find(acc => acc.isCurrent);
+
+    if (previousCurrent) {
+      // Устанавливаем статус Offline для предыдущего аккаунта
+      this.userStatusService.updateStatus(Status.Offline, previousCurrent.id);
+    }
+
     if (newCurrent) {
       this.saveAccounts(accounts);
       this.setCurrentUser(newCurrent);
       localStorage.setItem(this.TOKEN_KEY, newCurrent.accessToken);
+
+      // Устанавливаем статус Online для нового аккаунта
+      this.userStatusService.updateStatus(Status.Online, newCurrent.id);
     }
   }
 
@@ -79,10 +98,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Получение полных данных пользователя.
-   * @returns Observable<User | null> - Полные данные пользователя или null, если пользователь не авторизован.
-   */
   getUser(): Observable<User | null> {
     return this.currentUser$.pipe(
       switchMap(userDao => {
@@ -96,17 +111,12 @@ export class AuthService {
     );
   }
 
-  /**
-   * Установка текущего пользователя.
-   * @param user - Полные данные пользователя.
-   */
   setUser(user: User): void {
     if (!user) {
       this.currentUserSubject.next(null);
       return;
     }
 
-    // Обновляем данные в BehaviorSubject
     this.currentUserSubject.next({
       openid: user.id!,
       username: user.username,
@@ -125,7 +135,7 @@ export class AuthService {
   private updateAccountInfo(user: User): void {
     const accounts: StoredUser[] = this.accountsSubject.value.map(a => {
       if (a.id === user.id)
-        return {...a, username: user.username, avatarUrl: user.avatarUrl};
+        return { ...a, username: user.username, avatarUrl: user.avatarUrl };
       return a;
     });
     this.saveAccounts(accounts);
@@ -160,6 +170,10 @@ export class AuthService {
 
         if (account) {
           this.setCurrentUser(account);
+          localStorage.setItem(this.TOKEN_KEY, account.accessToken);
+
+          // Устанавливаем статус Online при восстановлении сессии
+          this.userStatusService.updateStatus(Status.Online, account.id);
         }
       }
     } catch (error) {
@@ -177,7 +191,6 @@ export class AuthService {
     const accounts = this.accountsSubject.value;
     const existingAccount = accounts.find(acc => acc.id === payload.openid);
 
-    // Сбрасываем isCurrent для всех аккаунтов
     const updatedAccounts = accounts.map(acc => ({
       ...acc,
       isCurrent: false
@@ -186,7 +199,6 @@ export class AuthService {
     let newAccount: StoredUser;
 
     if (existingAccount) {
-      // Обновляем существующий аккаунт
       newAccount = {
         ...existingAccount,
         accessToken: encryptedToken,
@@ -194,14 +206,12 @@ export class AuthService {
         lastLogin: new Date()
       };
 
-      // Заменяем существующий аккаунт в updatedAccounts
       const index = updatedAccounts.findIndex(acc => acc.id === existingAccount.id);
       if (index !== -1)
         updatedAccounts[index] = newAccount;
       else
         updatedAccounts.push(newAccount);
     } else {
-      // Создаем новый аккаунт
       newAccount = this.createStoredUser(payload, encryptedToken);
       updatedAccounts.push(newAccount);
     }
@@ -209,13 +219,16 @@ export class AuthService {
     this.saveAccounts(updatedAccounts);
     this.setCurrentUser(newAccount);
     localStorage.setItem(this.TOKEN_KEY, encryptedToken);
+
+    // Устанавливаем статус Online при успешной авторизации
+    this.userStatusService.updateStatus(Status.Online, newAccount.id);
   }
 
   private createStoredUser(payload: any, encryptedToken: string): StoredUser {
     return {
       id: payload.openid,
       username: payload.username,
-      avatarUrl: payload.avatarUrl || '/assets/default-avatar.png',
+      avatarUrl: payload.avatarUrl || '/assets/icons/user-192x192.png',
       accessToken: encryptedToken,
       isCurrent: true,
       lastLogin: new Date()
@@ -249,7 +262,6 @@ export class AuthService {
 
   private decodeToken(token: string): any | null {
     try {
-      // Заменяем URL-safe символы и добавляем padding
       const base64Url = token.split('.')[1];
       const base64 = base64Url
         .replace(/-/g, '+')
@@ -299,6 +311,6 @@ export class AuthService {
     const token = this.getTokenFromUrl();
     if (!token) return;
     this.handleAuthenticationSuccess(token);
-    this.router.navigate(['/']); // Перенаправляем на главную после успешной авторизации
+    this.router.navigate(['/']);
   }
 }

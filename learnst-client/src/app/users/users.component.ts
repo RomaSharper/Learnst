@@ -300,6 +300,6 @@ export class UsersComponent extends MediumScreenSupport implements OnInit {
     });
   }
 
-  protected readonly StatusHelper = StatusHelper;
   protected readonly Status = Status;
+  protected readonly StatusHelper = StatusHelper;
 }

@@ -1,39 +1,40 @@
-import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatTreeModule } from '@angular/material/tree';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { InspectableDirective } from '../../directives/inspectable.directive';
-import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
-import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
-import { InfoType } from '../../enums/InfoType';
-import { Role } from '../../enums/Role';
-import { LevelHelper } from '../../helpers/LevelHelper';
-import { Return } from '../../helpers/Return';
-import { Activity } from '../../models/Activity';
-import { User } from '../../models/User';
-import { EllipsisPipe } from '../../pipes/ellipsis.pipe';
-import { RuDatePipe } from '../../pipes/ru.date.pipe';
-import { ActivitiesService } from '../../services/activities.service';
-import { AlertService } from '../../services/alert.service';
-import { AnswersService } from '../../services/answers.service';
-import { AuthService } from '../../services/auth.service';
-import { CertificateService } from '../../services/certificate.service';
-import { LessonsService } from '../../services/lessons.service';
-import { UserMenuComponent } from '../user-menu/user-menu.component';
-import { TagHelper } from '../../helpers/TagHelper';
-import { InfoCard } from '../../models/InfoCard';
+import {Location} from '@angular/common';
+import {Component, inject, OnInit} from '@angular/core';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatIconModule} from '@angular/material/icon';
+import {MatListModule} from '@angular/material/list';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatTreeModule} from '@angular/material/tree';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {of} from 'rxjs';
+import {catchError, map} from 'rxjs/operators';
+import {InspectableDirective} from '../../directives/inspectable.directive';
+import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
+import {PlaceholderImageDirective} from '../../directives/placeholder-image.directive';
+import {InfoType} from '../../enums/InfoType';
+import {Role} from '../../enums/Role';
+import {LevelHelper} from '../../helpers/LevelHelper';
+import {Return} from '../../helpers/Return';
+import {Activity} from '../../models/Activity';
+import {User} from '../../models/User';
+import {EllipsisPipe} from '../../pipes/ellipsis.pipe';
+import {RuDatePipe} from '../../pipes/ru.date.pipe';
+import {ActivitiesService} from '../../services/activities.service';
+import {AlertService} from '../../services/alert.service';
+import {AnswersService} from '../../services/answers.service';
+import {AuthService} from '../../services/auth.service';
+import {CertificateService} from '../../services/certificate.service';
+import {LessonsService} from '../../services/lessons.service';
+import {UserMenuComponent} from '../user-menu/user-menu.component';
+import {TagHelper} from '../../helpers/TagHelper';
+import {InfoCard} from '../../models/InfoCard';
+import {AudioService} from '../../services/audio.service';
 
 interface ActivityNode {
   id: string;
@@ -68,22 +69,31 @@ interface ActivityNode {
   ]
 })
 export class ActivityComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private audioService = inject(AudioService);
+  private answersService = inject(AnswersService);
+  private lessonsService = inject(LessonsService);
+  private activitiesService = inject(ActivitiesService);
+  private certificateService = inject(CertificateService);
+
+  activity?: Activity;
+  goBack!: () => void;
   activeTab = 0;
   loading = true;
   totalPoints = 0;
   earnedPoints = 0;
-  activity?: Activity;
-  goBack!: () => void;
-  totalLessonsCount = 0;
   user: User | null = null;
   benefits: InfoCard[] = [];
-  completedLessonsCount = 0;
   waysToLearn: InfoCard[] = [];
+  totalLessonsCount = 0;
+  dataSource: ActivityNode[] = [];
+  completedLessonsCount = 0;
   isCertificateLoading = false;
   isCertificateAvailable = false;
-  dataSource: ActivityNode[] = [];
 
-  LevelHelper = LevelHelper;
+  protected readonly LevelHelper = LevelHelper;
 
   // Метод для доступа к дочерним элементам узла
   childrenAccessor = (node: ActivityNode) => node.children ?? [];
@@ -91,17 +101,7 @@ export class ActivityComponent implements OnInit {
   // Метод для проверки, есть ли у узла дети
   hasChild = (_: number, node: ActivityNode) => !!node.children && node.children.length > 0;
 
-  constructor(
-    public router: Router,
-    public location: Location,
-    private route: ActivatedRoute,
-    private authService: AuthService,
-    private alertService: AlertService,
-    private answersService: AnswersService,
-    private lessonsService: LessonsService,
-    private activitiesService: ActivitiesService,
-    private certificateService: CertificateService
-  ) { }
+  constructor(public router: Router, public location: Location) { }
 
   ngOnInit(): void {
     let activityId!: string;
@@ -168,14 +168,14 @@ export class ActivityComponent implements OnInit {
     const tab = this.indexToName(this.activeTab);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { tab },
+      queryParams: {tab},
       queryParamsHandling: 'merge'
     });
   }
 
   navigateToTag(tag: string): void {
     this.router.navigate(['/activities'], {
-      queryParams: { tags: TagHelper.toUrlFormat(tag) }
+      queryParams: {tags: TagHelper.toUrlFormat(tag)}
     })
   }
 
@@ -213,6 +213,7 @@ export class ActivityComponent implements OnInit {
     ).subscribe(response => {
       this.isCertificateLoading = false;
       if (!response) return;
+      this.audioService.playVictorySound();
       this.alertService.showSnackBar('Сертификат успешно отправлен вам на почту!');
     });
   }
@@ -226,7 +227,7 @@ export class ActivityComponent implements OnInit {
       map(activity => {
         if (activity) {
           this.activity = activity;
-          const { benefits, waysToLearn } = this.activity.infoCards.reduce<{
+          const {benefits, waysToLearn} = this.activity.infoCards.reduce<{
             benefits: InfoCard[],
             waysToLearn: InfoCard[]
           }>((accelerator, infoCard) => {
@@ -235,7 +236,7 @@ export class ActivityComponent implements OnInit {
             else if (infoCard.infoType === InfoType.WayToLearn)
               accelerator.waysToLearn.push(infoCard);
             return accelerator;
-          }, { benefits: [], waysToLearn: [] });
+          }, {benefits: [], waysToLearn: []});
 
           this.benefits = benefits;
           this.waysToLearn = waysToLearn;

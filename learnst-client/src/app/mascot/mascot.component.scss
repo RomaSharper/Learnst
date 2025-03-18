@@ -388,9 +388,7 @@
       animation: mobile-slide-up 0.3s var(--easing);
 
       .messages {
-        flex: 1;
-        padding: 1.2rem;
-        overflow: hidden auto;
+        padding: 8px;
       }
 
       .input-box {

@@ -1,5 +1,5 @@
 import {CommonModule} from '@angular/common';
-import {Component, effect, HostListener, inject, OnInit, signal} from '@angular/core';
+import {Component, effect, HostListener, inject, signal} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
@@ -17,6 +17,7 @@ import {ThemeService} from '../services/theme.service';
 import {UserMenuComponent} from './user-menu/user-menu.component';
 import {MascotComponent} from './mascot/mascot.component';
 import {UserStatusService} from '../services/user.status.service';
+import {AudioService} from '../services/audio.service';
 
 @Component({
   selector: 'app-root',
@@ -41,9 +42,11 @@ import {UserStatusService} from '../services/user.status.service';
 })
 export class AppComponent extends MediumScreenSupport {
   router = inject(Router);
-  authService = inject(AuthService);
-  alertService = inject(AlertService);
   themeService = inject(ThemeService);
+
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private audioService = inject(AudioService);
   private userStatusService = inject(UserStatusService);
 
   loading = signal(true);
@@ -53,17 +56,18 @@ export class AppComponent extends MediumScreenSupport {
   constructor() {
     super();
     effect(() => {
-      console.log('Effect triggered');
+      this.audioService.initialize();
       this.authService.getUser().subscribe({
         next: user => {
-          console.log('User data received:', user);
           this.user.set(user);
           const themeId = user?.themeId || 'light';
 
           if (user?.id) {
             this.userStatusService.initialize(user.id);
             this.themeService.setTheme(themeId).subscribe({
-              next: () => setTimeout(() => this.loading.set(false), 1600),
+              next: () => setTimeout(() => {
+                this.loading.set(false);
+              }, 1600),
               error: _err => this.loading.set(false)
             });
           } else {

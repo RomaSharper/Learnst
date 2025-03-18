@@ -126,7 +126,6 @@ export class InfoCardDialogComponent {
         // Если это редактирование и старая иконка была, удаляем её
         if (this.oldIconUrl) {
           this.fileService.delete(this.oldIconUrl).subscribe({
-            next: () => console.log('Старая иконка удалена'),
             error: (err) => console.error('Ошибка при удалении старой иконки:', err)
           });
         }

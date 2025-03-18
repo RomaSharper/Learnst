@@ -475,18 +475,30 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   async sendMessage() {
     if (!this.userInput().trim() || this.isTyping()) return;
 
-    const input = this.userInput();
+    const input = this.userInput().trim();
     const newMessage: Message = {text: input, isBot: false};
     this.messages.update(m => [...m, newMessage]);
 
-    if (input.toLowerCase() === '!очистка') {
+    if (input === 'ь.') {
+      this.typeMessage({ text: 'ь.', mood: 'april_fools' });
+      this.userInput.set('');
+      return;
+    }
+
+    if (input.toLowerCase().includes('гойда')) {
+      this.typeMessage({ text: 'ГОЙДА!', mood: 'amazed' });
+      this.userInput.set('');
+      return;
+    }
+
+    if (input === '!очистка') {
       this.typeMessage(this.commands[input]);
       this.userInput.set('');
       setTimeout(() => this.clearChatHistory(), 1000);
       return;
     }
 
-    if (input.toLowerCase() === '!экспорт') {
+    if (input === '!экспорт') {
       this.typeMessage(this.commands[input]);
       this.userInput.set('');
       setTimeout(() => this.exportHistory(), 1000);

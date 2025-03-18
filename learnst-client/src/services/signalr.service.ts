@@ -6,7 +6,6 @@ import { environment } from '../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class SignalRService {
-  private connection?: HubConnection;
   private themeUpdates = new Subject<string>();
   private connectionSubject = new ReplaySubject<HubConnection>(1);
   private statusUpdates = new Subject<{ userId: string, status: Status }>();
@@ -23,18 +22,16 @@ export class SignalRService {
     transport: HttpTransportType.WebSockets | HttpTransportType.LongPolling
   };
 
+  private connection = new HubConnectionBuilder()
+    .withUrl(`${environment.apiBaseUrl}/commonhub`, this.defaultHttpOptions)
+    .withAutomaticReconnect(this.retryPolicy)
+    .build();
+
   constructor() {
     this.initializeConnection();
   }
 
   private initializeConnection(): void {
-    const options = { ...this.defaultHttpOptions };
-
-    this.connection = new HubConnectionBuilder()
-      .withUrl(`${environment.apiBaseUrl}/commonhub`, options)
-      .withAutomaticReconnect(this.retryPolicy)
-      .build();
-
     this.connection.start()
       .then(() => {
         console.log('Подключение к SignalR установлено');
@@ -69,7 +66,6 @@ export class SignalRService {
       await this.waitForConnection();
     }
 
-    console.log(`Invoking SignalR method ${methodName} with args:`, args); // Логирование
     try {
       await this.connection.invoke(methodName, ...args);
     } catch (err) {
@@ -79,13 +75,8 @@ export class SignalRService {
   }
 
   private async waitForConnection(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject(new Error('Время подключения истекло.'));
-      }, 5000);
-
+    return new Promise((resolve, _reject) => {
       this.connection!.onreconnected(() => {
-        clearTimeout(timeout);
         resolve();
       });
 

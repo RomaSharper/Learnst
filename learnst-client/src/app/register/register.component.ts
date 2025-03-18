@@ -109,7 +109,6 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
     }
 
     if (this.form.invalid || this.loading()) {
-      console.log('Form invalid:', this.form.errors);
       this.turnstile.reset();
       return;
     }

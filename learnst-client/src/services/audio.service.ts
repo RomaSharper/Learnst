@@ -1,4 +1,4 @@
-import {Injectable, signal} from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -7,6 +7,11 @@ export class AudioService {
   private nextTrackTimeout: any;
   private fadeDuration = 2000;
   private currentTrackIndex = -1;
+  private userInteracted = false; // Флаг для отслеживания взаимодействия пользователя
+  private sounds: string[] = [
+    '/assets/sounds/sfx/03 Puzzle Solved.mp3',
+    '/assets/sounds/sfx/37 Sun.mp3'
+  ];
   private tracks: string[] = [
     '/assets/sounds/music/01 My Burden Is Light.mp3',
     '/assets/sounds/music/02 Someplace I Know.mp3',
@@ -48,19 +53,17 @@ export class AudioService {
     '/assets/sounds/music/41 Countdown.mp3',
     '/assets/sounds/music/42 IT\'S TIME TO FIGHT CRIME.mp3'
   ];
-  private sounds: string[] = [
-    '/assets/sounds/sfx/03 Puzzle Solved.mp4',
-    '/assets/sounds/sfx/37 Sun.mp4'
-  ];
+  private audioElement = new Audio();
+
   isEnabled = signal(false);
   targetVolume = signal(0.2);
-  private audioElement = new Audio();
 
   constructor() {
     this.audioElement.loop = false;
     this.loadState();
     this.setupAudioHandlers();
     this.initializeVolume();
+    this.setupUserInteractionListener();
   }
 
   initialize(): void {
@@ -84,6 +87,8 @@ export class AudioService {
 
   playVictorySound(): void {
     const sound = new Audio(this.sounds[0]);
+    sound.loop = false;
+    sound.volume = this.targetVolume();
     sound.play().catch(console.error);
   }
 
@@ -111,11 +116,10 @@ export class AudioService {
   }
 
   private initializeVolume(): void {
-    if (this.isEnabled()) {
+    if (this.isEnabled())
       this.audioElement.volume = this.targetVolume();
-    } else {
+    else
       this.audioElement.volume = 0;
-    }
   }
 
   private scheduleNextTrack(): void {
@@ -133,6 +137,12 @@ export class AudioService {
 
   private playSpecificTrack(track: string): void {
     this.currentTrackIndex = this.tracks.indexOf(track);
+
+    if (!this.userInteracted) {
+      console.log('Пользователь еще не взаимодействовал с документом.');
+      return;
+    }
+
     this.audioElement.src = track;
 
     // Сбрасываем громкость перед воспроизведением
@@ -196,5 +206,15 @@ export class AudioService {
         this.audioElement.volume = newVolume;
       }
     }, 100);
+  }
+
+  private setupUserInteractionListener(): void {
+    document.addEventListener('click', () => {
+      this.userInteracted = true;
+      console.debug('Пользователь провзаимодействовал с документом, воспроизведение музыки возможно.');
+      if (this.isEnabled()) {
+        this.playSpecificTrack(this.tracks[this.currentTrackIndex]);
+      }
+    }, { once: true });
   }
 }
