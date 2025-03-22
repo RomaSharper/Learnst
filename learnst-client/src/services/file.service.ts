@@ -18,6 +18,6 @@ export class FileService {
   }
 
   delete(path: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}?path=\\wwwroot\\${path}`);
+    return this.http.delete<any>(`${this.apiUrl}?path=\\wwwroot${path}`);
   }
 }

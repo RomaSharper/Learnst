@@ -66,7 +66,7 @@ public static class FileService
     public static void Delete(string path, SftpSettings settings)
     {
         using SftpClient sftp = new(settings.Host, settings.Port, settings.Username, settings.Password);
-        path = path.Replace(@"\\", @"\");
+        path = path.Replace("%5C", @"\").Replace(@"\\", @"\");
         try
         {
             sftp.Connect();
@@ -82,8 +82,8 @@ public static class FileService
 
     private static string GetPathFromContentType(string contentType) => contentType switch
     {
-        "image/jpeg" or "image/png" or "image/gif" => "images",
-        "video/mp4" => "videos",
+        "image/jpeg" or "image/jpg" or "image/png" or "image/gif" or "image/webp" or "image/tiff" => "images",
+        "video/mp4" or "video/webm" or "video/avi" => "videos",
         _ => "docs"
     };
 }

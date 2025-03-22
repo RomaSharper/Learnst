@@ -23,7 +23,7 @@ public class User : IEntity
     public DateOnly? DateOfBirth { get; set; }
 
     [StringLength(20, ErrorMessage = "Имя пользователя должно быть не длиннее 20 символов")]
-    [RegularExpression("^(?!_)[a-z0-9]+(_[a-z0-9]+)*(?<!_)$", ErrorMessage = "Имя пользователя должно содержать только строчные латинские буквы, цифры и максимум одно нижнее подчёркивание (не в начале и не в конце)")]
+    [RegularExpression("^(?!_)[a-zA-Z][a-zA-Z0-9]*(?:_[a-zA-Z0-9]+)?(?<!_)$", ErrorMessage = "Имя пользователя должно содержать только латинские буквы, цифры и максимум одно нижнее подчёркивание (не в начале и не в конце)")]
     public string Username { get; set; } = string.Empty;
 
     [StringLength(255)]

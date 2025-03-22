@@ -9,7 +9,7 @@ export class ValidationService {
   static emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   static passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
   static usernamePattern = /^(?!_)[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*(?<!_)$/;
-  static urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-@]*)*\/?$/;
+  static urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-@]*)*\/?$/;
 
   static emptyGuid = '00000000-0000-0000-0000-000000000000';
   static emailDomains = ['mail.ru', 'xmail.ru', 'gmail.com', 'vk.com', 'yandex.ru', 'icloud.com'];
@@ -211,6 +211,17 @@ export class ValidationService {
           if (exists) return { duplicateUsername: true };
           return null;
         }),
+        catchError(() => of(null))
+      );
+    };
+  }
+
+  static existingEmailValidator(usersService: UsersService): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      if (!control.value || control.invalid) return of(null);
+
+      return usersService.checkEmailExists(control.value).pipe(
+        map(exists => (exists ? null : { emailNotFound: true })),
         catchError(() => of(null))
       );
     };

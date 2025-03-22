@@ -14,7 +14,11 @@ public class ActivitiesController(ActivitiesRepository repository) : ControllerB
     // GET: api/Activities
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Activity>>> GetActivities()
-        => Ok(await repository.GetAsync(orderBy: a => a.CreatedAt, descending: true));
+        => Ok(await repository.DbSet.OrderByDescending(a => a.CreatedAt)
+            .Include(a => a.InfoCards)
+            .Include(a => a.Topics)
+                .ThenInclude(t => t.Lessons)
+            .ToListAsync());
 
     // GET: api/Activities/5
     [HttpGet("{id:guid}")]
@@ -28,9 +32,9 @@ public class ActivitiesController(ActivitiesRepository repository) : ControllerB
                 .Include(a => a.InfoCards)
                 .Include(a => a.UserActivities)
                 .Include(a => a.Topics)
-                .ThenInclude(t => t.Lessons)
-                .ThenInclude(l => l.Questions)
-                .ThenInclude(q => q.Answers)
+                    .ThenInclude(t => t.Lessons)
+                        .ThenInclude(l => l.Questions)
+                            .ThenInclude(q => q.Answers)
                 .SingleOrDefaultAsync(a => a.Id == id) ?? throw new NotFoundException<Activity>(id));
         }
         catch (NotFoundException<Activity> nfe)

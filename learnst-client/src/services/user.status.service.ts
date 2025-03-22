@@ -80,8 +80,7 @@ export class UserStatusService {
       // Уведомляем других клиентов через SignalR
       await this.signalRService.invoke('SendStatusUpdate', targetUserId, status);
     } catch (err) {
-      console.error('Ошибка при обновлении статуса:', err);
-      this.alertService.showSnackBar('Не удалось обновить статус. Пожалуйста, попробуйте позже.');
+      // console.error('Ошибка при обновлении статуса:', err);
     }
   }
 }

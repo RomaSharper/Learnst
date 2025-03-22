@@ -6,8 +6,8 @@ import { Injectable, signal } from '@angular/core';
 export class AudioService {
   private nextTrackTimeout: any;
   private fadeDuration = 2000;
+  private userInteracted = false;
   private currentTrackIndex = -1;
-  private userInteracted = false; // Флаг для отслеживания взаимодействия пользователя
   private sounds: string[] = [
     '/assets/sounds/sfx/03 Puzzle Solved.mp3',
     '/assets/sounds/sfx/37 Sun.mp3'
@@ -134,9 +134,7 @@ export class AudioService {
 
     console.log(`Следующий трек "${this.getTrackName(nextTrack)}" через ${delay / 1000} сек.`);
 
-    this.nextTrackTimeout = setTimeout(() => {
-      this.playSpecificTrack(nextTrack);
-    }, delay);
+    this.nextTrackTimeout = setTimeout(() => this.playSpecificTrack(nextTrack), delay);
   }
 
   private playSpecificTrack(track: string): void {
@@ -168,11 +166,10 @@ export class AudioService {
         this.fadeIn(); // Добавляем fade-in при старте трека
       })
       .catch((error) => {
-        if (error.name === 'AbortError') {
+        if (error.name === 'AbortError')
           console.log('Воспроизведение прервано, музыка отключена.');
-        } else {
+        else
           console.error('Ошибка воспроизведения:', error);
-        }
       });
   }
 
@@ -190,10 +187,9 @@ export class AudioService {
   }
 
   private clearSchedule(): void {
-    if (this.nextTrackTimeout) {
-      clearTimeout(this.nextTrackTimeout);
-      this.nextTrackTimeout = null;
-    }
+    if (!this.nextTrackTimeout) return;
+    clearTimeout(this.nextTrackTimeout);
+    this.nextTrackTimeout = null;
   }
 
   private fadeIn(): void {
@@ -211,9 +207,8 @@ export class AudioService {
       if (newVolume >= this.targetVolume()) {
         this.audioElement.volume = this.targetVolume();
         clearInterval(fade);
-      } else {
+      } else
         this.audioElement.volume = newVolume;
-      }
     }, 100);
   }
 
@@ -227,9 +222,8 @@ export class AudioService {
         this.audioElement.volume = 0;
         this.audioElement.pause();
         clearInterval(fade);
-      } else {
+      } else
         this.audioElement.volume = newVolume;
-      }
     }, 100);
   }
 
@@ -238,10 +232,8 @@ export class AudioService {
       if (!this.userInteracted) {
         this.userInteracted = true;
         console.debug('Пользователь провзаимодействовал с документом, воспроизведение музыки возможно.');
-        if (this.isEnabled()) {
-          // Если музыка включена, начинаем воспроизведение
+        if (this.isEnabled())
           this.playSpecificTrack(this.selectNextTrack());
-        }
       }
     }, { once: true });
   }

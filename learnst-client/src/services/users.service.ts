@@ -49,6 +49,10 @@ export class UsersService {
     return this.http.put<UpdateUserResponse>(`${this.apiUrl}/password`, updateRoleRequest);
   }
 
+  updateUserPasswordByEmail(updateRoleRequest: { email: string, password: string }): Observable<UpdateUserResponse> {
+    return this.http.put<UpdateUserResponse>(`${this.apiUrl}/password/email`, updateRoleRequest);
+  }
+
   deleteUser(userId: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${userId}`);
   }

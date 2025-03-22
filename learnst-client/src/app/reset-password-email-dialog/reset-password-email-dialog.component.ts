@@ -1,0 +1,76 @@
+import {Component, inject, Inject} from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { ValidationService } from '../../services/validation.service';
+import { UsersService } from '../../services/users.service';
+
+@Component({
+  selector: 'app-reset-password-email-dialog',
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatFormFieldModule,
+  ],
+  template: `
+    <h2 mat-dialog-title>Восстановление пароля</h2>
+    <mat-dialog-content>
+      <p>Введите ваш email:</p>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input
+          matInput
+          [(ngModel)]="data.email"
+          placeholder="Email"
+          [formControl]="emailControl"
+        >
+        @if (emailControl.invalid && emailControl.touched) {
+          <mat-error>
+            @if (emailControl.hasError('required')) {
+              Email обязателен.
+            }
+            @if (emailControl.hasError('email')) {
+              Некорректный формат email.
+            }
+            @if (emailControl.hasError('invalidDomain')) {
+              Недопустимый домен.
+            }
+            @if (emailControl.hasError('emailNotFound')) {
+              Аккаунт с таким email не найден.
+            }
+          </mat-error>
+        }
+      </mat-form-field>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button mat-button (click)="onCancel()">Отмена</button>
+      <button mat-button [disabled]="emailControl.invalid" [mat-dialog-close]="data">Далее</button>
+    </mat-dialog-actions>
+  `
+})
+export class ResetPasswordEmailDialogComponent {
+  private usersService = inject(UsersService);
+  emailControl = new FormControl('', {
+    validators: [
+      Validators.required,
+      Validators.email,
+      ValidationService.domainValidator
+    ],
+    asyncValidators: [ValidationService.existingEmailValidator(this.usersService)],
+    updateOn: 'blur'
+  });
+
+  constructor(
+    public dialogRef: MatDialogRef<ResetPasswordEmailDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { email: string }
+  ) {}
+
+  onCancel(): void {
+    this.dialogRef.close();
+  }
+}

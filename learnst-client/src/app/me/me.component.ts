@@ -1,54 +1,54 @@
-import {DeviceType} from '../../models/DeviceType';
-import {Location, NgClass} from '@angular/common';
-import {Component, ElementRef, HostListener, inject, OnInit, signal, ViewChild} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
-import {MatDatepicker, MatDatepickerModule} from '@angular/material/datepicker';
-import {MatDialog} from '@angular/material/dialog';
-import {MatFormField} from '@angular/material/form-field';
-import {MatGridListModule} from '@angular/material/grid-list';
-import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {Router} from '@angular/router';
+import { DeviceType } from '../../models/DeviceType';
+import { Location, NgClass } from '@angular/common';
+import { Component, ElementRef, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatFormField } from '@angular/material/form-field';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
 import bcrypt from 'bcryptjs';
-import {forkJoin, map, Observable} from 'rxjs';
-import {of} from 'rxjs/internal/observable/of';
-import {catchError} from 'rxjs/internal/operators/catchError';
-import {InspectableDirective} from '../../directives/inspectable.directive';
-import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
-import {PlaceholderImageDirective} from '../../directives/placeholder-image.directive';
-import {SocialMediaPlatform} from '../../enums/SocialMediaPlatform';
-import {CanComponentDeactivate} from '../../helpers/CanComponentDeactivate';
-import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
-import {Return} from '../../helpers/Return';
-import {SocialMediaPlatformHelper} from '../../helpers/SocialMediaPlatformHelper';
-import {Education} from '../../models/Education';
-import {SocialMediaProfile} from '../../models/SocialMediaProfile';
-import {User} from '../../models/User';
-import {WorkExperience} from '../../models/WorkExperience';
-import {DateRangePipe} from '../../pipes/date.range.pipe';
-import {PluralPipe} from '../../pipes/plural.pipe';
-import {AlertService} from '../../services/alert.service';
-import {AuthService} from '../../services/auth.service';
-import {DateService} from '../../services/date.service';
-import {EmailService} from '../../services/email.service';
-import {FileService} from '../../services/file.service';
-import {UsersService} from '../../services/users.service';
-import {ThemePickerComponent} from '../theme-picker/theme-picker.component';
-import {EducationDialogComponent} from './education.dialog/education.dialog.component';
-import {SocialMediaDialogComponent} from './social.media.dialog/social.media.dialog.component';
-import {WorkExperienceDialogComponent} from './work.experience.dialog/work.experience.dialog.component';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import {ThemeService} from '../../services/theme.service';
-import {DeviceService} from '../../services/device.service';
-import {AudioService} from '../../services/audio.service';
-import {MatSliderModule} from '@angular/material/slider';
-import {StatusHelper} from '../../helpers/StatusHelper';
-import {Status} from '../../enums/Status';
+import { forkJoin, map, Observable } from 'rxjs';
+import { of } from 'rxjs/internal/observable/of';
+import { catchError } from 'rxjs/internal/operators/catchError';
+import { InspectableDirective } from '../../directives/inspectable.directive';
+import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
+import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
+import { SocialMediaPlatform } from '../../enums/SocialMediaPlatform';
+import { CanComponentDeactivate } from '../../helpers/CanComponentDeactivate';
+import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
+import { Return } from '../../helpers/Return';
+import { SocialMediaPlatformHelper } from '../../helpers/SocialMediaPlatformHelper';
+import { Education } from '../../models/Education';
+import { SocialMediaProfile } from '../../models/SocialMediaProfile';
+import { User } from '../../models/User';
+import { WorkExperience } from '../../models/WorkExperience';
+import { DateRangePipe } from '../../pipes/date.range.pipe';
+import { PluralPipe } from '../../pipes/plural.pipe';
+import { AlertService } from '../../services/alert.service';
+import { AuthService } from '../../services/auth.service';
+import { DateService } from '../../services/date.service';
+import { EmailService } from '../../services/email.service';
+import { FileService } from '../../services/file.service';
+import { UsersService } from '../../services/users.service';
+import { ThemePickerComponent } from '../theme-picker/theme-picker.component';
+import { EducationDialogComponent } from './education.dialog/education.dialog.component';
+import { SocialMediaDialogComponent } from './social.media.dialog/social.media.dialog.component';
+import { WorkExperienceDialogComponent } from './work.experience.dialog/work.experience.dialog.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ThemeService } from '../../services/theme.service';
+import { DeviceService } from '../../services/device.service';
+import { AudioService } from '../../services/audio.service';
+import { MatSliderModule } from '@angular/material/slider';
+import { StatusHelper } from '../../helpers/StatusHelper';
+import { Status } from '../../enums/Status';
 
 @Return()
 @Component({
@@ -283,7 +283,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   openSocialMediaModal(socialMedia?: SocialMediaProfile): void {
     const dialogRef = this.dialog.open(SocialMediaDialogComponent, {
       width: '500px',
-      data: {socialMedia: socialMedia || {id: 0, url: '', platform: SocialMediaPlatform.Bluesky, userId: this.userId}}
+      data: { socialMedia: socialMedia || { id: 0, url: '', platform: SocialMediaPlatform.Bluesky, userId: this.userId } }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -385,7 +385,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
     this.changesSaving = true;
 
-    this.checkDuplicates(this.user!).subscribe(({emailTaken, usernameTaken}) => {
+    this.checkDuplicates(this.user!).subscribe(({ emailTaken, usernameTaken }) => {
       if (emailTaken) {
         this.alertService.showSnackBar('Эта почта уже занята');
         this.changesSaving = false;
@@ -450,7 +450,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       extension = 'xml';
     }
 
-    const blob = new Blob([content], {type: mimeType});
+    const blob = new Blob([content], { type: mimeType });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

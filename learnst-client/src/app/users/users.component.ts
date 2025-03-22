@@ -20,9 +20,9 @@ import { UsersService } from '../../services/users.service';
 import { Role } from '../../enums/Role';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
-import {NgClass} from '@angular/common';
-import {StatusHelper} from '../../helpers/StatusHelper';
-import {Status} from '../../enums/Status';
+import { NgClass } from '@angular/common';
+import { StatusHelper } from '../../helpers/StatusHelper';
+import { Status } from '../../enums/Status';
 
 @Component({
   selector: 'app-users',
@@ -131,8 +131,8 @@ export class UsersComponent extends MediumScreenSupport implements OnInit {
     this.hintUsers = this.users.filter(user => {
       const matchesSearchQuery = this.searchQuery === '' || user.username.toLowerCase().includes(this.searchQuery.toLowerCase());
 
-      // Фильтрация по тегам
-      const matchesTags = this.tags.length === 0 || this.tags.some(tag => {
+      // Фильтрация по тегам ролей
+      const matchesRoleTags = this.tags.length === 0 || this.tags.some(tag => {
         const normalizedTag = tag.toLowerCase();
         if (['a', 'admin', 'а', 'админ', 'администратор'].includes(normalizedTag))
           return user.role === Role.Admin;
@@ -142,10 +142,22 @@ export class UsersComponent extends MediumScreenSupport implements OnInit {
           return user.role === Role.Backup;
         else if (['u', 'usr', 'user', 'п', 'пользователь'].includes(normalizedTag))
           return user.role === Role.User;
-        return false;
+        return true;
       });
 
-      return matchesSearchQuery && matchesTags;
+      // Фильтрация по тегам статусов
+      const matchesStatusTags = this.tags.length === 0 || this.tags.some(tag => {
+        const normalizedTag = tag.toLowerCase();
+        if (normalizedTag === 'here')
+          return user.status === Status.Online;
+        else if (normalizedTag === 'active')
+          return user.status === Status.Activity;
+        else if ((normalizedTag === 'off' || normalizedTag === 'offline'))
+          return user.status === Status.Offline;
+        return true;
+      });
+
+      return matchesSearchQuery && matchesRoleTags && matchesStatusTags;
     });
 
     this.updateDisplayedUsers();

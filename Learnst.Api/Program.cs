@@ -62,10 +62,9 @@ builder.Services.Configure<VkSettings>(builder.Configuration.GetSection("Vk"))
     .Configure<EpicGamesSettings>(builder.Configuration.GetSection("EpicGames"));
 
 // Настройка базы данных и аутентификации
-builder.Services.AddRequestTimeout(TimeSpan.FromSeconds(100))
-    .AddDbContext<ApplicationDbContext>(options => options
-        .EnableSensitiveDataLogging()
-        .UseSqlServer(builder.Configuration.GetConnectionString(connectionStringName)), ServiceLifetime.Transient)
+builder.Services.AddRequestTimeout(TimeSpan.FromSeconds(60))
+    .AddDbContext<ApplicationDbContext>(options => options.EnableSensitiveDataLogging()
+    .UseSqlServer(builder.Configuration.GetConnectionString(connectionStringName)), ServiceLifetime.Transient)
     .AddJwtAuthentication(builder.Configuration)
     .AddAuthorization()
     .AddHttpClient(apiName, client => client.Timeout = TimeSpan.FromSeconds(100));
@@ -94,9 +93,7 @@ app.UseWebSockets()
     .UseSession()
     .UseCustomSecurity(trustedOrigins, trustedPaths, onError: async (context, _, origin) =>
     {
-        await LogService.WriteLine($"** Запрещен доступ источнику \"{(
-            string.IsNullOrEmpty(origin) ? "null" : origin
-        )}\", так как он не является доверенным. **");
+        await LogService.WriteLine($"** Запрещен доступ источнику \"{(string.IsNullOrEmpty(origin) ? "null" : origin)}\", так как он не является доверенным. **");
         context.Response.Redirect("/error");
     });
 

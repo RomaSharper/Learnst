@@ -25,7 +25,6 @@ import { UsersService } from '../../services/users.service';
 import { User } from '../../models/User';
 import { ColorsService } from '../../services/colors.service';
 import { TurnstileService } from '../../services/turnstile.service';
-import {IpService} from '../../services/ip.service';
 import { Status } from '../../enums/Status';
 
 @Return()
@@ -50,7 +49,6 @@ import { Status } from '../../enums/Status';
   ]
 })
 export class RegisterComponent extends MediumScreenSupport implements AfterViewInit {
-  private ipService = inject(IpService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private emailService = inject(EmailService);
@@ -119,6 +117,7 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
     const dateOfBirth = DateService.formatDate(formValue.dateOfBirth);
 
     const user: User = {
+      ip: '',
       tickets: [],
       educations: [],
       userLessons: [],
@@ -134,8 +133,7 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
       username: formValue.username,
       emailAddress: formValue.email,
       passwordHash: formValue.password,
-      banner: ColorsService.generateColor(),
-      ip: await lastValueFrom(this.ipService.getIp())
+      banner: ColorsService.generateColor()
     };
 
     // Шаг 1: Отправляем код подтверждения
@@ -164,7 +162,8 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
           // Если код введен правильно, продолжаем создание пользователя
           this.usersService.createUser(user).pipe(
             catchError(errorObj => {
-              const error: string = errorObj?.error?.message ?? 'Произошла ошибка при регистрации. Попробуйте еще раз.';
+              console.error('Полная ошибка:', errorObj);
+              const error: string = errorObj?.message ?? 'Произошла ошибка при регистрации. Попробуйте еще раз.';
               this.alertService.showSnackBar(error);
               this.loading.set(false); // Выключаем состояние загрузки при ошибке
               return of(null);

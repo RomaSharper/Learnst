@@ -19,6 +19,8 @@ public class UsersRepository(ApplicationDbContext context, IMapper mapper) : Asy
             .Include(u => u.TicketAnswers)
             .SingleOrDefaultAsync(u => u.Id == id)
             ?? throw new NotFoundException<User>(id);
+
+        context.Follows.RemoveRange(context.Follows.Where(u => u.FollowerId == id || u.UserId == id));
         context.UserActivities.RemoveRange(user.UserActivities);
         context.UserAnswers.RemoveRange(user.UserAnswers);
         context.UserLessons.RemoveRange(user.UserLessons);

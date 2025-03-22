@@ -233,6 +233,7 @@ public class UsersController(
             }
 
             user.PasswordHash = bcrypt.HashPassword(user.PasswordHash);
+            user.Ip = HttpContext.GetRemoteIPAddress()?.ToString() ?? "unknown";
             await repository.AddAsync(user);
             await repository.SaveAsync();
 
@@ -298,6 +299,7 @@ public class UsersController(
             existingUser.ResumeText = user.ResumeText;
             existingUser.AboutMe = user.AboutMe;
             existingUser.Banner = user.Banner;
+            existingUser.Ip = HttpContext.GetRemoteIPAddress()?.ToString() ?? "unknown";
 
             // Обновляем коллекции
             existingUser.Educations = user.Educations;
@@ -401,6 +403,44 @@ public class UsersController(
         }
     }
 
+    // PUT: Users/Password/Email
+    [HttpPut("Password/Email")]
+    public async Task<ActionResult<UpdateUserResponse>> PutUserPasswordByEmail([FromBody] UpdatePasswordByEmailRequest request)
+    {
+        try
+        {
+            var validatePassword = validationService.ValidatePassword(new User { PasswordHash = request.Password });
+            if (!validatePassword.Succeed)
+                return BadRequest(new
+                {
+                    Succeed = false,
+                    validatePassword.Message
+                });
+
+            var existingUser = await repository.GetFirstAsync(noTracking: false, where: u => u.EmailAddress == request.Email)
+                ?? throw new NotFoundException<User>($"Пользователь с почтой \"{request.Email}\" не найден.");
+
+            var hash = bcrypt.HashPassword(request.Password);
+            existingUser.PasswordHash = hash;
+
+            await repository.SaveAsync();
+
+            return Ok(new
+            {
+                Succeed = true,
+                Message = hash
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new
+            {
+                Succeed = false,
+                ex.Message
+            });
+        }
+    }
+
     // PUT: Users/5/Status
     [HttpPut("{id:guid}/Status")]
     public async Task<ActionResult> UpdateUserStatus(Guid id, [FromBody] Status status)
@@ -411,6 +451,7 @@ public class UsersController(
                        ?? throw new NotFoundException<User>(id);
 
             user.Status = status;
+            user.Ip = HttpContext.GetRemoteIPAddress()?.ToString() ?? "unknown";
             await repository.SaveAsync();
 
             return Ok();

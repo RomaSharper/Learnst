@@ -156,7 +156,7 @@ public partial class ValidationService(ApplicationDbContext context) : IValidati
     [GeneratedRegex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$")]
     private partial Regex PasswordRegex();
 
-    [GeneratedRegex(@"^(?!_)[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*(?<!_)$")]
+    [GeneratedRegex(@"^(?!_)[a-zA-Z][a-zA-Z0-9]*(?:_[a-zA-Z0-9]+)?(?<!_)$")]
     private partial Regex UsernameRegex();
 
     [GeneratedRegex(@"^_")]

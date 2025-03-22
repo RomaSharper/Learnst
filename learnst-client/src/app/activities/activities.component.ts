@@ -1,5 +1,5 @@
 import { CommonModule, Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule, MatIconButton } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -9,7 +9,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { catchError, of } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
 import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
 import { Level } from '../../enums/Level';
@@ -24,6 +24,8 @@ import { RuDatePipe } from '../../pipes/ru.date.pipe';
 import { ActivitiesService } from '../../services/activities.service';
 import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
+import { LessonType } from '../../enums/LessonType';
+import { FileService } from '../../services/file.service';
 
 @Return()
 @Component({
@@ -49,6 +51,12 @@ import { AuthService } from '../../services/auth.service';
   ]
 })
 export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
+  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private fileService = inject(FileService);
+  private alertService = inject(AlertService);
+  private activitiesService = inject(ActivitiesService);
+
   pageSize = 6;
   pageIndex = 0;
   loading = true;
@@ -64,16 +72,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
 
   Role = Role;
 
-  constructor(
-    private activitiesService: ActivitiesService,
-    private route: ActivatedRoute,
-    private authService: AuthService,
-    private alertService: AlertService,
-    public location: Location,
-    public router: Router
-  ) {
-    super();
-  }
+  constructor(public location: Location, public router: Router) { super(); }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -281,9 +280,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (!result) return;
       activity.isClosed = !activity.isClosed;
-      this.activitiesService.updateActivity(activity.id, activity).subscribe(() => {
-
-      });
+      this.activitiesService.updateActivity(activity.id, activity).subscribe();
     })
   }
 
@@ -291,12 +288,70 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
     const dialogRef = this.alertService.openConfirmDialog('Удаление активности', 'Вы уверены, что хотите удалить эту активность?');
     dialogRef.afterClosed().subscribe(result => {
       if (!result) return;
-      this.activitiesService.deleteActivity(activity.id).subscribe(() => {
-        this.activities = this.activities.filter(a => a.id !== activity.id);
-        this.alertService.showSnackBar('Активность успешно удалена!');
-        this.filterActivities();
+
+      // Удаляем все файлы, связанные с активностью
+      this.deleteActivityFiles(activity).subscribe({
+        next: () => {
+          // После успешного удаления файлов удаляем саму активность
+          this.activitiesService.deleteActivity(activity.id).subscribe(() => {
+            this.activities = this.activities.filter(a => a.id !== activity.id);
+            this.alertService.showSnackBar('Активность успешно удалена!');
+            this.filterActivities();
+          });
+        },
+        error: (error) => {
+          this.alertService.showSnackBar('Не удалось удалить файлы активности.');
+          console.error('Ошибка при удалении файлов:', error);
+        }
       });
     });
+  }
+
+  private deleteActivityFiles(activity: Activity): Observable<void> {
+    const deleteObservables: Observable<void>[] = [];
+
+    // Удаляем картинку активности
+    if (activity.avatarUrl)
+      deleteObservables.push(this.fileService.delete(activity.avatarUrl));
+
+    // Удаляем картинки инфокарточек
+    if (activity.infoCards) {
+      activity.infoCards.forEach(infoCard => {
+        if (infoCard.iconUrl)
+          deleteObservables.push(this.fileService.delete(infoCard.iconUrl));
+      });
+    }
+
+    // Удаляем файлы уроков
+    if (activity.topics) {
+      activity.topics.forEach(topic => {
+        topic.lessons.forEach(lesson => {
+          switch (lesson.lessonType) {
+            case LessonType.LongRead:
+              if (lesson.longReadUrl)
+                deleteObservables.push(this.fileService.delete(lesson.longReadUrl));
+              break;
+            case LessonType.Video:
+              if (lesson.videoUrl)
+                deleteObservables.push(this.fileService.delete(lesson.videoUrl))
+              break;
+          }
+        });
+      });
+    }
+
+    // Если нет файлов для удаления, возвращаем успешный Observable
+    if (deleteObservables.length === 0)
+      return of();
+
+    // Объединяем все запросы на удаление в один поток
+    return forkJoin(deleteObservables).pipe(
+      map(() => { }),
+      catchError(error => {
+        console.error('Ошибка при удалении файлов:', error);
+        throw error;
+      })
+    );
   }
 
   toDate(date?: string | number | Date): Date {

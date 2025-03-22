@@ -130,7 +130,7 @@ export class ActivityComponent implements OnInit {
         })
       ).subscribe(activity => {
         if (!activity || !user.id) {
-          this.goBack();
+          this.router.navigate(['/']);
           return;
         }
 
