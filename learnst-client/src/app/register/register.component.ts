@@ -1,31 +1,39 @@
-import { AfterViewInit, Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterLink } from '@angular/router';
-import {catchError, lastValueFrom, of} from 'rxjs';
-import { Role } from '../../enums/Role';
-import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
-import { Return } from '../../helpers/Return';
-import { AlertService } from '../../services/alert.service';
-import { AuthService } from '../../services/auth.service';
-import { DateService } from '../../services/date.service';
-import { EmailService } from '../../services/email.service';
-import { ValidationService } from '../../services/validation.service';
-import { Location } from '@angular/common';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatIconModule } from '@angular/material/icon';
-import { UsersService } from '../../services/users.service';
-import { User } from '../../models/User';
-import { ColorsService } from '../../services/colors.service';
-import { TurnstileService } from '../../services/turnstile.service';
-import { Status } from '../../enums/Status';
+import {AfterViewInit, Component, ElementRef, inject, signal, ViewChild} from '@angular/core';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatNativeDateModule} from '@angular/material/core';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {Router, RouterLink} from '@angular/router';
+import {catchError, of} from 'rxjs';
+import {Role} from '../../enums/Role';
+import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
+import {Return} from '../../helpers/Return';
+import {AlertService} from '../../services/alert.service';
+import {AuthService} from '../../services/auth.service';
+import {DateService} from '../../services/date.service';
+import {EmailService} from '../../services/email.service';
+import {ValidationService} from '../../services/validation.service';
+import {Location} from '@angular/common';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatIconModule} from '@angular/material/icon';
+import {UsersService} from '../../services/users.service';
+import {User} from '../../models/User';
+import {ColorsService} from '../../services/colors.service';
+import {TurnstileService} from '../../services/turnstile.service';
+import {Status} from '../../enums/Status';
 
 @Return()
 @Component({
@@ -69,12 +77,12 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
         Validators.required,
         Validators.minLength(3),
         ValidationService.usernameValidator
-      ], [ ValidationService.uniqueUsernameValidator(this.usersService) ]),
+      ], [ValidationService.uniqueUsernameValidator(this.usersService)]),
       email: new FormControl('', [
         Validators.required,
         Validators.email,
         ValidationService.domainValidator
-      ], [ ValidationService.uniqueEmailValidator(this.usersService) ]),
+      ], [ValidationService.uniqueEmailValidator(this.usersService)]),
       password: new FormControl('', [
         Validators.required,
         Validators.minLength(8),
@@ -100,7 +108,7 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
     });
 
     if (!this.form.value.cfToken) {
-      this.form.get('cfToken')?.setErrors({ required: true });
+      this.form.get('cfToken')?.setErrors({required: true});
       this.alertService.showSnackBar('Пройдите проверку безопасности');
       this.turnstile.reset();
       return;
@@ -195,8 +203,8 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
       }
 
       if (control!.value !== matchingControl!.value) {
-        matchingControl!.setErrors({ passwordsDontMatch: true });
-        return { passwordsDontMatch: true };
+        matchingControl!.setErrors({passwordsDontMatch: true});
+        return {passwordsDontMatch: true};
       }
 
       matchingControl!.setErrors(null);
@@ -216,7 +224,7 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
         'cf-turnstile',
         '0x4AAAAAAA-lpuh_BYavc73X',
         (token: string) => {
-          this.form.patchValue({ cfToken: token });
+          this.form.patchValue({cfToken: token});
           this.form.get('cfToken')?.markAsTouched();
         }
       );

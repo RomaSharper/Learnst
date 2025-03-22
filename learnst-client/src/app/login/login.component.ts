@@ -61,7 +61,7 @@ export class LoginComponent {
       return;
     }
 
-    this.loading = true; // Включаем состояние загрузки
+    this.loading = true;
     const formValue = this.form.value;
     this.authService.login(formValue.login!, formValue.password!)
       .pipe(
@@ -104,7 +104,7 @@ export class LoginComponent {
 
   openCodeDialog(email: string): void {
     this.alertService.openVerificationCodeDialog(email).afterClosed().subscribe(code => {
-      if (!code) return;
+      if (!code || this.code !== code.toString()) return;
       this.dialog.open(ResetPasswordNewPasswordDialogComponent, {
         width: '400px',
         data: {email, code, newPassword: ''}
@@ -123,9 +123,5 @@ export class LoginComponent {
         }
       });
     });
-  }
-
-  openNewPasswordDialog(email: string, code: string): void {
-
   }
 }
