@@ -104,7 +104,11 @@ export class LoginComponent {
 
   openCodeDialog(email: string): void {
     this.alertService.openVerificationCodeDialog(email).afterClosed().subscribe(code => {
-      if (!code || this.code !== code.toString()) return;
+      if (!code || this.code !== code.toString()) {
+        this.alertService.showSnackBar('Неверный код!');
+        return;
+      }
+
       this.dialog.open(ResetPasswordNewPasswordDialogComponent, {
         width: '400px',
         data: {email, code, newPassword: ''}

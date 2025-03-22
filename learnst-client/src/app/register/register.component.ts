@@ -69,7 +69,6 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
 
   @ViewChild('turnstileContainer') turnstileContainer!: ElementRef;
 
-
   constructor(private router: Router, public location: Location) {
     super();
     this.form = new FormGroup({
