@@ -54,11 +54,28 @@
 
       <mat-form-field appearance="outline" class="full-width mb">
         <mat-label>Пароль</mat-label>
-        <input matInput id="password" maxlength="50" formControlName="password" autocomplete="new-password"
-          placeholder="Введите ваш пароль" [type]="hidePassword() ? 'password' : 'text'">
+        <input
+          matInput
+          id="password"
+          maxlength="50"
+          formControlName="password"
+          autocomplete="new-password"
+          placeholder="Введите ваш пароль"
+          [type]="hidePassword() ? 'password' : 'text'"
+          [matTooltip]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
+          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
+        >
 
-        <button matSuffix type="button" mat-icon-button class="input-button" (click)="hidePassword.set(!hidePassword())"
-          tabindex="-1" [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'">
+        <button
+          matSuffix
+          type="button"
+          tabindex="-1"
+          mat-icon-button
+          class="input-button"
+          (click)="hidePassword.set(!hidePassword())"
+          [matTooltip]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
+          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
+        >
           <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
 

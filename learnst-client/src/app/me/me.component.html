@@ -111,6 +111,7 @@
             mat-icon-button
             class="input-button"
             (click)="hidePassword = !hidePassword"
+            [matTooltip]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'"
             [attr.aria-label]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'"
           >
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
@@ -133,6 +134,7 @@
             mat-icon-button
             class="input-button"
             (click)="hidePassword = !hidePassword"
+            [matTooltip]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'"
             [attr.aria-label]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'"
           >
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>

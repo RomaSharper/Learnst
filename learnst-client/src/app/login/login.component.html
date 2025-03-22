@@ -21,24 +21,25 @@
           formControlName="password"
           placeholder="Введите пароль"
           autocomplete="current-password"
-          [type]="hidePassword ? 'password' : 'text'"
+          [type]="hidePassword() ? 'password' : 'text'"
         >
         <button
           matSuffix
           type="button"
           mat-icon-button
           class="input-button"
-          (click)="hidePassword = !hidePassword"
-          [attr.aria-label]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'"
+          (click)="hidePassword.set(!hidePassword())"
+          [matTooltip]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
+          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
         >
-          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
         @if (form.get('password')?.invalid && form.get('password')?.touched) {
           <mat-error>Пожалуйста, введите пароль.</mat-error>
         }
       </mat-form-field>
-      <button mat-flat-button [disabled]="form.invalid || loading" class="full-width" color="primary" type="submit">
-        @if (loading) {
+      <button mat-flat-button [disabled]="form.invalid || loading()" class="full-width" color="primary" type="submit">
+        @if (loading()) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else {
           Войти

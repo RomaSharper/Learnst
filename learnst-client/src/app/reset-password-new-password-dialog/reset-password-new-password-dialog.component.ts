@@ -1,10 +1,12 @@
-import { Component, Inject } from '@angular/core';
+import {Component, Inject, signal} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ValidationService } from '../../services/validation.service';
+import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-reset-password-new-password-dialog',
@@ -15,6 +17,8 @@ import { ValidationService } from '../../services/validation.service';
     MatDialogModule,
     MatButtonModule,
     MatFormFieldModule,
+    MatIcon,
+    MatTooltip,
   ],
   template: `
     <h2 mat-dialog-title>Введите новый пароль</h2>
@@ -23,11 +27,22 @@ import { ValidationService } from '../../services/validation.service';
         <mat-label>Новый пароль</mat-label>
         <input
           matInput
-          type="password"
           placeholder="Новый пароль"
           [(ngModel)]="data.newPassword"
           [formControl]="passwordControl"
+          [type]="hidePassword() ? 'password' : 'text'"
         >
+        <button
+          matSuffix
+          type="button"
+          mat-icon-button
+          class="input-button"
+          (click)="hidePassword.set(!hidePassword())"
+          [matTooltip]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
+          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
+        >
+          <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
         @if (passwordControl.invalid && passwordControl.touched) {
           <mat-error>
             @if (passwordControl.hasError('required')) {
@@ -50,6 +65,7 @@ import { ValidationService } from '../../services/validation.service';
   `
 })
 export class ResetPasswordNewPasswordDialogComponent {
+  hidePassword = signal(true);
   passwordControl = new FormControl('', [
     Validators.required,
     Validators.minLength(8),

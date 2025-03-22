@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
@@ -48,8 +48,8 @@ export class LoginComponent {
   private emailService = inject(EmailService);
   private usersService = inject(UsersService);
 
-  loading = false;
-  hidePassword = true;
+  loading = signal(false);
+  hidePassword = signal(true);
   form = new FormGroup({
     login: new FormControl('', [Validators.required, ValidationService.loginValidator]),
     password: new FormControl('', [Validators.required])
@@ -61,19 +61,19 @@ export class LoginComponent {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
     const formValue = this.form.value;
     this.authService.login(formValue.login!, formValue.password!)
       .pipe(
         catchError(error => {
           console.error('Ошибка', error.message);
-          this.loading = false; // Выключаем состояние загрузки при ошибке
+          this.loading.set(false); // Выключаем состояние загрузки при ошибке
           this.alertService.showSnackBar('Произошла ошибка при авторизации.');
           return of(undefined);
         })
       )
       .subscribe(success => {
-        this.loading = false; // Выключаем состояние загрузки
+        this.loading.set(false); // Выключаем состояние загрузки
 
         if (!success) {
           this.alertService.showSnackBar('Неверный логин или пароль.');
