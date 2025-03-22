@@ -20,7 +20,6 @@ import { UsersService } from '../../services/users.service';
   template: `
     <h2 mat-dialog-title>Восстановление пароля</h2>
     <mat-dialog-content>
-      <p>Введите ваш email:</p>
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Email</mat-label>
         <input
