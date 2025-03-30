@@ -126,6 +126,7 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
     const user: User = {
       ip: '',
       tickets: [],
+      isHidden: true,
       educations: [],
       userLessons: [],
       userAnswers: [],
@@ -135,6 +136,7 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
       userActivities: [],
       workExperiences: [],
       status: Status.Online,
+      createdAt: new Date(),
       socialMediaProfiles: [],
       dateOfBirth: dateOfBirth!,
       username: formValue.username,

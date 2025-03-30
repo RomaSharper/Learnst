@@ -1,4 +1,3 @@
-import {animate, keyframes, style, transition, trigger} from '@angular/animations';
 import {Component, signal, OnDestroy, HostListener, inject, AfterViewInit, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
@@ -12,6 +11,9 @@ import {Message} from '../../models/Message';
 import {NikoMood} from '../../models/NikoMood';
 import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
 import {Router} from '@angular/router';
+import {ChatContext} from '../../models/ChatContext';
+import {CryptoService} from '../../services/crypto.service';
+import {environment} from '../../environments/environment';
 
 @Component({
   selector: 'app-mascot',
@@ -24,66 +26,43 @@ import {Router} from '@angular/router';
     MatSnackBarModule
   ],
   templateUrl: './mascot.component.html',
-  styleUrls: ['./mascot.component.scss'],
-  animations: [
-    trigger('avatarBounce', [
-      transition('* <=> *', [
-        animate('600ms ease',
-          keyframes([
-            style({transform: 'translateY(0)', offset: 0}),
-            style({transform: 'translateY(-10px)', offset: 0.5}),
-            style({transform: 'translateY(0)', offset: 1})
-          ])
-        )
-      ])
-    ]),
-    trigger('chatWindow', [
-      transition(':enter', [
-        style({
-          transform: 'translateY(100%) scale(0.95)',
-          opacity: 0
-        }),
-        animate('500ms cubic-bezier(0.4, 0, 0.2, 1)',
-          style({
-            transform: 'translateY(0) scale(1)',
-            opacity: 1
-          }))
-      ]),
-      transition(':leave', [
-        animate('400ms cubic-bezier(0.4, 0, 0.2, 1)',
-          style({
-            transform: 'translateY(100%) scale(0.95)',
-            opacity: 0
-          }))
-      ])
-    ]),
-    trigger('messageAppear', [
-      transition(':enter', [
-        style({opacity: 0, transform: 'translateY(20px)'}),
-        animate('300ms cubic-bezier(0.4, 0, 0.2, 1)')
-      ])
-    ]),
-    trigger('avatarScale', [
-      transition(':enter', [
-        style({ transform: 'scale(0.5)', opacity: 0 }),
-        animate('300ms cubic-bezier(0.4, 0, 0.2, 1)',
-          style({ transform: 'scale(1)', opacity: 1 }))
-      ]),
-      transition(':leave', [
-        animate('200ms ease',
-          style({ transform: 'scale(0.5)', opacity: 0 }))
-      ])
-    ])
-  ]
+  styleUrls: ['./mascot.component.scss']
 })
 export class MascotComponent extends MediumScreenSupport implements OnDestroy, OnInit, AfterViewInit {
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
   private alertService = inject(AlertService);
+  private readonly STORAGE_KEY = 'chat_data';
 
   private timer?: number;
+  private moodIntensity: number = 0;
+  private currentTopic: string = '';
+  private context: ChatContext = {
+    messages: [],
+    currentMood: 'normal',
+    moodIntensity: 0,
+    currentTopic: '',
+    complimentCounter: 0,
+    nextComplimentAt: this.generateRandomComplimentThreshold(),
+    lastTopics: [],
+    mentionedEntities: [],
+    userPreferences: {}
+  };
 
-  private readonly pageCommandsMap: {[key: string]: string} = {
+  // Заменяем сигналы на геттеры/сеттеры
+  get messages() {
+    return this.context.messages;
+  }
+
+  get currentMood() {
+    return this.context.currentMood;
+  }
+
+  set currentMood(value: NikoMood) {
+    this.context.currentMood = value;
+  }
+
+  private readonly pageCommandsMap: { [key: string]: string } = {
     'активности': '/activities',
     'активность': '/activity',
     'сообщество': '/community',
@@ -91,46 +70,14 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     'инфо': '/manuals',
     'главная': '/home',
     'пользователи': '/users',
-    'пользователь': '/user' // Будет обрабатываться с параметром
+    'пользователь': '/user'
   };
 
-  private readonly phrases = [
-    {pattern: /привет|хай|hello|здравствуй|здравствуйте|добро пожаловать|как дела|все нормально|что нового|приветствие|как ты/i, category: 'greeting'},
-    {pattern: /пока|бай|bye|до свидания|увидимся|до встречи|береги себя|досвидос|всем удачи/i, category: 'farewell'},
-    {pattern: /\?|как|что|почему|где|когда|зачем|почему так|что ты думаешь|можешь рассказать|зачем так/i, category: 'question'},
-    {pattern: /ненавижу|злой|раздражает|не могу|гадость|дурак|глупец|всё плохо|что за ерунда/i, category: 'angry'},
-    {pattern: /крут|умный|классный|прекрасный|замечательный|хороший|милый|потрясающий|великолепный|необычный/i, category: 'compliment'},
-    {pattern: /шутка|смешной|анекдот|прикол|смешно|забавно|ржача|смешарики|хихи|ха-ха/i, category: 'joke'},
-    {pattern: /помощь|помоги|нужна поддержка|расскажи|что посоветуешь|как поступить/i, category: 'help'},
-    {pattern: /игра|ваншот|играем|видеоигра|геймер|киберспорт|крутая игра|новинка/i, category: 'game'},
-    {pattern: /любовь|нравишься|влюблённый|романтика|сердечко|чувства|я тебя люблю|приятные отношения/i, category: 'love'},
-    {pattern: /погода|солнечно|дождь|ветрено|холодно|жарко|как погода|прогноз|снег|Россия/i, category: 'weather'},
-    {pattern: /музыка|песня|слушаю|музыкальные предпочтения|выбор музыки/i, category: 'music'},
-    {pattern: /кот|пес|животное|питомец|зверь|как у тебя питомцы/i, category: 'pets'},
-    {pattern: /страна|город|место|путешествие|где ты был|любимые места/i, category: 'travel'},
-    {pattern: /еда|вкусно|рецепт|что ты любишь|еда вкусная|поесть/i, category: 'food'},
-    {pattern: /технологии|интернет|новинки|гаджеты|что думаешь об этом/i, category: 'tech'},
-    {pattern: /фильмы|сериал|смотреть|любимые актеры|вот это кайф|рекомендуй/i, category: 'movies'},
-    {pattern: /книги|чтение|любимые книги|что почитать|рекомендуешь/i, category: 'books'}
-  ];
-
   private readonly commands: { [key: string]: { text: string, mood: NikoMood } } = {
-    '!страница': {
-      mood: 'speak',
-      text: ''
-    },
-    '!сказать': {
-      mood: 'speak',
-      text: ''
-    },
-    '!очистка': {
-      mood: 'normal',
-      text: 'Очищаю историю чата...'
-    },
-    '!экспорт': {
-      mood: 'normal',
-      text: 'Экспортирую историю чата...'
-    },
+    '!страница': {mood: 'speak', text: ''},
+    '!сказать': {mood: 'speak', text: ''},
+    '!очистка': {mood: 'normal', text: 'Очищаю историю чата...'},
+    '!экспорт': {mood: 'normal', text: 'Экспортирую историю чата...'},
     '!твич': {
       mood: 'speak',
       text: 'Не матерится. Много болтает, играет в самые разные игры. За баллы канала позорится ;3 ❤️ <a class="link" href="https://www.twitch.tv/fibi_ch" target="_blank">https://www.twitch.tv/fibi_ch</a>'
@@ -184,6 +131,125 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       text: 'Я НЕ ФЕМБОЙ!!!! <img width="24" src="https://cdn.7tv.app/emote/01GBFAYKGR000FWWN7MDZZ8XQN/1x.avif" alt="RAGEY">'
     },
   };
+
+  private readonly phrases = [
+    {
+      pattern: /(привет|ха[йя]|hello|hi|здрав?ств?уй(те)?|доброе?\sутро|добрый\s(день|вечер)|рад\sвидеть|давно\sне\sвиделись|как\sты\sтам|приветик|салют|здоров[оа]|добро\sпожаловать|как\sдела\?*|хей|хеллоу|здаров?а?|доброго\sвремени\sсуток)/i,
+      category: 'greeting'
+    },
+    {
+      pattern: /(пока|бай|bye|goodbye|до\s(свидания|встречи)|увидимся|чао|всего\s(хорошего|доброго)|бывай|береги\sсебя|досвидос|всем\sудачи|гудбай|спокойной\sночи|покеда|ариведерчи|прощай|до\sзавтра|бай-бай|покедова|покасики)/i,
+      category: 'farewell'
+    },
+    {
+      pattern: /(\?|как|что|почему|где|когда|зачем|откуда|куда|сколько|чей|какой|какая|какое|какие|расскажи|объясни|знаешь\sли|можешь\sли|подскажи|в\sчем\sпричина|в\sчем\sдело|как\sсдел|как\sработает|что\sесли|почему\sтак|что\sпосоветуешь)/i,
+      category: 'question'
+    },
+    {
+      pattern: /(ненавижу|злюсь|бесит|раздражает|надоело|устал|грустно|печаль|тоска|депресс|кошмар|ужас|отвратительно|мерзко|фигня|хреново|отстой|противно|гадость|тупость|дурак|идиот|достало|заколебало|надоед|разочарован|отврат|фу|тьфу)/i,
+      category: 'angry'
+    },
+    {
+      pattern: /(крут|умничк[аи]|молодец|талант|гениальн|шикарн|восхитительн|прелестн|обожаю|лучший|супер|потряс|восхищ|очаровательн|класс|великолепн|невероятн|божественн|чудо|красив[аоы]|мил|восхит|брав|умнище|красавч|огонь|шик|превосход)/i,
+      category: 'compliment'
+    },
+    {
+      pattern: /(шутк|прикол|смех|анекдот|юмор|прикольно|забавно|угар|ржу|ха-ха|хи-хи|рофл|lol|кек|сарказм|ирония|пародия|мем|мемчик|смехуечки|ржака|умора|приколь|смешнявк|ржач|угарн|весель)/i,
+      category: 'joke'
+    },
+    {
+      pattern: /(помоги|помощь|спас[иы]|выручи|подмог|поддержк|не\sработает|сломал[ао]сь|поломк|глюк|баг|ошибк|не\sпонимаю|запутал|застрял|тупик|как\s(сдел|использ|настро)|хелп|срочно\sнужно|выручай|не\sполучается|не\sработай)/i,
+      category: 'help'
+    },
+    {
+      pattern: /((video)?game|игр[ауы]|ваншот|гейм|steam|стим|кс?го|танки|майнкрафт|рпг|квест|стратеги|шутер|синглплеер|мультиплеер|прокачк|ачивк|достижени|левел|уровень|прокачаться|геймплей|сюжет|персонаж|босс|лут|крафт|ресурсы|инвентар)/i,
+      category: 'game'
+    },
+    {
+      pattern: /(любов|роман|сердц|чувств|влюб|свидан|отношен|романтик|обнимашк|целовашк|симпати|встречаться|пара|чувствую\sсебя|одинок|мечтаю|хочу\sвстреч|флирт|знакомств|романс|сердечко|валентинк)/i,
+      category: 'love'
+    },
+    {
+      pattern: /(погод|дожд|снег|град|ветер|солнц|жара|холод|мороз|туман|облач|ясн|температур|прогноз\sпогод|климат|заморозк|слякоть|гроза|молния|радуга|ураган|шторм|метель|ливень|снегопад|погодка)/i,
+      category: 'weather'
+    },
+    {
+      pattern: /(напомни|помнишь|мы\sговорили|ранее\sобсуждали|в\sпрошлый\sраз|как\sмы\sрешили|как\sдоговаривались|вспомни|предыдущ|прежде|уже\sбыло|напоминание|ранее\sупоминали|прошлый\sразговор)/i,
+      category: 'memory'
+    },
+    {
+      pattern: /(как\s(зовут|звать)|тво[её]\sимя|представься|имя\sкота|кличк|никак\sне\sзапомню|забыл\sимя|называй\sменя|зовут\sменя|твоя\sкличк|имя\sпитомц)/i,
+      category: 'name_request'
+    },
+    {
+      pattern: /(спасибо|благодар|ты\s(помог|выручил)|признателен|очень\sвыручил|ты\sмолодец|респект|уважуха|ты\sлучший|я\sоцен|ты\sкрут|мерси|пасиб|благодарючко|ты\sсупер)/i,
+      category: 'thanks'
+    },
+    {
+      pattern: /(врем[яи]|который\sчас|сколько\sвремени|часики|тайминг|опозда|успева|тороп|поздн|рано|таймер|будильник|расписан|хронометр|секундомер|время\sсейчас)/i,
+      category: 'time'
+    },
+    {
+      pattern: /(совет|посоветуй|как\sлучше|что\sвыбрать|рекомендац|помоги\sрешить|иде[яи]|подход|вариант|альтернатив|опыт\sв|мнение\sо|какой\sлучше|что\sпосовету|дай\sсовет)/i,
+      category: 'advice'
+    },
+    {
+      pattern: /(фильм|кино|сериал|нетфликс|смотрю|трейлер|режиссёр|акт[ёе]р|сюжет|кинопоиск|оскар|премия|блокбастер|драм|комеди|ужас|фантастик|мелодрам|биографи|мультфильм|аним[еэ])/i,
+      category: 'movies'
+    },
+    {
+      pattern: /(музык|песн|трек|плейлист|альбом|исполнитель|групп|рок|поп|джаз|классик|хит|ритм|мелоди|бит|бас|вокал|концерт|фестивал|диджей|ремикс|кавер|текст\sпесн)/i,
+      category: 'music'
+    },
+    {
+      pattern: /(еда|рецепт|готовить|вкусн|кулинар|блюд|завтрак|обед|ужин|десерт|перекус|продукт|ингредиент|специ|соус|приправ|кафе|ресторан|рецептик|вкусняш|деликатес|гастроном)/i,
+      category: 'food'
+    },
+    {
+      pattern: /(спорт|тренировк|зал|бег|йог|фитнес|качалк|бодибилдинг|кроссфит|марафон|чемпион|соревнован|олимпиад|разминк|мышц|пресс|подтягивани|отжимани|гантел|тренажер)/i,
+      category: 'sport'
+    },
+    {
+      pattern: /(книг|читать|литератур|автор|роман|фантастик|детектив|поэз|стих|библиотек|глава|сюжет|персонаж|издатель|бестселлер|буккроссинг|сага|новелл|антиутопи|фэнтези)/i,
+      category: 'books'
+    },
+    {
+      pattern: /(работ|карьер|проект|коллег|начальник|зарплат|офис|увольнен|совещани|дедлайн|стресс|переработк|фриланс|ваканс|должност|труд|задач|клиент|отчет)/i,
+      category: 'work'
+    },
+    {
+      pattern: /(уч[ёе]б|экзамен|сессия|преподаватель|универ|колледж|школ|лекци|семинар|зачёт|диплом|курсов|студен|академ|реферат|контрольн|задани|шпаргалк)/i,
+      category: 'study'
+    },
+    {
+      pattern: /(путешеств|отпуск|отдых|отель|билет|авиа|поездк|тур|виз|паспорт|чемодан|экскурс|достопримечательн|курорт|пляж|горы|багаж|роуминг|гид|туристическ)/i,
+      category: 'travel'
+    },
+    {
+      pattern: /(технолог|гаджет|смартфон|ноутбук|компьютер|видеокарт|процессор|софт|железо|айти|программир|код|алгоритм|шифрован|видюха|материнк|оперативк|девайс)/i,
+      category: 'tech'
+    },
+    {
+      pattern: /(мечт|цел|план|будущ|амбиц|хочу\sдобиться|планирую|намерен|стратеги|перспектив|исполнени|желани|хобби|увлечен|целеустремлени|мечтани|грандиозн)/i,
+      category: 'dreams'
+    },
+    {
+      pattern: /(кот|кошк|кот[ёе]нок|мурлык|хвост|усы|лапк|мяу|мур-мур|пушист|четвероног|питомец|хозяин|корм|лежанк|когтеточк|мурчани|кошачий|котэ|котейк)/i,
+      category: 'pets'
+    },
+    {
+      pattern: /(здоровь|болит|врач|больничн|лекарств|аптек|симптом|диагноз|лечен|процедур|терапи|самочувств|диет|витамин|анализ|давление|температур|аллерг)/i,
+      category: 'health'
+    },
+    {
+      pattern: /(деньг|финанс|бюджет|экономи|трат|зарплат|накоплен|кредит|долг|инвестиц|копилк|состояни|бедн|богат|валюта|крипт|биткоин|акци|ипотек|налог)/i,
+      category: 'finance'
+    },
+    {
+      pattern: /(?:меня зовут|мо[ёе] имя|обращайся ко мне|меня звать|я -|я —)\s+([А-Яа-яЁёA-Za-z-]+)/i,
+      category: 'name_mention'
+    },
+  ];
 
   private responses: { [key: string]: string[] } = {
     greeting: [
@@ -396,6 +462,116 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       'Какой любимой погодой ты наслаждаешься?',
       'Если бы ты мог создать идеальную погоду, какой она была бы?',
     ],
+    memory: [
+      'Конечно помню! Мы говорили о $topic...',
+      'Как забыть про $topic?',
+      'Это было интересное обсуждение $topic!'
+    ],
+    name_request: [
+      'Меня зовут Нико! А тебя?',
+      'Я кот Нико, а ты?',
+      'Нико. А как зовут тебя?'
+    ],
+    thanks: [
+      'Всегда пожалуйста!', 'Рад был помочь!', 'Обращайся ещё!',
+      'Для тебя всегда есть время!', 'Это моя работа!'
+    ],
+    time: [
+      'Время для котика всегда одинаково - пора играть!',
+      'Сейчас самое подходящее время для чая с печеньками',
+      'Мои часы показывают время веселья!',
+      'Точное время можно узнать в телефоне, я же кот!'
+    ],
+    advice: [
+      'Мой совет - больше спать и есть вкусняшки!',
+      'Попробуй спросить у Фиби, она умная!',
+      'Лучший совет - доверься интуиции',
+      'Сначала хорошо подумай, потом действуй'
+    ],
+    movies: [
+      'Советую посмотреть "Котики на поводке"!',
+      'Лучший фильм всех времён - "Ваншот: Последний клик"',
+      'Как насчёт старого доброго аниме?',
+      'Фиби недавно смотрела новый хоррор, спроси у неё'
+    ],
+    music: [
+      'Сейчас в тренде мяуканье под джаз!',
+      'Включи lo-fi и расслабься',
+      'Рекомендую группу "Мурчальные ритмы"',
+      'Лучшая музыка - звуки природы'
+    ],
+    food: [
+      'Попробуй тунца под соусом из сметаны!',
+      'Идеальный ужин - рыба с картошкой',
+      'Главное - не пережарь печеньки!',
+      'Спроси у Фиби её фирменный рецепт'
+    ],
+    sport: [
+      'Мой любимый спорт - бег за лазерной точкой!',
+      'Йога для котиков: 18 часов сна в день',
+      'Главное - регулярность!',
+      'Не забывай разминаться!'
+    ],
+    books: [
+      'Обязательно прочти "Мур-мур-терапия"!',
+      'Лучшая книга - поваренная книга для котиков',
+      'Как насчёт классики? "Война и мир" с котом Бегемотом',
+      'Фиби любит детективы, спроси у неё'
+    ],
+    work: [
+      'Не работай слишком много!',
+      'Помни про перерывы на кофе',
+      'Лучшая работа - лежать на солнышке',
+      'Главное - хороший коллектив!'
+    ],
+    study: [
+      'Учись как кот - с любопытством!',
+      'Не зубри, а понимай!',
+      'Делай перерывы на игры',
+      'Помни: практика важнее теории'
+    ],
+    travel: [
+      'Хочу в Японию! Там лучшая рыба!',
+      'Идеальное путешествие - диван и телевизор',
+      'Не забудь взять меня с собой!',
+      'Спроси у Фиби про её поездки'
+    ],
+    tech: [
+      'Новый айфон? Лучше купи вкусняшек!',
+      'Главное в технике - чтобы мышка бегала',
+      'Не забывай иногда отключаться от гаджетов',
+      'Лучшее изобретение - автоматическая кормушка'
+    ],
+    dreams: [
+      'Мечтай как кот - масштабно!',
+      'Главная цель - мировая власть... мур-мур',
+      'Не останавливайся на достигнутом!',
+      'Разбивай большие цели на маленькие шаги'
+    ],
+    health: [
+      'Не забывай высыпаться!',
+      'Здоровье важнее всего!',
+      'Может сделать перерыв?',
+      'Советую кошачью мяту!'
+    ],
+    finance: [
+      'Инвестируй в корм!',
+      'Экономить - это по-кошачьи!',
+      'Лучший бюджет - когда есть запасы',
+      'Не забудь про сбережения'
+    ],
+    pets: [
+      'Коты - лучшие существа!',
+      'У тебя есть питомец?',
+      'Все котики заслуживают любви',
+      'Мур-мур-терапия лучшая!'
+    ],
+    name_mention: [
+      'Приятно познакомиться, $name! Меня зовут Нико!',
+      'Запомнил, $name! А меня кстати Нико зовут!',
+      'Буду звать тебя $name! А ты называй меня Нико!',
+      'Хорошее имя, $name! А меня Нико зовут!'
+    ]
   };
 
   private moodMatrix: { [key: string]: NikoMood[] } = {
@@ -408,28 +584,74 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     help: ['normal', 'looking_left', 'speak'],
     game: ['happy', 'amazed', 'surprised'],
     love: ['crying', 'smiling', 'eyes_closed'],
-    weather: ['normal', 'looking_right', 'open_mouth']
+    weather: ['normal', 'looking_right', 'open_mouth'],
+    memory: ['normal', 'looking_left', 'looking_right'],
+    name_request: ['open_mouth', 'speak', 'happy'],
+    thanks: ['happy', 'smiling', 'eyes_closed'],
+    time: ['looking_left', 'looking_right', 'normal'],
+    advice: ['looking_left', 'looking_right', 'speak', 'normal'],
+    movies: ['amazed', 'surprised', 'happy'],
+    music: ['happy', 'smiling'],
+    food: ['open_mouth', 'eating_a_pancake', 'happy'],
+    sport: ['speak', 'smiling', 'normal'],
+    books: ['normal', 'looking_left', 'looking_right'],
+    work: ['distressed', 'uncomfortable', 'normal'],
+    study: ['normal', 'speak'],
+    travel: ['amazed', 'happy', 'surprised'],
+    tech: ['looking_right', 'normal', 'speak'],
+    dreams: ['eyes_closed', 'happy', 'smiling']
   };
 
   userInput = signal('');
   isTyping = signal(false);
   isChatOpen = signal(false);
-  messages = signal<Message[]>([]);
-  currentMood = signal<NikoMood>('normal');
+  scaleTrigger = signal(false);
+  bounceTrigger = signal(false);
 
   ngOnInit() {
-    const savedMessages = localStorage.getItem('chatMessages');
-    if (savedMessages) {
-      const parsedMessages: Message[] = JSON.parse(savedMessages).map((msg: Message) => ({
-        ...msg,
-        displayedText: msg.text
-      }));
-      this.messages.set(parsedMessages);
-    }
+    this.loadFromStorage();
+  }
 
-    const savedMood = localStorage.getItem('currentMood');
-    if (savedMood)
-      this.currentMood.set(savedMood as NikoMood);
+  private loadFromStorage() {
+    const encryptedData = localStorage.getItem(this.STORAGE_KEY);
+    if (encryptedData) {
+      const data = CryptoService.decryptData<ChatContext>(encryptedData, environment.encryptionKey);
+      if (data) {
+        this.context = {
+          ...this.context,
+          ...data,
+          messages: data.messages.map(msg => ({
+            ...msg,
+            displayedText: msg.text // Восстанавливаем отображение
+          }))
+        };
+      }
+    }
+  }
+
+  private saveToLocalStorage() {
+    const dataToSave = {
+      ...this.context,
+      messages: this.context.messages.map(({text, isBot}) => ({text, isBot}))
+    };
+
+    const encryptedData = CryptoService.encryptData(dataToSave, environment.encryptionKey);
+    localStorage.setItem(this.STORAGE_KEY, encryptedData);
+  }
+
+  private clearChatHistory() {
+    this.context = {
+      messages: [],
+      currentMood: 'normal',
+      moodIntensity: 0,
+      currentTopic: '',
+      complimentCounter: 0,
+      nextComplimentAt: this.generateRandomComplimentThreshold(),
+      lastTopics: [],
+      mentionedEntities: [],
+      userPreferences: {}
+    };
+    localStorage.removeItem(this.STORAGE_KEY);
   }
 
   ngAfterViewInit() {
@@ -440,15 +662,23 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
   ngOnDestroy() {
     window.clearTimeout(this.timer);
-    localStorage.setItem('chatMessages', JSON.stringify(this.messages()));
-    localStorage.setItem('currentMood', this.currentMood());
+    this.saveToLocalStorage();
   }
 
   toggleChat() {
+    this.bounceTrigger.set(true);
+    const wasOpen = this.isChatOpen();
     this.isChatOpen.update(v => !v);
-    if (this.isChatOpen()) {
-      setTimeout(() => this.scrollToBottom(), 100); // Даем время на анимацию
+
+    if (!wasOpen) {
+      setTimeout(() => {
+        this.scrollToBottom();
+      }, 100);
     }
+
+    setTimeout(() => {
+      this.bounceTrigger.set(false);
+    }, 600);
   }
 
   getSafeHtml(text: string): SafeHtml {
@@ -466,7 +696,6 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     const onAlerts = el.closest('.mat-mdc-dialog-actions')
       || el.closest('.cdk-overlay-container');
 
-    // Проверяем, был ли клик вне chat-box
     if (onOverlay || this.isChatOpen() && !onAlerts && chatBox && chatContainer
       && !chatBox.contains(el) && !chatContainer.contains(el))
       this.isChatOpen.set(false);
@@ -477,16 +706,16 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
     const input = this.userInput().trim();
     const newMessage: Message = {text: input, isBot: false};
-    this.messages.update(m => [...m, newMessage]);
+    this.context.messages.push(newMessage);
 
     if (input === 'ь.') {
-      this.typeMessage({ text: 'ь.', mood: 'april_fools' });
+      this.typeMessage({text: 'ь.', mood: 'april_fools'});
       this.userInput.set('');
       return;
     }
 
     if (input.toLowerCase().includes('гойда')) {
-      this.typeMessage({ text: 'ГОЙДА!', mood: 'amazed' });
+      this.typeMessage({text: 'ГОЙДА!', mood: 'amazed'});
       this.userInput.set('');
       return;
     }
@@ -515,14 +744,14 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
           isBot: true,
           displayedText: result
         };
-        this.messages.update(m => [...m, botMessage]);
+        this.context.messages.push(botMessage);
       } catch (e) {
         const errorMessage: Message = {
           text: 'Ошибка в выражении',
           isBot: true,
           displayedText: 'Ошибка в выражении'
         };
-        this.messages.update(m => [...m, errorMessage]);
+        this.context.messages.push(errorMessage);
       }
       this.scrollToBottom();
       return;
@@ -547,7 +776,6 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       let navigationPath = route;
       let displayText = `Перенаправляю на страницу "${page}"`;
 
-      // Специальная обработка для пользователя
       if (page === 'пользователь' && args.length > 0) {
         navigationPath += `/${encodeURIComponent(args.join(' '))}`;
         displayText += `: ${args.join(' ')}`;
@@ -564,7 +792,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
         displayedText: displayText
       };
 
-      this.messages.update(m => [...m, botMessage]);
+      this.context.messages.push(botMessage);
       await this.router.navigate([navigationPath]);
       this.userInput.set('');
       this.scrollToBottom();
@@ -580,25 +808,28 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       const botMessage: Message = {
         text: response.text,
         isBot: true,
-        displayedText: response.text // Пропускаем анимацию для команд
+        displayedText: response.text
       };
 
-      this.messages.update(m => [...m, botMessage]);
-      this.currentMood.set(response.mood);
+      this.context.messages.push(botMessage);
+      this.context.currentMood = response.mood;
       this.userInput.set('');
       this.scrollToBottom();
       this.saveToLocalStorage();
       return;
     }
 
-    const category = this.detectCategory(this.userInput());
+    const category = this.detectCategory(input);
     const response = this.generateResponse(category);
 
     this.isTyping.set(true);
-    this.currentMood.set('speak');
+    this.context.currentMood = 'speak';
     this.typeMessage(response);
     this.scrollToBottom();
     this.userInput.set('');
+
+    this.updateContext(input, category);
+    this.updateMood(category);
     this.saveToLocalStorage();
   }
 
@@ -618,15 +849,8 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     this.exportHistory();
   }
 
-  private clearChatHistory() {
-    this.messages.set([]);
-    this.currentMood.set('normal');
-    localStorage.removeItem('chatMessages');
-    this.alertService.showSnackBar('История очищена', 'OK');
-  }
-
   private exportHistory() {
-    if (this.messages().length === 0) {
+    if (this.messages.length === 0) {
       this.alertService.showSnackBar('Нет истории для экспорта', 'OK');
       return;
     }
@@ -686,7 +910,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     </style>
   `;
 
-    const messagesHtml = this.messages()
+    const messagesHtml = this.messages
       .map(msg => `
       <div class="message ${msg.isBot ? 'bot-message' : 'user-message'}">
         ${msg.text}
@@ -733,7 +957,6 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   }
 
   private safeEval(expression: string): string {
-    // Удаляем все опасные конструкции
     const sanitized = expression
       .replace(/[^a-zA-Z0-9а-яА-ЯёЁ+\-*\/()\d\s="'_%.]/g, '')
       .replace(/\b(alert|fetch|XMLHttpRequest|document|window|eval|function|import|export|require|process)\b/g, '');
@@ -750,7 +973,6 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       const messagesContainer = document.querySelector('.messages');
       if (messagesContainer) {
         messagesContainer.scrollTop = messagesContainer.scrollHeight + 100;
-        // Добавляем дополнительный отступ для мобильных устройств
         if (this.isMediumScreen) {
           messagesContainer.scrollTop += 50;
         }
@@ -768,53 +990,196 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     }
   }
 
-  private saveToLocalStorage() {
-    localStorage.setItem('chatMessages', JSON.stringify(this.messages()));
-    localStorage.setItem('currentMood', this.currentMood());
-  }
-
   private detectCategory(text: string): string {
     const lowerText = text.toLowerCase();
-    return this.phrases.find(p => p.pattern.test(lowerText))?.category || 'default';
+    const foundPhrase = this.phrases.find(p => {
+      const match = p.pattern.exec(lowerText);
+      if (match && p.category === 'name_mention' && match[1])
+        this.context.userPreferences.name = match[1];
+
+      return p.pattern.test(lowerText);
+    });
+
+    return foundPhrase?.category || 'default';
   }
 
   private generateResponse(category: string): { text: string; mood: NikoMood } {
-    const responses = this.responses[category] || ['Понятно...', 'Интересно...', 'Не очень понял...'];
-    const moods = this.moodMatrix[category] || ['distressed'];
+    let baseResponse = this.getBaseResponse(category);
+    baseResponse = this.applyContextModifications(baseResponse);
+    baseResponse = this.applyMoodModifications(baseResponse);
+    console.log(`Niko's mood (-5:5): ${this.moodIntensity}`);
 
     return {
-      text: responses[Math.floor(Math.random() * responses.length)],
-      mood: moods[Math.floor(Math.random() * moods.length)]
+      text: baseResponse,
+      mood: this.calculateCurrentMood()
     };
   }
 
-  private typeMessage(response: { text: string; mood: NikoMood }): void {
-    const message: Message = {text: response.text, isBot: true, displayedText: ''};
-    this.messages.update(m => [...m, message]);
+  private getBaseResponse(category: string): string {
+    const responses = this.responses[category] || ['Мяу...'];
+    let response = this.random(...responses);
 
-    const isHtmlResponse = /<[a-z][\s\S]*>/i.test(response.text);
+    // Замена специальных тегов
+    return response
+      .replace(/\$topic/g, this.currentTopic)
+      .replace(/\$entity/g, this.context.mentionedEntities[0] || 'что-то')
+      .replace(/\$name/g, this.context.userPreferences.name || 'друг')
+      .replace(/\$game/g, this.random('Oneshot', 'Omori', 'Terraria', 'Minecraft'))
+      .replace(/\$food/g, this.random('тунец', 'молоко', 'печеньки'));
+  }
 
-    if (isHtmlResponse) {
-      message.displayedText = response.text;
-      this.isTyping.set(false);
-      this.currentMood.set(response.mood);
-      return;
+  private generateRandomComplimentThreshold(): number {
+    return Math.floor(Math.random() * (15 - 5 + 1)) + 5; // Случайное число от 5 до 15
+  }
+
+  private applyContextModifications(response: string): string {
+    // Увеличиваем счетчик сообщений
+    this.context.complimentCounter++;
+
+    // Проверяем достижение порога для комплимента
+    if (this.context.complimentCounter >= this.context.nextComplimentAt) {
+      response = this.addCompliment(response);
+      this.context.complimentCounter = 0;
+      this.context.nextComplimentAt = this.generateRandomComplimentThreshold();
     }
 
-    let index = 0;
-    const typing = () => {
-      if (index < response.text.length) {
-        message.displayedText = response.text.slice(0, ++index);
-        this.timer = window.setTimeout(typing, 30);
-      } else {
-        this.isTyping.set(false);
-        this.currentMood.set(response.mood);
-      }
+    return response;
+  }
 
-      this.scrollToBottom();
+  private applyMoodModifications(response: string): string {
+    let modifiedResponse = response;
+
+    switch(true) {
+      case (this.moodIntensity <= -5):
+        this.context.currentMood = this.random<NikoMood>('very_uncomfortable', 'crying');
+        modifiedResponse += '😥 М-мяу...';
+        break;
+
+      case (this.moodIntensity >= -4 && this.moodIntensity <= -3):
+        this.context.currentMood = this.random<NikoMood>('sad', 'distressed');
+        modifiedResponse += '😞 Мяяу...';
+        break;
+
+      case (this.moodIntensity >= -2 && this.moodIntensity <= -1):
+        this.context.currentMood = this.random<NikoMood>('uncomfortable', 'looking_left');
+        modifiedResponse += '😨 Мррр...';
+        break;
+
+      case (this.moodIntensity >= 1 && this.moodIntensity <= 2):
+        this.context.currentMood = this.random<NikoMood>('normal', 'smiling');
+        modifiedResponse += ' 🙂';
+        break;
+
+      case (this.moodIntensity >= 3 && this.moodIntensity <= 4):
+        this.context.currentMood = this.random<NikoMood>('happy', 'amazed');
+        modifiedResponse += ' 😊';
+        break;
+
+      case (this.moodIntensity >= 5):
+        this.context.currentMood = this.random<NikoMood>('surprised', 'eyes_closed');
+        modifiedResponse += ' 🥰 УРРРР!';
+        break;
+
+      default: // 0
+        this.context.currentMood = this.random<NikoMood>('normal', 'speak');
+        modifiedResponse += '~';
+    }
+
+    return modifiedResponse;
+  }
+
+  private updateContext(text: string, category: string): void {
+    this.currentTopic = category !== 'default' ? category : this.currentTopic;
+
+    if (category !== 'default') {
+      this.context.lastTopics = [category, ...this.context.lastTopics].slice(0, 3);
+    }
+
+    const entities = this.extractEntities(text);
+    this.context.mentionedEntities = [...entities, ...this.context.mentionedEntities].slice(0, 5);
+
+    if (category === 'compliment') {
+      this.context.userPreferences.likesCompliments = true;
+    }
+  }
+
+  private updateMood(category: string): void {
+    const moodMap: { [key: string]: number } = {
+      compliment: 2,
+      angry: -3,
+      joke: 1,
+      farewell: -1,
+      love: 2
     };
 
-    typing();
+    this.moodIntensity = Math.min(Math.max(
+      this.moodIntensity + (moodMap[category] || 0),
+      -5
+    ), 5);
+  }
+
+  private calculateCurrentMood(): NikoMood {
+    if (this.moodIntensity > 3) return 'happy';
+    if (this.moodIntensity < -3) return 'distressed';
+    return this.random(...this.moodMatrix[this.currentTopic] || ['normal']);
+  }
+
+  private extractEntities(text: string): string[] {
+    return text.match(/[А-ЯЁA-Z][а-яёa-z-]+/g) || [];
+  }
+
+  private addCompliment(response: string): string {
+    const compliments = ['Кстати, ты сегодня прекрасно выглядишь!', 'Ты молодец!', 'Как всегда, умничка!'];
+    return response + ' ' + this.random(...compliments);
+  }
+
+  private typeMessage(response: { text: string; mood: NikoMood }): void {
+    this.context.currentMood = response.mood;
+
+    const message: Message = {
+      text: response.text,
+      isBot: true,
+      displayedText: ''
+    };
+
+    this.context.messages.push(message);
+
+    // Запуск анимации печати
+    if (!response.text.match(/<[^>]*>/)) {
+      this.animateTextTyping(message, response.text);
+    }
+  }
+
+  private animateTextTyping(message: Message, fullText: string): void {
+    let currentChar = 0;
+    const typingSpeed = this.calculateTypingSpeed(fullText);
+
+    const typeNextChar = () => {
+      if (currentChar < fullText.length) {
+        message.displayedText = fullText.slice(0, currentChar + 1);
+        currentChar++;
+        this.timer = window.setTimeout(typeNextChar, typingSpeed);
+      } else {
+        this.isTyping.set(false);
+        this.scrollToBottom();
+      }
+    };
+
+    this.isTyping.set(true);
+    typeNextChar();
+  }
+
+  private calculateTypingSpeed(text: string): number {
+    const baseSpeed = 30; // Минимальная скорость печати
+    const speedVariation = 20; // Вариация для естественности
+    const punctuationDelay = 50; // Задержка для пунктуации
+
+    // Увеличиваем задержку для знаков препинания
+    if (/[.!?,;:]$/.test(text)) {
+      return baseSpeed + speedVariation + punctuationDelay;
+    }
+
+    return baseSpeed + Math.random() * speedVariation;
   }
 
   private showError(message: string): void {
@@ -823,7 +1188,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       isBot: true,
       displayedText: message
     };
-    this.messages.update(m => [...m, errorMessage]);
+    this.context.messages.push(errorMessage);
     this.scrollToBottom();
   }
 }

@@ -45,6 +45,10 @@ public class User : IEntity
 
     [JsonIgnore, StringLength(20)] public string Ip { get; set; } = "unknown";
 
+    public bool IsHidden { get; set; } = true;
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
     #endregion
 
     #region Образование

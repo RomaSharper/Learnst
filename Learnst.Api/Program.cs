@@ -11,6 +11,7 @@ using Learnst.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 const string policy = "CORS";
+const int requestTimeout = 60;
 const string apiName = "Learnst API v.1";
 const string swaggerUrl = "/swagger/v1/swagger.json";
 const string connectionStringName = "InnerConnection";
@@ -62,12 +63,12 @@ builder.Services.Configure<VkSettings>(builder.Configuration.GetSection("Vk"))
     .Configure<EpicGamesSettings>(builder.Configuration.GetSection("EpicGames"));
 
 // Настройка базы данных и аутентификации
-builder.Services.AddRequestTimeout(TimeSpan.FromSeconds(60))
+builder.Services.AddRequestTimeout(TimeSpan.FromSeconds(requestTimeout))
     .AddDbContext<ApplicationDbContext>(options => options.EnableSensitiveDataLogging()
     .UseSqlServer(builder.Configuration.GetConnectionString(connectionStringName)), ServiceLifetime.Transient)
     .AddJwtAuthentication(builder.Configuration)
     .AddAuthorization()
-    .AddHttpClient(apiName, client => client.Timeout = TimeSpan.FromSeconds(100));
+    .AddHttpClient(apiName, client => client.Timeout = TimeSpan.FromSeconds(requestTimeout));
 
 // Добавление остальных служб
 builder.Services.AddOpenApi()

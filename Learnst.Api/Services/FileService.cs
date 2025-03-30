@@ -33,36 +33,6 @@ public static class FileService
         return path;
     }
 
-    public static string Upload(
-        byte[] fileData,
-        string contentType,
-        string fileName,
-        SftpSettings settings)
-    {
-        if (fileData is null || fileData.Length == 0)
-            throw new Exception("Файл не обнаружен");
-
-        var path = Path.Combine(
-            GetPathFromContentType(contentType), 
-            $"{DateTimeOffset.Now.ToUnixTimeSeconds()}_{fileName}"
-        );
-        
-        var fullPath = Path.Combine(@"\wwwroot", path);
-        
-        using SftpClient sftp = new(settings.Host, settings.Port, settings.Username, settings.Password);
-        try
-        {
-            sftp.Connect();
-            using MemoryStream stream = new(fileData);
-            sftp.UploadFile(stream, fullPath);
-            return path;
-        }
-        finally
-        {
-            sftp.Disconnect();
-        }
-    }
-
     public static void Delete(string path, SftpSettings settings)
     {
         using SftpClient sftp = new(settings.Host, settings.Port, settings.Username, settings.Password);
@@ -70,9 +40,7 @@ public static class FileService
         try
         {
             sftp.Connect();
-            if (!sftp.Exists(path))
-                throw new Exception($"Файл не найден по пути \"{path}\"");
-            sftp.DeleteFile(path);
+            if (sftp.Exists(path)) sftp.DeleteFile(path);
         }
         finally
         {

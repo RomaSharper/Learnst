@@ -19,7 +19,7 @@ export class ThemeService {
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly CURSOR_STORAGE_KEY = 'customCursorsEnabled';
+  private readonly CURSOR_STORAGE_KEY = 'custom_cursors';
   private readonly cursorsEnabled = signal(
     localStorage.getItem(this.CURSOR_STORAGE_KEY) === 'true'
   );

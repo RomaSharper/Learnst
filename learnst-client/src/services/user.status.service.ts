@@ -1,67 +1,88 @@
-import { Injectable, inject } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
-import { Status } from '../enums/Status';
-import { SignalRService } from './signalr.service';
-import { UsersService } from './users.service';
-import { AlertService } from './alert.service';
+import {Injectable, inject} from '@angular/core';
+import {Router, NavigationEnd} from '@angular/router';
+import {Status} from '../enums/Status';
+import {SignalRService} from './signalr.service';
+import {UsersService} from './users.service';
+import {environment} from '../environments/environment';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class UserStatusService {
   private currentUserId?: string;
   private activityTimeout?: any;
+  private isWindowActive = true;
+  private readonly INACTIVITY_TIMEOUT = 300000;
+
   private router = inject(Router);
-  private alertService = inject(AlertService);
   private usersService = inject(UsersService);
   private signalRService = inject(SignalRService);
 
   initialize(userId: string): void {
     this.currentUserId = userId;
+    this.setupActivityTracking();
+    this.setupVisibilityChangeHandler();
+  }
 
-    // Отслеживание активности пользователя
-    this.trackUserActivity();
+  private setupActivityTracking(): void {
+    const events = [
+      'mousemove', 'keydown', 'scroll', 'click',
+      'touchstart', 'touchmove', 'wheel'
+    ];
 
-    // Отслеживание закрытия вкладки или приложения
-    this.trackWindowClose();
+    events.forEach(event => {
+      window.addEventListener(event, this.handleActivity.bind(this), {passive: true});
+    });
 
-    // Отслеживание навигации
     this.trackNavigation();
+    this.handleActivity(); // Инициализация таймера
   }
 
-  private trackUserActivity(): void {
-    window.addEventListener('mousemove', this.resetActivityTimeout.bind(this));
-    window.addEventListener('keydown', this.resetActivityTimeout.bind(this));
-    window.addEventListener('scroll', this.resetActivityTimeout.bind(this));
-    window.addEventListener('click', this.resetActivityTimeout.bind(this));
+  private setupVisibilityChangeHandler(): void {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden')
+        this.handleInactive();
+      else
+        this.handleActivity();
+    });
 
-    this.resetActivityTimeout();
+    window.addEventListener('beforeunload', () => {
+      if (this.currentUserId) {
+        // Используем Beacon API для надежной отправки статуса
+        navigator.sendBeacon(
+          `${environment.apiBaseUrl}/users/${this.currentUserId}/status`,
+          JSON.stringify({status: Status.Offline})
+        );
+      }
+    });
   }
 
-  private resetActivityTimeout(): void {
+  private handleActivity(): void {
+    if (!this.isWindowActive) {
+      this.isWindowActive = true;
+      this.updateStatus(Status.Online);
+    }
+
     clearTimeout(this.activityTimeout);
 
-    // Устанавливаем таймер на 1 минуту
     this.activityTimeout = setTimeout(() => {
+      this.isWindowActive = false;
       this.updateStatus(Status.Offline);
-    }, 60000); // 1 минута
+    }, this.INACTIVITY_TIMEOUT);
   }
 
-  private trackWindowClose(): void {
-    // Отслеживаем закрытие вкладки или приложения
-    window.addEventListener('beforeunload', () => {
-      this.updateStatus(Status.Offline);
-    });
+  private handleInactive(): void {
+    clearTimeout(this.activityTimeout);
+    this.updateStatus(Status.Offline);
   }
 
   private trackNavigation(): void {
     // Отслеживаем навигацию пользователя
     this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        if (event.url.startsWith('/activity/') || event.url.startsWith('/lesson/')) {
-          this.updateStatus(Status.Activity);
-        } else {
-          this.updateStatus(Status.Online);
-        }
-      }
+      if (event instanceof NavigationEnd)
+        this.updateStatus(event.url.startsWith('/activity/') || event.url.startsWith('/lesson/')
+          ? Status.Activity
+          : Status.Online);
     });
   }
 

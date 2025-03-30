@@ -21,19 +21,25 @@ public class UsersController(
     // GET: Users
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
-        => Ok(await repository.GetAsync(includes:
-        [
-            u => u.Educations,
-            u => u.SocialMediaProfiles,
-            u => u.WorkExperiences,
-            u => u.UserActivities,
-            u => u.UserLessons,
-            u => u.UserAnswers,
-            u => u.Tickets,
-            u => u.TicketAnswers,
-            u => u.Followers,
-            u => u.Followings
-        ]));
+        => Ok(
+            await repository.GetAsync(
+                descending: true,
+                orderBy: u => u.CreatedAt,
+                includes:
+                [
+                    u => u.Educations,
+                    u => u.SocialMediaProfiles,
+                    u => u.WorkExperiences,
+                    u => u.UserActivities,
+                    u => u.UserLessons,
+                    u => u.UserAnswers,
+                    u => u.Tickets,
+                    u => u.TicketAnswers,
+                    u => u.Followers,
+                    u => u.Followings
+                ]
+            )
+        );
 
     // GET: Users/5
     [HttpGet("{id}")]
@@ -299,6 +305,7 @@ public class UsersController(
             existingUser.ResumeText = user.ResumeText;
             existingUser.AboutMe = user.AboutMe;
             existingUser.Banner = user.Banner;
+            existingUser.IsHidden = user.IsHidden;
             existingUser.Ip = HttpContext.GetRemoteIPAddress()?.ToString() ?? "unknown";
 
             // Обновляем коллекции

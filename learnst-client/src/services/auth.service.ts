@@ -52,16 +52,30 @@ export class AuthService {
 
   logout(fullLogout = false): void {
     if (fullLogout) {
+      // Сохраняем ID всех аккаунтов перед очисткой
+      const accounts = this.accountsSubject.value;
+      const accountIds = accounts.map(acc => acc.id);
+
+      // Очищаем данные
       this.clearAuthData();
       localStorage.removeItem(this.ACCOUNTS_KEY);
       this.accountsSubject.next([]);
       this.router.navigate(['/login']);
-    } else {
-      this.clearAuthData();
-    }
 
-    // Устанавливаем статус Offline при выходе
-    this.userStatusService.updateStatus(Status.Offline);
+      // Обновляем статус для всех аккаунтов
+      accountIds.forEach(id => {
+        this.userStatusService.updateStatus(Status.Offline, id);
+      });
+    } else {
+      // Сохраняем ID текущего пользователя перед очисткой
+      const currentUserId = this.currentUserSubject.value?.openid;
+      this.clearAuthData();
+
+      // Обновляем статус только текущего пользователя
+      if (currentUserId) {
+        this.userStatusService.updateStatus(Status.Offline, currentUserId);
+      }
+    }
   }
 
   switchAccount(accountId: string): void {
@@ -189,9 +203,10 @@ export class AuthService {
     if (!payload) return;
 
     const accounts = this.accountsSubject.value;
+    const previousCurrent = accounts.find(acc => acc.isCurrent); // Находим предыдущий текущий аккаунт
     const existingAccount = accounts.find(acc => acc.id === payload.openid);
 
-    const updatedAccounts = accounts.map(acc => ({
+    const updatedAccounts: StoredUser[] = accounts.map(acc => ({
       ...acc,
       isCurrent: false
     }));
@@ -207,21 +222,20 @@ export class AuthService {
       };
 
       const index = updatedAccounts.findIndex(acc => acc.id === existingAccount.id);
-      if (index !== -1)
-        updatedAccounts[index] = newAccount;
-      else
-        updatedAccounts.push(newAccount);
+      if (index !== -1) updatedAccounts[index] = newAccount;
+      else updatedAccounts.push(newAccount);
     } else {
       newAccount = this.createStoredUser(payload, encryptedToken);
       updatedAccounts.push(newAccount);
     }
 
+    // Обновляем статусы
+    if (previousCurrent) this.userStatusService.updateStatus(Status.Offline, previousCurrent.id);
+    this.userStatusService.updateStatus(Status.Online, newAccount.id);
+
     this.saveAccounts(updatedAccounts);
     this.setCurrentUser(newAccount);
     localStorage.setItem(this.TOKEN_KEY, encryptedToken);
-
-    // Устанавливаем статус Online при успешной авторизации
-    this.userStatusService.updateStatus(Status.Online, newAccount.id);
   }
 
   private createStoredUser(payload: any, encryptedToken: string): StoredUser {

@@ -1,15 +1,15 @@
-import { Component, inject, Inject, OnInit } from "@angular/core";
-import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from "@angular/forms";
-import { MatButtonModule } from "@angular/material/button";
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatIconModule } from "@angular/material/icon";
-import { MatInputModule } from "@angular/material/input";
-import { MatRadioModule } from "@angular/material/radio";
-import { AlertService } from "../../../services/alert.service";
-import { FileService } from "../../../services/file.service";
-import { lastValueFrom } from "rxjs";
-import { InspectableDirective } from "../../../directives/inspectable.directive";
+import {Component, inject, Inject, OnInit} from "@angular/core";
+import {FormGroup, FormBuilder, Validators, ReactiveFormsModule} from "@angular/forms";
+import {MatButtonModule} from "@angular/material/button";
+import {MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from "@angular/material/dialog";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatIconModule} from "@angular/material/icon";
+import {MatInputModule} from "@angular/material/input";
+import {MatRadioModule} from "@angular/material/radio";
+import {AlertService} from "../../../services/alert.service";
+import {FileService} from "../../../services/file.service";
+import {lastValueFrom} from "rxjs";
+import {MediumScreenSupport} from '../../../helpers/MediumScreenSupport';
 
 @Component({
   selector: 'app-change-banner-dialog',
@@ -22,11 +22,10 @@ import { InspectableDirective } from "../../../directives/inspectable.directive"
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
-    ReactiveFormsModule,
-    InspectableDirective
+    ReactiveFormsModule
   ]
 })
-export class ChangeBannerDialogComponent implements OnInit {
+export class ChangeBannerDialogComponent extends MediumScreenSupport implements OnInit {
   private fb = inject(FormBuilder);
   private fileService = inject(FileService);
   private alertService = inject(AlertService);
@@ -37,6 +36,7 @@ export class ChangeBannerDialogComponent implements OnInit {
   private currentFile: File | null = null;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { banner?: string }) {
+    super();
     const bannerIsColor = data.banner?.startsWith('#');
     this.previewUrl = data.banner || null;
 
@@ -65,7 +65,7 @@ export class ChangeBannerDialogComponent implements OnInit {
 
   onColorSelected(target: EventTarget | null) {
     const color = (target as HTMLInputElement).value;
-    this.form.patchValue({ color });
+    this.form.patchValue({color});
     this.previewUrl = color;
   }
 
@@ -82,7 +82,7 @@ export class ChangeBannerDialogComponent implements OnInit {
 
       this.currentFile = file;
       this.previewUrl = URL.createObjectURL(file);
-      this.form.patchValue({ imageFile: file });
+      this.form.patchValue({imageFile: file});
     }
   }
 

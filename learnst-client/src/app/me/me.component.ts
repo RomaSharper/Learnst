@@ -49,6 +49,7 @@ import { AudioService } from '../../services/audio.service';
 import { MatSliderModule } from '@angular/material/slider';
 import { StatusHelper } from '../../helpers/StatusHelper';
 import { Status } from '../../enums/Status';
+import {RuDatePipe} from '../../pipes/ru.date.pipe';
 
 @Return()
 @Component({
@@ -75,7 +76,8 @@ import { Status } from '../../enums/Status';
     NoDownloadingDirective,
     MatProgressSpinnerModule,
     PlaceholderImageDirective,
-    NgClass
+    NgClass,
+    RuDatePipe
   ]
 })
 export class MeComponent extends MediumScreenSupport implements OnInit, CanComponentDeactivate {
@@ -90,7 +92,6 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   private usersService = inject(UsersService);
   private deviceService = inject(DeviceService);
 
-  user?: User;
   userId = '';
   oldPassword = '';
   newPassword = '';
@@ -100,7 +101,9 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   changesSaving = false;
   unsavedChanges = false;
   passwordChanging = false;
+  loading = signal(true);
   followersCount = signal(0);
+  user = signal<User | null>(null);
   isDesktop = signal(this.deviceService.getDeviceType() === DeviceType.Desktop);
 
   readonly maxDate = new Date();
@@ -113,6 +116,17 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
   SocialMediaPlatformHelper = SocialMediaPlatformHelper;
 
+  get isVeteran(): boolean {
+    if (!this.user()?.createdAt) return false;
+
+    const registrationDate = new Date(this.user()!.createdAt);
+    const currentDate = new Date();
+    const diffTime = currentDate.getTime() - registrationDate.getTime();
+    const diffYears = diffTime / (1000 * 3600 * 24 * 365);
+
+    return diffYears >= 1;
+  }
+
   constructor(public router: Router, public location: Location) {
     super();
   }
@@ -122,8 +136,18 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       if (!user) return;
       this.userId = user.id!;
       this.originalUser = JSON.parse(JSON.stringify(user));
-      this.usersService.getUserById(this.userId).subscribe(user => this.user = user);
-      this.usersService.getFollowersCount(this.userId).subscribe(count => this.followersCount.set(count));
+      this.usersService.getUserById(this.userId).pipe(
+        catchError(() => {
+          this.loading.set(false);
+          return of(null);
+        })
+      ).subscribe(user => {
+        this.user.set(user);
+        this.usersService.getFollowersCount(this.userId).subscribe(count => {
+          this.followersCount.set(count);
+          this.loading.set(false);
+        });
+      });
     });
   }
 
@@ -162,8 +186,8 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        if (!this.user) return;
-        this.user.avatarUrl = e.target!.result as string; // Временное отображение нового аватара
+        if (!this.user()) return;
+        this.user()!.avatarUrl = e.target!.result as string; // Временное отображение нового аватара
         this.onUserInfoChange();
       };
       reader.readAsDataURL(this.selectedFile);
@@ -181,7 +205,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       return;
     }
 
-    if (!this.oldPassword && this.user.passwordHash) {
+    if (!this.oldPassword && this.user()?.passwordHash) {
       // Если пользователь авторизован по паролю, но старый пароль не указан
       this.alertService.showSnackBar('Пожалуйста, введите старый пароль');
       return;
@@ -193,10 +217,8 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       return;
     }
 
-    if (
-      this.user.passwordHash && // У пользователя уже есть сохраненный пароль
-      !bcrypt.compareSync(this.oldPassword, this.user.passwordHash || '') // Старый пароль не совпадает с хэшем
-    ) {
+    if (this.user()?.passwordHash && // У пользователя уже есть сохраненный пароль
+      !bcrypt.compareSync(this.oldPassword, this.user()!.passwordHash || '')) { // Старый пароль не совпадает с хэшем
       this.alertService.showSnackBar('Старый пароль введен неверно');
       return;
     }
@@ -225,7 +247,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       this.alertService.showSnackBar('Пароль успешно изменен');
       this.oldPassword = '';
       this.newPassword = '';
-      this.user!.passwordHash = updateUserResponse.message!;
+      this.user()!.passwordHash = updateUserResponse.message!;
     });
   }
 
@@ -298,48 +320,51 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   // Метод для добавления образования
   addEducation(education: Education): void {
     if (!this.user) return;
-    this.user.educations.push(education);
+    this.user()?.educations.push(education);
     this.onUserInfoChange();
   }
 
   // Метод для обновления образования
   updateEducation(education: Education): void {
     if (!this.user) return;
-    const index = this.user.educations.findIndex(e => e.id === education.id);
+    const index = this.user()?.educations
+      .findIndex(e => e.id === education.id)!;
     if (index === -1) return;
-    this.user.educations[index] = education;
+    this.user()!.educations[index] = education;
     this.onUserInfoChange();
   }
 
   // Метод для добавления опыта работы
   addWorkExperience(workExperience: WorkExperience): void {
     if (!this.user) return;
-    this.user.workExperiences.push(workExperience);
+    this.user()!.workExperiences.push(workExperience);
     this.onUserInfoChange();
   }
 
   // Метод для обновления опыта работы
   updateWorkExperience(workExperience: WorkExperience): void {
     if (!this.user) return;
-    const index = this.user.workExperiences.findIndex(w => w.id === workExperience.id);
+    const index = this.user()?.workExperiences
+      .findIndex(w => w.id === workExperience.id)!;
     if (index === -1) return;
-    this.user.workExperiences[index] = workExperience;
+    this.user()!.workExperiences[index] = workExperience;
     this.onUserInfoChange();
   }
 
   // Метод для добавления социальной сети
   addSocialMedia(socialMedia: SocialMediaProfile): void {
     if (!this.user) return;
-    this.user.socialMediaProfiles.push(socialMedia);
+    this.user()?.socialMediaProfiles.push(socialMedia);
     this.onUserInfoChange();
   }
 
   // Метод для обновления социальной сети
   updateSocialMedia(socialMedia: SocialMediaProfile): void {
     if (!this.user) return;
-    const index = this.user.socialMediaProfiles.findIndex(s => s.id === socialMedia.id);
+    const index = this.user()?.socialMediaProfiles
+      .findIndex(s => s.id === socialMedia.id)!;
     if (index === -1) return;
-    this.user.socialMediaProfiles[index] = socialMedia;
+    this.user()!.socialMediaProfiles[index] = socialMedia;
     this.onUserInfoChange();
   }
 
@@ -350,7 +375,8 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       'Вы уверены, что хотите удалить образование?'
     ).afterClosed().subscribe(confirmed => {
       if (!this.user || !confirmed) return;
-      this.user.educations = this.user.educations.filter(e => e.id !== education.id);
+      this.user()!.educations = this.user()?.educations
+        .filter(e => e.id !== education.id)!;
       this.onUserInfoChange();
     });
   }
@@ -362,7 +388,8 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       'Вы уверены, что хотите удалить опыт работы?'
     ).afterClosed().subscribe(confirmed => {
       if (!this.user || !confirmed) return;
-      this.user.workExperiences = this.user.workExperiences.filter(w => w.id !== workExperience.id);
+      this.user()!.workExperiences = this.user()?.workExperiences
+        .filter(w => w.id !== workExperience.id)!;
       this.onUserInfoChange();
     });
   }
@@ -374,7 +401,8 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       'Вы уверены, что хотите удалить опыт работы?'
     ).afterClosed().subscribe(confirmed => {
       if (!this.user || !confirmed) return;
-      this.user.socialMediaProfiles = this.user.socialMediaProfiles.filter(s => s.id !== socialMedia.id);
+      this.user()!.socialMediaProfiles = this.user()?.socialMediaProfiles
+        .filter(s => s.id !== socialMedia.id)!;
       this.onUserInfoChange();
     });
   }
@@ -385,7 +413,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
     this.changesSaving = true;
 
-    this.checkDuplicates(this.user!).subscribe(({ emailTaken, usernameTaken }) => {
+    this.checkDuplicates(this.user()!).subscribe(({ emailTaken, usernameTaken }) => {
       if (emailTaken) {
         this.alertService.showSnackBar('Эта почта уже занята');
         this.changesSaving = false;
@@ -398,7 +426,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
         return;
       }
 
-      if (this.user?.emailAddress && this.user?.emailAddress !== this.originalUser?.emailAddress)
+      if (this.user()?.emailAddress && this.user()?.emailAddress !== this.originalUser?.emailAddress)
         this.verifyEmail();
       else
         this.proceedWithSave();
@@ -406,7 +434,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   }
 
   deleteProfile(): void {
-    if (!this.user?.id) {
+    if (!this.user()?.id) {
       this.alertService.showSnackBar('User ID не определено');
       return;
     }
@@ -415,12 +443,12 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       AlertService.CONFIRM_TITLE,
       'Вы уверены, что хотите удалить свой аккаунт? Это действие необратимо.'
     ).afterClosed().subscribe(confirmed => {
-      if (!confirmed || !this.user) return;
+      if (!confirmed || !this.user()) return;
 
-      this.usersService.deleteUser(this.user.id!).subscribe({
+      this.usersService.deleteUser(this.user()?.id!).subscribe({
         next: () => {
-          this.alertService.showSnackBar(`Аккаунт ${this.user?.username} успешно удалён.`);
-          this.authService.removeAccount(this.user?.id!);
+          this.alertService.showSnackBar(`Аккаунт ${this.user()?.username} успешно удалён.`);
+          this.authService.removeAccount(this.user()?.id!);
           this.router.navigate(['/login']);
         },
         error: err => {
@@ -430,6 +458,14 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
         }
       });
     });
+  }
+
+  toggleVisibility() {
+    this.user.update(user => ({
+      ...user!,
+      isHidden: !this.user()?.isHidden
+    }));
+    this.onUserInfoChange();
   }
 
   exportData(format: 'json' | 'xml'): void {
@@ -459,27 +495,56 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
     window.URL.revokeObjectURL(url);
   }
 
+  async importData(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+
+    const file = input.files[0];
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      try {
+        const content = e.target?.result as string;
+        const data = await this.parseImportFile(content, file.name);
+        this.applyImportedData(data);
+        this.alertService.showSnackBar('Данные успешно импортированы');
+      } catch (error) {
+        this.alertService.showSnackBar('Ошибка импорта: ' + error);
+      } finally {
+        input.value = ''; // Сбрасываем значение input
+      }
+    };
+
+    reader.readAsText(file);
+  }
+
+  setVolumeFromEvent(event: Event): void {
+    this.audioService.setVolume(parseFloat((event.target as HTMLInputElement).value));
+  }
+
   private prepareExportData(): any {
     return {
       copyright: `© ${new Date().getFullYear()} TCorporation. All rights reserved.`,
       exportDate: new Date().toISOString(),
       version: '1.0',
       user: {
-        fullName: this.user!.fullName,
-        avatarUrl: this.user!.avatarUrl,
-        dateOfBirth: this.user!.dateOfBirth,
-        emailAddress: this.user!.emailAddress,
-        city: this.user!.city,
-        resumeText: this.user!.resumeText,
-        aboutMe: this.user!.aboutMe,
-        username: this.user!.username,
-        banner: this.user!.banner,
-        educations: this.user!.educations.map(e => ({
+        fullName: this.user()!.fullName,
+        avatarUrl: this.user()!.avatarUrl,
+        dateOfBirth: this.user()!.dateOfBirth,
+        emailAddress: this.user()!.emailAddress,
+        isHidden: this.user()!.isHidden,
+        city: this.user()!.city,
+        resumeText: this.user()!.resumeText,
+        aboutMe: this.user()!.aboutMe,
+        username: this.user()!.username,
+        banner: this.user()!.banner,
+        theme: this.user()!.theme,
+        educations: this.user()!.educations.map(e => ({
           institutionName: e.institutionName,
           degree: e.degree,
           graduationYear: e.graduationYear
         })),
-        workExperiences: this.user!.workExperiences.map(w => ({
+        workExperiences: this.user()!.workExperiences.map(w => ({
           companyName: w.companyName,
           position: w.position,
           description: w.description,
@@ -543,33 +608,6 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
     });
   }
 
-  async importData(event: Event): Promise<void> {
-    const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
-
-    const file = input.files[0];
-    const reader = new FileReader();
-
-    reader.onload = async (e) => {
-      try {
-        const content = e.target?.result as string;
-        const data = await this.parseImportFile(content, file.name);
-        this.applyImportedData(data);
-        this.alertService.showSnackBar('Данные успешно импортированы');
-      } catch (error) {
-        this.alertService.showSnackBar('Ошибка импорта: ' + error);
-      } finally {
-        input.value = ''; // Сбрасываем значение input
-      }
-    };
-
-    reader.readAsText(file);
-  }
-
-  setVolumeFromEvent(event: Event): void {
-    this.audioService.setVolume(parseFloat((event.target as HTMLInputElement).value));
-  }
-
   private async parseImportFile(content: string, fileName: string): Promise<any> {
     if (fileName.endsWith('.json')) {
       return JSON.parse(content);
@@ -601,6 +639,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       dateOfBirth: this.getXmlValue(userNode, 'dateOfBirth'),
       emailAddress: this.getXmlValue(userNode, 'emailAddress'),
       city: this.getXmlValue(userNode, 'city'),
+      isHidden: this.getXmlValue(userNode, 'isHidden'),
       resumeText: this.getXmlValue(userNode, 'resumeText'),
       aboutMe: this.getXmlValue(userNode, 'aboutMe'),
       username: this.getXmlValue(userNode, 'username'),
@@ -648,8 +687,8 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   private applyImportedData(data: any): void {
     if (!this.user || !data.user) return;
     const newUser = data.user as User;
-    this.user = {
-      ...this.user,
+    this.user.set({
+      ...this.user()!,
       fullName: newUser.fullName,
       avatarUrl: newUser.avatarUrl,
       dateOfBirth: newUser.dateOfBirth,
@@ -661,7 +700,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       banner: newUser.banner,
       educations: newUser.educations,
       workExperiences: newUser.workExperiences
-    };
+    });
     this.onUserInfoChange();
   }
 
@@ -684,21 +723,25 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
     // Сравниваем основные поля
     const basicFieldsChanged =
-      this.user.emailAddress !== this.originalUser.emailAddress ||
-      this.user.username !== this.originalUser.username ||
-      this.user.fullName !== this.originalUser.fullName ||
-      DateService.formatDate(this.user.dateOfBirth) !== DateService.formatDate(this.originalUser.dateOfBirth) ||
-      this.user.city !== this.originalUser.city ||
-      this.user.resumeText !== this.originalUser.resumeText ||
-      this.user.aboutMe !== this.originalUser.aboutMe;
+      this.user()!.emailAddress !== this.originalUser.emailAddress ||
+      this.user()!.username !== this.originalUser.username ||
+      this.user()!.fullName !== this.originalUser.fullName ||
+      DateService.formatDate(this.user()!.dateOfBirth) !== DateService.formatDate(this.originalUser.dateOfBirth) ||
+      this.user()!.city !== this.originalUser.city ||
+      this.user()!.resumeText !== this.originalUser.resumeText ||
+      this.user()!.aboutMe !== this.originalUser.aboutMe ||
+      this.user()!.isHidden !== this.originalUser.isHidden;
 
     // Сравниваем аватар
-    const avatarChanged = this.user.avatarUrl !== this.originalUser.avatarUrl;
+    const avatarChanged = this.user()?.avatarUrl !== this.originalUser.avatarUrl;
 
     // Сравниваем массивы (образование, опыт работы, социальные сети)
-    const educationsChanged = JSON.stringify(this.user.educations) !== JSON.stringify(this.originalUser.educations);
-    const workExperiencesChanged = JSON.stringify(this.user.workExperiences) !== JSON.stringify(this.originalUser.workExperiences);
-    const socialMediaProfilesChanged = JSON.stringify(this.user.socialMediaProfiles) !== JSON.stringify(this.originalUser.socialMediaProfiles);
+    const educationsChanged = JSON.stringify(this.user()?.educations)
+      !== JSON.stringify(this.originalUser.educations);
+    const workExperiencesChanged = JSON.stringify(this.user()?.workExperiences)
+      !== JSON.stringify(this.originalUser.workExperiences);
+    const socialMediaProfilesChanged = JSON.stringify(this.user()?.socialMediaProfiles)
+      !== JSON.stringify(this.originalUser.socialMediaProfiles);
 
     // Если хотя бы одно поле изменилось, возвращаем true
     return (
@@ -712,7 +755,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
   private verifyEmail() {
     // Шаг 1: Отправляем код подтверждения
-    return this.user && this.emailService.sendVerificationCode(this.user.emailAddress!).pipe(
+    return this.user && this.emailService.sendVerificationCode(this.user()?.emailAddress!).pipe(
       catchError(errorObj => {
         this.alertService.showSnackBar('Ошибка при отправке кода подтверждения.');
         this.changesSaving = false;
@@ -723,7 +766,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       if (!codeResponse) return; // Если ошибка, выходим
 
       // Шаг 2: Открываем диалог для ввода кода
-      this.alertService.openVerificationCodeDialog(this.user!.emailAddress!).afterClosed().subscribe(result => {
+      this.alertService.openVerificationCodeDialog(this.user()!.emailAddress!).afterClosed().subscribe(result => {
         if (result === 0) {
           this.alertService.showSnackBar('Почта не была подтверждена. Изменения не сохранены.');
           this.changesSaving = false;
@@ -744,7 +787,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
   private proceedWithSave() {
     // Если аватар не изменился, сразу обновляем пользователя
-    if (this.originalUser?.avatarUrl === this.user?.avatarUrl) {
+    if (this.originalUser?.avatarUrl === this.user()?.avatarUrl) {
       this.updateUserData();
       return;
     }
@@ -763,7 +806,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
           if (this.originalUser?.avatarUrl)
             this.deleteOriginalAvatar(this.originalUser.avatarUrl); // Удаляем старый аватар
           if (response)
-            this.user!.avatarUrl = response.fileUrl; // Обновляем URL аватара
+            this.user()!.avatarUrl = response.fileUrl; // Обновляем URL аватара
           this.updateUserData(); // Обновляем данные пользователя
         },
         error: error => {
@@ -780,11 +823,11 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   }
 
   private updateUserData(): void {
-    if (!this.user) return;
+    if (!this.user()) return;
     this.unsavedChanges = false;
-    this.user.dateOfBirth = DateService.formatDate(this.user.dateOfBirth)!;
+    this.user()!.dateOfBirth = DateService.formatDate(this.user()!.dateOfBirth)!;
 
-    this.usersService.updateUser(this.userId, this.user).pipe(
+    this.usersService.updateUser(this.userId, this.user()!).pipe(
       catchError(err => {
         this.changesSaving = false;
         this.alertService.showSnackBar(err.error.message || 'Не удалось обновить данные.');
@@ -808,7 +851,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
         return;
       }
 
-      this.user = updatedResponse.user;
+      this.user.set(updatedResponse.user);
       this.authService.setUser(updatedResponse.user);
       this.alertService.showSnackBar('Данные обновлены успешно.');
     });

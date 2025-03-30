@@ -18,6 +18,7 @@ import {UserMenuComponent} from './user-menu/user-menu.component';
 import {MascotComponent} from './mascot/mascot.component';
 import {UserStatusService} from '../services/user.status.service';
 import {AudioService} from '../services/audio.service';
+import { Status } from '../enums/Status';
 
 @Component({
   selector: 'app-root',
@@ -41,12 +42,12 @@ import {AudioService} from '../services/audio.service';
   ],
 })
 export class AppComponent extends MediumScreenSupport {
-  router = inject(Router);
-  audioService = inject(AudioService);
-  themeService = inject(ThemeService);
+  protected router = inject(Router);
+  protected audioService = inject(AudioService);
 
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
+  private themeService = inject(ThemeService);
   private userStatusService = inject(UserStatusService);
 
   loading = signal(true);
@@ -61,21 +62,30 @@ export class AppComponent extends MediumScreenSupport {
           this.user.set(user);
           const themeId = user?.themeId || 'light';
 
-          if (user?.id) {
-            this.userStatusService.initialize(user.id);
-            this.themeService.setTheme(themeId).subscribe({
-              next: () => setTimeout(() => {
-                this.loading.set(false);
-              }, 1600),
-              error: _err => this.loading.set(false)
-            });
-          } else {
+          if (!user?.id) {
             this.themeService.setLocalTheme(themeId);
             this.loading.set(false);
+            return;
           }
+
+          this.userStatusService.initialize(user.id);
+
+          // Отслеживание сетевого статуса
+          window.addEventListener('online', () =>
+            this.userStatusService.updateStatus(Status.Online));
+
+          window.addEventListener('offline', () =>
+            this.userStatusService.updateStatus(Status.Offline));
+
+          this.themeService.setTheme(themeId).subscribe({
+            next: () => setTimeout(() => {
+              this.loading.set(false);
+            }, 1600),
+            error: _err => this.loading.set(false)
+          });
         },
         error: err => {
-          console.error('Error fetching user data:', err);
+          console.error('Ошибка при получении данных пользователя:', err);
           this.alertService.showSnackBar(err);
           this.loading.set(false);
         }

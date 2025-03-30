@@ -59,18 +59,17 @@ body {
 mat-select, mat-select *, mat-select + *,
 [role="button"], [role="link"], a *, button *,
 .mat-mdc-form-field, .mat-mdc-option, .mat-mdc-option *, .mat-mdc-menu-item,
-.mat-mdc-slide-toggle *, .mat-mdc-snack-bar-action, .mat-mdc-button-touch-target {
+.mat-mdc-slide-toggle *, .mat-mdc-snack-bar-action, .mat-mdc-button-touch-target, .mat-mdc-radio-button * {
   cursor: var(--cursor-pointer) !important;
 }
 
 /* Текстовые элементы */
 //noinspection ALL
 [contenteditable]:not([contenteditable="false"]),
-.mat-mdc-snack-bar-label, .mat-mdc-tooltip-surface,
 textarea, p, h1, h2, h3, h4, h5, h6, strong, small, pre, code, mat-label,
-input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="range"]):not([type="color"]),
+.mat-mdc-snack-bar-label, .mat-mdc-tooltip-surface, .mat-mdc-form-field-infix,
 .mat-mdc-text-field-wrapper:not(mat-icon):not(button):not(mat-select *):not(mat-select + *):not(.mat-mdc-button-touch-target),
-.mat-mdc-form-field-infix {
+input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="range"]):not([type="color"]):not([type="radio"]) {
   cursor: var(--cursor-text) !important;
 }
 

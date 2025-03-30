@@ -38,4 +38,6 @@ export interface User {
   banner: string;
   ip: string;
   status: Status;
+  isHidden: boolean;
+  createdAt: Date;
 }

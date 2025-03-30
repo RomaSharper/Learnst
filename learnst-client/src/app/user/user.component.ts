@@ -23,6 +23,8 @@ import { AuthService } from '../../services/auth.service';
 import { UsersService } from '../../services/users.service';
 import {StatusHelper} from '../../helpers/StatusHelper';
 import {Status} from '../../enums/Status';
+import {Role} from '../../enums/Role';
+import {RuDatePipe} from '../../pipes/ru.date.pipe';
 
 @Return()
 @Component({
@@ -43,7 +45,8 @@ import {Status} from '../../enums/Status';
     NoDownloadingDirective,
     MatProgressSpinnerModule,
     PlaceholderImageDirective,
-    NgClass
+    NgClass,
+    RuDatePipe
   ]
 })
 export class UserComponent implements OnInit {
@@ -61,6 +64,17 @@ export class UserComponent implements OnInit {
   currentUser = signal<User | null>(null);
 
   SocialMediaPlatformHelper = SocialMediaPlatformHelper;
+
+  get isVeteran(): boolean {
+    if (!this.user()?.createdAt) return false;
+
+    const registrationDate = new Date(this.user()!.createdAt);
+    const currentDate = new Date();
+    const diffTime = currentDate.getTime() - registrationDate.getTime();
+    const diffYears = diffTime / (1000 * 3600 * 24 * 365);
+
+    return diffYears >= 1;
+  }
 
   constructor(public router: Router, public location: Location) { }
 
@@ -131,4 +145,5 @@ export class UserComponent implements OnInit {
 
   protected readonly StatusHelper = StatusHelper;
   protected readonly Status = Status;
+  protected readonly Role = Role;
 }
