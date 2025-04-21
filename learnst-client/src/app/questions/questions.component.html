@@ -3,13 +3,12 @@
     <mat-horizontal-stepper
       linear
       #stepper
-      [selectedIndex]="selectedStepIndex"
       (selectionChange)="onStepChange($event)"
     >
       <!-- Шаги с вопросами -->
       @for (question of questions; track question.id; let i = $index) {
         <mat-step
-          [editable]="!isTestEnded"
+          [editable]="true"
           [aria-label]="'Вопрос ' + (i + 1)"
           [completed]="isQuestionAnswered(question.id)"
         >
@@ -33,7 +32,7 @@
             </mat-card-header>
             <mat-card-content>
               @if (isLoading(question.id)) {
-                <mat-spinner diameter="28"></mat-spinner>
+                <mat-spinner></mat-spinner>
               } @else {
                 @if (isQuestionAnswered(question.id)) {
                   <p>Вы ответили {{
@@ -121,20 +120,18 @@
             <button
               mat-button
               type="button"
-              matStepperPrevious
-              [disabled]="selectedStepIndex === 0"
-            >
+              (click)="stepper.previous()"
+              [disabled]="selectedStepIndex === 0">
               Назад
             </button>
             <button
               type="button"
-              matStepperNext
               color="primary"
               mat-raised-button
+              [disabled]="isTransitioning"
               (click)="handleNextOrComplete()"
-              [disabled]="!isCurrentStepValid()"
             >
-              {{isLastQuestion() ? 'Завершить' : 'Далее'}}
+              Далее
             </button>
           </div>
         </mat-step>

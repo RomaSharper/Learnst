@@ -1,19 +1,19 @@
-import { LessonType } from '../../enums/LessonType';
-import { Location } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, OnInit } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
-import { Return } from '../../helpers/Return';
-import { Lesson } from '../../models/Lesson';
-import { UserLesson } from '../../models/UserLesson';
-import { AuthService } from '../../services/auth.service';
-import { DocumentService } from '../../services/document.service';
-import { LessonsService } from '../../services/lessons.service';
-import { QuestionsComponent } from '../questions/questions.component';
-import { AlertService } from '../../services/alert.service';
-import { MatCardModule } from '@angular/material/card';
+import {LessonType} from '../../enums/LessonType';
+import {Location} from '@angular/common';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, inject, NO_ERRORS_SCHEMA, OnInit, signal} from '@angular/core';
+import {MatButtonModule} from '@angular/material/button';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {ActivatedRoute, Router} from '@angular/router';
+import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
+import {Return} from '../../helpers/Return';
+import {Lesson} from '../../models/Lesson';
+import {AuthService} from '../../services/auth.service';
+import {DocumentService} from '../../services/document.service';
+import {LessonsService} from '../../services/lessons.service';
+import {QuestionsComponent} from '../questions/questions.component';
+import {AlertService} from '../../services/alert.service';
+import {MatCardModule} from '@angular/material/card';
+import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
 
 @Return()
 @Component({
@@ -26,109 +26,109 @@ import { MatCardModule } from '@angular/material/card';
     MatButtonModule,
     QuestionsComponent,
     MatProgressSpinnerModule,
+    NoDownloadingDirective,
   ]
 })
 export class LessonComponent extends MediumScreenSupport implements OnInit {
-  loading = true;
-  innerHTML = '';
+  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private lessonsService = inject(LessonsService);
+  private documentService = inject(DocumentService);
+
   lesson?: Lesson;
   userId?: string;
   goBack!: () => void;
-
+  innerHTML = '';
   LessonType = LessonType;
+  loading = signal(true);
 
-  constructor(
-    public router: Router,
-    public location: Location,
-    private route: ActivatedRoute,
-    private authService: AuthService,
-    private alertService: AlertService,
-    private lessonsService: LessonsService,
-    private documentService: DocumentService
-  ) {
+  constructor(protected router: Router, protected location: Location) {
     super();
   }
 
   ngOnInit() {
-    this.loading = true; // Устанавливаем загрузку в начале
-
     this.authService.getUser().subscribe({
       next: user => {
         if (!user) {
-          this.loading = false;
+          this.loading.set(false);
           return;
         }
 
         this.userId = user.id!;
-        const lessonId = this.route.snapshot.paramMap.get('lessonId') ?? '';
-
-        this.lessonsService.getLessonById(lessonId).subscribe({
-          next: lesson => {
-            this.lesson = lesson;
-            if (!lesson) {
-              this.loading = false;
-              return;
-            }
-
-            this.checkAndCreateUserLesson(lessonId);
-
-            if (this.lesson.longReadUrl) {
-              this.loadMarkdownContent(this.lesson.longReadUrl);
-            }
-
-            if (this.lesson.videoUrl) {
-              this.lesson.videoUrl = encodeURIComponent(this.lesson.videoUrl);
-            }
-
-            this.loading = false;
-          },
-          error: (err) => {
-            console.error('Ошибка загрузки урока:', err);
-            this.loading = false;
-            this.alertService.showSnackBar('Не удалось загрузить урок');
-          }
-        });
+        this.loadLesson(this.getLessonId());
       },
-      error: (err) => {
-        console.error('Ошибка получения пользователя:', err);
-        this.loading = false;
-      }
+      error: err => this.handleError('Ошибка получения пользователя:', err)
     });
   }
 
-  // Метод для проверки и создания записи в UserLessons
+  private getLessonId(): string {
+    return this.route.snapshot.paramMap.get('lessonId') ?? '';
+  }
+
+  private loadLesson(lessonId: string) {
+    this.lessonsService.getLessonById(lessonId).subscribe({
+      next: lesson => {
+        this.lesson = lesson;
+        if (!lesson) {
+          this.loading.set(false);
+          return;
+        }
+
+        this.checkAndCreateUserLesson(lessonId);
+        this.loadContent();
+      },
+      error: err => this.handleError('Ошибка загрузки урока:', err)
+    });
+  }
+
+  private loadContent() {
+    if (this.lesson?.longReadUrl)
+      this.loadMarkdownContent(this.lesson.longReadUrl);
+    if (this.lesson?.videoUrl)
+      this.lesson.videoUrl = encodeURIComponent(this.lesson.videoUrl);
+    if (this.loading())
+      this.loading.set(false);
+  }
+
+  private handleError(message: string, error: any) {
+    console.error(message, error);
+    this.loading.set(false);
+    this.alertService.showSnackBar('Не удалось загрузить урок');
+  }
+
   private checkAndCreateUserLesson(lessonId: string): void {
     if (!this.userId) return;
+
     this.lessonsService.getUserLesson(this.userId, lessonId).subscribe({
       next: (userLesson) => {
-        if (!userLesson) {
-          const newUserLesson: UserLesson = {
-            userId: this.userId!,
-            lessonId: lessonId
-          };
-          this.lessonsService.createUserLesson(newUserLesson).subscribe({
-            error: (err) => {
-              console.error('Ошибка при создании записи в UserLessons:', err);
-            }
-          });
-        }
+        if (!userLesson)
+          this.createUserLesson(lessonId);
       },
-      error: (err) => {
-        console.error('Ошибка при проверке UserLessons:', err);
-      }
+      error: err => console.error('Ошибка при проверке UserLessons:', err)
     });
   }
 
-  // Метод для загрузки и отображения Markdown
+  private createUserLesson(lessonId: string): void {
+    this.lessonsService.createUserLesson({
+      userId: this.userId!,
+      lessonId: lessonId
+    }).subscribe({
+      error: err => console.error('Ошибка при создании записи в UserLessons:', err)
+    });
+  }
+
   private loadMarkdownContent(url: string): void {
     this.documentService.getMarkdown(url).subscribe({
       next: markdown => {
-        const htmlContent = this.documentService.markdownToHtml(markdown);
-        this.innerHTML = htmlContent.toString();
-      }, error: err => {
+        this.innerHTML = this.documentService.markdownToHtml(markdown).toString();
+        this.loading.set(false);
+      },
+      error: err => {
         console.error('Ошибка загрузки Markdown:', err);
         this.alertService.showSnackBar('Произошла ошибка при загрузке документа');
-      },
+        this.loading.set(false);
+      }
     });
   }
 }

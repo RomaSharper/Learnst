@@ -2,7 +2,9 @@
   <a mat-button class="nav-btn" routerLink="/activities">Назад</a>
   @if (loading) {
     <mat-spinner></mat-spinner>
-  } @else if (activity) {
+  } @else if (!activity) {
+    <div class="error">Активность не найдена</div>
+  } @else {
     <h2>{{ activity.title }}</h2>
     <mat-tab-group [(selectedIndex)]="activeTab"
       (selectedIndexChange)="onTabChange($event)">
@@ -54,21 +56,13 @@
               <div class="activity-right">
                 <div class="points card">
                   <p><strong>Баллы:</strong>
-                    @if (loading) {
-                      <mat-spinner diameter="20"></mat-spinner>
-                    } @else {
-                      {{ earnedPoints }} / {{ totalPoints }}
-                    }
+                    {{ earnedPoints }} / {{ totalPoints }}
                   </p>
                   <mat-progress-bar [value]="(earnedPoints / totalPoints) * 100"></mat-progress-bar>
                 </div>
                 <div class="lessons card">
                   <p><strong>Уроки:</strong>
-                    @if (loading) {
-                      <mat-spinner diameter="20"></mat-spinner>
-                    } @else {
-                      {{ completedLessonsCount }} / {{ totalLessonsCount }}
-                    }
+                    {{ completedLessonsCount }} / {{ totalLessonsCount }}
                   </p>
                   <mat-progress-bar [value]="(completedLessonsCount / totalLessonsCount) * 100"></mat-progress-bar>
                 </div>
@@ -120,7 +114,7 @@
             @if (waysToLearn.length > 0) {
               <p><strong>Как проходит обучение:</strong></p>
               <div class="info-cards">
-                @for (card of waysToLearn; track card) {
+                @for (card of waysToLearn; track card.id) {
                   <div class="info-card" inspectable>
                     <img [alt]="card.text" [src]="card.iconUrl!" noDownloading>
                     <p>{{ card.text }}</p>
@@ -156,7 +150,5 @@
         </div>
       </mat-tab>
     </mat-tab-group>
-  } @else {
-    <div class="error">Активность не найдена</div>
   }
 </mat-card>

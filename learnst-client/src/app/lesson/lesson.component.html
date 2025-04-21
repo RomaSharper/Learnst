@@ -1,8 +1,10 @@
 <mat-card class="container" appearance="outlined">
   <a mat-button (click)="goBack()" class="mb nav-btn">Назад</a>
-  @if (loading) {
-    <mat-spinner diameter="40"></mat-spinner>
-  } @else if (lesson) {
+  @if (loading()) {
+    <mat-spinner></mat-spinner>
+  } @else if (!lesson) {
+    <div class="error">Урок не найден</div>
+  } @else {
     @switch (lesson.lessonType) {
       @case (LessonType.LongRead) {
         <div class="md-container" [innerHTML]="innerHTML"></div>
@@ -16,6 +18,7 @@
             slot="media"
             playsinline
             crossorigin
+            noDownloading
             [src]="lesson.videoUrl"
           >
             Ваш браузер не поддерживает видео
@@ -27,7 +30,5 @@
         <app-questions [questions]="lesson.questions"></app-questions>
       }
     }
-  } @else {
-    <div class="error">Урок не найден</div>
   }
 </mat-card>

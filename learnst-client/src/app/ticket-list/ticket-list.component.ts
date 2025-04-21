@@ -17,6 +17,7 @@ import { CreateTicketDialogComponent } from './create-ticket-dialog/create-ticke
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RuDateTimePipe } from '../../pipes/ru.date.time.pipe';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
 
 @Return()
 @Component({
@@ -32,7 +33,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     MatTooltipModule,
     MatPaginatorModule,
     ReactiveFormsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    NoDownloadingDirective
   ]
 })
 export class TicketListComponent extends MediumScreenSupport implements OnInit {

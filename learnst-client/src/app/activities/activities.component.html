@@ -1,5 +1,4 @@
-<mat-card class="container" appearance="outlined"
-  [class.mb-4]="isMediumScreen">
+<mat-card class="container" appearance="outlined" [class.mb-4]="isMediumScreen">
   <a mat-button color="primary" routerLink="/" class="mb">Назад</a>
 
   <!-- Кнопка "Добавить" -->
@@ -11,60 +10,65 @@
 
   <mat-form-field appearance="outline" class="full-width mt">
     <mat-label>Поиск курсов</mat-label>
-    <input matInput [(ngModel)]="searchInput" (keydown.enter)="onSearch()" placeholder="Начинайте вводить название..." maxlength="2048">
+    <input matInput [(ngModel)]="searchInput" (keydown.enter)="onSearch()" placeholder="Начинайте вводить название..."
+           maxlength="2048">
     <button type="button" mat-icon-button matSuffix (click)="onSearch()">
       <mat-icon>search</mat-icon>
     </button>
   </mat-form-field>
 
   <div class="activities-container">
-    @for (activity of paginatedActivities; track activity) {
-      <mat-card class="activity-card"
-                [routerLink]="['/activity', activity.id]"
-                [ngClass]="{'my-activity': activity.isEnrolled, 'closed-activity': activity.isClosed || toDate(activity.endAt) < now}">
-        <mat-card-header>
-          <mat-card-title class="mr-3">
-            @if (activity.isClosed || toDate(activity.endAt) < now) {
-              <mat-icon class="closed-icon">lock</mat-icon> <!-- Иконка для закрытых активностей -->
-            }
-            @else if (activity.isEnrolled) {
-              <mat-icon class="enrolled-icon">check_circle</mat-icon> <!-- Иконка для "моих" активностей -->
-            }
-            {{ activity.title }}
-          </mat-card-title>
-          @if (user?.role === Role.Specialist && activity.authorId === user?.id || user?.role === Role.Admin) {
-            <button type="button" class="activity-more-button" mat-icon-button
-              [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <button type="button" mat-menu-item (click)="editActivity(activity)">Изменить</button>
-              <button type="button" mat-menu-item (click)="openOrCloseActivity(activity)">{{ activity.isClosed ? 'Открыть' : 'Закрыть' }}</button>
-              <button type="button" mat-menu-item (click)="deleteActivity(activity)" class="delete">Удалить</button>
-            </mat-menu>
-          }
-        </mat-card-header>
-        <img mat-card-image [src]="activity.avatarUrl!" [alt]="activity.title"
-          noDownloading loading="lazy" placeholder="/assets/icons/placeholder.png">
-        @if (user) {
-          <mat-card-actions>
-            @if (activity.isClosed) {
-              Запись на курс закрыта
-            } @else if (toDate(activity.endAt) < now) {
-              Курс был открыт до {{ activity.endAt | ruDate }}
-            } @else {
-              <button type="button" mat-flat-button class="course-btn full-width"
-                      (click)="toggleActivity($event, activity)">
-                {{ activity.isEnrolled ? 'Отписаться от курса' : 'Записаться на курс' }}
+    @if (loading) {
+      <mat-spinner></mat-spinner>
+    } @else {
+      @for (activity of paginatedActivities; track activity.id) {
+        <mat-card class="activity-card"
+                  [routerLink]="['/activity', activity.id]"
+                  [ngClass]="{
+                    'my-activity': activity.isEnrolled,
+                    'closed-activity': activity.isClosed || toDate(activity.endAt) < now
+                  }">
+          <mat-card-header>
+            <mat-card-title class="mr-3">
+              @if (activity.isClosed || toDate(activity.endAt) < now) {
+                <mat-icon class="closed-icon">lock</mat-icon> <!-- Иконка для закрытых активностей -->
+              } @else if (activity.isEnrolled) {
+                <mat-icon class="enrolled-icon">check_circle</mat-icon> <!-- Иконка для "моих" активностей -->
+              }
+              {{ activity.title }}
+            </mat-card-title>
+            @if (user?.role === Role.Specialist && activity.authorId === user?.id || user?.role === Role.Admin) {
+              <button type="button" class="activity-more-button" mat-icon-button
+                      [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+                <mat-icon>more_vert</mat-icon>
               </button>
+              <mat-menu #menu="matMenu">
+                <button type="button" mat-menu-item (click)="editActivity(activity)">Изменить</button>
+                <button type="button" mat-menu-item
+                        (click)="openOrCloseActivity(activity)">{{ activity.isClosed ? 'Открыть' : 'Закрыть' }}
+                </button>
+                <button type="button" mat-menu-item (click)="deleteActivity(activity)" class="delete">Удалить</button>
+              </mat-menu>
             }
-          </mat-card-actions>
-        }
-      </mat-card>
-    } @empty {
-      @if (loading) {
-        <mat-spinner></mat-spinner>
-      } @else {
+          </mat-card-header>
+          <img mat-card-image [src]="activity.avatarUrl!" [alt]="activity.title"
+               noDownloading loading="lazy" placeholder="/assets/icons/placeholder.png">
+          @if (user) {
+            <mat-card-actions>
+              @if (activity.isClosed) {
+                Запись на курс закрыта
+              } @else if (toDate(activity.endAt) < now) {
+                Курс был открыт до {{ activity.endAt | ruDate }}
+              } @else {
+                <button type="button" mat-flat-button class="course-btn full-width"
+                        (click)="toggleActivity($event, activity)">
+                  {{ activity.isEnrolled ? 'Отписаться от курса' : 'Записаться на курс' }}
+                </button>
+              }
+            </mat-card-actions>
+          }
+        </mat-card>
+      } @empty {
         <div>Ничего не найдено...</div>
       }
     }
@@ -75,6 +79,5 @@
     [pageSize]="pageSize"
     (page)="onPageChange($event)"
     [pageSizeOptions]="pageSizeOptions"
-    [length]="filteredActivities.length"
-  />
+    [length]="filteredActivities.length"/>
 </mat-card>

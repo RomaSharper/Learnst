@@ -49,7 +49,6 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     userPreferences: {}
   };
 
-  // Заменяем сигналы на геттеры/сеттеры
   get messages() {
     return this.context.messages;
   }
@@ -63,14 +62,15 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   }
 
   private readonly pageCommandsMap: { [key: string]: string } = {
+    'главная': '/home',
     'активности': '/activities',
     'активность': '/activity',
     'сообщество': '/community',
-    'помощь': '/support',
-    'инфо': '/manuals',
-    'главная': '/home',
+    'поддержка': '/support',
+    'информация': '/manuals',
     'пользователи': '/users',
-    'пользователь': '/user'
+    'пользователь': '/user',
+    'настройки': '/settings'
   };
 
   private readonly commands: { [key: string]: { text: string, mood: NikoMood } } = {
@@ -839,8 +839,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       'Очистка истории',
       'Вы уверены, что хотите удалить всю историю переписки?'
     ).afterClosed().subscribe(result => {
-      if (result)
-        this.clearChatHistory();
+      if (result) this.clearChatHistory();
     });
   }
 
@@ -918,8 +917,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
           ${new Date().toLocaleString()}
         </div>
       </div>
-    `)
-      .join('');
+    `).join('');
 
     const html = `
     <!DOCTYPE html>
@@ -957,8 +955,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   }
 
   private safeEval(expression: string): string {
-    const sanitized = expression
-      .replace(/[^a-zA-Z0-9а-яА-ЯёЁ+\-*\/()\d\s="'_%.]/g, '')
+    const sanitized = expression.replace(/[^a-zA-Z0-9а-яА-ЯёЁ+\-*\/()\d\s="'_%.]/g, '')
       .replace(/\b(alert|fetch|XMLHttpRequest|document|window|eval|function|import|export|require|process)\b/g, '');
 
     try {
@@ -971,23 +968,19 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   private scrollToBottom(): void {
     setTimeout(() => {
       const messagesContainer = document.querySelector('.messages');
-      if (messagesContainer) {
-        messagesContainer.scrollTop = messagesContainer.scrollHeight + 100;
-        if (this.isMediumScreen) {
-          messagesContainer.scrollTop += 50;
-        }
-      }
+      if (!messagesContainer) return;
+      messagesContainer.scrollTop = messagesContainer.scrollHeight + 100;
+      if (this.isMediumScreen)
+        messagesContainer.scrollTop += 50;
     }, 50);
   }
 
   private updateScrollParallax() {
-    if (this.isMediumScreen) {
-      const messagesContainer = document.querySelector('.messages') as HTMLElement;
-      if (messagesContainer) {
-        const scrollTop = messagesContainer.scrollTop;
-        messagesContainer.style.setProperty('--scroll-offset', `${scrollTop}px`);
-      }
-    }
+    if (!this.isMediumScreen) return;
+    const messagesContainer = document.querySelector('.messages') as HTMLElement;
+    if (!messagesContainer) return;
+    const scrollTop = messagesContainer.scrollTop;
+    messagesContainer.style.setProperty('--scroll-offset', `${scrollTop}px`);
   }
 
   private detectCategory(text: string): string {
@@ -996,7 +989,6 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       const match = p.pattern.exec(lowerText);
       if (match && p.category === 'name_mention' && match[1])
         this.context.userPreferences.name = match[1];
-
       return p.pattern.test(lowerText);
     });
 
@@ -1017,11 +1009,10 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
   private getBaseResponse(category: string): string {
     const responses = this.responses[category] || ['Мяу...'];
-    let response = this.random(...responses);
+    const response = this.random(...responses);
 
     // Замена специальных тегов
-    return response
-      .replace(/\$topic/g, this.currentTopic)
+    return response.replace(/\$topic/g, this.currentTopic)
       .replace(/\$entity/g, this.context.mentionedEntities[0] || 'что-то')
       .replace(/\$name/g, this.context.userPreferences.name || 'друг')
       .replace(/\$game/g, this.random('Oneshot', 'Omori', 'Terraria', 'Minecraft'))
@@ -1049,20 +1040,20 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   private applyMoodModifications(response: string): string {
     let modifiedResponse = response;
 
-    switch(true) {
+    switch (true) {
       case (this.moodIntensity <= -5):
         this.context.currentMood = this.random<NikoMood>('very_uncomfortable', 'crying');
-        modifiedResponse += '😥 М-мяу...';
+        modifiedResponse += ' 😥 М-мяу...';
         break;
 
       case (this.moodIntensity >= -4 && this.moodIntensity <= -3):
         this.context.currentMood = this.random<NikoMood>('sad', 'distressed');
-        modifiedResponse += '😞 Мяяу...';
+        modifiedResponse += ' 😞 Мя-яу...';
         break;
 
       case (this.moodIntensity >= -2 && this.moodIntensity <= -1):
         this.context.currentMood = this.random<NikoMood>('uncomfortable', 'looking_left');
-        modifiedResponse += '😨 Мррр...';
+        modifiedResponse += ' 😨';
         break;
 
       case (this.moodIntensity >= 1 && this.moodIntensity <= 2):
@@ -1091,16 +1082,14 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   private updateContext(text: string, category: string): void {
     this.currentTopic = category !== 'default' ? category : this.currentTopic;
 
-    if (category !== 'default') {
+    if (category !== 'default')
       this.context.lastTopics = [category, ...this.context.lastTopics].slice(0, 3);
-    }
 
     const entities = this.extractEntities(text);
     this.context.mentionedEntities = [...entities, ...this.context.mentionedEntities].slice(0, 5);
 
-    if (category === 'compliment') {
+    if (category === 'compliment')
       this.context.userPreferences.likesCompliments = true;
-    }
   }
 
   private updateMood(category: string): void {
@@ -1145,9 +1134,8 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     this.context.messages.push(message);
 
     // Запуск анимации печати
-    if (!response.text.match(/<[^>]*>/)) {
+    if (!response.text.match(/<[^>]*>/))
       this.animateTextTyping(message, response.text);
-    }
   }
 
   private animateTextTyping(message: Message, fullText: string): void {
@@ -1175,20 +1163,18 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     const punctuationDelay = 50; // Задержка для пунктуации
 
     // Увеличиваем задержку для знаков препинания
-    if (/[.!?,;:]$/.test(text)) {
+    if (/[.!?,;:]$/.test(text))
       return baseSpeed + speedVariation + punctuationDelay;
-    }
 
     return baseSpeed + Math.random() * speedVariation;
   }
 
   private showError(message: string): void {
-    const errorMessage: Message = {
+    this.context.messages.push({
       text: message,
       isBot: true,
       displayedText: message
-    };
-    this.context.messages.push(errorMessage);
+    });
     this.scrollToBottom();
   }
 }

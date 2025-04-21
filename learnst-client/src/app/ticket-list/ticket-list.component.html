@@ -17,7 +17,8 @@
             <p>{{ ticket.description }}</p>
             <div class="ticket-info">
               <div class="author-info">
-                <img [src]="ticket.author?.avatarUrl || '/images/user.png'" alt="Аватар" class="avatar">
+                <img [src]="ticket.author?.avatarUrl || '/assets/icons/user-192x192.png'" alt="Аватар" class="avatar"
+                     noDownloading>
                 <span>{{ ticket.author?.username }}</span>
               </div>
               @switch (ticket.status) {
@@ -25,7 +26,7 @@
                   <mat-icon matTooltip="Тема открыта">lock_open</mat-icon>
                 }
                 @case (TicketStatus.InProgress) {
-                  <mat-icon matTooltip="Тема в процессе">pending</mat-icon>
+                  <mat-icon matTooltip="Тема в процессе">build</mat-icon>
                 }
                 @case (TicketStatus.Closed) {
                   <mat-icon matTooltip="Тема закрыта">lock</mat-icon>

@@ -1,14 +1,13 @@
-<mat-card class="profile-container" appearance="outlined">
-  <a mat-button color="primary" (click)="goBack()">Назад</a>
-
+<div class="profile-container">
   <h1>Управление профилем</h1>
-
   @if (loading()) {
     <mat-spinner></mat-spinner>
   } @else if (!user()) {
     <div class="error with-background">Пользователь не найден</div>
   } @else {
     <div class="profile-grid">
+      <a mat-button color="primary" class="mb full-width" (click)="goBack()">Назад</a>
+
       <!-- Личные данные -->
       <mat-card class="full-width" appearance="outlined">
         <h3>
@@ -178,7 +177,7 @@
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
         </mat-form-field>
-        <button type="button" mat-flat-button color="primary" class="full-width" (click)="changePassword()">
+        <button type="button" mat-flat-button class="full-width" (click)="changePassword()">
           @if (passwordChanging) {
             <mat-spinner diameter="20"></mat-spinner>
           } @else {
@@ -263,7 +262,7 @@
       </mat-card>
 
       <!-- Импорт/Экспорт -->
-      <mat-card class="full-width" appearance="outlined">
+      <mat-card class="full-width mb-2" appearance="outlined">
         <h3>Импорт и экспорт данных</h3>
         <p>
           Экспортируются следующие данные: ФИО, аватар, дата рождения, электронная почта, город,
@@ -329,7 +328,7 @@
 
     @if (unsavedChanges) {
     <div class="save-button-wrapper">
-      <button type="button" mat-flat-button color="primary" class="save-button" (click)="saveChanges()">
+      <button type="button" mat-flat-button class="save-button" (click)="saveChanges()">
         @if (changesSaving) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else {
@@ -339,4 +338,4 @@
     </div>
     }
   }
-</mat-card>
+</div>

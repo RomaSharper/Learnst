@@ -1,5 +1,5 @@
 import {MatStepper, MatStepperModule} from '@angular/material/stepper';
-import {Component, inject, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, inject, Input, OnChanges, ViewChild} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
@@ -32,59 +32,48 @@ import {lastValueFrom} from 'rxjs';
     MatProgressSpinnerModule
   ]
 })
-export class QuestionsComponent implements OnInit {
+export class QuestionsComponent implements OnChanges {
   private authService = inject(AuthService);
   private answersService = inject(AnswersService);
 
   userId!: string;
   isTestEnded = false;
   selectedStepIndex = 0;
-  correctAnswersCount = 0;
-  AnswerType = AnswerType;
   userAnswers: UserAnswer[] = [];
+  correctAnswersCount = 0;
   @Input() questions?: Question[];
+  isTransitioning = false;
+  AnswerType = AnswerType;
   loadingQuestions: Set<string> = new Set();
   @ViewChild("stepper") stepper!: MatStepper;
   selectedAnswers: { answerId: number, questionId: string }[] = [];
 
-  ngOnInit(): void {
+  ngOnChanges(): void {
     this.authService.getUser().subscribe(user => {
       this.userId = user?.id!;
-      if (this.questions)
+      if (this.questions?.length && this.userId)
         this.loadUserAnswers();
       else
-        console.warn('Вопросы не загружены.');
+        console.error('Вопросы не загружены.');
     });
   }
 
   async moveToNextUnanswered(): Promise<void> {
     if (this.isTestEnded || !this.questions) return;
 
-    // Сохраняем текущие ответы перед переходом
-    await this.submitAnswers();
-
-    const nextUnanswered = this.questions.findIndex(
+    const nextIndex = this.questions.findIndex(
       (q, index) => index > this.selectedStepIndex && !this.isQuestionAnswered(q.id)
     );
 
-    if (nextUnanswered === -1) {
-      if (this.isTestCompleted()) {
-        this.selectedStepIndex = this.questions.length;
-        this.isTestEnded = true;
-      } else {
-        this.updateSelectedStep();
-      }
-      return;
+    if (nextIndex !== -1) {
+      this.selectedStepIndex = nextIndex;
+    } else {
+      this.selectedStepIndex = this.questions.length; // Перейти на шаг результатов
+      this.isTestEnded = true;
     }
-    this.selectedStepIndex = nextUnanswered;
-  }
 
-  isLastQuestion(): boolean {
-    return this.selectedStepIndex === this.questions!.length - 1;
-  }
-
-  isLoading(questionId: string): boolean {
-    return this.loadingQuestions.has(questionId);
+    // Синхронизировать с UI
+    this.updateSelectedStep();
   }
 
   async submitAnswers(): Promise<void> {
@@ -99,18 +88,51 @@ export class QuestionsComponent implements OnInit {
       const responses = await lastValueFrom(this.answersService.answerQuestions(userAnswers));
       this.userAnswers = [...this.userAnswers, ...responses!];
       this.selectedAnswers = [];
-
       this.calculateProgress();
       this.isTestEnded = this.isTestCompleted();
-      this.updateSelectedStep();
-
-      if (this.isTestEnded) {
-        this.selectedStepIndex = this.questions!.length;
-      }
     } catch (err) {
       console.error('Ошибка сохранения:', err);
-      // Можно добавить обработку ошибки для пользователя
     }
+  }
+
+  async handleNextOrComplete(): Promise<void> {
+    if (this.isTransitioning) return;
+
+    this.isTransitioning = true;
+
+    try {
+      await this.submitAnswers(); // Просто сохраняем
+
+      await new Promise(res => setTimeout(res, 400));
+
+      // Если тест завершён – переход к результатам
+      if (this.isTestCompleted() && this.questions) {
+        this.isTestEnded = true;
+        this.selectedStepIndex = this.questions.length;
+      } else {
+        // Строго на следующий вопрос (не искать следующий пропущенный)
+        this.selectedStepIndex++;
+      }
+
+      this.updateSelectedStep();
+    } finally {
+      this.isTransitioning = false;
+    }
+  }
+
+  isLastQuestion(): boolean {
+    if (!this.questions) return true;
+    const currentIndex = this.selectedStepIndex;
+    for (let i = currentIndex + 1; i < this.questions.length; i++) {
+      if (!this.isQuestionAnswered(this.questions[i].id)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  isLoading(questionId: string): boolean {
+    return this.loadingQuestions.has(questionId);
   }
 
   isAnswerSelected(answerId: number, questionId: string): boolean {
@@ -161,28 +183,15 @@ export class QuestionsComponent implements OnInit {
   }
 
   isTestCompleted(): boolean {
-    if (!this.questions || this.questions.length === 0)
-      return false;
-
-    // Проверяем, ответил ли пользователь на все вопросы
-    return this.questions.every(question => this.isQuestionAnswered(question.id));
+    return this.questions?.every(q => this.isQuestionAnswered(q.id)) ?? false;
   }
 
   onStepChange(event: StepperSelectionEvent): void {
     if (!this.questions) return;
 
-    if (this.isTestEnded) {
-      this.selectedStepIndex = this.questions.length;
-      return;
-    }
-
-    const targetStep = event.selectedIndex;
-    if (targetStep < this.questions.length) {
-      const targetQuestion = this.questions[targetStep];
-      if (this.isQuestionAnswered(targetQuestion.id))
-        this.selectedStepIndex = targetStep;
-      else
-        this.updateSelectedStep();
+    // Разрешаем переход на любой вопрос, если тест не завершен
+    if (!this.isTestEnded) {
+      this.selectedStepIndex = event.selectedIndex;
     }
   }
 
@@ -195,7 +204,7 @@ export class QuestionsComponent implements OnInit {
     }
 
     if (isChecked) {
-      this.selectedAnswers.push({ answerId, questionId });
+      this.selectedAnswers.push({answerId, questionId});
     } else {
       this.selectedAnswers = this.selectedAnswers
         .filter(a => !(a.answerId === answerId && a.questionId === questionId));
@@ -206,9 +215,9 @@ export class QuestionsComponent implements OnInit {
   isCurrentStepValid(): boolean {
     // Проверяем наличие вопросов и корректность индекса
     if (!this.questions ||
-        this.questions.length === 0 ||
-        this.selectedStepIndex < 0 ||
-        this.selectedStepIndex >= this.questions.length) {
+      this.questions.length === 0 ||
+      this.selectedStepIndex < 0 ||
+      this.selectedStepIndex >= this.questions.length) {
       return false;
     }
 
@@ -223,62 +232,47 @@ export class QuestionsComponent implements OnInit {
     return hasSelected || this.isQuestionAnswered(currentQuestion.id);
   }
 
-  async handleNextOrComplete(): Promise<void> {
-    await this.submitAnswers();
-    this.stepper.next();
-
-    if (this.isLastQuestion() && this.isTestCompleted()) {
-      this.isTestEnded = true;
-    } else {
-      await this.moveToNextUnanswered();
-    }
-  }
-
   private loadUserAnswers(): void {
     const lessonId = this.questions![0].lessonId;
     this.questions!.forEach(q => this.loadingQuestions.add(q.id));
 
     this.answersService.getUserAnswersByLesson(lessonId, this.userId).subscribe({
-      next: (answers) => {
+      next: answers => {
         this.userAnswers = answers;
         this.calculateProgress();
-        this.updateSelectedStep(true);
         this.isTestEnded = this.isTestCompleted();
+
+        // Важно: Обновляем шаг после получения ответов
         this.questions!.forEach(q => this.loadingQuestions.delete(q.id));
+        this.updateSelectedStep();
       },
-      error: (err) => {
+      error: err => {
         console.error('Ошибка загрузки ответов:', err);
         this.questions!.forEach(q => this.loadingQuestions.delete(q.id));
       }
     });
   }
 
-  private calculateProgress(): void {
-    this.correctAnswersCount = this.questions!.filter(q =>
-      this.isAnswerCorrect(q.id)
-    ).length;
-  }
-
-  private updateSelectedStep(initialLoad: boolean = false): void {
+  private updateSelectedStep(): void {
     if (!this.questions) return;
 
-    if (this.isTestEnded) {
+    if (this.isTestCompleted()) {
       this.selectedStepIndex = this.questions.length;
-      return;
+      this.isTestEnded = true;
+    } else {
+      const firstUnanswered = this.questions.findIndex(q => !this.isQuestionAnswered(q.id));
+      this.selectedStepIndex = firstUnanswered !== -1 ? firstUnanswered : 0;
     }
 
-    const firstUnanswered = this.questions!.findIndex(
-      q => !this.isQuestionAnswered(q.id)
-    );
-
-    if (firstUnanswered === -1) {
-      this.selectedStepIndex = this.questions.length - 1;
-      return;
+    // 🛠 Принудительно обновим индекс Stepper после вычислений
+    if (this.stepper) {
+      setTimeout(() => {
+        this.stepper.selectedIndex = this.selectedStepIndex;
+      });
     }
+  }
 
-    this.selectedStepIndex = firstUnanswered;
-    if (initialLoad) {
-      setTimeout(() => this.selectedStepIndex = firstUnanswered);
-    }
+  private calculateProgress(): void {
+    this.correctAnswersCount = this.questions!.filter(q => this.isAnswerCorrect(q.id)).length;
   }
 }

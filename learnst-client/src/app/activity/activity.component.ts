@@ -35,12 +35,7 @@ import {UserMenuComponent} from '../user-menu/user-menu.component';
 import {TagHelper} from '../../helpers/TagHelper';
 import {InfoCard} from '../../models/InfoCard';
 import {AudioService} from '../../services/audio.service';
-
-interface ActivityNode {
-  id: string;
-  name: string;
-  children?: ActivityNode[];
-}
+import {ActivityNode} from '../../models/ActivityNode';
 
 @Return()
 @Component({
@@ -96,64 +91,57 @@ export class ActivityComponent implements OnInit {
   protected readonly LevelHelper = LevelHelper;
 
   // Метод для доступа к дочерним элементам узла
-  childrenAccessor = (node: ActivityNode) => node.children ?? [];
+  childrenAccessor =
+    (node: ActivityNode) => node.children ?? [];
 
   // Метод для проверки, есть ли у узла дети
-  hasChild = (_: number, node: ActivityNode) => !!node.children && node.children.length > 0;
+  hasChild =
+    (_: number, node: ActivityNode) => !!node.children && node.children.length > 0;
 
-  constructor(public router: Router, public location: Location) { }
+  constructor(public router: Router, public location: Location) {
+  }
 
   ngOnInit(): void {
     let activityId!: string;
-    this.route.paramMap.subscribe(params =>
-      activityId = params.get('activityId') ?? ''
-    );
-
-    this.route.queryParams.subscribe(queryParams =>
-      this.activeTab = this.nameToIndex(queryParams['tab'])
-    );
+    this.route.paramMap.subscribe(params => activityId = params.get('activityId') ?? '');
+    this.route.queryParams.subscribe(queryParams => this.activeTab = this.nameToIndex(queryParams['tab']));
 
     this.authService.getUser().subscribe(user => {
       this.user = user;
 
       // Если пользователь не авторизован, перенаправляем назад
       if (!user) {
-        this.goBack();
+        this.router.navigate(['/']);
         return;
       }
 
-      // Проверяем доступ к активности
-      this.activitiesService.getActivityById(activityId).pipe(
+      this.activitiesService.getActivityById(activityId).pipe( // Проверяем доступ к активности
         catchError(err => {
           this.handleError('Ошибка при загрузке данных активности', err);
           return of(undefined);
         })
       ).subscribe(activity => {
         if (!activity || !user.id) {
-          this.router.navigate(['/']);
+          this.router.navigate(['/activities']);
           return;
         }
 
         // Проверяем условия для доступа
-        const isUserEnrolled = this.activitiesService.isUserActivityExists(user.id, activityId).pipe(
-          catchError(() => of(false)) // В случае ошибки считаем, что пользователь не записан
-        );
+        if (user.role === Role.Admin // Администратор: всегда имеет доступ
+          || user.role === Role.Specialist && ((activity as Activity).authorId === user.id)) // Специалист: если автор активности
+          return;
 
-        isUserEnrolled.subscribe(exists => {
-          if (
-            // Обычный пользователь: должен быть записан на курс
-            exists ||
-            // Специалист: должен быть автором активности или записан на неё
-            (user.role === Role.Specialist && ((activity as Activity).authorId === user.id)) ||
-            // Администратор: всегда имеет доступ
-            (user.role === Role.Admin)
-          ) {
+        this.activitiesService.isUserActivityExists(user.id, activityId).pipe(
+          catchError(() => of(false)) // В случае ошибки считаем, что пользователь не записан
+        ).subscribe(exists => {
+          // Обычный пользователь: должен быть записан на курс
+          if (exists) {
             this.loadActivityData(activityId, user.id!);
             return;
           }
 
           this.handleError('Чтобы перейти к курсу, вы должны записаться на него');
-          this.goBack();
+          this.router.navigate(['/activities']);
         });
       });
     });

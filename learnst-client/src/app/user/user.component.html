@@ -1,23 +1,22 @@
-<!--suppress ALL -->
-<mat-card class="profile-container" appearance="outlined">
-  <a mat-button color="primary" class="mb" (click)="goBack()">Назад</a>
-
+<div class="profile-container">
   @if (loading()) {
     <mat-spinner></mat-spinner>
   } @else if (!user()) {
     <div class="error">Пользователь не найден</div>
   } @else if (user()?.isHidden && currentUser()?.role !== Role.Admin) {
     <div class="profile-grid">
+      <a mat-button color="primary" class="mb full-width" (click)="goBack()">Назад</a>
+
       <!-- Личные данные -->
       <div class="full-width">
-        <mat-card>
+        <mat-card appearance="outlined">
           <h3 class="profile-header">
             Личные данные
             <small class="profile-hidden-notice">Профиль скрыт</small>
           </h3>
           <div class="avatar-container">
             <img
-              oading="lazy"
+              loading="lazy"
               noDownloading
               class="avatar"
               [alt]="user()!.username"
@@ -254,4 +253,4 @@
       }
     </div>
   }
-</mat-card>
+</div>

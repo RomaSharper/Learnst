@@ -99,11 +99,6 @@ input::-ms-reveal {
   display: none;
 }
 
-video {
-  min-width: calc(100vw - 40px);
-  min-height: calc(100svh - 140px);
-}
-
 img {
   transform: translateZ(30px);
   transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
