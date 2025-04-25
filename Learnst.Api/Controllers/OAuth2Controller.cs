@@ -308,7 +308,7 @@ public partial class OAuth2Controller(
         var userInfo = await GetYandexUserInfo(tokenData.AccessToken);
 
         // Поиск/создание пользователя
-        var user = await FindOrCreateUser(userInfo.DefaultEmail, userInfo.Id, SocialMediaPlatform.Google,
+        var user = await FindOrCreateUser(userInfo.DefaultEmail, userInfo.Id, SocialMediaPlatform.Yandex,
             $"https://avatars.yandex.net/get-yapic/{userInfo.DefaultAvatarId}/islands-200",
             ipAddress: HttpContext.GetRemoteIPAddress()?.ToString());
 
