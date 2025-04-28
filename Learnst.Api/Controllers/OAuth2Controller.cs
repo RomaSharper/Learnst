@@ -219,12 +219,12 @@ public partial class OAuth2Controller(
 
         // Создание нового пользователя
         var user = await FindOrCreateUser(
-        email: userInfo.Email,
-        externalLoginId: userInfo.Id,
-        SocialMediaPlatform: SocialMediaPlatform.Google,
-        avatar: userInfo.Picture,
-        fullName: userInfo.Name,
-        ipAddress: HttpContext.GetRemoteIPAddress()?.ToString());
+            email: userInfo.Email,
+            externalLoginId: userInfo.Id,
+            SocialMediaPlatform: SocialMediaPlatform.Google,
+            avatar: userInfo.Picture,
+            fullName: userInfo.Name,
+            ipAddress: HttpContext.GetRemoteIPAddress()?.ToString());
 
         return RedirectWithToken(user);
     }

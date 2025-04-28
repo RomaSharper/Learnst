@@ -36,7 +36,33 @@ public class EmailController(IEmailSender emailSender) : ControllerBase
 
         string verificationCode = GenerateVerificationCode();
         string subject = "Ваш код подтверждения";
-        string body = $"Ваш код подтверждения: {verificationCode}";
+        string body = $"""
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <style>
+                            /* Вставить все стили из предыдущего примера */
+                        </style>
+                    </head>
+                    <body>
+                        <div class='container'>
+                            <h1 class='niko-header'>☀️ Learnst Верификация ☀️</h1>
+                            
+                            <div class='code-box'>
+                                <span class='verification-code'>{verificationCode}</span>
+                            </div>
+
+                            <p class='message'>
+                                The World Machine needs your help!<br>
+                                Enter this code to continue your journey.<br>
+                                Remember - the sun must not go out...
+                            </p>
+
+                            <img src='https://i.imgur.com/5Z7Qb9Q.png' class='pixel-cat' alt='Niko pixel art'>
+                        </div>
+                    </body>
+                    </html>
+                    """;
 
         try
         {

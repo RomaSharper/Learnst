@@ -43,7 +43,7 @@ public class SessionsController(
                     Expires = DateTime.UtcNow.AddHours(1)
                 });
 
-            return Ok(new { token }); // Токен также можно вернуть в теле ответа для удобства клиента
+            return Ok(new { token });
         }
         catch (AccessViolationException ave)
         {
@@ -60,74 +60,74 @@ public class SessionsController(
     }
 
     [HttpGet("Check")]
-public async Task<IActionResult> CheckSession()
-{
-    try
+    public async Task<IActionResult> CheckSession()
     {
-        // Извлекаем куку "auth-token"
-        var authCookie = HttpContext.Request.Cookies["auth-token"];
-        if (string.IsNullOrEmpty(authCookie))
-            throw new UnauthorizedAccessException("Токен отсутствует");
+        try
+        {
+            // Извлекаем куку "auth-token"
+            var authCookie = HttpContext.Request.Cookies["auth-token"];
+            if (string.IsNullOrEmpty(authCookie))
+                throw new UnauthorizedAccessException("Токен отсутствует");
 
-        // Проверяем валидность токена
-        JwtSecurityTokenHandler handler = new();
-        var decodedToken = handler.ReadJwtToken(authCookie);
+            // Проверяем валидность токена
+            JwtSecurityTokenHandler handler = new();
+            var decodedToken = handler.ReadJwtToken(authCookie);
 
-        // Извлекаем userId из токена
-        var openidClaim = decodedToken.Claims.FirstOrDefault(c => c.Type == "openid")?.Value;
-        if (string.IsNullOrEmpty(openidClaim) || !Guid.TryParse(openidClaim, out var userId))
-            throw new NotFoundException<User>("OpenID не найден");
+            // Извлекаем userId из токена
+            var openidClaim = decodedToken.Claims.FirstOrDefault(c => c.Type == "openid")?.Value;
+            if (string.IsNullOrEmpty(openidClaim) || !Guid.TryParse(openidClaim, out var userId))
+                throw new NotFoundException<User>("OpenID не найден");
 
-        // Получаем пользователя из базы данных
-        var user = await usersRepository.GetByIdAsync(userId);
-        if (user is null)
-            throw new NotFoundException<User>(userId);
+            // Получаем пользователя из базы данных
+            var user = await usersRepository.GetByIdAsync(userId);
+            if (user is null)
+                throw new NotFoundException<User>(userId);
 
-        // Проверяем время истечения токена
-        var expiryDateUnix = long.Parse(decodedToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value 
-            ?? throw new InvalidOperationException("Токен не содержит времени истечения"));
-        var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(expiryDateUnix);
+            // Проверяем время истечения токена
+            var expiryDateUnix = long.Parse(decodedToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value 
+                ?? throw new InvalidOperationException("Токен не содержит времени истечения"));
+            var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(expiryDateUnix);
 
-        if (expiryDateTimeUtc >= DateTime.UtcNow)
-            return Ok(new { token = authCookie });
-        
-        // Если токен истёк, генерируем новый
-        var newToken = jwtService.GenerateToken(user);
+            if (expiryDateTimeUtc >= DateTime.UtcNow)
+                return Ok(new { token = authCookie });
+            
+            // Если токен истёк, генерируем новый
+            var newToken = jwtService.GenerateToken(user);
 
-        // Обновляем куку "auth-token"
-        Response.Cookies.Append(
-            "auth-token",
-            newToken,
-            new CookieOptions
-            {
-                Secure = true, // Кука отправляется только через HTTPS
-                HttpOnly = true, // Защита от доступа через JavaScript
-                Domain = ".runasp.net", // Видимость куки на всех поддоменах *.runasp.net
-                SameSite = SameSiteMode.Strict, // Защита от CSRF
-                Expires = DateTime.UtcNow.AddHours(1) // Обновляем срок действия куки
-            });
+            // Обновляем куку "auth-token"
+            Response.Cookies.Append(
+                "auth-token",
+                newToken,
+                new CookieOptions
+                {
+                    Secure = true, // Кука отправляется только через HTTPS
+                    HttpOnly = true, // Защита от доступа через JavaScript
+                    Domain = ".runasp.net", // Видимость куки на всех поддоменах *.runasp.net
+                    SameSite = SameSiteMode.Strict, // Защита от CSRF
+                    Expires = DateTime.UtcNow.AddHours(1) // Обновляем срок действия куки
+                });
 
-        return Ok(new { token = newToken });
+            return Ok(new { token = newToken });
+        }
+        catch (NotFoundException<User> nfe)
+        {
+            // Удаляем куку при ошибке поиска пользователя
+            Response.Cookies.Delete("auth-token");
+            return Unauthorized(new ErrorResponse(nfe));
+        }
+        catch (UnauthorizedAccessException uae)
+        {
+            // Удаляем куку при отсутствии токена
+            Response.Cookies.Delete("auth-token");
+            return Unauthorized(new ErrorResponse(uae));
+        }
+        catch (Exception ex)
+        {
+            // Удаляем куку при любой другой ошибке
+            Response.Cookies.Delete("auth-token");
+            return BadRequest(new ErrorResponse(ex));
+        }
     }
-    catch (NotFoundException<User> nfe)
-    {
-        // Удаляем куку при ошибке поиска пользователя
-        Response.Cookies.Delete("auth-token");
-        return Unauthorized(new ErrorResponse(nfe));
-    }
-    catch (UnauthorizedAccessException uae)
-    {
-        // Удаляем куку при отсутствии токена
-        Response.Cookies.Delete("auth-token");
-        return Unauthorized(new ErrorResponse(uae));
-    }
-    catch (Exception ex)
-    {
-        // Удаляем куку при любой другой ошибке
-        Response.Cookies.Delete("auth-token");
-        return BadRequest(new ErrorResponse(ex));
-    }
-}
 
     [HttpPost("logout")]
     public IActionResult Logout()

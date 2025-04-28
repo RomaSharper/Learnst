@@ -30,7 +30,6 @@ public class FileController(IOptions<SftpSettings> settings) : ControllerBase
         }
     }
 
-
     [HttpDelete]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
