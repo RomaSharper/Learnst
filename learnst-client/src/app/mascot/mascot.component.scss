@@ -329,14 +329,18 @@
         .send-button {
           border: none;
           padding: 12px;
-          border-radius: 16px;
+          border-radius: 8px;
           background: var(--primary);
           cursor: var(--cursor-pointer);
           color: var(--mat-sys-on-primary);
           transition: all 0.3s var(--easing);
 
           &:hover:not(:disabled) {
-            transform: scale(1.1) rotate(12deg);
+            transform: scale(1.05);
+          }
+
+          &:active:not(:disabled) {
+            transform: scale(0.95);
           }
 
           &:disabled {

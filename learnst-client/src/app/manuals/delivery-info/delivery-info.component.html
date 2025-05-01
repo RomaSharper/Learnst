@@ -1,5 +1,8 @@
 <mat-card class="md-container" appearance="outlined">
-  <a mat-button routerLink="/manuals" class="nav-btn">Назад</a>
+  <a mat-button routerLink="/manuals" class="nav-btn" [class.full-width]="isMediumScreen">
+    Назад
+  </a>
+
   <h1>Условия подписки</h1>
   <p><em>Последнее обновление: 23.02.2025</em></p>
 
@@ -47,6 +50,5 @@
   <footer class="footer">
     <p>© 2025 TCorporation. Все права защищены.</p>
     <p>Юрисдикция: Российская Федерация</p>
-    <p><a routerLink="/manuals/contacts">Контакты</a></p>
   </footer>
 </mat-card>

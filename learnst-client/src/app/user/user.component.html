@@ -1,15 +1,19 @@
+<!--suppress ALL -->
 <div class="profile-container">
   @if (loading()) {
     <mat-spinner></mat-spinner>
   } @else if (!user()) {
-    <div class="error">Пользователь не найден</div>
+    <div class="error with-background">Пользователь не найден</div>
   } @else if (user()?.isHidden && currentUser()?.role !== Role.Admin) {
     <div class="profile-grid">
-      <a mat-button color="primary" class="mb full-width" (click)="goBack()">Назад</a>
+      <a mat-button class="mb" [class.full-width]="isMediumScreen" (click)="goBack()">
+        Назад
+      </a>
 
       <!-- Личные данные -->
       <div class="full-width">
         <mat-card appearance="outlined">
+
           <h3 class="profile-header">
             Личные данные
             <small class="profile-hidden-notice">Профиль скрыт</small>
@@ -31,7 +35,8 @@
           <mat-card appearance="outlined" class="registration-card">
             <div class="card-content">
               @if (isVeteran) {
-                <div class="veteran-container" matTooltip="Медалька даётся пользователям, зарегистрированным более года назад">
+                <div class="veteran-container"
+                     matTooltip="Медалька даётся пользователям, зарегистрированным более года назад">
                   <div class="veteran-badge">
                     <mat-icon class="veteran-icon">military_tech</mat-icon>
                     <span>Ветеран</span>
@@ -69,8 +74,12 @@
           <div class="user-info">
             <mat-form-field appearance="outline">
               <mat-label>Имя пользователя</mat-label>
-              <input matInput id="username" [(ngModel)]="user()!.username" maxlength="20" minlength="3" required
-                     readonly>
+              <input matInput id="username" [(ngModel)]="user()!.username" maxlength="20" minlength="3"
+                     required readonly>
+              <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                      matTooltipPosition="below" (click)="copy(user()!.username)">
+                <mat-icon>content_copy</mat-icon>
+              </button>
             </mat-form-field>
           </div>
         </mat-card>
@@ -78,9 +87,13 @@
     </div>
   } @else {
     <div class="profile-grid">
+      <a mat-button class="mb" [class.full-width]="isMediumScreen" (click)="goBack()">
+        Назад
+      </a>
+
       <!-- Личные данные -->
       <div class="full-width">
-        <mat-card>
+        <mat-card appearance="outlined">
           <h3>
             Личные данные
             @if (user()!.externalLoginType) {
@@ -142,22 +155,34 @@
             </button>
           </div>
           <div class="user-info">
-            @if (user()!.fullName && user()!.fullName !== '') {
+            @if (user()!.fullName) {
               <mat-form-field appearance="outline">
                 <mat-label>ФИО</mat-label>
                 <input matInput id="fullname" [(ngModel)]="user()!.fullName" placeholder="Не указано" maxlength="48"
                        readonly>
+                <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                        matTooltipPosition="below" (click)="copy(user()!.fullName!)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
               </mat-form-field>
             }
             <mat-form-field appearance="outline">
               <mat-label>Имя пользователя</mat-label>
               <input matInput id="username" [(ngModel)]="user()!.username" maxlength="20" minlength="3" required
                      readonly>
+              <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                      matTooltipPosition="below" (click)="copy(user()!.username)">
+                <mat-icon>content_copy</mat-icon>
+              </button>
             </mat-form-field>
             @if (user()!.dateOfBirth) {
               <mat-form-field appearance="outline">
                 <mat-label>Дата рождения</mat-label>
                 <input matInput id="date" type="date" [(ngModel)]="user()!.dateOfBirth" required readonly>
+                <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                        matTooltipPosition="below" (click)="copy(user()!.dateOfBirth!)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
               </mat-form-field>
             }
             @if (user()!.emailAddress) {
@@ -165,27 +190,42 @@
                 <mat-label>Электронная почта</mat-label>
                 <input matInput id="email" type="email" [(ngModel)]="user()!.emailAddress" required maxlength="255"
                        readonly>
+                <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                        matTooltipPosition="below" (click)="copy(user()!.emailAddress!)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
               </mat-form-field>
             }
-            @if (user()!.city && user()!.city !== '') {
+            @if (user()!.city) {
               <mat-form-field appearance="outline">
                 <mat-label>Город</mat-label>
                 <input matInput id="city" [(ngModel)]="user()!.city" placeholder="Не указан" maxlength="50" readonly>
+                <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                        matTooltipPosition="below" (click)="copy(user()!.city!)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
               </mat-form-field>
             }
-            @if (user()!.resumeText && user()!.resumeText !== '') {
+            @if (user()!.resumeText) {
               <mat-form-field appearance="outline">
                 <mat-label>Резюме</mat-label>
                 <textarea matInput id="resume" [(ngModel)]="user()!.resumeText" maxlength="500" placeholder="Не указано"
                           rows="4" readonly></textarea>
+                <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                        matTooltipPosition="below" (click)="copy(user()!.resumeText!)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
               </mat-form-field>
             }
-            @if (user()!.aboutMe && user()!.aboutMe !== '') {
+            @if (user()!.aboutMe) {
               <mat-form-field appearance="outline">
                 <mat-label>Обо мне</mat-label>
-                <textarea matInput id="aboutMe" [(ngModel)]="user()!.aboutMe" maxlength="500"
-                          placeholder="Изменить статус"
-                          rows="4" readonly></textarea>
+                <textarea matInput id="aboutMe" [(ngModel)]="user()!.aboutMe" maxlength="500" rows="4"
+                          placeholder="Изменить статус" readonly></textarea>
+                <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                        matTooltipPosition="below" (click)="copy(user()!.aboutMe!)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
               </mat-form-field>
             }
           </div>
@@ -198,7 +238,7 @@
           <mat-card>
             <h3>Социальные сети</h3>
             <div class="cards">
-              @for (socialMediaProfile of user()!.socialMediaProfiles; track socialMediaProfile) {
+              @for (socialMediaProfile of user()!.socialMediaProfiles; track socialMediaProfile.id) {
                 <div class="social-card" inspectable>
                   <a [href]="socialMediaProfile.url" target="_blank">
                     <img

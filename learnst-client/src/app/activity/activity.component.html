@@ -1,13 +1,15 @@
 <mat-card class="container" appearance="outlined">
-  <a mat-button class="nav-btn" routerLink="/activities">Назад</a>
-  @if (loading) {
+  <a mat-button class="nav-btn mb" routerLink="/activities" [class.full-width]="isMediumScreen">
+    Назад
+  </a>
+
+  @if (loading()) {
     <mat-spinner></mat-spinner>
   } @else if (!activity) {
-    <div class="error">Активность не найдена</div>
+    <div class="error with-background">Активность не найдена</div>
   } @else {
     <h2>{{ activity.title }}</h2>
-    <mat-tab-group [(selectedIndex)]="activeTab"
-      (selectedIndexChange)="onTabChange($event)">
+    <mat-tab-group [(selectedIndex)]="activeTab" (selectedIndexChange)="onTabChange($event)">
       <!-- Вкладка "Описание" -->
       <mat-tab label="Описание">
         <div class="activity-container">
@@ -41,10 +43,10 @@
                 </div>
                 <p><strong>Дата создания:</strong> {{ activity.createdAt | ruDate }}</p>
                 <p><strong>Уровень:</strong> {{ LevelHelper.getName(activity.level) }}</p>
-                @if (activity.minimalScore > 0) {
+                @if (activity.minimalScore) {
                   <p><strong>Минимальный балл:</strong> {{ activity.minimalScore }}</p>
                 }
-                @if (activity.targetAudience.length > 0) {
+                @if (activity.targetAudience.length) {
                   <p><strong>Кому подойдет обучение:</strong></p>
                   <ul class="list">
                     @for (audience of activity.targetAudience; track audience) {
@@ -66,7 +68,7 @@
                   </p>
                   <mat-progress-bar [value]="(completedLessonsCount / totalLessonsCount) * 100"></mat-progress-bar>
                 </div>
-                @if (activity.checkList.length > 0) {
+                @if (activity.checkList.length) {
                   <div class="activity-check-list card">
                     <p><strong>Чек-лист:</strong></p>
                     <ul class="list">
@@ -77,10 +79,10 @@
                   </div>
                 }
                 <div
-                  [matTooltip]="isCertificateAvailable
+                  [matTooltip]="isCertificateAvailable()
                   ? 'Нажмите, чтобы получить сертификат: он будет отправлен вам на почту'
                   : 'Для получения сертификата необходимо пройти все уроки'
-                  + (activity!.minimalScore > 0
+                  + (activity!.minimalScore
                     ? ' и набрать минимальное количество баллов'
                     : '')"
                 >
@@ -90,8 +92,8 @@
                     color="primary"
                     class="full-width"
                     (click)="getCertificate()"
-                    [disabled]="!isCertificateAvailable || isCertificateLoading">
-                    @if (isCertificateLoading) {
+                    [disabled]="!isCertificateAvailable() || isCertificateLoading()">
+                    @if (isCertificateLoading()) {
                       <mat-spinner diameter="20"></mat-spinner>
                     } @else {
                       Получить сертификат
@@ -100,10 +102,10 @@
                 </div>
               </div>
             </div>
-            @if (benefits.length > 0) {
+            @if (benefits.length) {
               <p><strong>Почему стоит учиться:</strong></p>
               <div class="info-cards">
-                @for (card of benefits; track card) {
+                @for (card of benefits; track card.id) {
                   <div class="info-card" inspectable>
                     <img [alt]="card.text" [src]="card.iconUrl!" noDownloading>
                     <p>{{ card.text }}</p>

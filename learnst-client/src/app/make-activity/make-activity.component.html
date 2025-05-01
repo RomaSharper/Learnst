@@ -1,7 +1,11 @@
 <mat-card class="activity-form-container" appearance="outlined">
-  <a mat-button routerLink="/activities" class="mb-2">Назад</a>
+  <a mat-button routerLink="/activities" class="mb" [class.full-width]="isMediumScreen">
+    Назад
+  </a>
 
-  <form [formGroup]="activityForm" (ngSubmit)="onSubmit()" (keydown.enter)="$event.preventDefault()" class="activity-form">
+  <form
+    [formGroup]="activityForm" (ngSubmit)="onSubmit()"
+    (keydown.enter)="$event.preventDefault()" class="activity-form">
     <!-- Основные поля -->
     <mat-form-field appearance="outline">
       <mat-label>Название</mat-label>

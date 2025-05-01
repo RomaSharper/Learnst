@@ -1,52 +1,89 @@
-<mat-card class="container" appearance="outlined">
-  <a mat-button color="primary" (click)="goBack()" class="mb">Назад</a>
+<mat-card class="ticket-list-container">
+  <div class="action-bar">
+    <a routerLink="/" mat-stroked-button class="back-btn">
+      <mat-icon class="pixel-icon">arrow_back</mat-icon>
+      <span class="btn-text">На главную</span>
+    </a>
 
-  <a type="button" mat-button color="primary" class="mb"
-    (click)="openCreateTicketDialog()">
-    Добавить
-  </a>
+    <button mat-flat-button
+            class="add-btn"
+            (click)="openCreateTicketDialog()"
+            [@pulseAnimation]="'hover'">
+      <mat-icon>add</mat-icon>
+      <span class="btn-text">Добавить</span>
+    </button>
+  </div>
 
-  <div class="ticket-list mt">
+  <div class="ticket-grid">
     @if (loading) {
-      <mat-spinner></mat-spinner>
+      <div class="loading-wrapper">
+        <mat-spinner diameter="64" strokeWidth="4"></mat-spinner>
+      </div>
     } @else {
       @for (ticket of paginatedTickets; track ticket.id) {
-        <mat-card (click)="navigateToTicketDetails(ticket.id!)" appearance="outlined">
-          <mat-card-title>{{ ticket.title }}</mat-card-title>
-          <mat-card-content>
-            <p>{{ ticket.description }}</p>
-            <div class="ticket-info">
-              <div class="author-info">
-                <img [src]="ticket.author?.avatarUrl || '/assets/icons/user-192x192.png'" alt="Аватар" class="avatar"
-                     noDownloading>
-                <span>{{ ticket.author?.username }}</span>
-              </div>
-              @switch (ticket.status) {
-                @case (TicketStatus.Open) {
-                  <mat-icon matTooltip="Тема открыта">lock_open</mat-icon>
-                }
-                @case (TicketStatus.InProgress) {
-                  <mat-icon matTooltip="Тема в процессе">build</mat-icon>
-                }
-                @case (TicketStatus.Closed) {
-                  <mat-icon matTooltip="Тема закрыта">lock</mat-icon>
-                }
-              }
+        <mat-card class="ticket-card"
+                  (click)="navigateToTicketDetails(ticket.id!)"
+                  [@cardHover]="'hover'">
+          <div class="type-banner"
+               [style.background]="TicketTypeHelper.getColor(ticket.type)">
+            {{ TicketTypeHelper.getName(ticket.type) }}
+            <div class="status-icon">
+              <mat-icon>{{ TicketStatusHelper.getStatusIcon(ticket.status) }}</mat-icon>
             </div>
-            <p class="created-at">{{ ticket.createdAt | ruDateTime: 'relative' }}</p>
-          </mat-card-content>
+          </div>
+
+          <div class="card-content">
+            <h3 class="title">{{ ticket.title }}</h3>
+
+            <p class="description">{{ (ticket.description || '') | ellipsis:100 }}</p>
+
+            <div class="meta-footer">
+              <div class="author-info" (click)="$event.stopPropagation()">
+                <button mat-stroked-button
+                        [matMenuTriggerFor]="userMenu"
+                        class="user-btn">
+                  <img [src]="ticket.author?.avatarUrl"
+                       class="pixel-avatar"
+                       noDownloading
+                       alt="Аватар">
+                  <span class="username">{{ ticket.author?.username! | ellipsis:12 }}</span>
+                </button>
+                <mat-menu #userMenu>
+                  <app-user-menu [user]="ticket.author!" [redirectOnly]="true" />
+                </mat-menu>
+              </div>
+
+              <div class="status-time">
+                <span class="time">
+                  {{ ticket.createdAt | ruDateTime: 'relative' }}
+                </span>
+              </div>
+            </div>
+          </div>
         </mat-card>
       } @empty {
-        <div class="empty-state">Тикетов нет</div>
+        <div class="empty-state">
+          <div class="empty-illustration">
+            <img src="assets/niko/sad.webp"
+                 class="pixel-image"
+                 noDownloading
+                 alt="Пусто">
+          </div>
+          <h3 class="empty-title">Нет тикетов</h3>
+          <button mat-flat-button
+                  class="create-btn"
+                  (click)="openCreateTicketDialog()">
+            Создать первый тикет
+          </button>
+        </div>
       }
     }
   </div>
 
-  <mat-paginator
-    showFirstLastButtons
-    [pageSize]="pageSize"
-    [length]="tickets.length"
-    (page)="onPageChange($event)"
-    [pageSizeOptions]="pageSizeOptions"
-  />
+  <mat-paginator [pageSize]="pageSize"
+                 class="pixel-paginator"
+                 [length]="tickets.length"
+                 (page)="onPageChange($event)"
+                 [pageSizeOptions]="pageSizeOptions">
+  </mat-paginator>
 </mat-card>

@@ -25,6 +25,8 @@ import {StatusHelper} from '../../helpers/StatusHelper';
 import {Status} from '../../enums/Status';
 import {Role} from '../../enums/Role';
 import {RuDatePipe} from '../../pipes/ru.date.pipe';
+import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
+import {ClipboardService} from '../../services/clipboard.service';
 
 @Return()
 @Component({
@@ -32,6 +34,8 @@ import {RuDatePipe} from '../../pipes/ru.date.pipe';
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.scss'],
   imports: [
+    NgClass,
+    RuDatePipe,
     PluralPipe,
     FormsModule,
     MatIconModule,
@@ -44,39 +48,37 @@ import {RuDatePipe} from '../../pipes/ru.date.pipe';
     InspectableDirective,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
-    PlaceholderImageDirective,
-    NgClass,
-    RuDatePipe
+    PlaceholderImageDirective
   ]
 })
-export class UserComponent implements OnInit {
+export class UserComponent extends MediumScreenSupport implements OnInit {
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private usersService = inject(UsersService);
+  private clipboardService = inject(ClipboardService);
 
-  date = new Date();
   goBack!: () => void;
+  date = new Date();
   loading = signal(true);
   followersCount = signal(0);
   isFollowing = signal(false);
   user = signal<User | null>(null);
   currentUser = signal<User | null>(null);
-
-  SocialMediaPlatformHelper = SocialMediaPlatformHelper;
+  protected SocialMediaPlatformHelper = SocialMediaPlatformHelper;
 
   get isVeteran(): boolean {
     if (!this.user()?.createdAt) return false;
-
     const registrationDate = new Date(this.user()!.createdAt);
     const currentDate = new Date();
     const diffTime = currentDate.getTime() - registrationDate.getTime();
     const diffYears = diffTime / (1000 * 3600 * 24 * 365);
-
     return diffYears >= 1;
   }
 
-  constructor(public router: Router, public location: Location) { }
+  constructor(public router: Router, public location: Location) {
+    super();
+  }
 
   ngOnInit(): void {
     const userId = this.route.snapshot.paramMap.get('userId')!;
@@ -101,6 +103,10 @@ export class UserComponent implements OnInit {
         this.loading.set(false);
       });
     });
+  }
+
+  copy(text: string): void {
+    this.clipboardService.copyText(text, this.alertService);
   }
 
   handleFollow(): void {

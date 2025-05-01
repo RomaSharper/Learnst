@@ -44,80 +44,58 @@ public class CertificateService(ApplicationDbContext context) : ICertificateServ
         return true;
     }
 
-    public async Task<byte[]> GenerateCertificateAsync(User user, Activity activity)
+    public byte[] GenerateCertificate(User user, Activity activity)
     {
         using PdfDocument pdfDoc = new();
         var page = pdfDoc.AddPage();
         using var gfx = XGraphics.FromPdfPage(page);
 
-        // Установка цветного фона
-        var gradientBrush = new XLinearGradientBrush(
-            new XPoint(0, 0),
-            new XPoint(page.Width.Point, page.Height.Point),
-            XColors.LightSkyBlue,
-            XColors.LightGreen
-        );
-        gfx.DrawRectangle(gradientBrush, new XRect(0, 0, page.Width.Point, page.Height.Point));
+        // Установка фона
+        var bgColor = XColor.FromArgb(255, 10, 16, 26);
+        gfx.DrawRectangle(new XSolidBrush(bgColor), new XRect(0, 0, page.Width.Point, page.Height.Point));
 
-        // Загрузка иконки по URL
-        var logoUrl = "http://learnst.runasp.net/favicon.png";
-        using HttpClient httpClient = new();
-        try
-        {
-            var logoBytes = await httpClient.GetByteArrayAsync(logoUrl);
-            using MemoryStream logoStream = new(logoBytes);
-            var logo = XImage.FromStream(logoStream);
+        // Шрифты и цвета
+        XFont titleFont = new("Courier New", 28, XFontStyleEx.Bold);
+        XFont headerFont = new("Courier New", 18, XFontStyleEx.Bold);
+        XFont bodyFont = new("Courier New", 14, XFontStyleEx.Regular);
+        XFont codeFont = new("Courier New", 18, XFontStyleEx.Bold);
 
-            // Размещение иконки с оригинальным размером 96x96
-            gfx.DrawImage(logo, new XRect(50, 50, 96, 96)); // Позиция (50, 50), размер 96x96
-        }
-        catch (Exception ex)
-        {
-            // Обработка ошибок загрузки иконки
-            Console.WriteLine($"Ошибка загрузки иконки: {ex.Message}");
-        }
+        var mainColor = XColor.FromArgb(255, 138, 190, 183);
+        var accentColor = XColor.FromArgb(255, 58, 107, 136);
 
-        // Шрифты
-        XFont titleFont = new("Arial", 28, XFontStyleEx.Bold);
-        XFont headerFont = new("Arial", 20, XFontStyleEx.Bold);
-        XFont bodyFont = new("Arial", 14, XFontStyleEx.Regular);
-        XFont smallFont = new("Arial", 12, XFontStyleEx.Italic);
-
-        // Заголовок сертификата
-        gfx.DrawString("Learnst", titleFont, XBrushes.DarkBlue, new XPoint(50, 160)); // Сдвинуто ниже иконки
-
-        // Название курса на новой строке
-        var courseTitle = $"Сертификат о прохождении курса:";
-        var courseName = activity.Title;
-        gfx.DrawString(courseTitle, headerFont, XBrushes.Black, new XPoint(50, 210));
-        gfx.DrawString(courseName, headerFont, XBrushes.DarkBlue, new XPoint(50, 240));
-
-        // Информация о пользователе
-        gfx.DrawString($"Выдан: {user.FullName}", bodyFont, XBrushes.Black, new XPoint(50, 290));
-        gfx.DrawString($"Дата выдачи: {DateTime.UtcNow:dd.MM.yyyy}", bodyFont, XBrushes.Black, new XPoint(50, 320));
-
-        // Поздравление
-        gfx.DrawString("Поздравляем с успешным завершением курса!", headerFont, XBrushes.DarkGreen, new XPoint(50, 460));
-
-        // Подпись
-        gfx.DrawString("Подпись: ___________________", smallFont, XBrushes.Black, new XPoint(50, 510));
-
-        // Декоративная рамка
-        var borderPen = new XPen(XColors.DarkBlue, 2);
+        // Основная рамка документа
+        var borderPen = new XPen(accentColor, 2);
         gfx.DrawRectangle(borderPen, new XRect(40, 40, page.Width.Point - 80, page.Height.Point - 80));
 
-        // Водяной знак
-        XFont watermarkFont = new("Arial", 48, XFontStyleEx.BoldItalic);
-        XSolidBrush watermarkBrush = new(XColor.FromArgb(50, XColors.Gray));
-        XStringFormat watermarkFormat = new()
-        {
-            Alignment = XStringAlignment.Center,
-            LineAlignment = XLineAlignment.Center
-        };
-        gfx.DrawString("Learnst", watermarkFont, watermarkBrush, new XRect(0, 0, page.Width.Point, page.Height.Point), watermarkFormat);
+        // Заголовок
+        gfx.DrawString("> CERTIFICATE_OSv1.4", headerFont, new XSolidBrush(accentColor), 60, 80);
+        gfx.DrawString("Learnst Terminal", titleFont, new XSolidBrush(mainColor), 60, 120);
+
+        // Блок информации о пользователе
+        DrawTerminalBox(gfx, new XRect(60, 160, 480, 160), "User Data", mainColor, accentColor);
+        gfx.DrawString($"USER: {user.FullName}", bodyFont, new XSolidBrush(mainColor), 80, 200);
+        gfx.DrawString($"ISSUED: {DateTime.UtcNow:yyyy-MM-dd}", bodyFont, new XSolidBrush(mainColor), 80, 230);
+        gfx.DrawString($"COURSE: {activity.Title}", bodyFont, new XSolidBrush(mainColor), 80, 260);
+
+        // Блок с кодом подтверждения
+        var code = Guid.NewGuid().ToString()[..8].ToUpper();
+        DrawTerminalBox(gfx, new XRect(60, 340, 480, 80), "Hash Code", mainColor, accentColor);
+        gfx.DrawString(code, codeFont, new XSolidBrush(mainColor),
+            new XRect(60, 340, 480, 80), XStringFormats.Center);
 
         using MemoryStream stream = new();
         pdfDoc.Save(stream);
         return stream.ToArray();
+    }
+
+    private static void DrawTerminalBox(XGraphics gfx, XRect rect, string title, XColor mainColor, XColor accentColor)
+    {
+        var boxPen = new XPen(accentColor, 1.5);
+        gfx.DrawRectangle(boxPen, rect);
+
+        // Заголовок блока
+        var titleFont = new XFont("Courier New", 12, XFontStyleEx.Bold);
+        gfx.DrawString($">> {title}", titleFont, new XSolidBrush(accentColor),
+            new XPoint(rect.X + 15, rect.Y + 20));
     }
 }

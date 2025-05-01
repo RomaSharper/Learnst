@@ -1,109 +1,169 @@
-<mat-card class="container" appearance="outlined">
-  <a mat-button color="primary" class="mb" routerLink="/support">Назад</a>
+<mat-card class="ticket-detail-container">
+  <div class="action-bar">
+    <button mat-stroked-button
+            class="back-btn"
+            routerLink="/support">
+      <mat-icon>arrow_back</mat-icon>
+      <span>Назад</span>
+    </button>
 
-  @if (canAnswerOrDelete) {
-    <a mat-button (click)="deleteTicket()" class="mb">Удалить</a>
-  }
+    @if (canAnswerOrDelete) {
+      <button mat-stroked-button
+              class="danger-btn"
+              (click)="deleteTicket()">
+        <mat-icon>delete</mat-icon>
+        <span>Удалить</span>
+      </button>
+    }
+  </div>
 
-  @if (canChangeStatus) {
-    <div class="status-actions mb-2">
-      <button type="button" mat-icon-button [disabled]="ticket.status === TicketStatus.Open"
-        (click)="updateStatus(TicketStatus.Open)" matTooltip="Открыть">
-        <mat-icon>lock_open</mat-icon>
-      </button>
-      <button type="button" mat-icon-button [disabled]="ticket.status === TicketStatus.InProgress"
-        (click)="updateStatus(TicketStatus.InProgress)" matTooltip="В процессе">
-        <mat-icon>build</mat-icon>
-      </button>
-      <button type="button" mat-icon-button [disabled]="ticket.status === TicketStatus.Closed"
-        (click)="updateStatus(TicketStatus.Closed)" matTooltip="Закрыть">
-        <mat-icon>lock</mat-icon>
-      </button>
+  @if (loading) {
+    <mat-spinner></mat-spinner>
+  } @else if (ticket) {
+    <div class="ticket-content">
+      <!-- Заголовок и статус -->
+      <div class="header-section">
+        <div class="title-type">
+          <h1 class="ticket-title">{{ ticket.title }}</h1>
+          <div class="type-tag"
+               [style.background]="TicketTypeHelper.getColor(ticket.type)">
+            {{ TicketTypeHelper.getName(ticket.type) }}
+          </div>
+        </div>
+
+        <div class="status-indicator">
+          <mat-icon>{{ TicketStatusHelper.getStatusIcon(ticket.status) }}</mat-icon>
+          <span>{{ TicketStatusHelper.getName(ticket.status) }}</span>
+        </div>
+      </div>
+
+      <!-- Мета-информация -->
+      <div class="meta-section">
+        <div class="author-info" (click)="$event.stopPropagation()">
+          <button class="user-btn"
+                  mat-stroked-button
+                  [matMenuTriggerFor]="userMenu">
+            <img alt="Аватар"
+                 noDownloading
+                 class="pixel-avatar"
+                 [src]="ticket.author?.avatarUrl">
+            <span class="username">{{ ticket.author?.username }}</span>
+          </button>
+          <mat-menu #userMenu>
+            <app-user-menu [user]="ticket.author!" [redirectOnly]="true" />
+          </mat-menu>
+        </div>
+        <span class="creation-date">
+          Создано: {{ ticket.createdAt | ruDateTime:'relative' }}
+        </span>
+      </div>
+
+      <!-- Описание -->
+      @if (ticket.description) {
+        <div class="description-section">
+          <h3 class="section-title">Описание</h3>
+          <p class="description-text">{{ ticket.description }}</p>
+        </div>
+      }
+
+      <!-- Управление статусом -->
+      @if (canChangeStatus) {
+        <div class="status-controls">
+          <button type="button" mat-icon-button [disabled]="ticket.status === TicketStatus.Open"
+                  (click)="updateStatus(TicketStatus.Open)" matTooltip="Открыть">
+            <mat-icon>lock_open</mat-icon>
+          </button>
+          <button type="button" mat-icon-button [disabled]="ticket.status === TicketStatus.InProgress"
+                  (click)="updateStatus(TicketStatus.InProgress)" matTooltip="В процессе">
+            <mat-icon>build</mat-icon>
+          </button>
+          <button type="button" mat-icon-button [disabled]="ticket.status === TicketStatus.Closed"
+                  (click)="updateStatus(TicketStatus.Closed)" matTooltip="Закрыть">
+            <mat-icon>lock</mat-icon>
+          </button>
+        </div>
+      }
+
+      <!-- Ответы -->
+      <div class="answers-section">
+        <div class="section-header">
+          <h3 class="section-title">Ответы</h3>
+          @if (canAnswerOrDelete) {
+            <button mat-flat-button
+                    color="primary"
+                    (click)="openAddAnswerDialog()">
+              Добавить ответ
+            </button>
+          }
+        </div>
+
+        <div class="answers-list">
+          @for (answer of ticket.ticketAnswers; track answer.id) {
+            <div class="answer-card">
+              <div class="answer-header" (click)="$event.stopPropagation()">
+                <div class="user-info">
+                  <img [src]="answer.author?.avatarUrl"
+                       class="pixel-avatar"
+                       noDownloading
+                       alt="Аватар"
+                       [matMenuTriggerFor]="answerMenu">
+                  <mat-menu #answerMenu>
+                    <app-user-menu [user]="answer.author!" [redirectOnly]="true" />
+                  </mat-menu>
+
+                  <div class="user-details">
+                    <span class="username">{{ answer.author?.username }}</span>
+                    <div class="user-role" [attr.data-role]="Role[answer.author?.role!].toLowerCase()">
+                      {{ RoleHelper.getName(answer.author?.role!) }}
+                    </div>
+                  </div>
+                </div>
+                <span class="answer-date">
+                  {{ answer.createdAt | ruDateTime: 'relative' }}
+                </span>
+              </div>
+              <p class="answer-content">{{ answer.content }}</p>
+            </div>
+          } @empty {
+            <div class="no-answers">
+              <img noDownloading
+                   alt="Нет ответов"
+                   class="empty-icon"
+                   src="assets/niko/sad.webp">
+              <p>Пока нет ответов</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- История изменений -->
+      <div class="history-section">
+        <h3 class="section-title">История изменений</h3>
+        <div class="timeline">
+          @for (history of ticket.statusHistories; track history.id) {
+            <div class="timeline-item">
+              <div class="timeline-icon">
+                <mat-icon class="icon">{{ TicketStatusHelper.getStatusIcon(history.status) }}</mat-icon>
+              </div>
+              <div class="timeline-content">
+                <span class="status-name">
+                  {{ TicketStatusHelper.getName(history.status) }}
+                </span>
+                <span class="status-date">
+                  {{ history.changedAt | ruDateTime: 'relative' }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
     </div>
   }
 
-  @if (ticket) {
-    <mat-card appearance="outlined">
-      <mat-card-title class="m" [class.center]="isMediumScreen">
-        {{ ticket.title }}
-        <span [matTooltip]="TicketStatusHelper.getName(ticket.status)"
-          class="status-icon">
-          <mat-icon>
-            {{ TicketStatusHelper.getStatusIcon(ticket.status) }}
-          </mat-icon>
-        </span>
-      </mat-card-title>
-      <mat-card-content>
-        <p [class.center]="isMediumScreen">{{ ticket.description }}</p>
-        <div class="ticket-info">
-            @if (ticket.author) {
-              <a class="author-info" [routerLink]="['/user', ticket.authorId]">
-                <img class="avatar" [src]="ticket.author.avatarUrl!" [alt]="ticket.author.username" noDownloading
-                  placeholder="/assets/icons/user-192x192.png">
-                <span>{{ ticket.author.username }}</span>
-              </a>
-            }
-          <p class="created-at">{{ ticket.createdAt | ruDateTime: 'relative' }}</p>
-        </div>
-
-        <h3>Ответы:</h3>
-        <mat-list>
-          @for (answer of ticket.ticketAnswers; track answer.id) {
-            <mat-list-item>
-              <div class="answer-info">
-                @if (answer.author) {
-                  <a class="author-info" [routerLink]="['/user', answer.authorId]">
-                    <img [src]="answer.author.avatarUrl!" placeholder="/assets/icons/user-192x192.png"
-                         alt="Аватар" class="avatar" noDownloading>
-                    <div class="author-details">
-                      <span class="username">{{ answer.author.username }}</span>
-                      <span class="created-at">{{ answer.createdAt | ruDateTime: 'relative' }}</span>
-                    </div>
-                    @if (answer.author.role === Role.Admin) {
-                      <mat-icon class="role-icon admin-icon" matTooltip="Администратор">star</mat-icon>
-                    } @else if (answer.author.role === Role.Backup) {
-                      <mat-icon class="role-icon backup-icon" matTooltip="Поддержка">backup</mat-icon>
-                    } @else if (answer.author.role === Role.Specialist) {
-                      <mat-icon class="role-icon specialist-icon" matTooltip="Специалист">build</mat-icon>
-                    }
-                  </a>
-                }
-                <p class="answer-content">{{ answer.content }}</p>
-              </div>
-            </mat-list-item>
-          } @empty {
-            <mat-list-item>
-              <p class="empty-state">Нет ответов</p>
-            </mat-list-item>
-          }
-        </mat-list>
-
-        @if (canAnswerOrDelete) {
-          <button type="button" mat-button (click)="openAddAnswerDialog()">Добавить ответ</button>
-        }
-
-        <h3>История статусов:</h3>
-        <div class="status-history">
-        @for (history of ticket.statusHistories; track history.id; let i = $index) {
-          <div class="status-node">
-            <div class="status-icon">
-              <mat-icon>{{ TicketStatusHelper.getStatusIcon(history.status) }}</mat-icon>
-            </div>
-            <div class="status-content">
-              <p>Статус: {{ TicketStatusHelper.getName(history.status) }}</p>
-              <p>Изменено: {{ history.changedAt | ruDateTime: 'relative' }}</p>
-            </div>
-          </div>
-          @if (i < ticket.statusHistories.length - 1) {
-            <div class="status-line"></div>
-          }
-        }
-      </div>
-    </mat-card-content>
-  </mat-card>
-} @else if (errorMessage()) {
-  <div class="error with-background p">{{ errorMessage() }}</div>
-} @else {
-  <mat-spinner></mat-spinner>
-}
+  @if (errorMessage()) {
+    <div class="error-message">
+      <mat-icon>error</mat-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
 </mat-card>

@@ -1,19 +1,14 @@
 <div class="mascot-container">
-  <div class="mascot-avatar"
-       (click)="toggleChat()"
-       [class.avatar-bounce]="bounceTrigger()">
+  <div class="mascot-avatar" (click)="toggleChat()" [class.avatar-bounce]="bounceTrigger()">
     <div class="avatar-wrapper">
       <img
         alt="Nico"
+        noDownloading
         class="nico-avatar"
-        matTooltip="Поговори со мной!"
         [@avatarBounce]="currentMood"
-        [src]="'assets/niko/' + currentMood + '.webp'"
-      >
-      <div
-        class="status-indicator"
-        [class.active]="isTyping()"
-      ></div>
+        matTooltip="Поговори со мной!"
+        [src]="'assets/niko/' + currentMood + '.webp'">
+      <div class="status-indicator" [class.active]="isTyping()"></div>
     </div>
   </div>
 
@@ -28,6 +23,7 @@
               <div class="header-avatar">
                 <img
                   alt="Nico"
+                  noDownloading
                   class="nico-avatar"
                   [@avatarScale]="isChatOpen()"
                   [src]="'assets/niko/' + currentMood + '.webp'"
@@ -47,8 +43,7 @@
               mat-icon-button
               class="action-button"
               matTooltip="Экспорт истории"
-              (click)="exportHistoryHandle($event)"
-            >
+              (click)="exportHistoryHandle($event)">
               <mat-icon>download</mat-icon>
             </button>
           </div>
@@ -102,13 +97,11 @@
             [disabled]="isTyping()"
             [(ngModel)]="userInput"
             (keyup.enter)="sendMessage()"
-            placeholder="Напишите сообщение..."
-          >
+            placeholder="Напишите сообщение...">
           <button
             class="send-button"
             (click)="sendMessage()"
-            [disabled]="isTyping()"
-          >
+            [disabled]="isTyping()">
             <span class="icon" [class.animated]="!isTyping()">➤</span>
           </button>
         </div>

@@ -1,4 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
+import {AlertService} from './alert.service';
 
 export type ClipboardContentType =
   'text/plain' |
@@ -24,6 +25,15 @@ export class ClipboardService {
 
   get isSupported(): boolean {
     return !!this.clipboard && !!document.hasFocus && document.hasFocus();
+  }
+
+  copyText(text: string, alertService: AlertService, snackBarMessage?: string): void {
+    this.copy({
+      type: 'text/plain',
+      blob: new Blob([text], { type: 'text/plain' })
+    })
+      .then(() => alertService.showSnackBar(snackBarMessage ?? 'Текст успешно скопирован'))
+      .catch(err => console.error('Копирование в буфер обмена не удалось: ', err));
   }
 
   async copy(content: { type: ClipboardContentType, blob: Blob }): Promise<void> {

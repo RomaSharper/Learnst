@@ -7,7 +7,6 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
-import {PlaceholderImageDirective} from '../../directives/placeholder-image.directive';
 import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
 import {Ticket} from '../../models/Ticket';
 import {TicketAnswer} from '../../models/TicketAnswer';
@@ -21,6 +20,14 @@ import {TicketStatusHelper} from '../../helpers/TicketStatusHelper';
 import {User} from '../../models/User';
 import {AlertService} from '../../services/alert.service';
 import {AddAnswerDialogComponent} from './add-answer-dialog/add-answer-dialog.component';
+import {TicketTypeHelper} from '../../helpers/TicketTypeHelper';
+import {RoleHelper} from '../../helpers/RoleHelper';
+import {MatMenuModule} from '@angular/material/menu';
+import {UserMenuComponent} from '../user-menu/user-menu.component';
+import {TicketType} from '../../enums/TicketType';
+import {forkJoin, of} from 'rxjs';
+import {catchError, switchMap, map} from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-ticket-detail',
@@ -31,12 +38,13 @@ import {AddAnswerDialogComponent} from './add-answer-dialog/add-answer-dialog.co
     MatCardModule,
     MatListModule,
     MatIconModule,
+    MatMenuModule,
     RuDateTimePipe,
     MatButtonModule,
     MatTooltipModule,
+    UserMenuComponent,
     NoDownloadingDirective,
-    MatProgressSpinnerModule,
-    PlaceholderImageDirective
+    MatProgressSpinnerModule
   ]
 })
 export class TicketDetailComponent extends MediumScreenSupport implements OnInit {
@@ -50,62 +58,98 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
   user!: User;
   ticket!: Ticket;
   ticketId!: string;
+  loading = true;
   canChangeStatus = false;
   canAnswerOrDelete = false;
   errorMessage = signal('');
 
-  Role = Role;
-  TicketStatus = TicketStatus;
-  TicketStatusHelper = TicketStatusHelper;
-
   ngOnInit(): void {
-    this.route.paramMap.subscribe(paramMap => {
-      this.ticketId = paramMap.get('ticketId')!;
-      if (!this.ticketId) return;
-      this.ticketService.getTicket(this.ticketId).subscribe({
-        next: ticket => {
-          this.ticket = ticket;
-
-          this.authService.getUser().subscribe({
-            next: data => {
-              this.user = data as User;
-              this.canChangeStatus = this.user.role !== Role.User;
-              this.canAnswerOrDelete = this.canChangeStatus || this.user.id === this.ticket.authorId;
-            }
-          })
-
-          // Загружаем текущего пользователя
-          this.usersService.getUserById(ticket.authorId).subscribe({
-            next: data => {
-              this.ticket.author = data as User;
-
-              this.ticket.ticketAnswers = this.ticket.ticketAnswers.sort(
-                (a, b) => new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime());
-
-              this.ticket.statusHistories = this.ticket.statusHistories.sort(
-                (a, b) => new Date(a.changedAt!).getTime() - new Date(b.changedAt!).getTime());
-
-              for (const answer of this.ticket.ticketAnswers)
-                this.usersService.getUserById(answer.authorId).subscribe({
-                  next: data => answer.author = data,
-                  error: err => {
-                    this.alertService.showSnackBar('Не удалось загрузить автора ответа');
-                    console.error(err);
-                  }
-                });
-            },
-            error: err => {
-              this.alertService.showSnackBar('Не удалось загрузить текущего пользователя');
-              console.error(err);
-            }
-          });
-        },
-        error: err => {
-          this.errorMessage.set('Не удалось загрузить тикет');
-          console.error(err);
+    this.route.paramMap.pipe(
+      switchMap(params => {
+        this.ticketId = params.get('ticketId')!;
+        if (!this.ticketId) {
+          this.handleError('Тикет не найден');
+          return of(null);
         }
-      });
+
+        return this.ticketService.getTicket(this.ticketId!).pipe(
+          switchMap(ticket => {
+            // Загрузка автора тикета и авторов ответов
+            const author$ = this.usersService.getUserById(ticket.authorId).pipe(
+              catchError(() => of({fullName: 'Неизвестный автор'} as User))
+            );
+
+            const answers$ = ticket.ticketAnswers.length > 0
+              ? forkJoin(ticket.ticketAnswers.map(answer =>
+                this.usersService.getUserById(answer.authorId).pipe(
+                  catchError(() => of({fullName: 'Неизвестный автор'} as User))
+                ))
+              ) : of([]);
+
+            return forkJoin([author$, answers$]).pipe(
+              map(([author, authors]) => {
+                ticket.author = author;
+                ticket.ticketAnswers.forEach((answer, index) => {
+                  answer.author = authors[index] || {fullName: 'Неизвестный автор'};
+                });
+                return ticket;
+              })
+            );
+          }),
+          catchError(err => {
+            this.handleError('Ошибка загрузки тикета', err);
+            return of(null);
+          })
+        );
+      }),
+      switchMap(ticket => {
+        if (!ticket) {
+          this.loading = false;
+          return of(null);
+        }
+
+        return this.authService.getUser().pipe(
+          map(user => ({ticket, user}))
+        );
+      })
+    ).subscribe({
+      next: result => {
+        if (!result?.ticket || !result.user) {
+          this.loading = false;
+          return;
+        }
+
+        this.ticket = this.processTicketData(result.ticket);
+        this.user = result.user;
+        this.updatePermissions();
+        this.loading = false;
+      },
+      error: err => this.handleError('Ошибка загрузки данных', err)
     });
+  }
+
+  private processTicketData(ticket: Ticket): Ticket {
+    return {
+      ...ticket,
+      ticketAnswers: ticket.ticketAnswers.sort(
+        (a, b) => new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime()
+      ),
+      statusHistories: ticket.statusHistories.sort(
+        (a, b) => new Date(a.changedAt!).getTime() - new Date(b.changedAt!).getTime()
+      )
+    };
+  }
+
+  private updatePermissions(): void {
+    this.canChangeStatus = this.user.role !== Role.User;
+    this.canAnswerOrDelete = this.canChangeStatus || this.user.id === this.ticket.authorId;
+  }
+
+  private handleError(message: string, err?: any): void {
+    this.loading = false;
+    this.errorMessage.set(message);
+    console.error(err || message);
+    this.alertService.showSnackBar(message);
   }
 
   updateStatus(newStatus: TicketStatus): void {
@@ -119,16 +163,14 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
         });
         this.alertService.showSnackBar('Статус успешно обновлен');
       },
-      error: () => {
-        this.alertService.showSnackBar('Ошибка при обновлении статуса');
-      }
+      error: () => this.alertService.showSnackBar('Ошибка при обновлении статуса')
     });
   }
 
   openAddAnswerDialog(): void {
     const dialogRef = this.alertService.getDialog().open(AddAnswerDialogComponent, {
       width: '500px',
-      data: { ticketId: this.ticketId }
+      data: {ticketId: this.ticketId}
     });
 
     dialogRef.afterClosed().subscribe((newAnswer: TicketAnswer) => {
@@ -149,4 +191,11 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
       });
     });
   }
+
+  protected readonly Role = Role;
+  protected readonly RoleHelper = RoleHelper;
+  protected readonly TicketType = TicketType;
+  protected readonly TicketStatus = TicketStatus;
+  protected readonly TicketTypeHelper = TicketTypeHelper;
+  protected readonly TicketStatusHelper = TicketStatusHelper;
 }

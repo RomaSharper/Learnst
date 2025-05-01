@@ -4,6 +4,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
 
 @Component({
   selector: 'app-manuals',
@@ -17,7 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule
   ],
 })
-export class ManualsComponent {
+export class ManualsComponent extends MediumScreenSupport {
   links = [
     { path: '/manuals/privacypolicy', title: 'Конфиденциальность' },
     { path: '/manuals/termsofuse', title: 'Условия использования' },

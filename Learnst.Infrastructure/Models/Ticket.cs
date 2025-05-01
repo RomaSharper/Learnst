@@ -21,6 +21,8 @@ public class Ticket : IEntity
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
+    public TicketType Type { get; set; } = TicketType.General;
+    
     public ICollection<TicketAnswer> TicketAnswers { get; set; } = [];
 
     public ICollection<StatusHistory> StatusHistories { get; set; } = [];

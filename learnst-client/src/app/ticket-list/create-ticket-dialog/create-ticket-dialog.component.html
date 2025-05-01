@@ -21,6 +21,16 @@
         <mat-error>Максимум 500 символов</mat-error>
       }
     </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Тип</mat-label>
+      <mat-select required [(value)]="selectedType">
+        @for (type of ticketTypes; track type) {
+          <mat-option [value]="type">
+            {{ TicketTypeHelper.getName(type) }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>

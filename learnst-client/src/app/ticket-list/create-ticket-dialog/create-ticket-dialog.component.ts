@@ -1,24 +1,35 @@
-import { AlertService } from '../../../services/alert.service';
-import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TicketService } from '../../../services/tickets.service';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { AuthService } from '../../../services/auth.service';
-import { Ticket } from '../../../models/Ticket';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { TicketStatus } from '../../../enums/TicketStatus';
+import {AlertService} from '../../../services/alert.service';
+import {Component, Inject, OnInit} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {TicketService} from '../../../services/tickets.service';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {AuthService} from '../../../services/auth.service';
+import {Ticket} from '../../../models/Ticket';
+import {MatButtonModule} from '@angular/material/button';
+import {MatInputModule} from '@angular/material/input';
+import {TicketStatus} from '../../../enums/TicketStatus';
+import {TicketType} from '../../../enums/TicketType';
+import {MatSelectModule} from '@angular/material/select';
+import {TicketTypeHelper} from '../../../helpers/TicketTypeHelper';
 
 @Component({
   selector: 'app-create-ticket-dialog',
   templateUrl: './create-ticket-dialog.component.html',
-  styleUrls: ['./create-ticket-dialog.component.less'],
-  imports: [ReactiveFormsModule, MatDialogModule, MatInputModule, MatFormFieldModule, MatButtonModule]
+  styleUrls: ['./create-ticket-dialog.component.scss'],
+  imports: [ReactiveFormsModule, MatDialogModule, MatInputModule, MatFormFieldModule, MatButtonModule, MatSelectModule]
 })
 export class CreateTicketDialogComponent implements OnInit {
   userId!: string;
   ticketForm!: FormGroup;
+  ticketTypes = [
+    TicketType.General,
+    TicketType.Feature,
+    TicketType.Help,
+    TicketType.Request,
+    TicketType.Maintenance
+  ];
+  selectedType = this.ticketTypes[0];
 
   constructor(
     public dialogRef: MatDialogRef<CreateTicketDialogComponent>,
@@ -42,8 +53,9 @@ export class CreateTicketDialogComponent implements OnInit {
       const newTicket: Ticket = {
         ticketAnswers: [],
         statusHistories: [],
-        authorId: this.userId,
         createdAt: new Date(),
+        authorId: this.userId,
+        type: this.selectedType,
         status: TicketStatus.Open,
         title: this.ticketForm.value.title,
         description: this.ticketForm.value.description,
@@ -67,4 +79,6 @@ export class CreateTicketDialogComponent implements OnInit {
   onCancel(): void {
     this.dialogRef.close();
   }
+
+  protected readonly TicketTypeHelper = TicketTypeHelper;
 }

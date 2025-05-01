@@ -6,7 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Router } from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
 import { Return } from '../../helpers/Return';
 import { Ticket } from '../../models/Ticket';
@@ -16,8 +16,16 @@ import { UsersService } from '../../services/users.service';
 import { CreateTicketDialogComponent } from './create-ticket-dialog/create-ticket-dialog.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RuDateTimePipe } from '../../pipes/ru.date.time.pipe';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import {MatPaginatorModule, PageEvent} from '@angular/material/paginator';
 import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
+import {TicketTypeHelper} from "../../helpers/TicketTypeHelper";
+import {MatMenuModule} from '@angular/material/menu';
+import {UserMenuComponent} from '../user-menu/user-menu.component';
+import {EllipsisPipe} from '../../pipes/ellipsis.pipe';
+import {TicketType} from '../../enums/TicketType';
+import {TicketStatusHelper} from '../../helpers/TicketStatusHelper';
+import {catchError} from 'rxjs/operators';
+import {forkJoin, of} from 'rxjs';
 
 @Return()
 @Component({
@@ -25,16 +33,20 @@ import {NoDownloadingDirective} from '../../directives/no-downloading.directive'
   templateUrl: './ticket-list.component.html',
   styleUrls: ['./ticket-list.component.scss'],
   imports: [
+    EllipsisPipe,
     CommonModule,
     MatIconModule,
     MatCardModule,
+    MatMenuModule,
     RuDateTimePipe,
     MatButtonModule,
     MatTooltipModule,
+    UserMenuComponent,
     MatPaginatorModule,
     ReactiveFormsModule,
+    NoDownloadingDirective,
     MatProgressSpinnerModule,
-    NoDownloadingDirective
+    RouterLink
   ]
 })
 export class TicketListComponent extends MediumScreenSupport implements OnInit {
@@ -42,21 +54,25 @@ export class TicketListComponent extends MediumScreenSupport implements OnInit {
   private usersService = inject(UsersService);
   private ticketService = inject(TicketService);
 
-  pageSize = 5;
+  goBack!: () => void;
+  pageSize = 20;
   pageIndex = 0;
   loading = true;
-  goBack!: () => void;
   tickets: Ticket[] = [];
-  pageSizeOptions = [5, 10, 20];
   paginatedTickets: Ticket[] = [];
+  pageSizeOptions = [20, 50, 100];
 
   TicketStatus = TicketStatus;
 
-  constructor(private router: Router, public location: Location) { super(); }
+  constructor(private router: Router, public location: Location) {
+    super();
+  }
 
-  ngOnInit(): void { this.loadTickets(); }
+  ngOnInit(): void {
+    this.loadTickets();
+  }
 
-  onPageChange(event: any): void {
+  onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
     const startIndex = event.pageIndex * event.pageSize;
@@ -65,19 +81,22 @@ export class TicketListComponent extends MediumScreenSupport implements OnInit {
   }
 
   loadTickets(): void {
-    this.loading = true;
     this.ticketService.getTickets().subscribe(data => {
       this.tickets = data.sort((a: Ticket, b: Ticket) =>
         new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
 
-      this.paginatedTickets = this.tickets.slice(0, this.pageSize);
+      // Параллельная загрузка авторов
+      const authorRequests = this.tickets.map(ticket =>
+        this.usersService.getUserById(ticket.authorId).pipe(
+          catchError(() => of(null)) // Обработка ошибок
+        )
+      );
 
-      // Загрузка авторов
-      this.tickets.forEach(ticket => {
-        this.usersService.getUserById(ticket.authorId).subscribe(data => ticket.author = data);
+      forkJoin(authorRequests).subscribe(authors => {
+        authors.forEach((author, index) => this.tickets[index].author = author!);
+        this.paginatedTickets = this.tickets.slice(0, this.pageSize);
+        this.loading = false;
       });
-
-      this.loading = false;
     });
   }
 
@@ -100,4 +119,8 @@ export class TicketListComponent extends MediumScreenSupport implements OnInit {
   navigateToTicketDetails(ticketId: string): void {
     this.router.navigate(['/ticket', ticketId]);
   }
+
+    protected readonly TicketTypeHelper = TicketTypeHelper;
+  protected readonly TicketType = TicketType;
+  protected readonly TicketStatusHelper = TicketStatusHelper;
 }

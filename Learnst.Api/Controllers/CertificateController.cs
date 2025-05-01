@@ -23,15 +23,14 @@ public class CertificateController(
             return NotFound("Пользователь или активность не найдены.");
 
         // Генерация PDF
-        var pdfBytes = await certificateService.GenerateCertificateAsync(user, activity);
+        var pdfBytes = certificateService.GenerateCertificate(user, activity);
 
         // Отправка PDF по почте
-        var subject = $"Ваш сертификат за курс: {activity.Title}";
-        var body = $"Поздравляем с успешным завершением курса! Ваш сертификат во вложении.";
-        var fileName = "certificate.pdf";
+        var subject = $"Ваш сертификат за завершение активности \"{activity.Title}\"";
+        const string body = "Поздравляем с успешным завершением курса на платформе Learnst!";
+        var fileName = $"{DateTime.UtcNow:yyyy-MM-dd}_certificate_{activity.Id:N}.pdf";
 
         await emailSender.SendEmailWithAttachmentAsync(request.EmailAddress, subject, body, pdfBytes, fileName);
-
         return Ok("Сертификат отправлен на почту.");
     }
 }

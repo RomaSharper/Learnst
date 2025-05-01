@@ -1,5 +1,5 @@
 import {Location} from '@angular/common';
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatChipsModule} from '@angular/material/chips';
@@ -36,6 +36,7 @@ import {TagHelper} from '../../helpers/TagHelper';
 import {InfoCard} from '../../models/InfoCard';
 import {AudioService} from '../../services/audio.service';
 import {ActivityNode} from '../../models/ActivityNode';
+import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
 
 @Return()
 @Component({
@@ -63,7 +64,7 @@ import {ActivityNode} from '../../models/ActivityNode';
     PlaceholderImageDirective
   ]
 })
-export class ActivityComponent implements OnInit {
+export class ActivityComponent extends MediumScreenSupport implements OnInit {
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
@@ -76,7 +77,6 @@ export class ActivityComponent implements OnInit {
   activity?: Activity;
   goBack!: () => void;
   activeTab = 0;
-  loading = true;
   totalPoints = 0;
   earnedPoints = 0;
   user: User | null = null;
@@ -85,10 +85,15 @@ export class ActivityComponent implements OnInit {
   totalLessonsCount = 0;
   dataSource: ActivityNode[] = [];
   completedLessonsCount = 0;
-  isCertificateLoading = false;
-  isCertificateAvailable = false;
+  loading = signal(true);
+  isCertificateLoading = signal(false);
+  isCertificateAvailable = signal(false);
 
   protected readonly LevelHelper = LevelHelper;
+
+  constructor(public router: Router, public location: Location) {
+    super();
+  }
 
   // Метод для доступа к дочерним элементам узла
   childrenAccessor =
@@ -98,11 +103,8 @@ export class ActivityComponent implements OnInit {
   hasChild =
     (_: number, node: ActivityNode) => !!node.children && node.children.length > 0;
 
-  constructor(public router: Router, public location: Location) {
-  }
-
   ngOnInit(): void {
-    let activityId!: string;
+    let activityId = '';
     this.route.paramMap.subscribe(params => activityId = params.get('activityId') ?? '');
     this.route.queryParams.subscribe(queryParams => this.activeTab = this.nameToIndex(queryParams['tab']));
 
@@ -117,6 +119,7 @@ export class ActivityComponent implements OnInit {
 
       this.activitiesService.getActivityById(activityId).pipe( // Проверяем доступ к активности
         catchError(err => {
+          this.loading.set(false);
           this.handleError('Ошибка при загрузке данных активности', err);
           return of(undefined);
         })
@@ -127,15 +130,14 @@ export class ActivityComponent implements OnInit {
         }
 
         // Проверяем условия для доступа
-        if (user.role === Role.Admin // Администратор: всегда имеет доступ
-          || user.role === Role.Specialist && ((activity as Activity).authorId === user.id)) // Специалист: если автор активности
-          return;
 
         this.activitiesService.isUserActivityExists(user.id, activityId).pipe(
           catchError(() => of(false)) // В случае ошибки считаем, что пользователь не записан
         ).subscribe(exists => {
-          // Обычный пользователь: должен быть записан на курс
-          if (exists) {
+          if (exists // Обычный пользователь: должен быть записан на курс
+            || user.role === Role.Admin // Администратор: всегда имеет доступ
+            || user.role === Role.Specialist && ((activity as Activity).authorId === user.id) // Специалист: если автор активности
+          ) {
             this.loadActivityData(activityId, user.id!);
             return;
           }
@@ -168,7 +170,7 @@ export class ActivityComponent implements OnInit {
   }
 
   getCertificate(): void {
-    if (!this.isCertificateAvailable || !this.user || this.isCertificateLoading)
+    if (!this.isCertificateAvailable() || !this.user || this.isCertificateLoading())
       return;
 
     if (!this.user.fullName) {
@@ -182,7 +184,7 @@ export class ActivityComponent implements OnInit {
     }
 
     // Включаем состояние загрузки
-    this.isCertificateLoading = true;
+    this.isCertificateLoading.set(true);
 
     const userId = this.user.id!;
     const activityId = this.activity!.id;
@@ -195,11 +197,11 @@ export class ActivityComponent implements OnInit {
       catchError(error => {
         console.error('Произошла ошибка при отправке сертификата', error);
         this.alertService.showSnackBar('Произошла неожиданная ошибка. Попробуйте позже');
-        this.isCertificateLoading = false;
+        this.isCertificateLoading.set(false);
         return of(null);
       })
     ).subscribe(response => {
-      this.isCertificateLoading = false;
+      this.isCertificateLoading.set(false);
       if (!response) return;
       this.audioService.playVictorySound();
       this.alertService.showSnackBar('Сертификат успешно отправлен вам на почту!');
@@ -209,6 +211,7 @@ export class ActivityComponent implements OnInit {
   private loadActivityData(activityId: string, userId: string): void {
     this.activitiesService.getActivityById(activityId).pipe(
       catchError(err => {
+        this.loading.set(false);
         this.handleError('Ошибка при загрузке данных', err);
         return of(null);
       }),
@@ -245,7 +248,7 @@ export class ActivityComponent implements OnInit {
 
           // Проверяем доступность сертификата
           this.checkCertificateAvailability(userId);
-          this.loading = false;
+          this.loading.set(false);
         }
         return activity;
       })
@@ -258,15 +261,17 @@ export class ActivityComponent implements OnInit {
     // Получаем все уроки активности
     const allLessons = this.activity.topics.flatMap(topic => topic.lessons);
     this.totalLessonsCount = allLessons.length;
+
     // Получаем пройденные уроки
     this.lessonsService.getUserLessonsByUserId(userId).pipe(
       catchError(err => {
+        this.loading.set(false);
         this.handleError('Ошибка при загрузке пройденных уроков', err);
         return of([]);
       })
     ).subscribe(userLessons => {
-      // Фильтруем уроки, которые относятся к текущей активности
-      const completedLessons = userLessons.filter(ul => allLessons.some(lesson => lesson.id === ul.lessonId));
+      const completedLessons = userLessons.filter(
+        ul => allLessons.some(lesson => lesson.id === ul.lessonId)); // Фильтруем уроки, которые относятся к текущей активности
       this.completedLessonsCount = completedLessons.length;
 
       // Получаем количество набранных баллов
@@ -282,7 +287,8 @@ export class ActivityComponent implements OnInit {
         const hasEnoughPoints = this.activity!.minimalScore ? points >= this.activity!.minimalScore : true;
 
         // Сертификат доступен, если пройдены все уроки и набраны баллы
-        this.isCertificateAvailable = allLessons.length > 0 && completedLessons.length === allLessons.length && hasEnoughPoints;
+        this.isCertificateAvailable.set(
+          allLessons.length > 0 && completedLessons.length === allLessons.length && hasEnoughPoints);
       });
     });
   }
@@ -291,6 +297,7 @@ export class ActivityComponent implements OnInit {
     // Получаем все уроки активности
     this.activitiesService.getActivityById(activityId).pipe(
       catchError(err => {
+        this.loading.set(false);
         this.handleError('Ошибка при загрузке уроков', err);
         return of(null);
       })
@@ -304,6 +311,7 @@ export class ActivityComponent implements OnInit {
       // Получаем пройденные уроки
       this.lessonsService.getUserLessonsByUserId(userId).pipe(
         catchError(err => {
+          this.loading.set(false);
           this.handleError('Ошибка при загрузке пройденных уроков', err);
           return of([]);
         })
@@ -340,7 +348,7 @@ export class ActivityComponent implements OnInit {
   }
 
   private handleError(message: string, err: Error | null = null, consoleError: boolean = true): void {
-    this.loading = false;
+    this.loading.set(false);
     if (consoleError) console.error(err ?? message);
     this.alertService.showSnackBar(message);
   }

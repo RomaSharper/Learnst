@@ -447,6 +447,22 @@ table:not(.mat-calendar-table) {
   }
 }
 
+.user-btn {
+  padding: 1rem;
+  border-radius: 20px;
+
+  .pixel-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--mat-primary);
+  }
+
+  .username {
+    margin-left: 0.5rem;
+  }
+}
+
 .avatar-container {
   position: relative;
   margin-right: 12px;
@@ -468,9 +484,9 @@ table:not(.mat-calendar-table) {
     border: 2px solid rgba(255, 255, 255, 0.5); /* Полупрозрачная обводка */
 
     &.online {
+      opacity: 1; /* Полностью непрозрачная */
       animation: pulse 1.5s infinite;
       background: linear-gradient(145deg, #66bb6a, #4caf50);
-      opacity: 1; /* Полностью непрозрачная */
     }
 
     &.offline {
@@ -484,9 +500,9 @@ table:not(.mat-calendar-table) {
         height: 12px;
         content: '';
         position: absolute;
-        background-color: transparent;
-        border: 2px solid white;
         border-radius: 50%;
+        border: 2px solid white;
+        background-color: transparent;
         transform: translate(-50%, -50%);
       }
 
@@ -503,9 +519,9 @@ table:not(.mat-calendar-table) {
     }
 
     &.activity {
-      background: linear-gradient(145deg, #ffa726, #fb8c00);
       opacity: 1; /* Полностью непрозрачная */
       animation: pulse 1.5s infinite;
+      background: linear-gradient(145deg, #ffa726, #fb8c00);
 
       &::before {
         content: '';

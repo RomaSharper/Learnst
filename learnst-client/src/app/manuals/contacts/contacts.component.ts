@@ -8,6 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { ClipboardService } from '../../../services/clipboard.service';
 import { AlertService } from '../../../services/alert.service';
 import { MatIconModule } from '@angular/material/icon';
+import {MediumScreenSupport} from '../../../helpers/MediumScreenSupport';
+import {MatTooltip} from '@angular/material/tooltip';
 
 @Return()
 @Component({
@@ -19,19 +21,15 @@ import { MatIconModule } from '@angular/material/icon';
     MatCardModule,
     MatInputModule,
     MatButtonModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatTooltip
   ]
 })
-export class ContactsComponent {
+export class ContactsComponent extends MediumScreenSupport {
   private alertService = inject(AlertService);
-  private clipboardService = inject(ClipboardService);
+  clipboardService = inject(ClipboardService);
 
-  copyToClipboard(value: string, label: string) {
-    this.clipboardService.copy({
-      type: 'text/plain',
-      blob: new Blob([value], { type: 'text/plain' })
-    })
-    .then(() => this.alertService.showSnackBar(`Поле ${label} успешно скопировано`))
-    .catch(err => console.error('Копирование в буфер обмена не удалось: ', err));
+  copyToClipboard(value: string, label?: string) {
+    this.clipboardService.copyText(value, this.alertService, `Поле ${label} успешно скопировано`);
   }
 }

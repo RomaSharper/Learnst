@@ -6,7 +6,9 @@
     <div class="error with-background">Пользователь не найден</div>
   } @else {
     <div class="profile-grid">
-      <a mat-button color="primary" class="mb full-width" (click)="goBack()">Назад</a>
+      <a mat-button class="mb" [class.full-width]="isMediumScreen" (click)="goBack()">
+        Назад
+      </a>
 
       <!-- Личные данные -->
       <mat-card class="full-width" appearance="outlined">
@@ -318,7 +320,7 @@
           type="button"
           mat-flat-button
           (click)="deleteProfile()"
-          class="mb full-width error with-background"
+          class="mb full-width error"
         >
           Удалить мой профиль
         </button>

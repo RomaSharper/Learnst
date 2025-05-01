@@ -12,7 +12,6 @@ import { MatInputModule } from '@angular/material/input';
 @Component({
   selector: 'app-add-answer-dialog',
   templateUrl: './add-answer-dialog.component.html',
-  styleUrls: ['./add-answer-dialog.component.less'],
   imports: [MatDialogModule, MatFormFieldModule, MatButtonModule, MatInputModule, ReactiveFormsModule]
 })
 export class AddAnswerDialogComponent implements OnInit {
@@ -28,6 +27,7 @@ export class AddAnswerDialogComponent implements OnInit {
     private alertService: AlertService
   ) {
   }
+
   ngOnInit(): void {
     this.answerForm = this.fb.group({
       content: ['', Validators.required]
@@ -44,7 +44,7 @@ export class AddAnswerDialogComponent implements OnInit {
       }).subscribe({
         next: response => {
           this.alertService.showSnackBar('Ответ успешно добавлен');
-          this.dialogRef.close(response); // Закрыть диалог и вернуть true
+          this.dialogRef.close(response);
         },
         error: err => {
           this.alertService.showSnackBar('Ошибка при добавлении ответа');

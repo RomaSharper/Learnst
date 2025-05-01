@@ -1,9 +1,12 @@
 <mat-card class="container" appearance="outlined">
-  <a mat-button (click)="goBack()" class="mb nav-btn">Назад</a>
+  <a mat-button class="mb nav-btn" (click)="goBack()" [class.full-width]="isMediumScreen">
+    Назад
+  </a>
+
   @if (loading()) {
     <mat-spinner></mat-spinner>
   } @else if (!lesson) {
-    <div class="error">Урок не найден</div>
+    <div class="error with-background">Урок не найден</div>
   } @else {
     @switch (lesson.lessonType) {
       @case (LessonType.LongRead) {

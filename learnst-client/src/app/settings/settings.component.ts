@@ -9,6 +9,7 @@ import {AudioService} from '../../services/audio.service';
 import {DeviceService} from '../../services/device.service';
 import {DeviceType} from '../../models/DeviceType';
 import {FormsModule} from '@angular/forms';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-settings',
@@ -21,7 +22,8 @@ import {FormsModule} from '@angular/forms';
     MatCardModule,
     MatSliderModule,
     MatButtonModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    RouterLink
   ]
 })
 export class SettingsComponent {

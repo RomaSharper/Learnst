@@ -1,5 +1,8 @@
 <mat-card class="md-container" appearance="outlined">
-  <a mat-button routerLink="/manuals" class="nav-btn">Назад</a>
+  <a mat-button routerLink="/manuals" class="nav-btn" [class.full-width]="isMediumScreen">
+    Назад
+  </a>
+
   <h1>Контактная информация</h1>
   <p><em>Последнее обновление: 23.02.2025</em></p>
 
@@ -7,7 +10,7 @@
     <h2>Содержание</h2>
     <ul>
       <li><a href="manuals/contacts#contacts-main">1. Основные контакты</a></li>
-      <li><a href="manuals/contacts#legal-info">2. Юридическая информация</a></li>
+      <!--<li><a href="manuals/contacts#legal-info">2. Юридическая информация</a></li>-->
     </ul>
   </section>
 
@@ -18,27 +21,28 @@
         <mat-form-field appearance="outline" class="copy-field">
           <input matInput value="oraclehub-tech@mail.ru" readonly>
           <mat-label>Электронная почта</mat-label>
-          <button type="button" mat-icon-button matSuffix
-            (click)="copyToClipboard('oraclehub-tech@mail.ru', 'Электронная почта')">
+          <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                  matTooltipPosition="below" (click)="copyToClipboard('oraclehub-tech@mail.ru', 'Электронная почта')">
             <mat-icon>content_copy</mat-icon>
           </button>
         </mat-form-field>
       </div>
       <div class="contact-item">
         <p class="label">Техническая поддержка:</p>
-        <a routerLink="/support">Доступна по этой ссылке</a>
+        <a mat-button routerLink="/support">Доступна по этой ссылке</a>
       </div>
     </div>
   </section>
 
-  <section id="legal-info">
+  <!--<section id="legal-info">
     <h2>2. Юридическая информация</h2>
     <div class="legal-details">
       <div class="detail-item">
         <mat-form-field appearance="outline" class="copy-field">
           <input matInput value="Шибалов Р.Н." readonly>
           <mat-label>Самозанятый</mat-label>
-          <button mat-icon-button matSuffix (click)="copyToClipboard('Шибалов Р.Н.', 'Самозанятый')">
+          <button mat-icon-button matSuffix matTooltip="Скопировать"
+                  matTooltipPosition="below" (click)="copyToClipboard('Шибалов Р.Н.', 'Самозанятый')">
             <mat-icon>content_copy</mat-icon>
           </button>
         </mat-form-field>
@@ -47,13 +51,14 @@
         <mat-form-field appearance="outline" class="copy-field">
           <input matInput value="761020396832" readonly>
           <mat-label>ИНН</mat-label>
-          <button mat-icon-button matSuffix (click)="copyToClipboard('761020396832', 'ИНН')">
+          <button mat-icon-button matSuffix matTooltip="Скопировать"
+                  matTooltipPosition="below" (click)="copyToClipboard('761020396832', 'ИНН')">
             <mat-icon>content_copy</mat-icon>
           </button>
         </mat-form-field>
       </div>
     </div>
-  </section>
+  </section>-->
 
   <footer class="footer">
     <p>© 2025 TCorporation. Все права защищены.</p>

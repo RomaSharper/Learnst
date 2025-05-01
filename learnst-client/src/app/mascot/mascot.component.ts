@@ -14,6 +14,7 @@ import {Router} from '@angular/router';
 import {ChatContext} from '../../models/ChatContext';
 import {CryptoService} from '../../services/crypto.service';
 import {environment} from '../../environments/environment';
+import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
 
 @Component({
   selector: 'app-mascot',
@@ -23,7 +24,8 @@ import {environment} from '../../environments/environment';
     MatButtonModule,
     MatDialogModule,
     MatTooltipModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    NoDownloadingDirective
   ],
   templateUrl: './mascot.component.html',
   styleUrls: ['./mascot.component.scss']
