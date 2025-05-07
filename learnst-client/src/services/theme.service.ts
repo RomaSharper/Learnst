@@ -20,9 +20,6 @@ export class ThemeService {
   private alertService = inject(AlertService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly CURSOR_STORAGE_KEY = 'custom_cursors';
-  private readonly cursorsEnabled = signal(
-    localStorage.getItem(this.CURSOR_STORAGE_KEY) === 'true'
-  );
 
   private readonly themes: FrontendTheme[] = [
     {
@@ -170,6 +167,10 @@ export class ThemeService {
       preview: 'linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), linear-gradient(47.61deg, rgb(44, 63, 231) 11.18%, rgb(38, 29, 131) 64.54%)'
     },
   ];
+  
+  readonly cursorsEnabled = signal(
+    localStorage.getItem(this.CURSOR_STORAGE_KEY) === 'true'
+  );
 
   currentTheme = signal<FrontendTheme>(this.themes[0]);
 

@@ -6,7 +6,7 @@
     <div class="error with-background">Пользователь не найден</div>
   } @else if (user()?.isHidden && currentUser()?.role !== Role.Admin) {
     <div class="profile-grid">
-      <a mat-button class="mb" [class.full-width]="isMediumScreen" (click)="goBack()">
+      <a mat-button class="mb full-width" (click)="goBack()">
         Назад
       </a>
 

@@ -3,13 +3,14 @@ import {Message} from './Message';
 
 export interface ChatContext {
   messages: Message[];
+  lastTopics: string[];
+  currentTopic: string;
   currentMood: NikoMood;
   moodIntensity: number;
-  currentTopic: string;
-  complimentCounter: number;
   nextComplimentAt: number;
-  lastTopics: string[];
+  complimentCounter: number;
   mentionedEntities: string[];
+  userVariables: Record<string, string | number | boolean>;
   userPreferences: {
     favoriteGame?: string;
     likesCompliments?: boolean;

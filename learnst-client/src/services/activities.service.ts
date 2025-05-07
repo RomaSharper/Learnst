@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 import { Activity } from '../models/Activity';
@@ -9,7 +9,7 @@ import { UserActivity } from '../models/UserActivity';
   providedIn: 'root'
 })
 export class ActivitiesService {
-  constructor(private http: HttpClient) { }
+  private http = inject(HttpClient);
 
   getActivities(): Observable<Activity[]> {
     return this.http.get<Activity[]>(`${environment.apiBaseUrl}/activities`);

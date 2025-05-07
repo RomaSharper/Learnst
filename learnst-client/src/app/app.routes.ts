@@ -18,9 +18,6 @@ import { TicketDetailComponent } from './ticket-detail/ticket-detail.component';
 import { TicketListComponent } from './ticket-list/ticket-list.component';
 import { UserComponent } from './user/user.component';
 import { UsersComponent } from './users/users.component';
-import { OfferAgreementComponent } from './manuals/offer-agreement/offer-agreement.component';
-import { ContactsComponent } from './manuals/contacts/contacts.component';
-import { DeliveryInfoComponent } from './manuals/delivery-info/delivery-info.component';
 import { ManualsComponent } from './manuals/manuals.component';
 import {SettingsComponent} from './settings/settings.component';
 
@@ -29,9 +26,6 @@ export const routes: Routes = [
 
   { path: 'manuals/termsofuse', component: TermsOfUseComponent },
   { path: 'manuals/privacypolicy', component: PrivacyPolicyComponent },
-  { path: 'manuals/oferta', component: OfferAgreementComponent },
-  { path: 'manuals/contacts', component: ContactsComponent },
-  { path: 'manuals/subscription', component: DeliveryInfoComponent },
   { path: 'manuals', component: ManualsComponent },
   { path: 'settings', component: SettingsComponent },
 

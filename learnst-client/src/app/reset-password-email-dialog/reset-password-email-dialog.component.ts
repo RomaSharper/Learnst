@@ -21,26 +21,26 @@ import { UsersService } from '../../services/users.service';
     <h2 mat-dialog-title>Восстановление пароля</h2>
     <mat-dialog-content>
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Email</mat-label>
+        <mat-label>Электронная почта</mat-label>
         <input
           matInput
           [(ngModel)]="data.email"
-          placeholder="Email"
+          placeholder="Адрес электронной почты"
           [formControl]="emailControl"
         >
         @if (emailControl.invalid && emailControl.touched) {
           <mat-error>
             @if (emailControl.hasError('required')) {
-              Email обязателен.
+              Адрес электронной почты обязателен.
             }
             @if (emailControl.hasError('email')) {
-              Некорректный формат email.
+              Некорректный формат электронной почты.
             }
             @if (emailControl.hasError('invalidDomain')) {
               Недопустимый домен.
             }
             @if (emailControl.hasError('emailNotFound')) {
-              Аккаунт с таким email не найден.
+              Аккаунт с такой электронной почтой не найден.
             }
           </mat-error>
         }

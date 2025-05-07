@@ -4,15 +4,28 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root'
 })
 export class AudioService {
-  private nextTrackTimeout: any;
   private fadeDuration = 2000;
+  private nextTrackTimeout: any;
   private userInteracted = false;
   private currentTrackIndex = -1;
-  private sounds: string[] = [
+  private readonly sounds: string[] = [
     '/assets/sounds/sfx/03 Puzzle Solved.mp3',
     '/assets/sounds/sfx/37 Sun.mp3'
   ];
-  private tracks: string[] = [
+  private readonly trackNames: string[] = [
+    'My Burden Is Light', 'Someplace I Know', 'Phosphor', 'The Prophecy',
+    'Abandoned Factory', 'Silverpoint', "A God's Machine", 'Rowbot',
+    'Geothermal', 'Distant', 'Into The Light', 'Self Contained Universe (Reprise)',
+    'Navigate', 'To Sleep', 'To Dream', 'Flooded Ruins', 'Alula',
+    'Children of the Ruins', 'Pretty Bad', 'On Little Cat Feet',
+    'Indoors', 'Dark Stairwell', 'Sonder', 'Pretty nice day, huh...',
+    'On Little Cat Feet (ground)', 'Library Stroll', 'Simple Secrets',
+    'Factory', 'Library Nap', 'The Tower', 'Distant water',
+    'Niko and the World Machine', 'I\'m Here', 'Pretty',
+    'Self Contained Universe', 'Thanks For Everything', 'OneShot Trailer',
+    'Countdown', 'IT\'S TIME TO FIGHT CRIME'
+  ];
+  readonly tracks: string[] = [
     '/assets/sounds/music/01 My Burden Is Light.mp3',
     '/assets/sounds/music/02 Someplace I Know.mp3',
     '/assets/sounds/music/04 Phosphor.mp3',
@@ -66,6 +79,10 @@ export class AudioService {
     this.setupUserInteractionListener();
   }
 
+  getTrackNameByNumber(trackNumber: number): string {
+    return this.trackNames[trackNumber - 1] || 'Unknown Track';
+  }
+
   toggleMusic(state?: boolean): void {
     const newState = state !== undefined ? state : !this.isEnabled();
     if (newState === this.isEnabled()) return;
@@ -93,6 +110,43 @@ export class AudioService {
     if (this.isEnabled())
       this.audioElement.volume = value;
     localStorage.setItem('musicVolume', value.toString());
+  }
+
+  async playSpecificTrack(track: string): Promise<boolean> {
+    if (!this.isEnabled()) {
+      console.log('Музыка отключена, воспроизведение отменено.');
+      return false;
+    }
+
+    if (!this.userInteracted) {
+      console.log('Пользователь еще не взаимодействовал с документом.');
+      return false;
+    }
+
+    // Если трек уже играет, не выбираем его снова
+    if (this.audioElement.src === track && !this.audioElement.paused) {
+      console.log('Трек уже играет.');
+      return false;
+    }
+
+    this.currentTrackIndex = this.tracks.indexOf(track);
+    this.audioElement.src = track;
+
+    // Сбрасываем громкость перед воспроизведением
+    this.audioElement.volume = 0;
+
+    try {
+      await this.audioElement.play();
+      console.log(`Сейчас играет: ${this.getTrackName(track)}`);
+      this.fadeIn(); // Добавляем fade-in при старте трека
+      return true;
+    } catch (error: any) {
+      if (error.name === 'AbortError')
+        console.log('Воспроизведение прервано, музыка отключена.');
+      else
+        console.error('Ошибка воспроизведения:', error);
+      return false;
+    }
   }
 
   private loadState(): void {
@@ -135,42 +189,6 @@ export class AudioService {
     console.log(`Следующий трек "${this.getTrackName(nextTrack)}" через ${delay / 1000} сек.`);
 
     this.nextTrackTimeout = setTimeout(() => this.playSpecificTrack(nextTrack), delay);
-  }
-
-  private playSpecificTrack(track: string): void {
-    if (!this.isEnabled()) {
-      console.log('Музыка отключена, воспроизведение отменено.');
-      return;
-    }
-
-    if (!this.userInteracted) {
-      console.log('Пользователь еще не взаимодействовал с документом.');
-      return;
-    }
-
-    // Если трек уже играет, не выбираем его снова
-    if (this.audioElement.src === track && !this.audioElement.paused) {
-      console.log('Трек уже играет.');
-      return;
-    }
-
-    this.currentTrackIndex = this.tracks.indexOf(track);
-    this.audioElement.src = track;
-
-    // Сбрасываем громкость перед воспроизведением
-    this.audioElement.volume = 0;
-
-    this.audioElement.play()
-      .then(() => {
-        console.log(`Сейчас играет: ${this.getTrackName(track)}`);
-        this.fadeIn(); // Добавляем fade-in при старте трека
-      })
-      .catch((error) => {
-        if (error.name === 'AbortError')
-          console.log('Воспроизведение прервано, музыка отключена.');
-        else
-          console.error('Ошибка воспроизведения:', error);
-      });
   }
 
   private selectNextTrack(): string {

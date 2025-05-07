@@ -17,13 +17,13 @@ import {RouterLink} from '@angular/router';
   styleUrls: ['./settings.component.scss'],
   standalone: true,
   imports: [
+    RouterLink,
     FormsModule,
     MatIconModule,
     MatCardModule,
     MatSliderModule,
     MatButtonModule,
-    MatSlideToggleModule,
-    RouterLink
+    MatSlideToggleModule
   ]
 })
 export class SettingsComponent {

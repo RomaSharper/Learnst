@@ -1,20 +1,25 @@
-import {Component, signal, OnDestroy, HostListener, inject, AfterViewInit, OnInit} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import {AlertService} from '../../services/alert.service';
-import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
-import {Message} from '../../models/Message';
-import {NikoMood} from '../../models/NikoMood';
-import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
-import {Router} from '@angular/router';
-import {ChatContext} from '../../models/ChatContext';
-import {CryptoService} from '../../services/crypto.service';
-import {environment} from '../../environments/environment';
-import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, signal, OnDestroy, HostListener, inject, AfterViewInit, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { AlertService } from '../../services/alert.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Message } from '../../models/Message';
+import { NikoMood } from '../../models/NikoMood';
+import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
+import { Router } from '@angular/router';
+import { ChatContext } from '../../models/ChatContext';
+import { CryptoService } from '../../services/crypto.service';
+import { environment } from '../../environments/environment';
+import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
+import { ThemeService } from '../../services/theme.service';
+import { AudioService } from '../../services/audio.service';
+import { lastValueFrom } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-mascot',
@@ -33,108 +38,116 @@ import {NoDownloadingDirective} from '../../directives/no-downloading.directive'
 export class MascotComponent extends MediumScreenSupport implements OnDestroy, OnInit, AfterViewInit {
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
+  private authService = inject(AuthService);
   private alertService = inject(AlertService);
-  private readonly STORAGE_KEY = 'chat_data';
+  private themeService = inject(ThemeService);
+  private audioService = inject(AudioService);
 
   private timer?: number;
-  private moodIntensity: number = 0;
   private currentTopic: string = '';
+  private moodIntensity: number = 0;
   private context: ChatContext = {
     messages: [],
-    currentMood: 'normal',
-    moodIntensity: 0,
-    currentTopic: '',
-    complimentCounter: 0,
-    nextComplimentAt: this.generateRandomComplimentThreshold(),
     lastTopics: [],
+    currentTopic: '',
+    moodIntensity: 0,
+    userVariables: {},
+    userPreferences: {},
+    complimentCounter: 0,
+    currentMood: 'normal',
     mentionedEntities: [],
-    userPreferences: {}
+    nextComplimentAt: this.generateRandomComplimentThreshold()
   };
 
-  get messages() {
-    return this.context.messages;
-  }
+  private readonly STORAGE_KEY = 'chat_data';
+  private readonly RESERVED = [
+    'volume', 'music', 'custom_cursors', 'page', 'user', 'date', 'time'
+  ];
 
-  get currentMood() {
-    return this.context.currentMood;
-  }
-
-  set currentMood(value: NikoMood) {
-    this.context.currentMood = value;
-  }
-
-  private readonly pageCommandsMap: { [key: string]: string } = {
-    'главная': '/home',
-    'активности': '/activities',
-    'активность': '/activity',
-    'сообщество': '/community',
-    'поддержка': '/support',
-    'информация': '/manuals',
-    'пользователи': '/users',
-    'пользователь': '/user',
-    'настройки': '/settings'
+  private readonly MOOD_MAP: { [key: string]: number } = {
+    joke: 1,
+    love: 2,
+    angry: -3,
+    farewell: -1,
+    compliment: 2,
   };
 
-  private readonly commands: { [key: string]: { text: string, mood: NikoMood } } = {
-    '!страница': {mood: 'speak', text: ''},
-    '!сказать': {mood: 'speak', text: ''},
-    '!очистка': {mood: 'normal', text: 'Очищаю историю чата...'},
-    '!экспорт': {mood: 'normal', text: 'Экспортирую историю чата...'},
-    '!твич': {
+  private readonly PAGE_COMMANDS_MAP: { [key: string]: string } = {
+    'home': '/home',
+    'user': '/user',
+    'users': '/users',
+    'support': '/support',
+    'manuals': '/manuals',
+    'activity': '/activity',
+    'settings': '/settings',
+    'community': '/community',
+    'activities': '/activities',
+  };
+
+  private readonly COMMANDS: { [key: string]: { text: string, mood: NikoMood } } = {
+    '/clear': {
+      mood: 'normal',
+      text: 'Очищаю историю чата...'
+    },
+    '/export': {
+      mood: 'normal',
+      text: 'Экспортирую историю чата...'
+    },
+    '/twitch': {
       mood: 'speak',
       text: 'Не матерится. Много болтает, играет в самые разные игры. За баллы канала позорится ;3 ❤️ <a class="link" href="https://www.twitch.tv/fibi_ch" target="_blank">https://www.twitch.tv/fibi_ch</a>'
     },
-    '!дис': {
+    '/dis': {
       mood: 'speak',
       text: 'Сладкий дискорд канал. Тут точно нет фембоев <img width="24" src="https://cdn.7tv.app/emote/01J6Y3QRPR000EYP9HFG8ZSZZN/1x.avif" alt="Coconut_Shy"> <a class="link" href="https://discord.gg/JwsSpfa9Gb" target="_blank">https://discord.gg/JwsSpfa9Gb</a>'
     },
-    '!тг': {
+    '/tg': {
       mood: 'speak',
       text: 'Telegram канал с самым важным и интересным мнением на все случаи жизни <img width="24" src="https://cdn.7tv.app/emote/01F6T8NM9R0007M5BTFWSP1YSJ/1x.avif" alt="Clueless">: <a class="link" href="https://t.me/fibitelega" target="_blank">https://t.me/fibitelega</a>'
     },
-    '!ютуб': {
+    '/youtube': {
       mood: 'speak',
       text: 'YouTube канал, на котором точно Фиби что-то выклаывает раз в пол года <img width="24" src="https://cdn.7tv.app/emote/01F8G9MDAR0009YQPYZYCKHYKQ/1x.avif" alt="SUSSY">: <a class="link" href="https://www.youtube.com/@Fibi66601" target="_blank">https://www.youtube.com/@Fibi66601</a>'
     },
-    '!план': {
+    '/plan': {
       mood: this.random<NikoMood>('normal', 'open_mouth', 'speak'),
       text: 'На данный момент проходим следующие игры: Террария кооп с модом Каламити, <img width="24" src="https://cdn.7tv.app/emote/01GHAB48CR000BH04EQR1SJPS8/1x.avif" alt="bajgenHeart">, Майнкрафт хардкор на все ачивки <img width="24" src="https://cdn.7tv.app/emote/01GERMH9M0000BQ5E4E4CKHN7S/1x.avif" alt="catDespair"> и Дарк Соулс 2 <img width="24" src="https://cdn.7tv.app/emote/01GRFJRB0G0007S059RQTKBPCS/1x.avif" alt="PraiseTheSun">. А в ближайшее время будет Dead Space 2023 <img width="24" src="https://cdn.7tv.app/emote/01F8PZ34B00006FPNFN9FJMHXG/1x.avif" alt="wideAmogus">'
     },
-    '!аук': {
+    '/auc': {
       mood: this.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
       text: 'Проводит стрим, где за бесплатно (1 раз) и за донаты (много раз) можно заказать почти любую игру на прохождение. Затем крутим рулетку. Чем больше суммы на игре тем больше шансов (но не 100%). Что выпадет - в то и играем. Обязательно играю 4 часа. Затем если игра нравится, то играю дальше. Если нет, то увы <img width="24" src="https://cdn.7tv.app/emote/01GB8R1ZF0000BX30STW7STTS2/1x.avif" alt="Jokerge">'
     },
-    '!фиби': {
+    '/fibi': {
       mood: this.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
       text: 'Начинающий стримлер. Активно стримит чуть меньше года, втбуером стал пол года назад. Играет в основном соло игры, иногда редко что-то проходит кооперативное. Чаще всего можно увидеть Террарию, Вр чат, Майнкрафт, а так же любые игры, которые выпадают на Аукционе <img width="24" src="https://cdn.7tv.app/emote/01F6ME9FRG0005TFYTWP1H8R42/1x.avif" alt="catJam">'
     },
-    '!купер': {
+    '/kuper': {
       mood: this.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
       text: 'Самый сладкий модератор. Любитель новеллы под названием Некопара а так лобото....АХАХА, ЭТО ЖЕ ЛОБОТОМИЯ КАРПАРЕШОН, А ТАМ КРАСНЫЙ ТУМАН, ЭТО ЖЕ ОТСЫЛКА НА ЛОБОТИМИЮ КАРПОРЕЙШОН АХАХА!!!!11!!! УЭээЭЭЭЭэЭЭ <img width="24" src="https://cdn.7tv.app/emote/01J6Y38X400001T67YKRJPS59G/1x.avif" alt="Cinnamon_AAAA"> <img width="24" src="https://cdn.7tv.app/emote/01J6Y38X400001T67YKRJPS59G/1x.avif" alt="Cinnamon_AAAA"> <img width="24" src="https://cdn.7tv.app/emote/01J6Y38X400001T67YKRJPS59G/1x.avif" alt="Cinnamon_AAAA">'
     },
-    '!ремуно': {
+    '/remuno': {
       mood: this.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
       text: 'Милый котик. Много мяукает. Только в добрые руки. Обращаться на Вы <img width="24" src="https://cdn.7tv.app/emote/01F6T2BZ5R000FFMY8SXKA600Q/1x.avif" alt="lickL">'
     },
-    '!фобия': {
+    '/phobia': {
       mood: this.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
       text: 'Любимый модератор <img width="24" src="https://cdn.7tv.app/emote/01F6NCKMP000052X5637DW2XDY/1x.avif" alt="meow">. Очень милый и справедливый. Только очень странное поведение, когда кто-то говорит МОХ <img width="24" src="https://cdn.7tv.app/emote/01F6MA6Y100002B6P5MWZ5D916/1x.avif" alt="Hmm">. Бесконечно хорни, поглотитель блинов а еще ВОССЛАВЬ СОЛНЦЕ!!!! <img width="24" src="https://cdn.7tv.app/emote/01GRFJRB0G0007S059RQTKBPCS/1x.avif" alt="PraiseTheSun"> <img width="24" src="https://cdn.7tv.app/emote/01GRFJRB0G0007S059RQTKBPCS/1x.avif" alt="PraiseTheSun"> <img width="24" src="https://cdn.7tv.app/emote/01GRFJRB0G0007S059RQTKBPCS/1x.avif" alt="PraiseTheSun">'
     },
-    '!крис': {
+    '/kris': {
       mood: this.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
       text: 'Очень милый и дружелюбный котик <img width="24" src="https://cdn.7tv.app/emote/01J6Y3QRPR000EYP9HFG8ZSZZN/1x.avif" alt="Coconut_Shy"> Целовашки и обнимашки лучше не предлагать, может не отказаться <img width="24" src="https://cdn.7tv.app/emote/01GVFW01E8000A3PWSY9YK31TP/1x.avif" alt="BoyKisser"> Иногда смущается, а иногда сильно смущается. AVE BASIL <img width="24" src="https://cdn.7tv.app/emote/01H0Y5SPCG00047GN16BFCRN7N/1x.avif" alt="Basil">'
     },
-    '!фурри': {
+    '/furri': {
       text: 'Я НЕ ФУРРИ !!!!! <img width="24" src="https://cdn.7tv.app/emote/01GBFAYKGR000FWWN7MDZZ8XQN/1x.avif" alt="RAGEY">',
       mood: this.random<NikoMood>('very_uncomfortable', 'very_uncomfortable_looking_left', 'uncomfortable', 'surprised')
     },
-    '!фембой': {
+    '/femboy': {
       mood: this.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
       text: 'Я НЕ ФЕМБОЙ!!!! <img width="24" src="https://cdn.7tv.app/emote/01GBFAYKGR000FWWN7MDZZ8XQN/1x.avif" alt="RAGEY">'
     },
   };
 
-  private readonly phrases = [
+  private readonly PHRASES: { pattern: RegExp, category: string }[] = [
     {
       pattern: /(привет|ха[йя]|hello|hi|здрав?ств?уй(те)?|доброе?\sутро|добрый\s(день|вечер)|рад\sвидеть|давно\sне\sвиделись|как\sты\sтам|приветик|салют|здоров[оа]|добро\sпожаловать|как\sдела\?*|хей|хеллоу|здаров?а?|доброго\sвремени\sсуток)/i,
       category: 'greeting'
@@ -253,7 +266,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     },
   ];
 
-  private responses: { [key: string]: string[] } = {
+  private readonly RESPONSES: { [key: string]: string[] } = {
     greeting: [
       'Привет!', 'Здорово!', 'Йоу!', 'Добро пожаловать!', 'Рад тебя видеть!',
       'Как дела?', 'Доброго времени суток!', 'Приятно видеть!',
@@ -576,7 +589,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     ]
   };
 
-  private moodMatrix: { [key: string]: NikoMood[] } = {
+  private readonly MOOD_MATRIX: { [key: string]: NikoMood[] } = {
     greeting: ['happy', 'smiling', 'normal'],
     farewell: ['sad', 'crying', 'closed_mouth'],
     question: ['looking_left', 'looking_right', 'speak'],
@@ -610,81 +623,19 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   scaleTrigger = signal(false);
   bounceTrigger = signal(false);
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadFromStorage();
   }
 
-  private loadFromStorage() {
-    const encryptedData = localStorage.getItem(this.STORAGE_KEY);
-    if (encryptedData) {
-      const data = CryptoService.decryptData<ChatContext>(encryptedData, environment.encryptionKey);
-      if (data) {
-        this.context = {
-          ...this.context,
-          ...data,
-          messages: data.messages.map(msg => ({
-            ...msg,
-            displayedText: msg.text // Восстанавливаем отображение
-          }))
-        };
-      }
-    }
-  }
-
-  private saveToLocalStorage() {
-    const dataToSave = {
-      ...this.context,
-      messages: this.context.messages.map(({text, isBot}) => ({text, isBot}))
-    };
-
-    const encryptedData = CryptoService.encryptData(dataToSave, environment.encryptionKey);
-    localStorage.setItem(this.STORAGE_KEY, encryptedData);
-  }
-
-  private clearChatHistory() {
-    this.context = {
-      messages: [],
-      currentMood: 'normal',
-      moodIntensity: 0,
-      currentTopic: '',
-      complimentCounter: 0,
-      nextComplimentAt: this.generateRandomComplimentThreshold(),
-      lastTopics: [],
-      mentionedEntities: [],
-      userPreferences: {}
-    };
-    localStorage.removeItem(this.STORAGE_KEY);
-  }
-
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     const messagesContainer = document.querySelector('.messages');
     if (messagesContainer)
       messagesContainer.addEventListener('scroll', () => this.updateScrollParallax());
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     window.clearTimeout(this.timer);
     this.saveToLocalStorage();
-  }
-
-  toggleChat() {
-    this.bounceTrigger.set(true);
-    const wasOpen = this.isChatOpen();
-    this.isChatOpen.update(v => !v);
-
-    if (!wasOpen) {
-      setTimeout(() => {
-        this.scrollToBottom();
-      }, 100);
-    }
-
-    setTimeout(() => {
-      this.bounceTrigger.set(false);
-    }, 600);
-  }
-
-  getSafeHtml(text: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(text);
   }
 
   @HostListener('document:click', ['$event'])
@@ -703,121 +654,101 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       this.isChatOpen.set(false);
   }
 
+  get messages() {
+    return this.context.messages;
+  }
+
+  get currentMood() {
+    return this.context.currentMood;
+  }
+
+  set currentMood(value: NikoMood) {
+    this.context.currentMood = value;
+  }
+
+  get time() {
+    return new Date().toLocaleTimeString(navigator.language, {
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  }
+
+  get date() {
+    return new Date().toLocaleDateString(navigator.language, {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  get user() {
+    let user = '';
+    this.authService.getUser().subscribe(u => user = u?.username || 'Гость');
+    return user;
+  }
+
+  get volume() {
+    return this.audioService.targetVolume();
+  }
+
+  get music() {
+    return this.audioService.isEnabled();
+  }
+
+  get customCursors() {
+    return this.themeService.cursorsEnabled();
+  }
+
+  toggleChat() {
+    this.bounceTrigger.set(true);
+    const wasOpen = this.isChatOpen();
+    this.isChatOpen.update(v => !v);
+
+    if (!wasOpen) {
+      setTimeout(() => {
+        this.scrollToBottom();
+      }, 100);
+    }
+
+    setTimeout(() => this.bounceTrigger.set(false), 600);
+  }
+
+  getSafeHtml(text: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(text);
+  }
+
   async sendMessage() {
     if (!this.userInput().trim() || this.isTyping()) return;
-
     const input = this.userInput().trim();
-    const newMessage: Message = {text: input, isBot: false};
+    const newMessage: Message = { text: input, isBot: false };
     this.context.messages.push(newMessage);
 
-    if (input === 'ь.') {
-      this.typeMessage({text: 'ь.', mood: 'april_fools'});
+    // Отсылка на клуб ь.
+    if (input.toLowerCase() === 'ь.') {
+      this.typeMessage({ text: 'ь.', mood: 'april_fools' });
       this.userInput.set('');
       return;
     }
 
+    // Отсылка на гойду
     if (input.toLowerCase().includes('гойда')) {
-      this.typeMessage({text: 'ГОЙДА!', mood: 'amazed'});
+      this.typeMessage({ text: 'ГОЙДА!', mood: 'amazed' });
       this.userInput.set('');
       return;
     }
 
-    if (input === '!очистка') {
-      this.typeMessage(this.commands[input]);
-      this.userInput.set('');
-      setTimeout(() => this.clearChatHistory(), 1000);
-      return;
-    }
-
-    if (input === '!экспорт') {
-      this.typeMessage(this.commands[input]);
-      this.userInput.set('');
-      setTimeout(() => this.exportHistory(), 1000);
-      return;
-    }
-
-    if (input.startsWith('!сказать')) {
-      const expression = input.slice(8).trim();
-      this.userInput.set('');
-      try {
-        const result = this.safeEval(expression);
-        const botMessage: Message = {
-          text: result,
-          isBot: true,
-          displayedText: result
-        };
-        this.context.messages.push(botMessage);
-      } catch (e) {
-        const errorMessage: Message = {
-          text: 'Ошибка в выражении',
-          isBot: true,
-          displayedText: 'Ошибка в выражении'
-        };
-        this.context.messages.push(errorMessage);
-      }
-      this.scrollToBottom();
-      return;
-    }
-
-    if (input.startsWith('!страница')) {
-      const match = input.match(/!страница\s+"?(.+?)"?$/);
-      if (!match) {
-        this.showError('Не указан параметр для страницы');
-        return;
-      }
-
-      const [_, params] = match;
-      const [page, ...args] = params.split(/\s+/);
-
-      const route = this.pageCommandsMap[page];
-      if (!route) {
-        this.showError(`Страница "${page}" не найдена`);
-        return;
-      }
-
-      let navigationPath = route;
-      let displayText = `Перенаправляю на страницу "${page}"`;
-
-      if (page === 'пользователь' && args.length > 0) {
-        navigationPath += `/${encodeURIComponent(args.join(' '))}`;
-        displayText += `: ${args.join(' ')}`;
-      }
-
-      if (page === 'активность' && args.length > 0) {
-        navigationPath += `/${encodeURIComponent(args.join(' '))}`;
-        displayText += `: ${args.join(' ')}`;
-      }
-
-      const botMessage: Message = {
-        text: displayText,
-        isBot: true,
-        displayedText: displayText
-      };
-
-      this.context.messages.push(botMessage);
-      await this.router.navigate([navigationPath]);
-      this.userInput.set('');
-      this.scrollToBottom();
-      return;
-    }
-
-    if (input.startsWith('!')) {
-      const response = this.commands[input] || {
-        mood: this.random('uncomfortable', 'freaked_out', 'freaked_out_looking_left', 'surprised'),
-        text: this.random('Не могу понять команду', 'Я тебя не понял...', 'Что?', 'Повтори пожалуйста', 'Я ничего не понимаю...')
-      };
-
-      const botMessage: Message = {
-        text: response.text,
-        isBot: true,
-        displayedText: response.text
-      };
-
-      this.context.messages.push(botMessage);
-      this.context.currentMood = response.mood;
-      this.userInput.set('');
-      this.scrollToBottom();
-      this.saveToLocalStorage();
+    if (input.includes('/')) {
+      if (input.includes(';')) {
+        const commands = input.split(';').map(c => c.trim()).filter(c => c);
+        for (const cmd of commands) {
+          this.userInput.set(cmd);
+          await this.sendSingleCommand(cmd);
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      } else
+        await this.sendSingleCommand(input);
       return;
     }
 
@@ -848,6 +779,310 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   exportHistoryHandle(event: Event) {
     event.stopPropagation();
     this.exportHistory();
+  }
+
+  private async sendSingleCommand(input: string) {
+    if (input.startsWith('/')) {
+      const parts = input.slice(1).split(' ');
+      const command = parts[0];
+      const args = parts.slice(1);
+
+      try {
+        this.userInput.set('');
+        switch (command) {
+          case 'clear':
+            this.typeMessage(this.COMMANDS[input]);
+            setTimeout(() => this.clearChatHistory(), 1000);
+            return;
+          case 'export':
+            this.typeMessage(this.COMMANDS[input]);
+            setTimeout(() => this.exportHistory(), 1000);
+            return;
+          case 'echo':
+            const { expression, vars } = this.parseEchoArgs(input.slice(5).trim());
+
+            // Проверка переменных
+            const missingVars = vars.filter(v =>
+              !this.context.userVariables[v] &&
+              !this.RESERVED.includes(v)
+            );
+
+            if (missingVars.length > 0)
+              throw new Error(`Не найдены переменные: ${missingVars.join(', ')}`);
+
+            // Подстановка значений
+            let result = expression.replace(/%([^%]+)%/g, (_, name) => {
+              if (this.context.userVariables[name])
+                return this.context.userVariables[name].toString();
+              if (name === 'time')
+                return this.time;
+              if (name === 'date')
+                return this.date;
+              if (name === 'user')
+                return this.user;
+              if (name === 'volume')
+                return this.volume.toString();
+              if (name === 'music')
+                return this.music ? 'on' : 'off';
+              if (name === 'custom_cursors')
+                return this.customCursors ? 'on' : 'off';
+              return '';
+            });
+
+            this.context.messages.push({
+              text: result,
+              isBot: true,
+              displayedText: result
+            });
+            this.scrollToBottom();
+            return;
+          case 'delete':
+            if (args.length < 1)
+              throw new Error('Недостаточно аргументов. Используйте: /delete <переменная>');
+
+            const variableName = args[0].replace(/%/g, '');
+
+            if (this.RESERVED.includes(variableName)) {
+              throw new Error(`Нельзя удалить системную переменную %${variableName}%`);
+            }
+
+            if (!this.context.userVariables[variableName]) {
+              throw new Error(`Переменная %${variableName}% не существует`);
+            }
+
+            delete this.context.userVariables[variableName];
+            this.typeMessage({
+              text: `✅ Переменная %${variableName}% удалена`,
+              mood: 'happy'
+            });
+            return;
+          case 'get':
+            const targetVar = args[0].replace(/%/g, '');
+
+            if (!this.context.userVariables[targetVar] && !this.RESERVED.includes(targetVar)) {
+              throw new Error(`Переменной %${targetVar}% не существует`);
+            }
+
+            let varValue;
+            if (this.RESERVED.includes(targetVar)) {
+              // Получение системных переменных
+              varValue = {
+                time: this.time,
+                date: this.date,
+                user: this.user,
+                volume: this.volume,
+                music: this.music ? 'on' : 'off',
+                custom_cursors: this.customCursors ? 'on' : 'off'
+              }[targetVar];
+            } else {
+              varValue = this.context.userVariables[targetVar];
+            }
+
+            this.typeMessage({
+              mood: 'normal',
+              text: varValue!.toString()
+            });
+            return;
+          case 'help':
+            this.typeMessage({
+              text: this.generateHelpText(),
+              mood: 'speak'
+            });
+            return;
+          case 'play':
+            if (args.length < 1)
+              throw new Error('Недостаточно аргументов. Используйте: /play <номер трека>');
+
+            const trackNumber = parseInt(args[0], 10);
+
+            if (isNaN(trackNumber))
+              throw new Error('Номер трека должен быть числом');
+
+            if (trackNumber < 1 || trackNumber > 39)
+              throw new Error('Допустимый диапазон: 1-39');
+
+            const trackIndex = trackNumber - 1;
+            const trackName = this.audioService.getTrackNameByNumber(trackNumber);
+
+            if (await this.audioService.playSpecificTrack(this.audioService.tracks[trackIndex]))
+              this.typeMessage({
+                text: `🎵 Воспроизвожу трек #${trackNumber}: ${trackName}`,
+                mood: 'happy'
+              });
+            else
+              this.typeMessage({
+                text: `Не удалось воспроизвести трек (см. консоль разработчика)`,
+                mood: 'sad'
+              });
+            return;
+          case 'set':
+            if (args.length < 2)
+              throw new Error('Недостаточно аргументов. Используйте: /set <переменная> <значение>');
+
+            // Извлекаем имя переменной без %
+            const variable = args[0].replace(/%/g, '');
+            const value = args.slice(1).join(' ');
+
+            // Обработка зарезервированных переменных
+            if (this.RESERVED.includes(variable)) {
+              switch (variable) {
+                case 'custom_cursors':
+                case 'music':
+                  if (!['on', 'off'].includes(value.toLowerCase()))
+                    throw new Error(`Допустимые значения для ${variable}: on/off`);
+
+                  const isOn = value.toLowerCase() === 'on';
+                  if (variable === 'custom_cursors') {
+                    this.themeService.toggleCursors(isOn);
+                    this.typeMessage({
+                      text: `🎮 Кастомные курсоры ${isOn ? 'активированы' : 'отключены'}`,
+                      mood: 'normal'
+                    });
+                  } else {
+                    this.audioService.toggleMusic(isOn);
+                    this.typeMessage({
+                      text: `🎵 Фоновая музыка ${isOn ? 'включена' : 'выключена'}`,
+                      mood: isOn ? 'happy' : 'sad'
+                    });
+                  }
+                  break;
+
+                case 'volume':
+                  const volume = parseFloat(value);
+                  if (isNaN(volume)) throw new Error('Значение должно быть числом');
+                  if (volume < 0 || volume > 1) throw new Error('Диапазон: 0.0 - 1.0');
+
+                  this.audioService.setVolume(volume);
+                  this.typeMessage({
+                    text: `🔊 Громкость установлена на ${volume.toFixed(2)}`,
+                    mood: 'normal'
+                  });
+                  break;
+                case 'page':
+                  const idRequiredPages = ['activity', 'user'];
+                  const pageParts = value.split(':');
+                  const pageName = pageParts[0];
+                  const id = pageParts[1];
+
+                  const baseRoute = this.PAGE_COMMANDS_MAP[pageName];
+                  let navigationPath = baseRoute;
+                  let displayText = `Перенаправляю на страницу "${pageName}"`;
+
+                  if (!baseRoute)
+                    throw new Error(`Страница "${pageName}" не найдена`);
+
+                  if (idRequiredPages.includes(pageName)) {
+                    if (!id)
+                      throw new Error(`Для страниц "${idRequiredPages.join('", "')}" требуется ID в формате: /set page ${pageName}:<GUID>`);
+                    navigationPath += `/${id}`;
+                    displayText += ` с ID: ${id}`;
+                  } else if (id)
+                    throw new Error(`Страница ${pageName} не требует указания ID`);
+
+                  const botMessage: Message = {
+                    isBot: true,
+                    text: displayText,
+                    displayedText: displayText
+                  };
+                  this.context.messages.push(botMessage);
+                  await this.router.navigate([navigationPath]);
+                  this.scrollToBottom();
+                  return;
+
+                default:
+                  throw new Error(`Неизвестное свойство: ${variable}`);
+              }
+              return;
+            }
+
+            // Обработка пользовательских переменных
+            try {
+              // Парсинг сложных значений
+              let parsedValue: string | number | boolean = value;
+
+              if (/^true$/i.test(value))
+                parsedValue = true;
+              else if (/^false$/i.test(value))
+                parsedValue = false;
+              else if (!isNaN(+value))
+                parsedValue = +value;
+              else if (value.startsWith('"') && value.endsWith('"'))
+                parsedValue = value.slice(1, -1);
+
+              this.context.userVariables[variable] = parsedValue;
+
+              this.typeMessage({
+                text: `✅ Переменная %${variable}% установлена`,
+                mood: 'happy'
+              });
+            } catch (e) {
+              throw new Error(`Ошибка установки переменной: ${(e as Error).message}`);
+            }
+            return;
+          default:
+            const response = this.COMMANDS[input] || {
+              mood: this.random('uncomfortable', 'freaked_out', 'freaked_out_looking_left', 'surprised'),
+              text: this.random('Не могу понять команду', 'Я тебя не понял...', 'Что?', 'Повтори пожалуйста', 'Я ничего не понимаю...')
+            };
+
+            const botMessage: Message = {
+              isBot: true,
+              text: response.text,
+              displayedText: response.text
+            };
+
+            this.context.messages.push(botMessage);
+            this.context.currentMood = response.mood;
+            this.scrollToBottom();
+            this.saveToLocalStorage();
+        }
+      } catch (error) {
+        this.showError(this.getCommandError(error as Error, input));
+      }
+    }
+  }
+
+  private loadFromStorage() {
+    const encryptedData = localStorage.getItem(this.STORAGE_KEY);
+    if (encryptedData) {
+      const data = CryptoService.decryptData<ChatContext>(encryptedData, environment.encryptionKey);
+      if (data) {
+        this.context = {
+          ...this.context,
+          ...data,
+          messages: data.messages.map(msg => ({
+            ...msg,
+            displayedText: msg.text // Восстанавливаем отображение
+          }))
+        };
+      }
+    }
+  }
+
+  private saveToLocalStorage() {
+    const dataToSave = {
+      ...this.context,
+      messages: this.context.messages.map(({ text, isBot }) => ({ text, isBot }))
+    };
+
+    const encryptedData = CryptoService.encryptData(dataToSave, environment.encryptionKey);
+    localStorage.setItem(this.STORAGE_KEY, encryptedData);
+  }
+
+  private clearChatHistory() {
+    this.context = {
+      messages: [],
+      lastTopics: [],
+      moodIntensity: 0,
+      currentTopic: '',
+      userVariables: {},
+      userPreferences: {},
+      complimentCounter: 0,
+      currentMood: 'normal',
+      mentionedEntities: [],
+      nextComplimentAt: this.generateRandomComplimentThreshold()
+    };
+    localStorage.removeItem(this.STORAGE_KEY);
   }
 
   private exportHistory() {
@@ -909,7 +1144,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
         margin-top: 10px;
       }
     </style>
-  `;
+    `;
 
     const messagesHtml = this.messages
       .map(msg => `
@@ -939,9 +1174,9 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
         </div>
       </body>
     </html>
-  `;
+    `;
 
-    const blob = new Blob([html], {type: 'text/html'});
+    const blob = new Blob([html], { type: 'text/html' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -956,15 +1191,47 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     return array[Math.floor(Math.random() * array.length)];
   }
 
-  private safeEval(expression: string): string {
-    const sanitized = expression.replace(/[^a-zA-Z0-9а-яА-ЯёЁ+\-*\/()\d\s="'_%.]/g, '')
-      .replace(/\b(alert|fetch|XMLHttpRequest|document|window|eval|function|import|export|require|process)\b/g, '');
+  private parseEchoArgs(input: string): { expression: string, vars: string[] } {
+    const args = [];
+    let current = '';
+    let inQuotes = false;
+    let quoteChar = '';
+    let varNames: string[] = [];
 
-    try {
-      return new Function(`return ${sanitized}`)();
-    } catch (e) {
-      return 'Не могу выполнить это выражение';
+    for (let i = 0; i < input.length; i++) {
+      const char = input[i];
+
+      // Обработка кавычек
+      if ((char === '"' || char === "'" || char === '`') && (i === 0 || input[i - 1] !== '\\')) {
+        if (!inQuotes) {
+          inQuotes = true;
+          quoteChar = char;
+        } else if (char === quoteChar) {
+          inQuotes = false;
+          quoteChar = '';
+        }
+        continue;
+      }
+
+      if (!inQuotes && char === ' ' && current) {
+        args.push(current);
+        current = '';
+      } else
+        current += char;
+
+      // Сбор переменных
+      const varMatch = current.match(/%([^%]+)%/g);
+      if (varMatch)
+        varNames = [...varNames, ...varMatch.map(v => v.slice(1, -1))];
     }
+
+    if (current)
+      args.push(current);
+
+    return {
+      expression: args.join(' '),
+      vars: [...new Set(varNames)].filter(v => !this.RESERVED.includes(v))
+    };
   }
 
   private scrollToBottom(): void {
@@ -987,7 +1254,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
   private detectCategory(text: string): string {
     const lowerText = text.toLowerCase();
-    const foundPhrase = this.phrases.find(p => {
+    const foundPhrase = this.PHRASES.find(p => {
       const match = p.pattern.exec(lowerText);
       if (match && p.category === 'name_mention' && match[1])
         this.context.userPreferences.name = match[1];
@@ -1010,7 +1277,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   }
 
   private getBaseResponse(category: string): string {
-    const responses = this.responses[category] || ['Мяу...'];
+    const responses = this.RESPONSES[category] || ['Мяу...'];
     const response = this.random(...responses);
 
     // Замена специальных тегов
@@ -1095,16 +1362,8 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   }
 
   private updateMood(category: string): void {
-    const moodMap: { [key: string]: number } = {
-      compliment: 2,
-      angry: -3,
-      joke: 1,
-      farewell: -1,
-      love: 2
-    };
-
     this.moodIntensity = Math.min(Math.max(
-      this.moodIntensity + (moodMap[category] || 0),
+      this.moodIntensity + (this.MOOD_MAP[category] || 0),
       -5
     ), 5);
   }
@@ -1112,7 +1371,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   private calculateCurrentMood(): NikoMood {
     if (this.moodIntensity > 3) return 'happy';
     if (this.moodIntensity < -3) return 'distressed';
-    return this.random(...this.moodMatrix[this.currentTopic] || ['normal']);
+    return this.random(...this.MOOD_MATRIX[this.currentTopic] || ['normal']);
   }
 
   private extractEntities(text: string): string[] {
@@ -1173,10 +1432,49 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
   private showError(message: string): void {
     this.context.messages.push({
-      text: message,
       isBot: true,
-      displayedText: message
+      text: `⚠️ ${message}`,
+      displayedText: `⚠️ ${message}`
     });
     this.scrollToBottom();
+  }
+
+  private getCommandError(error: Error, command: string): string {
+    const errorMessage = error.message;
+    const helpMessages: { [key: string]: string } = {
+      'Недостаточно аргументов': `Пример использования: /${command.split(' ')[0]} <параметр> <значение>`,
+      'Не числовое значение': 'Используйте числовое значение (например: 0.75)',
+      'Вне диапазона': 'Допустимый диапазон: 0.0 - 1.0',
+      'Неверный номер трека': 'Используйте: /play <номер от 1 до 39>',
+      'Диапазон 1-39': 'Доступны треки с 1 по 39',
+      'Отсутствует ID': `Пример: /${command.split(' ')[0]} ${command.split(' ')[1]} <значение>:<GUID>`,
+      'Неверный формат ID': 'Требуется GUID в формате: 00000000-0000-0000-0000-000000000000',
+      'Переменная %...% зарезервирована': 'Используйте другое имя переменной',
+      'Нельзя удалить системную переменную': 'Системные переменные защищены от удаления',
+      'Переменная %...% не существует': 'Убедитесь в правильности имени переменной'
+    };
+    return errorMessage + (helpMessages[errorMessage.split(':')[0]] || '');
+  }
+
+  private generateHelpText(): string {
+    let helpText = 'Привет, это я, твой друг Нико, я могу составить тебе компанию. Ты можешь пользоваться моими командами:\n\n';
+    const commandsToDescribe: any = {
+      '/help': 'Отображает список доступных команд и их описание.',
+      '/echo <текст>': 'Отображает указанный текст. Можно использовать переменные в формате %переменная%.',
+      '/set <переменная> <значение>': 'Устанавливает значение для пользовательской или системной переменной.',
+      '/get <переменная>': 'Отображает значение указанной переменной.',
+      '/delete <переменная>': 'Удаляет пользовательскую переменную.',
+      '/play <номер трека>': 'Включает воспроизведение фонового трека по его номеру (1-39).',
+      '/clear': 'Очищает всю историю чата.',
+      '/export': 'Экспортирует историю чата в HTML файл.'
+    };
+
+    for (const cmd in commandsToDescribe)
+      if (commandsToDescribe.hasOwnProperty(cmd))
+        helpText += `${cmd}: ${commandsToDescribe[cmd].toString()}\n`;
+
+    helpText += '\nМожно использовать несколько команд в одной строке, разделяя их точкой с запятой (;).';
+
+    return helpText;
   }
 }
