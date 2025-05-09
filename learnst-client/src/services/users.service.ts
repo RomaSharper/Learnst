@@ -8,6 +8,7 @@ import { UpdateRoleRequest } from '../models/UpdateRoleRequest';
 import { UpdateUserResponse } from '../models/UpdateUserResponse';
 import { User } from '../models/User';
 import {Status} from '../enums/Status';
+import { UserActivityStats } from '../models/UserActivityStats';
 
 @Injectable({
   providedIn: 'root'
@@ -70,19 +71,23 @@ export class UsersService {
   }
 
   getFollowers(userId: string): Observable<User[]> {
-    return this.http.get<User[]>(`${this.apiUrl}/${userId}/Followers`);
+    return this.http.get<User[]>(`${this.apiUrl}/${userId}/followers`);
   }
 
   getFollowersCount(userId: string): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/${userId}/Followers/Count`);
+    return this.http.get<number>(`${this.apiUrl}/${userId}/followers/count`);
   }
 
   followUser(userId: string, targetUserId: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${userId}/Follow/${targetUserId}`, {});
+    return this.http.post(`${this.apiUrl}/${userId}/follow/${targetUserId}`, {});
   }
 
   unfollowUser(userId: string, targetUserId: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${userId}/Follow/${targetUserId}`);
+    return this.http.delete(`${this.apiUrl}/${userId}/follow/${targetUserId}`);
+  }
+
+  getUserStats(userId: string): Observable<UserActivityStats> {
+    return this.http.get<UserActivityStats>(`${this.apiUrl}/${userId}/stats`);
   }
 
   getStatus(userId: string) {

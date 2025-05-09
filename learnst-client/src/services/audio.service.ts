@@ -4,27 +4,10 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root'
 })
 export class AudioService {
-  private fadeDuration = 2000;
   private nextTrackTimeout: any;
+  private fadeDuration = 2000;
   private userInteracted = false;
   private currentTrackIndex = -1;
-  private readonly sounds: string[] = [
-    '/assets/sounds/sfx/03 Puzzle Solved.mp3',
-    '/assets/sounds/sfx/37 Sun.mp3'
-  ];
-  private readonly trackNames: string[] = [
-    'My Burden Is Light', 'Someplace I Know', 'Phosphor', 'The Prophecy',
-    'Abandoned Factory', 'Silverpoint', "A God's Machine", 'Rowbot',
-    'Geothermal', 'Distant', 'Into The Light', 'Self Contained Universe (Reprise)',
-    'Navigate', 'To Sleep', 'To Dream', 'Flooded Ruins', 'Alula',
-    'Children of the Ruins', 'Pretty Bad', 'On Little Cat Feet',
-    'Indoors', 'Dark Stairwell', 'Sonder', 'Pretty nice day, huh...',
-    'On Little Cat Feet (ground)', 'Library Stroll', 'Simple Secrets',
-    'Factory', 'Library Nap', 'The Tower', 'Distant water',
-    'Niko and the World Machine', 'I\'m Here', 'Pretty',
-    'Self Contained Universe', 'Thanks For Everything', 'OneShot Trailer',
-    'Countdown', 'IT\'S TIME TO FIGHT CRIME'
-  ];
   readonly tracks: string[] = [
     '/assets/sounds/music/01 My Burden Is Light.mp3',
     '/assets/sounds/music/02 Someplace I Know.mp3',
@@ -67,9 +50,28 @@ export class AudioService {
     '/assets/sounds/music/42 IT\'S TIME TO FIGHT CRIME.mp3'
   ];
   private audioElement = new Audio();
+  private readonly sounds: string[] = [
+    '/assets/sounds/sfx/03 Puzzle Solved.mp3',
+    '/assets/sounds/sfx/37 Sun.mp3'
+  ];
+  private readonly MUSIC_STORAGE_KEY = 'music';
+  private readonly VOLUME_STORAGE_KEY = 'volume';
+  private readonly trackNames: string[] = [
+    'My Burden Is Light', 'Someplace I Know', 'Phosphor', 'The Prophecy',
+    'Abandoned Factory', 'Silverpoint', "A God's Machine", 'Rowbot',
+    'Geothermal', 'Distant', 'Into The Light', 'Self Contained Universe (Reprise)',
+    'Navigate', 'To Sleep', 'To Dream', 'Flooded Ruins', 'Alula',
+    'Children of the Ruins', 'Pretty Bad', 'On Little Cat Feet',
+    'Indoors', 'Dark Stairwell', 'Sonder', 'Pretty nice day, huh...',
+    'On Little Cat Feet (ground)', 'Library Stroll', 'Simple Secrets',
+    'Factory', 'Library Nap', 'The Tower', 'Distant water',
+    'Niko and the World Machine', 'I\'m Here', 'Pretty',
+    'Self Contained Universe', 'Thanks For Everything', 'OneShot Trailer',
+    'Countdown', 'IT\'S TIME TO FIGHT CRIME'
+  ];
 
+  targetVolume = signal(20);
   isEnabled = signal(false);
-  targetVolume = signal(0.2);
 
   constructor() {
     this.audioElement.loop = false;
@@ -80,7 +82,7 @@ export class AudioService {
   }
 
   getTrackNameByNumber(trackNumber: number): string {
-    return this.trackNames[trackNumber - 1] || 'Unknown Track';
+    return this.trackNames[trackNumber - 1] || 'Неизвестный';
   }
 
   toggleMusic(state?: boolean): void {
@@ -90,9 +92,9 @@ export class AudioService {
     this.isEnabled.set(newState);
     this.saveState();
 
-    if (this.isEnabled() && this.userInteracted) {
+    if (this.isEnabled() && this.userInteracted)
       this.scheduleNextTrack();
-    } else {
+    else {
       this.fadeOut();
       this.clearSchedule();
     }
@@ -101,15 +103,20 @@ export class AudioService {
   playVictorySound(): void {
     const sound = new Audio(this.sounds[0]);
     sound.loop = false;
-    sound.volume = this.targetVolume();
+    sound.volume = this.targetVolume() / 100;
     sound.play().catch(console.error);
   }
 
-  setVolume(value: number): void {
-    this.targetVolume.set(value); // Обновляем целевую громкость
+  setVolume(value: number): boolean {
+    if (value < 0 || value > 100)
+      return false;
+
+    const val = value / 100;
+    this.targetVolume.set(value);
     if (this.isEnabled())
-      this.audioElement.volume = value;
-    localStorage.setItem('musicVolume', value.toString());
+      this.audioElement.volume = val;
+    localStorage.setItem(this.VOLUME_STORAGE_KEY, value.toString());
+    return true;
   }
 
   async playSpecificTrack(track: string): Promise<boolean> {
@@ -123,7 +130,8 @@ export class AudioService {
       return false;
     }
 
-    // Если трек уже играет, не выбираем его снова
+    this.clearSchedule();
+
     if (this.audioElement.src === track && !this.audioElement.paused) {
       console.log('Трек уже играет.');
       return false;
@@ -150,27 +158,25 @@ export class AudioService {
   }
 
   private loadState(): void {
-    this.isEnabled.set(localStorage.getItem('musicEnabled') === 'true');
-    this.targetVolume.set(parseFloat(localStorage.getItem('musicVolume') ?? '0.2'));
+    this.isEnabled.set(localStorage.getItem(this.MUSIC_STORAGE_KEY) === 'on');
+    this.targetVolume.set(parseFloat(localStorage.getItem(this.VOLUME_STORAGE_KEY) ?? '20'));
   }
 
   private saveState(): void {
-    localStorage.setItem('musicEnabled', this.isEnabled().toString());
+    localStorage.setItem(this.MUSIC_STORAGE_KEY, this.isEnabled() ? 'on' : 'off');
+    localStorage.setItem(this.VOLUME_STORAGE_KEY, this.targetVolume().toString());
   }
 
   private setupAudioHandlers(): void {
-    const schedule = () => {
+    this.audioElement.addEventListener('ended', () => {
       if (this.isEnabled()) this.scheduleNextTrack();
-    }
-
-    schedule();
-    this.audioElement.addEventListener('ended', schedule);
+    });
     this.audioElement.volume = 0;
   }
 
   private initializeVolume(): void {
     if (this.isEnabled())
-      this.audioElement.volume = this.targetVolume();
+      this.audioElement.volume = this.targetVolume() / 100;
     else
       this.audioElement.volume = 0;
   }
@@ -212,7 +218,7 @@ export class AudioService {
 
   private fadeIn(): void {
     const initialVolume = this.audioElement.volume;
-    const delta = this.targetVolume() - initialVolume;
+    const delta = (this.targetVolume() / 100) - initialVolume;
     const step = delta / (this.fadeDuration / 100);
 
     const fade = setInterval(() => {
@@ -222,8 +228,9 @@ export class AudioService {
       }
 
       const newVolume = this.audioElement.volume + step;
-      if (newVolume >= this.targetVolume()) {
-        this.audioElement.volume = this.targetVolume();
+      const volume = this.targetVolume() / 100;
+      if (newVolume >= volume) {
+        this.audioElement.volume = volume;
         clearInterval(fade);
       } else
         this.audioElement.volume = newVolume;
@@ -251,7 +258,7 @@ export class AudioService {
         this.userInteracted = true;
         console.debug('Пользователь провзаимодействовал с документом, воспроизведение музыки возможно.');
         if (this.isEnabled())
-          this.playSpecificTrack(this.selectNextTrack());
+          this.scheduleNextTrack();
       }
     }, { once: true });
   }

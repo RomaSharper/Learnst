@@ -5,7 +5,7 @@
   <mat-card-content class="toggle-section">
     @if (isDesktop) {
       <mat-slide-toggle
-        [checked]="themeService.isCursorsEnabled()"
+        [checked]="themeService.cursorsEnabled()"
         (change)="themeService.toggleCursors($event.checked)">
         Кастомные курсоры
       </mat-slide-toggle>
@@ -20,13 +20,12 @@
     <div>Громкость</div>
     <mat-slider
       min="0"
-      max="1"
+      step="1"
       discrete
-      step="0.01"
+      max="100"
       showTickMarks
       class="full-width"
-      (change)="setVolumeFromEvent($event)"
-    >
+      (change)="setVolumeFromEvent($event)">
       <input matSliderThumb [(ngModel)]="audioService.targetVolume">
     </mat-slider>
   </mat-card-content>

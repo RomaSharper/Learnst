@@ -32,7 +32,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'me', component: MeComponent, canActivate: [AuthGuard], canDeactivate: [ConfirmGuard] },
-  { path: 'user/:userId', component: UserComponent, canActivate: [AuthGuard] },
+  { path: 'user/:userName', component: UserComponent, canActivate: [AuthGuard] },
   { path: 'community', component: UsersComponent, canActivate: [AuthGuard] },
 
   { path: 'activities', component: ActivitiesComponent, canActivate: [AuthGuard] },

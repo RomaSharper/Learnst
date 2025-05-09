@@ -74,7 +74,7 @@
                   </div>
                 </div>
               } @else {
-                <div class="bubble" [innerHTML]="getSafeHtml(msg.text)"></div>
+                <div class="bubble" [innerHTML]="msg.text"></div>
               }
             </div>
           } @empty {

@@ -1,55 +1,57 @@
-import { DeviceType } from '../../models/DeviceType';
-import { Location, NgClass } from '@angular/common';
-import { Component, ElementRef, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormField } from '@angular/material/form-field';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
+import {DeviceType} from '../../models/DeviceType';
+import {Location, NgClass} from '@angular/common';
+import {Component, ElementRef, HostListener, inject, OnInit, signal, ViewChild} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatDatepicker, MatDatepickerModule} from '@angular/material/datepicker';
+import {MatDialog} from '@angular/material/dialog';
+import {MatFormField} from '@angular/material/form-field';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {Router} from '@angular/router';
 import bcrypt from 'bcryptjs';
-import { forkJoin, map, Observable } from 'rxjs';
-import { of } from 'rxjs/internal/observable/of';
-import { catchError } from 'rxjs/internal/operators/catchError';
-import { InspectableDirective } from '../../directives/inspectable.directive';
-import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
-import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
-import { SocialMediaPlatform } from '../../enums/SocialMediaPlatform';
-import { CanComponentDeactivate } from '../../helpers/CanComponentDeactivate';
-import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
-import { Return } from '../../helpers/Return';
-import { SocialMediaPlatformHelper } from '../../helpers/SocialMediaPlatformHelper';
-import { Education } from '../../models/Education';
-import { SocialMediaProfile } from '../../models/SocialMediaProfile';
-import { User } from '../../models/User';
-import { WorkExperience } from '../../models/WorkExperience';
-import { DateRangePipe } from '../../pipes/date.range.pipe';
-import { PluralPipe } from '../../pipes/plural.pipe';
-import { AlertService } from '../../services/alert.service';
-import { AuthService } from '../../services/auth.service';
-import { DateService } from '../../services/date.service';
-import { EmailService } from '../../services/email.service';
-import { FileService } from '../../services/file.service';
-import { UsersService } from '../../services/users.service';
-import { ThemePickerComponent } from '../theme-picker/theme-picker.component';
-import { EducationDialogComponent } from './education.dialog/education.dialog.component';
-import { SocialMediaDialogComponent } from './social.media.dialog/social.media.dialog.component';
-import { WorkExperienceDialogComponent } from './work.experience.dialog/work.experience.dialog.component';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { ThemeService } from '../../services/theme.service';
-import { DeviceService } from '../../services/device.service';
-import { AudioService } from '../../services/audio.service';
-import { MatSliderModule } from '@angular/material/slider';
-import { StatusHelper } from '../../helpers/StatusHelper';
-import { Status } from '../../enums/Status';
+import {forkJoin, map, Observable} from 'rxjs';
+import {of} from 'rxjs/internal/observable/of';
+import {catchError} from 'rxjs/internal/operators/catchError';
+import {InspectableDirective} from '../../directives/inspectable.directive';
+import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
+import {PlaceholderImageDirective} from '../../directives/placeholder-image.directive';
+import {SocialMediaPlatform} from '../../enums/SocialMediaPlatform';
+import {CanComponentDeactivate} from '../../helpers/CanComponentDeactivate';
+import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
+import {Return} from '../../helpers/Return';
+import {SocialMediaPlatformHelper} from '../../helpers/SocialMediaPlatformHelper';
+import {Education} from '../../models/Education';
+import {SocialMediaProfile} from '../../models/SocialMediaProfile';
+import {User} from '../../models/User';
+import {WorkExperience} from '../../models/WorkExperience';
+import {DateRangePipe} from '../../pipes/date.range.pipe';
+import {AlertService} from '../../services/alert.service';
+import {AuthService} from '../../services/auth.service';
+import {DateService} from '../../services/date.service';
+import {EmailService} from '../../services/email.service';
+import {FileService} from '../../services/file.service';
+import {UsersService} from '../../services/users.service';
+import {ThemePickerComponent} from '../theme-picker/theme-picker.component';
+import {EducationDialogComponent} from './education.dialog/education.dialog.component';
+import {SocialMediaDialogComponent} from './social.media.dialog/social.media.dialog.component';
+import {WorkExperienceDialogComponent} from './work.experience.dialog/work.experience.dialog.component';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {ThemeService} from '../../services/theme.service';
+import {DeviceService} from '../../services/device.service';
+import {AudioService} from '../../services/audio.service';
+import {MatSliderModule} from '@angular/material/slider';
+import {StatusHelper} from '../../helpers/StatusHelper';
+import {Status} from '../../enums/Status';
 import {RuDatePipe} from '../../pipes/ru.date.pipe';
+import {Role} from '../../enums/Role';
+import {TicketStatus} from '../../enums/TicketStatus';
+import {TicketType} from '../../enums/TicketType';
 
 @Return()
 @Component({
@@ -57,7 +59,6 @@ import {RuDatePipe} from '../../pipes/ru.date.pipe';
   templateUrl: './me.component.html',
   styleUrls: ['./me.component.scss'],
   imports: [
-    PluralPipe,
     FormsModule,
     MatFormField,
     MatIconModule,
@@ -93,42 +94,39 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   private deviceService = inject(DeviceService);
 
   userId = '';
-  oldPassword = '';
-  newPassword = '';
+  goBack!: () => void;
   selectedFile?: File;
   originalUser?: User;
+  oldPassword = '';
+  newPassword = '';
   hidePassword = true;
   changesSaving = false;
   unsavedChanges = false;
   passwordChanging = false;
+  readonly maxDate = new Date();
+  created = signal(0);
+  enrolled = signal(0);
+  completed = signal(0);
   loading = signal(true);
+  readonly minDate = new Date(1900, 0, 1);
   followersCount = signal(0);
   user = signal<User | null>(null);
-  isDesktop = signal(this.deviceService.getDeviceType() === DeviceType.Desktop);
-
-  readonly maxDate = new Date();
-  readonly minDate = new Date(1900, 0, 1);
-
   @ViewChild('importFile') importFileInput!: ElementRef<HTMLInputElement>;
   @ViewChild(MatDatepicker<Date | null>) picker!: MatDatepicker<Date | null>;
+  isDesktop = signal(this.deviceService.getDeviceType() === DeviceType.Desktop);
+  protected readonly SocialMediaPlatformHelper = SocialMediaPlatformHelper;
 
-  goBack!: () => void;
-
-  SocialMediaPlatformHelper = SocialMediaPlatformHelper;
+  constructor(public router: Router, public location: Location) {
+    super();
+  }
 
   get isVeteran(): boolean {
     if (!this.user()?.createdAt) return false;
-
     const registrationDate = new Date(this.user()!.createdAt);
     const currentDate = new Date();
     const diffTime = currentDate.getTime() - registrationDate.getTime();
     const diffYears = diffTime / (1000 * 3600 * 24 * 365);
-
     return diffYears >= 1;
-  }
-
-  constructor(public router: Router, public location: Location) {
-    super();
   }
 
   ngOnInit(): void {
@@ -144,6 +142,11 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       ).subscribe(user => {
         this.user.set(user);
         this.usersService.getFollowersCount(this.userId).subscribe(count => {
+          this.usersService.getUserStats(this.userId).subscribe(userStats => {
+            this.created.set(userStats.created);
+            this.enrolled.set(userStats.enrolled);
+            this.completed.set(userStats.completed);
+          });
           this.followersCount.set(count);
           this.loading.set(false);
         });
@@ -305,7 +308,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   openSocialMediaModal(socialMedia?: SocialMediaProfile): void {
     const dialogRef = this.dialog.open(SocialMediaDialogComponent, {
       width: '500px',
-      data: { socialMedia: socialMedia || { id: 0, url: '', platform: SocialMediaPlatform.Bluesky, userId: this.userId } }
+      data: {socialMedia: socialMedia || {id: 0, url: '', platform: SocialMediaPlatform.Bluesky, userId: this.userId}}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -413,7 +416,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
     this.changesSaving = true;
 
-    this.checkDuplicates(this.user()!).subscribe(({ emailTaken, usernameTaken }) => {
+    this.checkDuplicates(this.user()!).subscribe(({emailTaken, usernameTaken}) => {
       if (emailTaken) {
         this.alertService.showSnackBar('Эта почта уже занята');
         this.changesSaving = false;
@@ -471,51 +474,27 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   exportData(format: 'json' | 'xml'): void {
     if (!this.user) return;
 
-    const data = this.prepareExportData();
-    let content: string;
-    let mimeType: string;
-    let extension: string;
+    try {
+      const data = this.prepareExportData();
+      let content: string;
+      let mimeType: string;
+      let extension: string;
 
-    if (format === 'json') {
-      content = JSON.stringify(data, null, 2);
-      mimeType = 'application/json';
-      extension = 'json';
-    } else {
-      content = this.convertToXml(data);
-      mimeType = 'application/xml';
-      extension = 'xml';
-    }
-
-    const blob = new Blob([content], { type: mimeType });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `user_profile_${new Date().toISOString()}.${extension}`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-  }
-
-  async importData(event: Event): Promise<void> {
-    const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
-
-    const file = input.files[0];
-    const reader = new FileReader();
-
-    reader.onload = async (e) => {
-      try {
-        const content = e.target?.result as string;
-        const data = await this.parseImportFile(content, file.name);
-        this.applyImportedData(data);
-        this.alertService.showSnackBar('Данные успешно импортированы');
-      } catch (error) {
-        this.alertService.showSnackBar('Ошибка импорта: ' + error);
-      } finally {
-        input.value = ''; // Сбрасываем значение input
+      if (format === 'json') {
+        content = JSON.stringify(data, this.jsonReplacer, 2);
+        mimeType = 'application/json';
+        extension = 'json';
+      } else {
+        content = this.convertToXml(data);
+        mimeType = 'application/xml';
+        extension = 'xml';
       }
-    };
 
-    reader.readAsText(file);
+      this.saveFile(content, mimeType, `user_profile_${new Date().toISOString()}.${extension}`);
+    } catch (err) {
+      this.alertService.showSnackBar('Ошибка при генерации файла');
+      console.error('Export error:', err);
+    }
   }
 
   setVolumeFromEvent(event: Event): void {
@@ -523,70 +502,134 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   }
 
   private prepareExportData(): any {
+    const user = this.user()!;
+
     return {
-      copyright: `© ${new Date().getFullYear()} TCorporation. All rights reserved.`,
+      copyright: `© ${new Date().getFullYear()} RomaSharper. All rights reserved.`,
       exportDate: new Date().toISOString(),
-      version: '1.0',
+      version: '2.0',
       user: {
-        fullName: this.user()!.fullName,
-        avatarUrl: this.user()!.avatarUrl,
-        dateOfBirth: this.user()!.dateOfBirth,
-        emailAddress: this.user()!.emailAddress,
-        isHidden: this.user()!.isHidden,
-        city: this.user()!.city,
-        resumeText: this.user()!.resumeText,
-        aboutMe: this.user()!.aboutMe,
-        username: this.user()!.username,
-        banner: this.user()!.banner,
-        theme: this.user()!.theme,
-        educations: this.user()!.educations.map(e => ({
+        // Основная информация
+        id: user.id,
+        username: user.username,
+        fullName: user.fullName,
+        emailAddress: user.emailAddress,
+        role: Role[user.role],
+        status: Status[user.status],
+        isHidden: user.isHidden,
+        createdAt: user.createdAt,
+
+        // Персональные данные
+        avatarUrl: user.avatarUrl,
+        dateOfBirth: user.dateOfBirth,
+        city: user.city,
+        resumeText: user.resumeText,
+        aboutMe: user.aboutMe,
+        banner: user.banner,
+
+        // Социальные сети и аутентификация
+        externalLoginId: user.externalLoginId,
+        externalLoginType: user.externalLoginType !== undefined
+          ? SocialMediaPlatform[user.externalLoginType]
+          : undefined,
+        socialMediaProfiles: user.socialMediaProfiles.map(p => ({
+          platform: SocialMediaPlatform[p.platform],
+          url: p.url
+        })),
+
+        // Образование и опыт работы
+        educations: user.educations.map(e => ({
           institutionName: e.institutionName,
           degree: e.degree,
           graduationYear: e.graduationYear
         })),
-        workExperiences: this.user()!.workExperiences.map(w => ({
+        workExperiences: user.workExperiences.map(w => ({
           companyName: w.companyName,
           position: w.position,
           description: w.description,
           startDate: w.startDate,
           endDate: w.endDate
-        }))
+        })),
+
+        // Активности и прогресс
+        userActivities: user.userActivities.map(ua => ({
+          activityId: ua.activityId,
+          assignedAt: ua.assignedAt
+        })),
+        userLessons: user.userLessons,
+
+        // Тикеты и ответы
+        tickets: user.tickets.map(t => ({
+          id: t.id,
+          title: t.title,
+          description: t.description,
+          status: TicketStatus[t.status],
+          type: TicketType[t.type],
+          createdAt: t.createdAt
+        })),
+        ticketAnswers: user.ticketAnswers.map(ta => ({
+          id: ta.id,
+          content: ta.content,
+          createdAt: ta.createdAt,
+          ticketId: ta.ticketId
+        })),
+
+        // Настройки
+        theme: {
+          id: user.themeId
+        }
       }
     };
   }
 
+  private jsonReplacer(key: string, value: any): any {
+    // Убираем циклические ссылки
+    if (key === 'user') return value;
+    return value instanceof Date ? value.toISOString() : value;
+  }
+
+  private saveFile(content: string, mimeType: string, filename: string): void {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+
+    document.body.appendChild(a);
+    a.click();
+
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
+  }
+
   private convertToXml(data: any): string {
-    const buildXml = (obj: any, indent: string): string => {
-      if (!obj || typeof obj !== 'object') return '';
+    const buildXmlNode = (obj: any, nodeName: string, indent: string): string => {
+      if (obj === null || obj === undefined) return '';
 
-      let xml = '';
-      for (const [key, value] of Object.entries(obj)) {
-        if (value === undefined || value === null) continue;
+      if (Array.isArray(obj))
+        return obj.map(item => buildXmlNode(item, nodeName, indent)).join('\n');
 
-        if (Array.isArray(value)) {
-          xml += `${indent}<${key}>\n`;
-          value.forEach(item => {
-            xml += `${indent}  <${key.slice(0, -1)}>\n`;
-            xml += buildXml(item, `${indent}    `);
-            xml += `${indent}  </${key.slice(0, -1)}>\n`;
-          });
-          xml += `${indent}</${key}>\n`;
-        } else if (typeof value === 'object') {
-          xml += `${indent}<${key}>\n`;
-          xml += buildXml(value, `${indent}  `);
-          xml += `${indent}</${key}>\n`;
-        } else {
-          xml += `${indent}<${key}>${this.escapeXml(value.toString())}</${key}>\n`;
-        }
+      if (typeof obj === 'object') {
+        const entries = Object.entries(obj)
+          .filter(([_, v]) => v !== null && v !== undefined);
+
+        if (!entries.length) return `${indent}<${nodeName}/>`;
+
+        const children = entries.map(([key, val]) => buildXmlNode(val, key, `${indent}  `))
+          .join('\n');
+
+        return `${indent}<${nodeName}>\n${children}\n${indent}</${nodeName}>`;
       }
-      return xml;
+
+      return `${indent}<${nodeName}>${this.escapeXml(obj.toString())}</${nodeName}>`;
     };
 
-    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    xml += '<userData>\n';
-    xml += buildXml(data, '  ');
-    xml += '</userData>';
-    return xml;
+    return `<?xml version="1.0" encoding="UTF-8"?>\n` +
+      buildXmlNode(data, 'UserData', '');
   }
 
   private escapeXml(unsafe: string): string {
@@ -608,102 +651,6 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
     });
   }
 
-  private async parseImportFile(content: string, fileName: string): Promise<any> {
-    if (fileName.endsWith('.json')) {
-      return JSON.parse(content);
-    } else if (fileName.endsWith('.xml')) {
-      return this.parseXml(content);
-    }
-    throw new Error('Неподдерживаемый формат файла');
-  }
-
-  private async parseXml(xml: string): Promise<any> {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(xml, 'application/xml');
-
-    if (doc.getElementsByTagName('parsererror').length > 0) {
-      throw new Error('Неверный формат XML');
-    }
-
-    const root = doc.documentElement;
-    if (!root) throw new Error('Неверная структура XML');
-
-    const result: any = {};
-    const userNode = root.getElementsByTagName('user')[0];
-
-    if (!userNode) throw new Error('Данные о пользователе не были найдены в XML');
-
-    result.User = {
-      fullName: this.getXmlValue(userNode, 'fullName'),
-      avatarUrl: this.getXmlValue(userNode, 'avatarUrl'),
-      dateOfBirth: this.getXmlValue(userNode, 'dateOfBirth'),
-      emailAddress: this.getXmlValue(userNode, 'emailAddress'),
-      city: this.getXmlValue(userNode, 'city'),
-      isHidden: this.getXmlValue(userNode, 'isHidden'),
-      resumeText: this.getXmlValue(userNode, 'resumeText'),
-      aboutMe: this.getXmlValue(userNode, 'aboutMe'),
-      username: this.getXmlValue(userNode, 'username'),
-      banner: this.getXmlValue(userNode, 'banner'),
-      background: this.getXmlValue(userNode, 'background'),
-      educations: this.parseXmlCollection(userNode, 'educations', 'education', node => ({
-        institutionName: this.getXmlValue(node, 'institutionName'),
-        degree: this.getXmlValue(node, 'degree'),
-        graduationYear: this.parseNumber(node, 'graduationYear')
-      })),
-      workExperiences: this.parseXmlCollection(userNode, 'workExperiences', 'workExperience', node => ({
-        companyName: this.getXmlValue(node, 'companyName'),
-        position: this.getXmlValue(node, 'position'),
-        description: this.getXmlValue(node, 'description'),
-        startDate: this.getXmlValue(node, 'startDate'),
-        endDate: this.getXmlValue(node, 'endDate')
-      }))
-    };
-
-    return result;
-  }
-
-  private parseNumber(node: Element, tagName: string): number {
-    const value = this.getXmlValue(node, tagName);
-    const num = parseInt(value, 10);
-    return isNaN(num) ? 0 : num;
-  }
-
-  private getXmlValue(parent: Element, tagName: string): string {
-    return parent.getElementsByTagName(tagName)[0]?.textContent || '';
-  }
-
-  private parseXmlCollection<T>(
-    parent: Element,
-    collectionTag: string,
-    itemTag: string,
-    mapper: (node: Element) => T
-  ): T[] {
-    const collection = parent.getElementsByTagName(collectionTag)[0];
-    if (!collection) return [];
-
-    return Array.from(collection.getElementsByTagName(itemTag)).map(mapper);
-  }
-
-  private applyImportedData(data: any): void {
-    if (!this.user || !data.user) return;
-    const newUser = data.user as User;
-    this.user.set({
-      ...this.user()!,
-      fullName: newUser.fullName,
-      avatarUrl: newUser.avatarUrl,
-      dateOfBirth: newUser.dateOfBirth,
-      emailAddress: newUser.emailAddress,
-      city: newUser.city,
-      resumeText: newUser.resumeText,
-      aboutMe: newUser.aboutMe,
-      username: newUser.username,
-      banner: newUser.banner,
-      educations: newUser.educations,
-      workExperiences: newUser.workExperiences
-    });
-    this.onUserInfoChange();
-  }
-
   // Метод для проверки дубликатов
   private checkDuplicates(user: User): Observable<{ emailTaken: boolean, usernameTaken: boolean }> {
     return forkJoin({
@@ -719,7 +666,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   }
 
   private hasUserChanged(): boolean {
-    if (!this.user || !this.originalUser) return false;
+    if (!this.user() || !this.originalUser) return false;
 
     // Сравниваем основные поля
     const basicFieldsChanged =

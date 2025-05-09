@@ -57,22 +57,24 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
   private alertService = inject(AlertService);
   private activitiesService = inject(ActivitiesService);
 
+  tags: string[] = [];
   pageSize = 6;
   pageIndex = 0;
-  loading = true;
   now = new Date();
+  loading = true;
   searchInput = '';
   searchQuery = '';
-  tags: string[] = [];
   user: User | null = null;
   level: string | null = null;
   activities: Activity[] = [];
-  pageSizeOptions = [6, 12, 24];
   paginatedActivities: Activity[] = [];
+  pageSizeOptions = [6, 12, 24];
 
   Role = Role;
 
-  constructor(public location: Location, public router: Router) { super(); }
+  constructor(public location: Location, public router: Router) {
+    super();
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -88,9 +90,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
       this.loadActivities();
     });
 
-    setInterval(() => {
-      this.now = new Date();
-    }, 60000);
+    setInterval(() => this.now = new Date(), 60000);
   }
 
   // Обработка поиска

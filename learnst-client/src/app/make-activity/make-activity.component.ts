@@ -90,8 +90,8 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
   infoCards: InfoCard[] = [];
   filteredTags: string[] = [];
   targetAudience: string[] = [];
-  levels = LevelHelper.getLevels();
   separatorKeysCodes: number[] = [ENTER]; // Клавиши для добавления чипсов
+  levels = LevelHelper.getLevels();
   allTags = [
     // Популярные языки программирования
     'JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'C++', 'C', 'Ruby', 'Go', 'Rust',
@@ -184,9 +184,7 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
       this.loadActivity(activityId);
     });
 
-    this.authService.getUser().subscribe(user =>
-      this.userId = user?.id
-    );
+    this.authService.getUser().subscribe(user => this.userId = user?.id);
   }
 
   loadActivity(activityId: string): void {
@@ -382,14 +380,9 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
       return;
     }
 
-    if (
-      !this.validateTopics() ||
-      !this.validateLessons() ||
-      !this.validateQuestions() ||
-      !this.validateAnswers()
-    ) {
+    if (!this.validateTopics() || !this.validateLessons() || !this.validateQuestions() || !this.validateAnswers()
+      || !this.validateLists())
       return;
-    }
 
     if (this.selectedFile)
       this.uploadFileAndSaveActivity();
@@ -402,6 +395,34 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
     if (control.value > totalQuestions)
       return {maxScore: {max: totalQuestions, actual: control.value}};
     return null;
+  }
+
+  private validateLists(): boolean {
+    if (this.infoCards.length > 6) {
+      this.alertService.showSnackBar(`Количество инфокарт не должно превышать 6 (Текущее кол-во: ${this.infoCards.length}).`);
+      return false;
+    }
+
+    const tagsLen = this.tags.join('').length;
+    const checkListLen = this.checkList.join('').length;
+    const targetAudienceLen = this.targetAudience.join('').length;
+
+    if (tagsLen > 2000) {
+      this.alertService.showSnackBar(`Длина тегов не должна превышать 2000 символов (Текущее кол-во: ${tagsLen}).`);
+      return false;
+    }
+
+    if (checkListLen > 2000) {
+      this.alertService.showSnackBar(`Длина чек-листа не должна превышать 2000 символов (Текущее кол-во: ${checkListLen}).`);
+      return false;
+    }
+
+    if (targetAudienceLen > 2000) {
+      this.alertService.showSnackBar(`Длина аудитории не должна превышать 2000 символов (Текущее кол-во: ${targetAudienceLen}).`);
+      return false;
+    }
+
+    return true;
   }
 
   private validateTopics(): boolean {

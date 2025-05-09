@@ -2,8 +2,8 @@ import { User } from './User';
 import { Lesson } from './Lesson';
 
 export interface UserLesson {
-  userId: string; // Guid
+  userId: string;
   user?: User;
-  lessonId: string; // Guid
+  lessonId: string;
   lesson?: Lesson;
 }

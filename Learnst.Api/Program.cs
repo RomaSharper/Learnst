@@ -1,6 +1,5 @@
 using Learnst.Api;
 using Learnst.Api.Hubs;
-using Learnst.Api.Middleware;
 using Learnst.Api.Models;
 using Learnst.Api.Services;
 using Learnst.Infrastructure;
@@ -46,8 +45,7 @@ builder.Services.AddScoped<JwtService>()
     .AddScoped(typeof(IRepository<,>), typeof(Repository<,>))
     .AddScoped(typeof(IBulkRepository<,>), typeof(BulkRepository<,>))
     .AddScoped(typeof(IAsyncRepository<,>), typeof(AsyncRepository<,>))
-    .AddScoped(typeof(ISoftDeleteRepository<,>), typeof(SoftDeleteRepository<,>))
-    .AddScoped<TokenRefreshMiddleware>();
+    .AddScoped(typeof(ISoftDeleteRepository<,>), typeof(SoftDeleteRepository<,>));
 
 // Конфигурация настроек из appsettings.json
 builder.Services.Configure<VkSettings>(builder.Configuration.GetSection("Vk"))
@@ -80,9 +78,6 @@ builder.Services.AddOpenApi()
 builder.Services.AddSignalR();
 
 var app = builder.Build();
-
-// Middleware
-app.UseMiddleware<TokenRefreshMiddleware>();
 
 app.UseWebSockets()
     .UseRouting()

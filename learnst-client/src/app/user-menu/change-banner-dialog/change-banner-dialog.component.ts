@@ -10,6 +10,7 @@ import {AlertService} from "../../../services/alert.service";
 import {FileService} from "../../../services/file.service";
 import {lastValueFrom} from "rxjs";
 import {MediumScreenSupport} from '../../../helpers/MediumScreenSupport';
+import {NoDownloadingDirective} from '../../../directives/no-downloading.directive';
 
 @Component({
   selector: 'app-change-banner-dialog',
@@ -22,7 +23,8 @@ import {MediumScreenSupport} from '../../../helpers/MediumScreenSupport';
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NoDownloadingDirective
   ]
 })
 export class ChangeBannerDialogComponent extends MediumScreenSupport implements OnInit {

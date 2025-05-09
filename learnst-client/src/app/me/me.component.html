@@ -65,9 +65,24 @@
           </div>
         </mat-card>
 
-        <div class="full-width">
-          <p>{{ followersCount() | plural:'подписчик':'подписчика':'подписчиков' }}</p>
-        </div>
+        <mat-card class="mb-2 stats full-width" appearance="outlined">
+          <div class="stat-item">
+            <div class="stat-value">{{ followersCount() }}</div>
+            <div class="stat-label">Подписчиков</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ created() }}</div>
+            <div class="stat-label">Создано активностей</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ enrolled() }}</div>
+            <div class="stat-label">Записан на</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ completed() }}</div>
+            <div class="stat-label">Пройдено</div>
+          </div>
+        </mat-card>
 
         <div class="user-info">
           <mat-form-field appearance="outline">
@@ -263,45 +278,26 @@
         </div>
       </mat-card>
 
-      <!-- Импорт/Экспорт -->
+      <!-- Экспорт -->
       <mat-card class="full-width mb-2" appearance="outlined">
-        <h3>Импорт и экспорт данных</h3>
+        <h3>Экспорт данных</h3>
         <p>
-          Экспортируются следующие данные: ФИО, аватар, дата рождения, электронная почта, город,
-          резюме, информация о себе, имя пользователя, баннер, образование и опыт работы.
-          Импорт заменит текущие данные на импортированные.
+          Запросить экспорт данных аккаунта.
         </p>
         <div class="import-export-buttons">
           <button
             type="button"
             color="accent"
             mat-flat-button
-            (click)="exportData('json')"
-          >
+            (click)="exportData('json')">
             Экспорт JSON
           </button>
           <button
             type="button"
             color="accent"
             mat-flat-button
-            (click)="exportData('xml')"
-          >
+            (click)="exportData('xml')">
             Экспорт XML
-          </button>
-          <input
-            hidden
-            type="file"
-            #importFile
-            accept=".json,.xml"
-            (change)="importData($event)"
-          >
-          <button
-            type="button"
-            color="accent"
-            mat-flat-button
-            (click)="importFile.click()"
-          >
-            Импорт данных
           </button>
         </div>
       </mat-card>
@@ -320,8 +316,7 @@
           type="button"
           mat-flat-button
           (click)="deleteProfile()"
-          class="mb full-width error"
-        >
+          class="mb full-width error with-background">
           Удалить мой профиль
         </button>
         <strong>Внимание: это действие необратимо. Все ваши данные будут удалены.</strong>

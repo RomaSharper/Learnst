@@ -2,7 +2,7 @@
 <mat-dialog-content>
   <form [formGroup]="form" class="banner-dialog">
     <mat-radio-group formControlName="bannerType" class="type-selector">
-      <!-- Изменена структура радиокнопок -->
+      <!-- Изменена структура радио-кнопок -->
       <mat-radio-button class="type-option" value="color">
         <div class="option-content">
           <mat-icon>palette</mat-icon>
@@ -23,10 +23,9 @@
           <div class="color-picker">
             <input
               type="color"
-              formControlName="color"
-              (input)="onColorSelected($event.target)"
               class="color-input"
-            >
+              formControlName="color"
+              (input)="onColorSelected($event.target)">
             <label>Выберите цвет</label>
           </div>
         }
@@ -39,8 +38,7 @@
                   mat-mini-fab
                   color="primary"
                   class="upload-button"
-                  (click)="fileInput.click()"
-                >
+                  (click)="fileInput.click()">
                   <mat-icon>upload</mat-icon>
                 </button>
               } @else {
@@ -48,8 +46,7 @@
                   color="primary"
                   mat-flat-button
                   class="upload-button"
-                  (click)="fileInput.click()"
-                >
+                  (click)="fileInput.click()">
                   <mat-icon>upload</mat-icon>
                   Выбрать файл
                 </button>
@@ -60,13 +57,12 @@
                 #fileInput
                 type="file"
                 accept="image/*"
-                (change)="onFileSelected($event)"
-              >
+                (change)="onFileSelected($event)">
             </div>
 
             @if (previewUrl) {
               <div class="preview">
-                <img [src]="previewUrl" alt="Предпросмотр">
+                <img [src]="previewUrl" alt="Предпросмотр" noDownloading>
               </div>
             }
           </div>
@@ -81,8 +77,7 @@
     mat-raised-button
     color="primary"
     (click)="confirm()"
-    [disabled]="!form.valid"
-  >
+    [disabled]="!form.valid">
     Сохранить
   </button>
 </mat-dialog-actions>

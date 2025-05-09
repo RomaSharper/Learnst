@@ -5,6 +5,6 @@ export interface Education {
   institutionName: string;
   degree: string;
   graduationYear: number;
-  userId: string; // Guid
+  userId: string;
   user?: User;
 }

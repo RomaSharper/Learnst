@@ -18,6 +18,7 @@
             Личные данные
             <small class="profile-hidden-notice">Профиль скрыт</small>
           </h3>
+
           <div class="avatar-container">
             <img
               loading="lazy"
@@ -54,10 +55,6 @@
             </div>
           </mat-card>
 
-          <div class="full-width">
-            <p>{{ followersCount() | plural:'подписчик':'подписчика':'подписчиков' }}</p>
-          </div>
-
           <div class="actions full-width mb-2">
             <button
               type="button"
@@ -70,6 +67,25 @@
               {{ isFollowing() ? 'Отписаться' : 'Подписаться' }}
             </button>
           </div>
+
+          <mat-card class="mb-2 stats full-width" appearance="outlined">
+            <div class="stat-item">
+              <div class="stat-value">{{ followersCount() }}</div>
+              <div class="stat-label">Подписчиков</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ created() }}</div>
+              <div class="stat-label">Создано активностей</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ enrolled() }}</div>
+              <div class="stat-label">Записан на</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ completed() }}</div>
+              <div class="stat-label">Пройдено</div>
+            </div>
+          </mat-card>
 
           <div class="user-info">
             <mat-form-field appearance="outline">
@@ -87,7 +103,7 @@
     </div>
   } @else {
     <div class="profile-grid">
-      <a mat-button class="mb" [class.full-width]="isMediumScreen" (click)="goBack()">
+      <a mat-button class="mb full-width" (click)="goBack()">
         Назад
       </a>
 
@@ -138,9 +154,24 @@
             </div>
           </mat-card>
 
-          <div class="full-width">
-            <p>{{ followersCount() | plural:'подписчик':'подписчика':'подписчиков' }}</p>
-          </div>
+          <mat-card class="mb-2 stats full-width" appearance="outlined">
+            <div class="stat-item">
+              <div class="stat-value">{{ followersCount() }}</div>
+              <div class="stat-label">Подписчиков</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ created() }}</div>
+              <div class="stat-label">Создано активностей</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ enrolled() }}</div>
+              <div class="stat-label">Записан на</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ completed() }}</div>
+              <div class="stat-label">Пройдено</div>
+            </div>
+          </mat-card>
 
           <div class="actions full-width mb-2">
             <button
@@ -234,62 +265,55 @@
 
       <!-- Социальные сети -->
       @if (user()!.socialMediaProfiles.length > 0) {
-        <div>
-          <mat-card>
-            <h3>Социальные сети</h3>
-            <div class="cards">
-              @for (socialMediaProfile of user()!.socialMediaProfiles; track socialMediaProfile.id) {
-                <div class="social-card" inspectable>
-                  <a [href]="socialMediaProfile.url" target="_blank">
-                    <img
-                      noDownloading
-                      [title]="socialMediaProfile.url"
-                      [src]="SocialMediaPlatformHelper.getImagePath(socialMediaProfile.platform)"
-                    >
-                    <div>{{ SocialMediaPlatformHelper.getName(socialMediaProfile.platform) }}</div>
-                  </a>
-                </div>
-              }
-            </div>
-          </mat-card>
-        </div>
+        <mat-card class="full-height" appearance="outlined">
+          <h3>Социальные сети</h3>
+          <div class="cards">
+            @for (socialMediaProfile of user()!.socialMediaProfiles; track socialMediaProfile.id) {
+              <div class="social-card">
+                <a [href]="socialMediaProfile.url" target="_blank">
+                  <img
+                    noDownloading
+                    [title]="socialMediaProfile.url"
+                    [src]="SocialMediaPlatformHelper.getImagePath(socialMediaProfile.platform)">
+                  <div>{{ SocialMediaPlatformHelper.getName(socialMediaProfile.platform) }}</div>
+                </a>
+              </div>
+            }
+          </div>
+        </mat-card>
       }
 
       <!-- Образование -->
       @if (user()!.educations.length > 0) {
-        <div>
-          <mat-card>
-            <h3>Образование</h3>
-            <div class="cards">
-              @for (education of user()!.educations; track education) {
-                <div class="education-item">
-                  <div><strong>Вуз:</strong> {{ education.institutionName }}</div>
-                  <div><strong>Факультет:</strong> {{ education.degree }}</div>
-                  <div><strong>Год выпуска:</strong> {{ education.graduationYear }}</div>
-                </div>
-              }
-            </div>
-          </mat-card>
-        </div>
+        <mat-card class="full-height" appearance="outlined">
+          <h3>Образование</h3>
+          <div class="cards">
+            @for (education of user()!.educations; track education) {
+              <div class="education-item">
+                <div><strong>Вуз:</strong> {{ education.institutionName }}</div>
+                <div><strong>Факультет:</strong> {{ education.degree }}</div>
+                <div><strong>Год выпуска:</strong> {{ education.graduationYear }}</div>
+              </div>
+            }
+          </div>
+        </mat-card>
       }
 
       <!-- Опыт работы -->
       @if (user()!.workExperiences.length > 0) {
-        <div class="full-width">
-          <mat-card>
-            <h3>Опыт работы</h3>
-            <div class="cards">
-              @for (job of user()!.workExperiences; track job) {
-                <div class="work-item">
-                  <div><strong>Компания:</strong> {{ job.companyName }}</div>
-                  <div><strong>Должность:</strong> {{ job.position }}</div>
-                  <div><strong>Период работы:</strong> {{ job.startDate | dateRange: job.endDate }}</div>
-                  <div><strong>Описание:</strong> {{ job.description || 'Отсутствует' }}</div>
-                </div>
-              }
-            </div>
-          </mat-card>
-        </div>
+        <mat-card class="full-width full-height" appearance="outlined">
+          <h3>Опыт работы</h3>
+          <div class="cards">
+            @for (job of user()!.workExperiences; track job) {
+              <div class="work-item">
+                <div><strong>Компания:</strong> {{ job.companyName }}</div>
+                <div><strong>Должность:</strong> {{ job.position }}</div>
+                <div><strong>Период работы:</strong> {{ job.startDate | dateRange: job.endDate }}</div>
+                <div><strong>Описание:</strong> {{ job.description || 'Отсутствует' }}</div>
+              </div>
+            }
+          </div>
+        </mat-card>
       }
     </div>
   }

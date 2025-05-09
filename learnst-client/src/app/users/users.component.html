@@ -14,7 +14,7 @@
 
   <!-- Автозаполнение -->
   <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelected($event)">
-    @for (user of hintUsers; track user) {
+    @for (user of hintUsers; track user.id) {
       <mat-option [value]="user.username">
         {{ user.username }}
       </mat-option>
@@ -23,7 +23,7 @@
 
   <div class="users-container">
     @for (user of displayedUsers; track user) {
-      <mat-card [routerLink]="['/user', user.id]" appearance="outlined">
+      <mat-card [routerLink]="['/user', user.username]" appearance="outlined">
         <mat-card-content class="user-card">
           <div class="avatar-container">
             <img [src]="user.avatarUrl!" alt="Avatar" class="avatar" placeholder="/assets/icons/user-192x192.png"

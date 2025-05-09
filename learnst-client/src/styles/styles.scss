@@ -416,7 +416,6 @@ table:not(.mat-calendar-table) {
       top: 0;
       position: sticky;
       padding: 1.25rem 1.5rem;
-      backdrop-filter: blur(4px);
       font: var(--mat-sys-title-medium);
       color: var(--mat-sys-on-surface-variant);
     }
@@ -460,6 +459,27 @@ table:not(.mat-calendar-table) {
 
   .username {
     margin-left: 0.5rem;
+  }
+}
+
+.stats {
+  display: flex;
+  flex-direction: row !important;
+  justify-content: space-around !important;
+
+  .stat-item {
+    text-align: center;
+
+    .stat-value {
+      font-weight: 700;
+      font-size: 2.5rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .stat-label {
+      opacity: 0.9;
+      font-size: 0.9rem;
+    }
   }
 }
 
@@ -1073,14 +1093,9 @@ mat-date-range-input {
   margin: 1rem 0;
   border-radius: 12px;
   overflow: hidden;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--mat-sys-elevation-level2);
   background: var(--mat-sys-surface-container);
-  box-shadow: var(--mat-sys-elevation-level1);
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--mat-sys-elevation-level3);
-  }
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   .card-content {
     padding: 1.5rem;

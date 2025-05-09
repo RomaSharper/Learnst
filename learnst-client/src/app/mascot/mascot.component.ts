@@ -1,25 +1,22 @@
-import { toSignal } from '@angular/core/rxjs-interop';
-import { Component, signal, OnDestroy, HostListener, inject, AfterViewInit, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { AlertService } from '../../services/alert.service';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Message } from '../../models/Message';
-import { NikoMood } from '../../models/NikoMood';
-import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
-import { Router } from '@angular/router';
-import { ChatContext } from '../../models/ChatContext';
-import { CryptoService } from '../../services/crypto.service';
-import { environment } from '../../environments/environment';
-import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
-import { ThemeService } from '../../services/theme.service';
-import { AudioService } from '../../services/audio.service';
-import { lastValueFrom } from 'rxjs';
-import { AuthService } from '../../services/auth.service';
+import {AfterViewInit, Component, HostListener, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {AlertService} from '../../services/alert.service';
+import {Message} from '../../models/Message';
+import {NikoMood} from '../../models/NikoMood';
+import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
+import {Router} from '@angular/router';
+import {ChatContext} from '../../models/ChatContext';
+import {CryptoService} from '../../services/crypto.service';
+import {environment} from '../../environments/environment';
+import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
+import {ThemeService} from '../../services/theme.service';
+import {AudioService} from '../../services/audio.service';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-mascot',
@@ -36,16 +33,21 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./mascot.component.scss']
 })
 export class MascotComponent extends MediumScreenSupport implements OnDestroy, OnInit, AfterViewInit {
+  userInput = signal('');
+  isTyping = signal(false);
+  isChatOpen = signal(false);
+  scaleTrigger = signal(false);
+  bounceTrigger = signal(false);
+
   private router = inject(Router);
-  private sanitizer = inject(DomSanitizer);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
-  private themeService = inject(ThemeService);
   private audioService = inject(AudioService);
+  private themeService = inject(ThemeService);
 
   private timer?: number;
-  private currentTopic: string = '';
-  private moodIntensity: number = 0;
+  private currentTopic = '';
+  private moodIntensity = 0;
   private context: ChatContext = {
     messages: [],
     lastTopics: [],
@@ -61,7 +63,8 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
   private readonly STORAGE_KEY = 'chat_data';
   private readonly RESERVED = [
-    'volume', 'music', 'custom_cursors', 'page', 'user', 'date', 'time'
+    'volume', 'music', 'custom_cursors', 'page', 'user',
+    'date', 'time'
   ];
 
   private readonly MOOD_MAP: { [key: string]: number } = {
@@ -617,12 +620,6 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     dreams: ['eyes_closed', 'happy', 'smiling']
   };
 
-  userInput = signal('');
-  isTyping = signal(false);
-  isChatOpen = signal(false);
-  scaleTrigger = signal(false);
-  bounceTrigger = signal(false);
-
   ngOnInit(): void {
     this.loadFromStorage();
   }
@@ -694,11 +691,11 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   }
 
   get music() {
-    return this.audioService.isEnabled();
+    return this.audioService.isEnabled() ? 'on' : 'off';
   }
 
   get customCursors() {
-    return this.themeService.cursorsEnabled();
+    return this.themeService.cursorsEnabled() ? 'on' : 'off';
   }
 
   toggleChat() {
@@ -706,35 +703,27 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     const wasOpen = this.isChatOpen();
     this.isChatOpen.update(v => !v);
 
-    if (!wasOpen) {
-      setTimeout(() => {
-        this.scrollToBottom();
-      }, 100);
-    }
-
+    if (!wasOpen)
+      setTimeout(this.scrollToBottom, 100);
     setTimeout(() => this.bounceTrigger.set(false), 600);
-  }
-
-  getSafeHtml(text: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(text);
   }
 
   async sendMessage() {
     if (!this.userInput().trim() || this.isTyping()) return;
     const input = this.userInput().trim();
-    const newMessage: Message = { text: input, isBot: false };
+    const newMessage: Message = {text: input, isBot: false};
     this.context.messages.push(newMessage);
 
     // Отсылка на клуб ь.
     if (input.toLowerCase() === 'ь.') {
-      this.typeMessage({ text: 'ь.', mood: 'april_fools' });
+      this.typeMessage({text: 'ь.', mood: 'april_fools'});
       this.userInput.set('');
       return;
     }
 
     // Отсылка на гойду
     if (input.toLowerCase().includes('гойда')) {
-      this.typeMessage({ text: 'ГОЙДА!', mood: 'amazed' });
+      this.typeMessage({text: 'ГОЙДА!', mood: 'amazed'});
       this.userInput.set('');
       return;
     }
@@ -742,9 +731,9 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     if (input.includes('/')) {
       if (input.includes(';')) {
         const commands = input.split(';').map(c => c.trim()).filter(c => c);
-        for (const cmd of commands) {
-          this.userInput.set(cmd);
-          await this.sendSingleCommand(cmd);
+        for (const command of commands) {
+          this.userInput.set(command);
+          await this.sendSingleCommand(command);
           await new Promise(resolve => setTimeout(resolve, 100));
         }
       } else
@@ -799,7 +788,10 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
             setTimeout(() => this.exportHistory(), 1000);
             return;
           case 'echo':
-            const { expression, vars } = this.parseEchoArgs(input.slice(5).trim());
+            const {expression, vars, hasQuotes} = this.parseEchoArgs(input.slice(5).trim());
+
+            if (!hasQuotes)
+              throw new Error('Фраза должна быть заключена в кавычки');
 
             // Проверка переменных
             const missingVars = vars.filter(v =>
@@ -810,28 +802,13 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
             if (missingVars.length > 0)
               throw new Error(`Не найдены переменные: ${missingVars.join(', ')}`);
 
-            // Подстановка значений
-            let result = expression.replace(/%([^%]+)%/g, (_, name) => {
-              if (this.context.userVariables[name])
-                return this.context.userVariables[name].toString();
-              if (name === 'time')
-                return this.time;
-              if (name === 'date')
-                return this.date;
-              if (name === 'user')
-                return this.user;
-              if (name === 'volume')
-                return this.volume.toString();
-              if (name === 'music')
-                return this.music ? 'on' : 'off';
-              if (name === 'custom_cursors')
-                return this.customCursors ? 'on' : 'off';
-              return '';
-            });
+            // Подстановка значений и вычисление
+            let result = this.evaluateExpression(expression)?.toString() ?? '';
 
+            // Обработка HTML
             this.context.messages.push({
-              text: result,
               isBot: true,
+              text: result,
               displayedText: result
             });
             this.scrollToBottom();
@@ -842,13 +819,11 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
             const variableName = args[0].replace(/%/g, '');
 
-            if (this.RESERVED.includes(variableName)) {
+            if (this.RESERVED.includes(variableName))
               throw new Error(`Нельзя удалить системную переменную %${variableName}%`);
-            }
 
-            if (!this.context.userVariables[variableName]) {
+            if (!this.context.userVariables[variableName])
               throw new Error(`Переменная %${variableName}% не существует`);
-            }
 
             delete this.context.userVariables[variableName];
             this.typeMessage({
@@ -859,9 +834,8 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
           case 'get':
             const targetVar = args[0].replace(/%/g, '');
 
-            if (!this.context.userVariables[targetVar] && !this.RESERVED.includes(targetVar)) {
+            if (!this.context.userVariables[targetVar] && !this.RESERVED.includes(targetVar))
               throw new Error(`Переменной %${targetVar}% не существует`);
-            }
 
             let varValue;
             if (this.RESERVED.includes(targetVar)) {
@@ -870,13 +844,12 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
                 time: this.time,
                 date: this.date,
                 user: this.user,
+                music: this.music,
                 volume: this.volume,
-                music: this.music ? 'on' : 'off',
-                custom_cursors: this.customCursors ? 'on' : 'off'
+                custom_cursors: this.customCursors
               }[targetVar];
-            } else {
+            } else
               varValue = this.context.userVariables[targetVar];
-            }
 
             this.typeMessage({
               mood: 'normal',
@@ -948,21 +921,21 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
                   break;
 
                 case 'volume':
-                  const volume = parseFloat(value);
+                  const volume = parseInt(value);
                   if (isNaN(volume)) throw new Error('Значение должно быть числом');
-                  if (volume < 0 || volume > 1) throw new Error('Диапазон: 0.0 - 1.0');
+                  if (volume < 0 || volume > 100) throw new Error('Диапазон: 0 - 100');
 
                   this.audioService.setVolume(volume);
                   this.typeMessage({
-                    text: `🔊 Громкость установлена на ${volume.toFixed(2)}`,
+                    text: `🔊 Громкость установлена на ${volume}`,
                     mood: 'normal'
                   });
                   break;
                 case 'page':
-                  const idRequiredPages = ['activity', 'user'];
+                  const paramRequiredPages = ['activity', 'user'];
                   const pageParts = value.split(':');
                   const pageName = pageParts[0];
-                  const id = pageParts[1];
+                  const param = pageParts[1];
 
                   const baseRoute = this.PAGE_COMMANDS_MAP[pageName];
                   let navigationPath = baseRoute;
@@ -971,13 +944,13 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
                   if (!baseRoute)
                     throw new Error(`Страница "${pageName}" не найдена`);
 
-                  if (idRequiredPages.includes(pageName)) {
-                    if (!id)
-                      throw new Error(`Для страниц "${idRequiredPages.join('", "')}" требуется ID в формате: /set page ${pageName}:<GUID>`);
-                    navigationPath += `/${id}`;
-                    displayText += ` с ID: ${id}`;
-                  } else if (id)
-                    throw new Error(`Страница ${pageName} не требует указания ID`);
+                  if (paramRequiredPages.includes(pageName)) {
+                    if (!param)
+                      throw new Error(`Для страниц "${paramRequiredPages.join('", "')}" требуется параметр в формате: /set page ${pageName}:<параметр>`);
+                    navigationPath += `/${param}`;
+                    displayText += ` с параметром "${param}"`;
+                  } else if (param)
+                    throw new Error(`Страница ${pageName} не требует указания параметра`);
 
                   const botMessage: Message = {
                     isBot: true,
@@ -1062,7 +1035,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   private saveToLocalStorage() {
     const dataToSave = {
       ...this.context,
-      messages: this.context.messages.map(({ text, isBot }) => ({ text, isBot }))
+      messages: this.context.messages.map(({text, isBot}) => ({text, isBot}))
     };
 
     const encryptedData = CryptoService.encryptData(dataToSave, environment.encryptionKey);
@@ -1176,7 +1149,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     </html>
     `;
 
-    const blob = new Blob([html], { type: 'text/html' });
+    const blob = new Blob([html], {type: 'text/html'});
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -1191,46 +1164,34 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     return array[Math.floor(Math.random() * array.length)];
   }
 
-  private parseEchoArgs(input: string): { expression: string, vars: string[] } {
-    const args = [];
-    let current = '';
-    let inQuotes = false;
-    let quoteChar = '';
-    let varNames: string[] = [];
+  private parseEchoArgs(input: string): {
+    expression: string,
+    vars: string[],
+    hasQuotes: boolean
+  } {
+    let expression = '';
+    const vars = [];
 
-    for (let i = 0; i < input.length; i++) {
-      const char = input[i];
+    // Проверяем наличие кавычек
+    const trimmed = input.trim();
+    const isQuoted = /^(["'`])(.*)\1$/.exec(trimmed);
 
-      // Обработка кавычек
-      if ((char === '"' || char === "'" || char === '`') && (i === 0 || input[i - 1] !== '\\')) {
-        if (!inQuotes) {
-          inQuotes = true;
-          quoteChar = char;
-        } else if (char === quoteChar) {
-          inQuotes = false;
-          quoteChar = '';
-        }
-        continue;
-      }
-
-      if (!inQuotes && char === ' ' && current) {
-        args.push(current);
-        current = '';
-      } else
-        current += char;
-
-      // Сбор переменных
-      const varMatch = current.match(/%([^%]+)%/g);
-      if (varMatch)
-        varNames = [...varNames, ...varMatch.map(v => v.slice(1, -1))];
+    if (isQuoted) {
+      expression = isQuoted[2];
+      input = expression;
     }
 
-    if (current)
-      args.push(current);
+    // Парсим переменные и выражения
+    const varRegex = /%([^%]+)%/g;
+    let match;
+
+    while ((match = varRegex.exec(input)) !== null)
+      vars.push(match[1]);
 
     return {
-      expression: args.join(' '),
-      vars: [...new Set(varNames)].filter(v => !this.RESERVED.includes(v))
+      expression: input,
+      hasQuotes: !!isQuoted,
+      vars: [...new Set(vars)].filter(v => !this.RESERVED.includes(v))
     };
   }
 
@@ -1268,7 +1229,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     let baseResponse = this.getBaseResponse(category);
     baseResponse = this.applyContextModifications(baseResponse);
     baseResponse = this.applyMoodModifications(baseResponse);
-    console.log(`Niko's mood (-5:5): ${this.moodIntensity}`);
+    console.log(`Настроение Нико (-5 ... 5): ${this.moodIntensity}`);
 
     return {
       text: baseResponse,
@@ -1362,10 +1323,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   }
 
   private updateMood(category: string): void {
-    this.moodIntensity = Math.min(Math.max(
-      this.moodIntensity + (this.MOOD_MAP[category] || 0),
-      -5
-    ), 5);
+    this.moodIntensity = Math.min(Math.max(this.moodIntensity + (this.MOOD_MAP[category] || 0), -5), 5);
   }
 
   private calculateCurrentMood(): NikoMood {
@@ -1380,16 +1338,16 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
   private addCompliment(response: string): string {
     const compliments = ['Кстати, ты сегодня прекрасно выглядишь!', 'Ты молодец!', 'Как всегда, умничка!'];
-    return response + ' ' + this.random(...compliments);
+    return `${response} ${this.random(...compliments)}`;
   }
 
   private typeMessage(response: { text: string; mood: NikoMood }): void {
     this.context.currentMood = response.mood;
 
     const message: Message = {
-      text: response.text,
       isBot: true,
-      displayedText: ''
+      displayedText: '',
+      text: response.text
     };
 
     this.context.messages.push(message);
@@ -1444,11 +1402,10 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     const helpMessages: { [key: string]: string } = {
       'Недостаточно аргументов': `Пример использования: /${command.split(' ')[0]} <параметр> <значение>`,
       'Не числовое значение': 'Используйте числовое значение (например: 0.75)',
-      'Вне диапазона': 'Допустимый диапазон: 0.0 - 1.0',
+      'Вне диапазона': 'Допустимый диапазон: 0 - 100',
       'Неверный номер трека': 'Используйте: /play <номер от 1 до 39>',
       'Диапазон 1-39': 'Доступны треки с 1 по 39',
-      'Отсутствует ID': `Пример: /${command.split(' ')[0]} ${command.split(' ')[1]} <значение>:<GUID>`,
-      'Неверный формат ID': 'Требуется GUID в формате: 00000000-0000-0000-0000-000000000000',
+      'Отсутствует параметр': `Пример: /${command.split(' ')[0]} ${command.split(' ')[1]} <значение>:<GUID>`,
       'Переменная %...% зарезервирована': 'Используйте другое имя переменной',
       'Нельзя удалить системную переменную': 'Системные переменные защищены от удаления',
       'Переменная %...% не существует': 'Убедитесь в правильности имени переменной'
@@ -1457,24 +1414,152 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   }
 
   private generateHelpText(): string {
-    let helpText = 'Привет, это я, твой друг Нико, я могу составить тебе компанию. Ты можешь пользоваться моими командами:\n\n';
-    const commandsToDescribe: any = {
-      '/help': 'Отображает список доступных команд и их описание.',
-      '/echo <текст>': 'Отображает указанный текст. Можно использовать переменные в формате %переменная%.',
-      '/set <переменная> <значение>': 'Устанавливает значение для пользовательской или системной переменной.',
-      '/get <переменная>': 'Отображает значение указанной переменной.',
-      '/delete <переменная>': 'Удаляет пользовательскую переменную.',
-      '/play <номер трека>': 'Включает воспроизведение фонового трека по его номеру (1-39).',
-      '/clear': 'Очищает всю историю чата.',
-      '/export': 'Экспортирует историю чата в HTML файл.'
-    };
+    return `
+      <style>
+        .help-table {
+          width: 100%;
+          margin: 16px 0;
+          overflow: hidden;
+          border-collapse: collapse;
+          color: var(--mat-sys-color-on-surface);
+          background: var(--mat-sys-color-surface-container);
+          border-radius: var(--mat-sys-shape-corner-extra-large);
+        }
 
-    for (const cmd in commandsToDescribe)
-      if (commandsToDescribe.hasOwnProperty(cmd))
-        helpText += `${cmd}: ${commandsToDescribe[cmd].toString()}\n`;
+        .help-table th {
+          text-align: left;
+          padding: var(--mat-sys-spacing-3);
+          color: var(--mat-sys-color-primary);
+          background: var(--mat-sys-color-surface-container-high);
+        }
 
-    helpText += '\nМожно использовать несколько команд в одной строке, разделяя их точкой с запятой (;).';
+        .help-table td {
+          padding: var(--mat-sys-spacing-3);
+          border-bottom: 1px solid var(--mat-sys-color-outline-variant);
+        }
 
-    return helpText;
+        .help-table code {
+          padding: 2px 6px;
+          color: var(--mat-sys-color-on-secondary-container);
+          background: var(--mat-sys-color-secondary-container);
+          border-radius: var(--mat-sys-shape-corner-extra-small);
+        }
+
+        .help-note {
+          display: block;
+          margin-top: var(--mat-sys-spacing-3);
+          color: var(--mat-sys-color-on-surface-variant);
+        }
+      </style>
+
+      <table class="help-table">
+        <thead>
+          <tr>
+            <th>Команда</th>
+            <th>Описание</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>/help</code></td>
+            <td>Список доступных команд</td>
+          </tr>
+          <tr>
+            <td><code>/echo "текст"</code></td>
+            <td>Вывод текста с переменными</td>
+          </tr>
+          <tr>
+            <td><code>/set &lt;var&gt; &lt;value&gt;</code></td>
+            <td>Установка переменной</td>
+          </tr>
+          <tr>
+            <td><code>/get &lt;var&gt;</code></td>
+            <td>Просмотр переменной</td>
+          </tr>
+          <tr>
+            <td><code>/play &lt;1-39&gt;</code></td>
+            <td>Воспроизведение музыки</td>
+          </tr>
+          <tr>
+            <td><code>/clear</code></td>
+            <td>Очистка истории</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <span class="help-note">
+        ⓘ Несколько команд разделяйте через точку с запятой (;)
+      </span>
+    `;
+  }
+
+  private evaluateExpression(expression: string): string | undefined {
+    try {
+      // Обрабатываем конкатенацию строк
+      const concatRegex = /(?:"([^"]*)"|'([^']*)'|(%\w+%)|(\d+(?:\.\d+)?))\s*\+\s*/g;
+      const parts = [];
+      let lastIndex = 0;
+      let match;
+
+      while ((match = concatRegex.exec(expression)) !== null) {
+        const [full, dq, sq, varName, num] = match;
+        if (dq !== undefined) parts.push(dq);
+        if (sq !== undefined) parts.push(sq);
+        if (varName !== undefined) parts.push(this.getVariableValue(varName.slice(1, -1)));
+        if (num !== undefined) parts.push(num);
+        lastIndex = match.index + full.length;
+      }
+
+      // Добавляем остаток выражения
+      const remaining = expression.slice(lastIndex);
+      if (remaining) parts.push(remaining);
+
+      // Вычисляем математические выражения в каждой части
+      return parts.map(part => {
+        const mathMatch = part.toString().match(/^\((.*)\)$/);
+        if (mathMatch) {
+          return String(new Function(`return ${mathMatch[1]}`)());
+        }
+        return part;
+      }).join('');
+    } catch (e) {
+      throw new Error(`Ошибка вычисления выражения: ${(e as Error).message}`);
+    }
+  }
+
+  private getVariableValue(name: string): string | number | boolean {
+    if (this.RESERVED.includes(name)) {
+      switch (name) {
+        case 'volume':
+          return this.audioService.targetVolume();
+
+        case 'music':
+          return this.audioService.isEnabled() ? 'on' : 'off';
+
+        case 'custom_cursors':
+          return this.themeService.cursorsEnabled() ? 'on' : 'off';
+
+        case 'user': {
+          let username = 'Гость';
+          this.authService.getUser().subscribe(u => username = u?.username || username);
+          return username;
+        }
+
+        case 'date':
+          return this.date;
+
+        case 'time':
+          return this.time;
+
+        case 'page':
+          return this.router.url;
+
+        default:
+          return '';
+      }
+    }
+
+    // Для пользовательских переменных
+    return this.context.userVariables[name] || '';
   }
 }

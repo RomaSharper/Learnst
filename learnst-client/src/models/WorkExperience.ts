@@ -7,6 +7,6 @@ export interface WorkExperience {
   description: string | null;
   startDate: string;
   endDate: string | null;
-  userId: string; // Guid
+  userId: string;
   user?: User;
 }

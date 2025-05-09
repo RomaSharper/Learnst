@@ -10,6 +10,7 @@ import {DeviceService} from '../../services/device.service';
 import {DeviceType} from '../../models/DeviceType';
 import {FormsModule} from '@angular/forms';
 import {RouterLink} from '@angular/router';
+import {AlertService} from '../../services/alert.service';
 
 @Component({
   selector: 'app-settings',
@@ -30,10 +31,12 @@ export class SettingsComponent {
   themeService = inject(ThemeService);
   audioService = inject(AudioService);
   deviceService = inject(DeviceService);
+  private alertService = inject(AlertService);
 
   setVolumeFromEvent(event: Event): void {
-    const value = parseFloat((event.target as HTMLInputElement).value);
-    this.audioService.setVolume(value);
+    const value = parseInt((event.target as HTMLInputElement).value);
+    if (!this.audioService.setVolume(value))
+      this.alertService.showSnackBar('Не удалось изменить звук (неверное значение)');
   }
 
   get isDesktop(): boolean {

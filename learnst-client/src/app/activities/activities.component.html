@@ -21,6 +21,8 @@
   <div class="activities-container">
     @if (loading) {
       <mat-spinner></mat-spinner>
+    } @else if (!paginatedActivities) {
+      <small>Ничего не найдено...</small>
     } @else {
       @for (activity of paginatedActivities; track activity.id) {
         <mat-card class="activity-card"
@@ -69,14 +71,11 @@
             </mat-card-actions>
           }
         </mat-card>
-      } @empty {
-        <div>Ничего не найдено...</div>
       }
     }
   </div>
 
   <mat-paginator
-    showFirstLastButtons
     [pageSize]="pageSize"
     (page)="onPageChange($event)"
     [pageSizeOptions]="pageSizeOptions"

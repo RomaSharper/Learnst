@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Learnst.Infrastructure.Models;
 using Learnst.Infrastructure.Exceptions;
 using Learnst.Infrastructure.Repositories;
+using Learnst.Infrastructure.Interfaces;
+using Learnst.Infrastructure.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Learnst.Api.Controllers;
 
@@ -15,7 +18,10 @@ namespace Learnst.Api.Controllers;
 public class UsersController(
     UsersRepository repository,
     FollowsRepository followsRepository,
-    IValidationService validationService
+    IValidationService validationService,
+    ActivitiesRepository activitiesRepository,
+    IAsyncRepository<UserLesson, (Guid, Guid)> userLessonsRepository,
+    IAsyncRepository<UserActivity, (Guid, Guid)> userActivitiesRepository
 ) : ControllerBase
 {
     // GET: Users
@@ -151,6 +157,55 @@ public class UsersController(
         catch (Exception ex)
         {
             return BadRequest(new ErrorResponse(ex));
+        }
+    }
+
+    [HttpGet("{id:guid}/stats")]
+    public async Task<ActionResult<UserActivityStats>> GetUserStats(Guid id)
+    {
+        try
+        {
+            var created = await activitiesRepository.AggregateAsync<int>(
+                EFHelper.AggregateFunction.Count, a => a.AuthorId == id);
+
+            var enrolled = await userActivitiesRepository.AggregateAsync<int>(
+                EFHelper.AggregateFunction.Count, ua => ua.UserId == id);
+
+            var userActivities = await userActivitiesRepository.DbSet.Where(ua => ua.UserId == id)
+                .AsNoTracking()
+                .Include(ua => ua.Activity!)
+                    .ThenInclude(a => a.Topics)
+                        .ThenInclude(t => t.Lessons)
+                .Select(ua => ua.Activity)
+                .ToListAsync();
+
+            var completed = 0;
+            foreach (var activity in userActivities)
+            {
+                // Получаем все уроки активности
+                var totalLessons = activity!.Topics
+                    .SelectMany(t => t.Lessons)
+                    .ToList();
+
+                // Получаем пройденные уроки для этой активности
+                var completedLessons = await userLessonsRepository.AggregateAsync<int>(
+                    EFHelper.AggregateFunction.Count,
+                    ul => ul.UserId == id && totalLessons.Contains(ul.Lesson!));
+
+                if (totalLessons.Count > 0 && completedLessons >= totalLessons.Count)
+                    completed++;
+            }
+    
+            return new UserActivityStats
+            {
+                Created = created,
+                Enrolled = enrolled,
+                Completed = completed
+            };
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new ErrorResponse(ex));
         }
     }
 

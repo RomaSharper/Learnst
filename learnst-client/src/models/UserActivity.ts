@@ -2,9 +2,9 @@ import { Activity } from './Activity';
 import { User } from './User';
 
 export interface UserActivity {
-  userId: string; // Guid
+  userId: string;
   user?: User;
-  activityId: string; // Guid
+  activityId: string;
   activity?: Activity;
   assignedAt?: string;
 }

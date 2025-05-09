@@ -29,6 +29,7 @@ import { Status } from '../../enums/Status';
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss'],
   imports: [
+    NgClass,
     RouterLink,
     FormsModule,
     MatIconModule,
@@ -42,8 +43,7 @@ import { Status } from '../../enums/Status';
     MatAutocompleteModule,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
-    PlaceholderImageDirective,
-    NgClass
+    PlaceholderImageDirective
   ],
 })
 export class UsersComponent extends MediumScreenSupport implements OnInit {
