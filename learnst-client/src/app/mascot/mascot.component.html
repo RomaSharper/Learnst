@@ -14,8 +14,8 @@
 
   @if (isChatOpen()) {
     <div class="chat-box"
-         [class.active]="isChatOpen()"
-         [class.mobile]="isMediumScreen">
+        [class.active]="isChatOpen()"
+        [class.mobile]="isMediumScreen">
       <div class="chat-content">
         <div class="chat-header">
           <div class="title-group">
@@ -26,8 +26,7 @@
                   noDownloading
                   class="nico-avatar"
                   [@avatarScale]="isChatOpen()"
-                  [src]="'assets/niko/' + currentMood + '.webp'"
-                >
+                  [src]="'assets/niko/' + currentMood + '.webp'">
               </div>
             }
             <h3 class="title">Нико (твой друг)</h3>
@@ -61,11 +60,11 @@
         </div>
 
         <div class="messages">
-          @for (msg of messages; track $index) {
+          @for (message of messages; track $index) {
             <div class="message"
                  [class.visible]="true"
-                 [class.bot]="msg.isBot">
-              @if (msg.isBot && $index === messages.length - 1 && isTyping()) {
+                 [class.bot]="message.isBot">
+              @if (message.isBot && $index === messages.length - 1 && isTyping()) {
                 <div class="typing-bubble">
                   <div class="wave">
                     <div class="dot"></div>
@@ -74,13 +73,13 @@
                   </div>
                 </div>
               } @else {
-                <div class="bubble" [innerHTML]="msg.text"></div>
+                <div class="bubble" [innerHTML]="message.text"></div>
               }
             </div>
           } @empty {
             <div class="message">
               <div class="empty">
-                Здесь пусто... Начните общение!
+                Здесь пусто... Давай пообщаемся!
               </div>
             </div>
           }

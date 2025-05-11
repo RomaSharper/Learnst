@@ -1,0 +1,19 @@
+<!-- twitch.component.html -->
+<div class="twitch-panel">
+  <div class="video-container">
+    <iframe #stream
+            [src]="streamUrl"
+            frameborder="0"
+            allowfullscreen="true"
+            scrolling="no"
+            referrerpolicy="no-referrer"
+            loading="lazy"></iframe>
+  </div>
+  <div class="chat-container">
+    <iframe #chat
+            id="chat_embed"
+            [src]="chatUrl()"
+            referrerpolicy="no-referrer"
+            loading="lazy"></iframe>
+  </div>
+</div>

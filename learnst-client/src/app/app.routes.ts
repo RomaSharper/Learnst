@@ -20,6 +20,7 @@ import { UserComponent } from './user/user.component';
 import { UsersComponent } from './users/users.component';
 import { ManualsComponent } from './manuals/manuals.component';
 import {SettingsComponent} from './settings/settings.component';
+import { TwitchComponent } from './twitch/twitch.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -28,6 +29,7 @@ export const routes: Routes = [
   { path: 'manuals/privacypolicy', component: PrivacyPolicyComponent },
   { path: 'manuals', component: ManualsComponent },
   { path: 'settings', component: SettingsComponent },
+  { path: 'twitch', component: TwitchComponent },
 
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },

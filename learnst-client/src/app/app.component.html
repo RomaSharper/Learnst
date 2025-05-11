@@ -10,7 +10,7 @@
 <div class="content" [class.visible]="!loading()">
   <nav class="main-navigation">
     <div class="background-overlay" [class.active]="isMenuOpen()"
-         (click)="closeMenu($event)"></div>
+        (click)="closeMenu($event)"></div>
 
     <button type="button" class="hamburger" mat-icon-button
             (click)="toggleMenu($event)">
@@ -18,105 +18,109 @@
     </button>
 
     @if (isMediumScreen) {
+      <app-mascot/>
       <ul class="mobile-menu" [class.active]="isMenuOpen()">
-        @if (user()) {
-          <li>
-            <a
-              routerLink="/"
-              class="img-link"
-              routerLinkActive="active"
-              [routerLinkActiveOptions]="{ exact: true }"
-            >
-              <img src="assets/icons/favicon.png" alt="Learnst">
-              <span>Learnst</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="/activities" routerLinkActive="active" class="img-link">
-              <img src="assets/icons/books.png" alt="Обучение">
-              <span>Обучение</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="/community" routerLinkActive="active" class="img-link">
-              <img src="assets/icons/community.png" alt="Сообщество">
-              <span>Сообщество</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="/support" routerLinkActive="active" class="img-link">
-              <img src="assets/icons/support.png" alt="Поддержка">
-              <span>Поддержка</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="/manuals" routerLinkActive="active" class="img-link">
-              <img src="assets/icons/documents.png" alt="Информация">
-              <span>Информация</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="/settings" routerLinkActive="active" class="img-link">
-              <img src="assets/icons/settings.png" alt="Настройки">
-              <span>Настройки</span>
-            </a>
-          </li>
-          <li class="mt">
-            <a
-              target="_blank"
-              mat-raised-button
-              class="donate-btn"
-              rel="noopener noreferrer"
-              matTooltip="Поддержать разработчика ♡"
-              href="https://www.donationalerts.com/r/romasharper"
-            >
-              <img src="./assets/icons/donation_alerts.png" alt="Donation Alerts">
-              Донат
-            </a>
-          </li>
-          <li class="user-area">
+        <div class="scroll-container">
+          @if (user()) {
+            <li>
+              <a
+                routerLink="/"
+                class="img-link"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+                <img src="assets/icons/favicon.png" alt="Learnst">
+                <span>Learnst</span>
+              </a>
+            </li>
+            <li>
+              <a routerLink="/activities" routerLinkActive="active" class="img-link">
+                <img src="assets/icons/books.png" alt="Обучение">
+                <span>Обучение</span>
+              </a>
+            </li>
+            <li>
+              <a routerLink="/community" routerLinkActive="active" class="img-link">
+                <img src="assets/icons/community.png" alt="Сообщество">
+                <span>Сообщество</span>
+              </a>
+            </li>
+            <li>
+              <a routerLink="/support" routerLinkActive="active" class="img-link">
+                <img src="assets/icons/support.png" alt="Поддержка">
+                <span>Поддержка</span>
+              </a>
+            </li>
+            <li>
+              <a routerLink="/manuals" routerLinkActive="active" class="img-link">
+                <img src="assets/icons/documents.png" alt="Информация">
+                <span>Информация</span>
+              </a>
+            </li>
+            <li>
+              <a routerLink="/settings" routerLinkActive="active" class="img-link">
+                <img src="assets/icons/settings.png" alt="Настройки">
+                <span>Настройки</span>
+              </a>
+            </li>
+            <li class="mt">
+              <a
+                target="_blank"
+                mat-raised-button
+                class="donate-btn"
+                rel="noopener noreferrer"
+                matTooltip="Поддержать разработчика ♡"
+                href="https://www.donationalerts.com/r/romasharper"
+              >
+                <img src="./assets/icons/donation_alerts.png" alt="Donation Alerts">
+                Донат
+              </a>
+            </li>
+          } @else {
+            <li>
+              <a
+                routerLink="/"
+                class="img-link"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                <img src="assets/icons/favicon.png" alt="Learnst">
+                <span>Learnst</span>
+              </a>
+            </li>
+            <li>
+              <a routerLink="/manuals" routerLinkActive="active" class="img-link">
+                <img src="assets/icons/documents.png" alt="Информация">
+                <span>Информация</span>
+              </a>
+            </li>
+            <li>
+              <a routerLink="/settings" routerLinkActive="active" class="img-link">
+                <img src="assets/icons/settings.png" alt="Настройки">
+                <span>Настройки</span>
+              </a>
+            </li>
+          }
+        </div>
+
+        <li class="user-area">
+          @if (user()) {
             <button type="button" mat-stroked-button class="user-btn" routerLinkActive="active"
                     [matTooltip]="user()?.username" [matMenuTriggerFor]="userMenu">
               <img [alt]="user()?.username" [src]="user()?.avatarUrl" noDownloading
-                   placeholder="/assets/icons/user-192x192.png">
+                  placeholder="/assets/icons/user-192x192.png">
               <span class="user-name">{{ user()!.username | ellipsis: 10 }}</span>
             </button>
 
             <mat-menu #userMenu="matMenu">
               <app-user-menu [user]="user()" />
             </mat-menu>
-          </li>
-        } @else {
-          <li>
-            <a
-              routerLink="/"
-              class="img-link"
-              routerLinkActive="active"
-              [routerLinkActiveOptions]="{ exact: true }"
-            >
-              <img src="assets/icons/favicon.png" alt="Learnst">
-              <span>Learnst</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="/manuals" routerLinkActive="active" class="img-link">
-              <img src="assets/icons/documents.png" alt="Информация">
-              <span>Информация</span>
-            </a>
-          </li>
-          <li>
-            <a routerLink="/settings" routerLinkActive="active" class="img-link">
-              <img src="assets/icons/settings.png" alt="Настройки">
-              <span>Настройки</span>
-            </a>
-          </li>
-          <li class="user-area">
+          } @else {
             <a mat-stroked-button routerLink="/login">
               <mat-icon class="scale-1-5">login</mat-icon>
               Войти
             </a>
-          </li>
-        }
+          }
+        </li>
       </ul>
     } @else {
       <div class="desktop-panel">
@@ -186,6 +190,6 @@
     }
   </nav>
 
-  <app-mascot/>
+  @if (!isMediumScreen) { <app-mascot/> }
   <router-outlet></router-outlet>
 </div>

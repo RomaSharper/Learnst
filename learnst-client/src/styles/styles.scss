@@ -76,7 +76,8 @@ body {
   color: var(--mat-sys-on-secondary-container);
 
   @media (max-width: 767px) {
-    padding-top: 53px;
+    margin-top: 53px;
+    height: calc(100svh - 53px);
     transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }

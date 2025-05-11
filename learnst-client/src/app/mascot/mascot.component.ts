@@ -76,9 +76,9 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   };
 
   private readonly PAGE_COMMANDS_MAP: { [key: string]: string } = {
+    'me': '/me',
     'home': '/home',
     'user': '/user',
-    'users': '/users',
     'support': '/support',
     'manuals': '/manuals',
     'activity': '/activity',
@@ -712,11 +712,11 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     if (!this.userInput().trim() || this.isTyping()) return;
     const input = this.userInput().trim();
     const newMessage: Message = {text: input, isBot: false};
-    this.context.messages.push(newMessage);
+    this.addMessageToContext(newMessage);
 
     // Отсылка на клуб ь.
     if (input.toLowerCase() === 'ь.') {
-      this.typeMessage({text: 'ь.', mood: 'april_fools'});
+      this.typeMessage({ text: 'ь.', mood: 'april_fools' });
       this.userInput.set('');
       return;
     }
@@ -747,7 +747,6 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     this.isTyping.set(true);
     this.context.currentMood = 'speak';
     this.typeMessage(response);
-    this.scrollToBottom();
     this.userInput.set('');
 
     this.updateContext(input, category);
@@ -806,11 +805,8 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
             let result = this.evaluateExpression(expression)?.toString() ?? '';
 
             // Обработка HTML
-            this.context.messages.push({
-              isBot: true,
-              text: result,
-              displayedText: result
-            });
+            this.typeMessage({ text: result, mood: 'speak' });
+            this.addMessageToContext({ text: result, isBot: true });
             this.scrollToBottom();
             return;
           case 'delete':
@@ -827,8 +823,8 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
             delete this.context.userVariables[variableName];
             this.typeMessage({
-              text: `✅ Переменная %${variableName}% удалена`,
-              mood: 'happy'
+              mood: 'happy',
+              text: `✅ Переменная %${variableName}% удалена`
             });
             return;
           case 'get':
@@ -837,29 +833,24 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
             if (!this.context.userVariables[targetVar] && !this.RESERVED.includes(targetVar))
               throw new Error(`Переменной %${targetVar}% не существует`);
 
-            let varValue;
-            if (this.RESERVED.includes(targetVar)) {
-              // Получение системных переменных
-              varValue = {
-                time: this.time,
-                date: this.date,
-                user: this.user,
-                music: this.music,
-                volume: this.volume,
-                custom_cursors: this.customCursors
-              }[targetVar];
-            } else
-              varValue = this.context.userVariables[targetVar];
-
             this.typeMessage({
               mood: 'normal',
-              text: varValue!.toString()
+              text: (this.RESERVED.includes(targetVar)
+                ? {
+                  time: this.time,
+                  date: this.date,
+                  user: this.user,
+                  music: this.music,
+                  volume: this.volume,
+                  custom_cursors: this.customCursors
+                }[targetVar]
+                : this.context.userVariables[targetVar])!.toString()
             });
             return;
           case 'help':
             this.typeMessage({
-              text: this.generateHelpText(),
-              mood: 'speak'
+              mood: 'speak',
+              text: this.generateHelpText()
             });
             return;
           case 'play':
@@ -877,15 +868,15 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
             const trackIndex = trackNumber - 1;
             const trackName = this.audioService.getTrackNameByNumber(trackNumber);
 
-            if (await this.audioService.playSpecificTrack(this.audioService.tracks[trackIndex]))
+            if (await this.audioService.playSpecificTrack(this.audioService.tracks[trackIndex], true))
               this.typeMessage({
-                text: `🎵 Воспроизвожу трек #${trackNumber}: ${trackName}`,
-                mood: 'happy'
+                mood: 'happy',
+                text: `🎵 Воспроизвожу трек #${trackNumber}: ${trackName}`
               });
             else
               this.typeMessage({
-                text: `Не удалось воспроизвести трек (см. консоль разработчика)`,
-                mood: 'sad'
+                mood: 'sad',
+                text: `Не удалось воспроизвести трек (см. консоль разработчика)`
               });
             return;
           case 'set':
@@ -908,28 +899,28 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
                   if (variable === 'custom_cursors') {
                     this.themeService.toggleCursors(isOn);
                     this.typeMessage({
-                      text: `🎮 Кастомные курсоры ${isOn ? 'активированы' : 'отключены'}`,
-                      mood: 'normal'
+                      mood: 'normal',
+                      text: `🎮 Кастомные курсоры ${isOn ? 'активированы' : 'отключены'}`
                     });
                   } else {
                     this.audioService.toggleMusic(isOn);
-                    this.typeMessage({
-                      text: `🎵 Фоновая музыка ${isOn ? 'включена' : 'выключена'}`,
-                      mood: isOn ? 'happy' : 'sad'
-                    });
+                    let text = `🎵 Фоновая музыка ${isOn ? 'включена' : 'выключена'}`;
+                    this.typeMessage({ text, mood: isOn ? 'happy' : 'sad' });
                   }
                   break;
 
                 case 'volume':
                   const volume = parseInt(value);
-                  if (isNaN(volume)) throw new Error('Значение должно быть числом');
-                  if (volume < 0 || volume > 100) throw new Error('Диапазон: 0 - 100');
+
+                  if (isNaN(volume))
+                    throw new Error('Значение должно быть числом');
+
+                  if (volume < 0 || volume > 100)
+                    throw new Error('Диапазон: 0 - 100');
 
                   this.audioService.setVolume(volume);
-                  this.typeMessage({
-                    text: `🔊 Громкость установлена на ${volume}`,
-                    mood: 'normal'
-                  });
+                  let text = `🔊 Громкость установлена на ${volume}`;
+                  this.typeMessage({ text, mood: 'normal' });
                   break;
                 case 'page':
                   const paramRequiredPages = ['activity', 'user'];
@@ -947,6 +938,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
                   if (paramRequiredPages.includes(pageName)) {
                     if (!param)
                       throw new Error(`Для страниц "${paramRequiredPages.join('", "')}" требуется параметр в формате: /set page ${pageName}:<параметр>`);
+
                     navigationPath += `/${param}`;
                     displayText += ` с параметром "${param}"`;
                   } else if (param)
@@ -954,10 +946,10 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
                   const botMessage: Message = {
                     isBot: true,
-                    text: displayText,
-                    displayedText: displayText
+                    text: displayText
                   };
-                  this.context.messages.push(botMessage);
+
+                  this.typeMessage({ text: displayText, mood: 'happy' });
                   await this.router.navigate([navigationPath]);
                   this.scrollToBottom();
                   return;
@@ -983,14 +975,15 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
                 parsedValue = value.slice(1, -1);
 
               this.context.userVariables[variable] = parsedValue;
-
-              this.typeMessage({
-                text: `✅ Переменная %${variable}% установлена`,
-                mood: 'happy'
-              });
+              let text = `✅ Переменная %${variable}% установлена`;
+              this.typeMessage({ text, mood: 'happy' });
             } catch (e) {
               throw new Error(`Ошибка установки переменной: ${(e as Error).message}`);
             }
+            return;
+          case 'twitch':
+            this.typeMessage(this.COMMANDS[input]);
+            setTimeout(() => this.router.navigate(['/twitch']), 300);
             return;
           default:
             const response = this.COMMANDS[input] || {
@@ -1000,13 +993,11 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
             const botMessage: Message = {
               isBot: true,
-              text: response.text,
-              displayedText: response.text
+              text: response.text
             };
 
-            this.context.messages.push(botMessage);
+            this.addMessageToContext(botMessage);
             this.context.currentMood = response.mood;
-            this.scrollToBottom();
             this.saveToLocalStorage();
         }
       } catch (error) {
@@ -1346,11 +1337,10 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
     const message: Message = {
       isBot: true,
-      displayedText: '',
       text: response.text
     };
 
-    this.context.messages.push(message);
+    this.addMessageToContext(message);
 
     // Запуск анимации печати
     if (!response.text.match(/<[^>]*>/))
@@ -1363,17 +1353,18 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
     const typeNextChar = () => {
       if (currentChar < fullText.length) {
-        message.displayedText = fullText.slice(0, currentChar + 1);
+        message.text = fullText.slice(0, currentChar + 1);
         currentChar++;
         this.timer = window.setTimeout(typeNextChar, typingSpeed);
-      } else {
-        this.isTyping.set(false);
-        this.scrollToBottom();
+        return;
       }
+
+      this.isTyping.set(false);
     };
 
     this.isTyping.set(true);
     typeNextChar();
+    this.scrollToBottom();
   }
 
   private calculateTypingSpeed(text: string): number {
@@ -1389,10 +1380,9 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   }
 
   private showError(message: string): void {
-    this.context.messages.push({
+    this.addMessageToContext({
       isBot: true,
-      text: `⚠️ ${message}`,
-      displayedText: `⚠️ ${message}`
+      text: `⚠️ ${message}`
     });
     this.scrollToBottom();
   }
@@ -1561,5 +1551,11 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
     // Для пользовательских переменных
     return this.context.userVariables[name] || '';
+  }
+
+  private addMessageToContext(message: Message) {
+    this.context.messages.push(message);
+    this.saveToLocalStorage();
+    this.scrollToBottom();
   }
 }

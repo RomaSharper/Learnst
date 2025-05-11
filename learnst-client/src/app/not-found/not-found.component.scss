@@ -1,29 +1,24 @@
-// @not-found-text: #c7d5e0;
-// @not-found-error: #ff6b6b;
-// @not-found-accent: #e4e4e4;
-
 .not-found-container {
   display: flex;
-  padding: 4px * 5;
+  padding: 20px;
   text-align: center;
   align-items: center;
-  // color: @not-found-text;
   justify-content: center;
-  height: calc(100vh - 87px);
+  height: calc(100svh - 93px);
 
   @media (max-width: 767px) {
-    margin: 4px * 5;
+    margin: 20px;
   }
 
   .not-found-content {
     width: 100%;
     display: flex;
+    max-width: 800px;
     align-items: center;
-    max-width: 4px * 200;
     flex-direction: column;
 
     @media (min-width: 768px) {
-      gap: 4px * 10; // Отступ между изображением и текстом
+      gap: 40px;
       flex-direction: row;
       align-items: flex-start;
     }
@@ -34,14 +29,14 @@
 
       @media (min-width: 768px) {
         width: 50%;
-        max-width: 4px * 100; // Максимальная ширина изображения
+        max-width: 400px;
       }
     }
 
     .not-found-info {
       width: 100%;
+      margin: 20px;
       display: flex;
-      margin: 4px * 5;
       align-items: center;
       flex-direction: column;
 
@@ -55,21 +50,19 @@
     .not-found-title {
       margin: 0;
       font-size: 2.5rem;
-      // color: @not-found-accent;
 
       @media (min-width: 768px) {
-        margin: 0 0 4px * 2 0;
+        margin: 0 0 8px 0;
       }
     }
 
     .not-found-description {
       font-size: 1.2rem;
-      // color: @not-found-text;
     }
 
     .not-found-button {
       font-size: 1rem;
-      padding: 4px * 2 4px * 4;
+      padding: 8px 4px * 4;
       transition: background-color 0.3s ease;
     }
   }
