@@ -1,4 +1,4 @@
-import {encrypt, decrypt} from 'crypto-js/aes';
+import {decrypt, encrypt} from 'crypto-js/aes';
 import utf8 from 'crypto-js/enc-utf8';
 
 export class CryptoService {

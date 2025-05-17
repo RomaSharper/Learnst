@@ -14,12 +14,10 @@ import {ThemeService} from '../../services/theme.service';
 })
 export class ThemePickerComponent {
   private authService = inject(AuthService);
-  private alertService = inject(AlertService);
-  private themeService = inject(ThemeService);
-
   // Используем toSignal для автоматической отписки
   user = toSignal(this.authService.getUser());
-
+  private alertService = inject(AlertService);
+  private themeService = inject(ThemeService);
   // Получаем прямую ссылку на сигнал из сервиса
   currentTheme = this.themeService.currentTheme;
 

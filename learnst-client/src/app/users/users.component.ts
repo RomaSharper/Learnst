@@ -1,28 +1,28 @@
 import {Component, inject, OnInit} from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
-import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
-import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
-import { RoleHelper } from '../../helpers/RoleHelper';
-import { User } from '../../models/User';
-import { UsersService } from '../../services/users.service';
-import { Role } from '../../enums/Role';
-import { AlertService } from '../../services/alert.service';
-import { AuthService } from '../../services/auth.service';
-import { NgClass } from '@angular/common';
-import { StatusHelper } from '../../helpers/StatusHelper';
-import { Status } from '../../enums/Status';
+import {FormsModule} from '@angular/forms';
+import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
+import {PlaceholderImageDirective} from '../../directives/placeholder-image.directive';
+import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
+import {RoleHelper} from '../../helpers/RoleHelper';
+import {User} from '../../models/User';
+import {UsersService} from '../../services/users.service';
+import {Role} from '../../enums/Role';
+import {AlertService} from '../../services/alert.service';
+import {AuthService} from '../../services/auth.service';
+import {NgClass} from '@angular/common';
+import {StatusHelper} from '../../helpers/StatusHelper';
+import {Status} from '../../enums/Status';
 import {LogService} from '../../services/log.service';
 
 @Component({
@@ -48,13 +48,6 @@ import {LogService} from '../../services/log.service';
   ],
 })
 export class UsersComponent extends MediumScreenSupport implements OnInit {
-  private router = inject(Router);
-  private logService = inject(LogService);
-  private route = inject(ActivatedRoute);
-  private authService = inject(AuthService);
-  private alertService = inject(AlertService);
-  private usersService = inject(UsersService);
-
   users: User[] = [];
   tags: string[] = [];
   pageSize = 20;
@@ -66,6 +59,16 @@ export class UsersComponent extends MediumScreenSupport implements OnInit {
   displayedUsers: User[] = [];
   currentUser: User | null = null;
   pageSizeOptions = [20, 50, 100];
+  protected readonly Role = Role;
+  protected readonly Status = Status;
+  protected readonly RoleHelper = RoleHelper;
+  protected readonly StatusHelper = StatusHelper;
+  private router = inject(Router);
+  private logService = inject(LogService);
+  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private usersService = inject(UsersService);
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -200,7 +203,6 @@ export class UsersComponent extends MediumScreenSupport implements OnInit {
     this.searchQuery = parts[0]; // Первая часть - текст запроса
     this.tags = parts.slice(1).filter(tag => tag.length > 0); // Остальные - непустые теги
   }
-
 
   // Обновление URL с новыми параметрами
   updateUrl(): void {
@@ -342,9 +344,4 @@ export class UsersComponent extends MediumScreenSupport implements OnInit {
       });
     });
   }
-
-  protected readonly Role = Role;
-  protected readonly Status = Status;
-  protected readonly RoleHelper = RoleHelper;
-  protected readonly StatusHelper = StatusHelper;
 }

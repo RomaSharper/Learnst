@@ -1,11 +1,11 @@
 import {Component, inject, Inject} from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { ValidationService } from '../../services/validation.service';
-import { UsersService } from '../../services/users.service';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MatButtonModule} from '@angular/material/button';
+import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {ValidationService} from '../../services/validation.service';
+import {UsersService} from '../../services/users.service';
 
 @Component({
   selector: 'app-reset-password-email-dialog',
@@ -67,7 +67,8 @@ export class ResetPasswordEmailDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<ResetPasswordEmailDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { email: string }
-  ) {}
+  ) {
+  }
 
   onCancel(): void {
     this.dialogRef.close();

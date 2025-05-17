@@ -50,13 +50,6 @@ import {LogService} from '../../services/log.service';
   ]
 })
 export class UserComponent extends MediumScreenSupport implements OnInit {
-  private logService = inject(LogService);
-  private route = inject(ActivatedRoute);
-  private authService = inject(AuthService);
-  private alertService = inject(AlertService);
-  private usersService = inject(UsersService);
-  private clipboardService = inject(ClipboardService);
-
   goBack!: () => void;
   date = new Date();
   created = signal(0);
@@ -68,6 +61,15 @@ export class UserComponent extends MediumScreenSupport implements OnInit {
   user = signal<User | null>(null);
   currentUser = signal<User | null>(null);
   protected readonly SocialMediaPlatformHelper = SocialMediaPlatformHelper;
+  protected readonly StatusHelper = StatusHelper;
+  protected readonly Status = Status;
+  protected readonly Role = Role;
+  private logService = inject(LogService);
+  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private usersService = inject(UsersService);
+  private clipboardService = inject(ClipboardService);
 
   constructor(public router: Router, public location: Location) {
     super();
@@ -159,8 +161,4 @@ export class UserComponent extends MediumScreenSupport implements OnInit {
     this.usersService.getFollowersCount(userId).subscribe(count =>
       this.followersCount.set(count));
   }
-
-  protected readonly StatusHelper = StatusHelper;
-  protected readonly Status = Status;
-  protected readonly Role = Role;
 }

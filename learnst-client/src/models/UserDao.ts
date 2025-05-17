@@ -1,4 +1,4 @@
-import { Role } from "../enums/Role";
+import {Role} from "../enums/Role";
 
 export interface UserDao {
   openid: string,

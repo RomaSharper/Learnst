@@ -1,5 +1,5 @@
-import { Directive, HostListener } from "@angular/core";
-import { WindowService } from "../services/window.service";
+import {Directive, HostListener} from "@angular/core";
+import {WindowService} from "../services/window.service";
 
 @Directive({
   selector: '[appMediumScreenSupport]'

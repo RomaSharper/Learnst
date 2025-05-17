@@ -1,15 +1,15 @@
-<mat-card class="activity-form-container" appearance="outlined">
-  <a mat-button routerLink="/activities" class="mb" [class.full-width]="isMediumScreen">
+<mat-card appearance="outlined" class="activity-form-container">
+  <a [class.full-width]="isMediumScreen" class="mb" mat-button routerLink="/activities">
     Назад
   </a>
 
   <form
-    [formGroup]="activityForm" (ngSubmit)="onSubmit()"
-    (keydown.enter)="$event.preventDefault()" class="activity-form">
+    (keydown.enter)="$event.preventDefault()" (ngSubmit)="onSubmit()"
+    [formGroup]="activityForm" class="activity-form">
     <!-- Основные поля -->
     <mat-form-field appearance="outline">
       <mat-label>Название</mat-label>
-      <input matInput formControlName="title" required maxlength="50">
+      <input formControlName="title" matInput maxlength="50" required>
       @if (activityForm.get('title')?.hasError('required')) {
         <mat-error>
           Название обязательно
@@ -23,7 +23,7 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Описание</mat-label>
-      <textarea matInput formControlName="description" maxlength="500"></textarea>
+      <textarea formControlName="description" matInput maxlength="500"></textarea>
     </mat-form-field>
 
     <!-- Поле для выбора файла -->
@@ -31,23 +31,24 @@
       <div class="avatar-preview-container">
         @if (previewAvatarUrl) {
           <img [src]="previewAvatarUrl" alt="Аватар активности"
-            class="avatar-preview" noDownloading inspectable>
+               class="avatar-preview" noDownloading inspectable>
         }
       </div>
-      <button type="button" mat-stroked-button class="choose-preview-button full-width"
-              (click)="openFilePicker()">
-        Выбрать превью</button>
-      <input type="file" id="avatarInput" accept="image/png, image/jpeg, image/jpg"
-        (change)="onFileSelected($event)" class="hidden">
+      <button (click)="openFilePicker()" class="choose-preview-button full-width" mat-stroked-button
+              type="button">
+        Выбрать превью
+      </button>
+      <input (change)="onFileSelected($event)" accept="image/png, image/jpeg, image/jpg" class="hidden"
+             id="avatarInput" type="file">
     </div>
 
     <mat-form-field appearance="outline">
       <mat-label>Уровень</mat-label>
       <mat-select formControlName="level">
         @for (level of levels; track level) {
-        <mat-option [value]="level.value">
-          {{ level.label }}
-        </mat-option>
+          <mat-option [value]="level.value">
+            {{ level.label }}
+          </mat-option>
         }
       </mat-select>
     </mat-form-field>
@@ -55,12 +56,12 @@
     <mat-form-field appearance="outline">
       <mat-label>Минимальное кол-во баллов для сертификата</mat-label>
       <input
+        [max]="getTotalQuestionsCount()"
+        formControlName="minimalScore"
+        matInput
         min="0"
         step="1"
-        matInput
         type="number"
-        formControlName="minimalScore"
-        [max]="getTotalQuestionsCount()"
       >
       <mat-hint>Максимум: {{ getTotalQuestionsCount() }}</mat-hint>
       @if (activityForm.get('minimalScore')?.hasError('maxScore')) {
@@ -72,12 +73,12 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Дата закрытия</mat-label>
-      <input matInput [matDatepicker]="picker" readonly formControlName="endAt">
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <input [matDatepicker]="picker" formControlName="endAt" matInput readonly>
+      <mat-datepicker-toggle [for]="picker" matSuffix></mat-datepicker-toggle>
       <mat-datepicker #picker [touchUi]="isMediumScreen"></mat-datepicker>
     </mat-form-field>
 
-    <mat-slide-toggle formControlName="isClosed" class="mb">Сделать активность закрытой</mat-slide-toggle>
+    <mat-slide-toggle class="mb" formControlName="isClosed">Сделать активность закрытой</mat-slide-toggle>
 
     <!-- Тэги -->
     <div class="form-section">
@@ -96,14 +97,14 @@
         </mat-chip-grid>
         <input
           #tagInput
+          (input)="filterTags(tagInput.value)"
+          (matChipInputTokenEnd)="addTagFromInput($event)"
+          [matAutocomplete]="tagAuto"
+          [matChipInputFor]="tagGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
           maxlength="50"
           name="currentTag"
-          [matChipInputFor]="tagGrid"
-          [matAutocomplete]="tagAuto"
-          (input)="filterTags(tagInput.value)"
           placeholder="Начинайте вводить тэг..."
-          (matChipInputTokenEnd)="addTagFromInput($event)"
-          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
         >
         <mat-autocomplete #tagAuto="matAutocomplete" (optionSelected)="addTagFromAutocomplete($event)">
           @for (tag of filteredTags; track tag) {
@@ -129,12 +130,12 @@
           }
         </mat-chip-grid>
         <input
+          (matChipInputTokenEnd)="addAudience($event)"
+          [matChipInputFor]="audienceGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
           matInput
           maxlength="50"
           placeholder="Новая аудитория..."
-          [matChipInputFor]="audienceGrid"
-          (matChipInputTokenEnd)="addAudience($event)"
-          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
         >
       </mat-form-field>
     </div>
@@ -155,12 +156,12 @@
           }
         </mat-chip-grid>
         <input
+          (matChipInputTokenEnd)="addChecklistItem($event)"
+          [matChipInputFor]="checklistGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
           matInput
           maxlength="100"
           placeholder="Новый пункт..."
-          [matChipInputFor]="checklistGrid"
-          (matChipInputTokenEnd)="addChecklistItem($event)"
-          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
         >
       </mat-form-field>
     </div>
@@ -187,34 +188,34 @@
           </mat-menu>
         </mat-card>
       }
-      <button type="button" mat-stroked-button (click)="addInfoCard()">Добавить инфокарту</button>
+      <button (click)="addInfoCard()" mat-stroked-button type="button">Добавить инфокарту</button>
     </div>
 
     <!-- Темы -->
-  <div class="form-section">
-    <h3>Темы</h3>
-    @for (topic of topics; track topic; let i = $index) {
-      <mat-card class="topic" appearance="outlined">
-        <div class="topic-content">
-          <p><strong>{{ topic.title }}</strong></p>
-        </div>
-        <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="topicMenu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #topicMenu="matMenu">
-          <button type="button" mat-menu-item (click)="editTopic(i)">Изменить</button>
-          <button type="button" mat-menu-item (click)="removeTopic(i)">Удалить</button>
-        </mat-menu>
-      </mat-card>
-    }
-    <button type="button" mat-stroked-button (click)="addTopic()">
-      Добавить тему
-    </button>
-  </div>
+    <div class="form-section">
+      <h3>Темы</h3>
+      @for (topic of topics; track topic; let i = $index) {
+        <mat-card class="topic" appearance="outlined">
+          <div class="topic-content">
+            <p><strong>{{ topic.title }}</strong></p>
+          </div>
+          <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="topicMenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #topicMenu="matMenu">
+            <button type="button" mat-menu-item (click)="editTopic(i)">Изменить</button>
+            <button type="button" mat-menu-item (click)="removeTopic(i)">Удалить</button>
+          </mat-menu>
+        </mat-card>
+      }
+      <button (click)="addTopic()" mat-stroked-button type="button">
+        Добавить тему
+      </button>
+    </div>
 
     <!-- Кнопка сохранения -->
-    <button mat-flat-button color="primary" type="submit" class="full-width mt-2"
-      [disabled]="activityForm.invalid">
+    <button [disabled]="activityForm.invalid" class="full-width mt-2" color="primary" mat-flat-button
+            type="submit">
       {{ activityId ? 'Обновить' : 'Создать' }}
     </button>
   </form>

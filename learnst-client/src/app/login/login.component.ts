@@ -41,6 +41,12 @@ import {LogService} from '../../services/log.service';
   ]
 })
 export class LoginComponent {
+  loading = signal(false);
+  hidePassword = signal(true);
+  form = new FormGroup({
+    login: new FormControl('', [Validators.required, ValidationService.loginValidator]),
+    password: new FormControl('', [Validators.required])
+  });
   private code = '';
   private router = inject(Router);
   private dialog = inject(MatDialog);
@@ -49,13 +55,6 @@ export class LoginComponent {
   private alertService = inject(AlertService);
   private emailService = inject(EmailService);
   private usersService = inject(UsersService);
-
-  loading = signal(false);
-  hidePassword = signal(true);
-  form = new FormGroup({
-    login: new FormControl('', [Validators.required, ValidationService.loginValidator]),
-    password: new FormControl('', [Validators.required])
-  });
 
   onSubmit() {
     if (this.form.invalid) {

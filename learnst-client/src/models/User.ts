@@ -1,14 +1,14 @@
-import { Role } from "../enums/Role";
-import { Education } from "./Education";
-import { SocialMediaProfile } from "./SocialMediaProfile";
-import { UserActivity } from "./UserActivity";
-import { UserLesson } from "./UserLesson";
-import { WorkExperience } from "./WorkExperience";
-import { UserAnswer } from "./UserAnswer";
-import { Ticket } from "./Ticket";
-import { TicketAnswer } from "./TicketAnswer";
-import { Theme } from "./Theme";
-import { SocialMediaPlatform } from "../enums/SocialMediaPlatform";
+import {Role} from "../enums/Role";
+import {Education} from "./Education";
+import {SocialMediaProfile} from "./SocialMediaProfile";
+import {UserActivity} from "./UserActivity";
+import {UserLesson} from "./UserLesson";
+import {WorkExperience} from "./WorkExperience";
+import {UserAnswer} from "./UserAnswer";
+import {Ticket} from "./Ticket";
+import {TicketAnswer} from "./TicketAnswer";
+import {Theme} from "./Theme";
+import {SocialMediaPlatform} from "../enums/SocialMediaPlatform";
 import {Status} from '../enums/Status';
 
 export interface User {

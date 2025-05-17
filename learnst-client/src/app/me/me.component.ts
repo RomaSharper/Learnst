@@ -85,16 +85,6 @@ import {LogService} from '../../services/log.service';
 export class MeComponent extends MediumScreenSupport implements OnInit, CanComponentDeactivate {
   audioService = inject(AudioService);
   themeService = inject(ThemeService);
-
-  private dialog = inject(MatDialog);
-  private logService = inject(LogService);
-  private fileService = inject(FileService);
-  private authService = inject(AuthService);
-  private alertService = inject(AlertService);
-  private emailService = inject(EmailService);
-  private usersService = inject(UsersService);
-  private deviceService = inject(DeviceService);
-
   userId = '';
   goBack!: () => void;
   selectedFile?: File;
@@ -115,8 +105,18 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   user = signal<User | null>(null);
   @ViewChild('importFile') importFileInput!: ElementRef<HTMLInputElement>;
   @ViewChild(MatDatepicker<Date | null>) picker!: MatDatepicker<Date | null>;
-  isDesktop = signal(this.deviceService.getDeviceType() === DeviceType.Desktop);
   protected readonly SocialMediaPlatformHelper = SocialMediaPlatformHelper;
+  protected readonly StatusHelper = StatusHelper;
+  protected readonly Status = Status;
+  private dialog = inject(MatDialog);
+  private logService = inject(LogService);
+  private fileService = inject(FileService);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private emailService = inject(EmailService);
+  private usersService = inject(UsersService);
+  private deviceService = inject(DeviceService);
+  isDesktop = signal(this.deviceService.getDeviceType() === DeviceType.Desktop);
 
   constructor(public router: Router, public location: Location) {
     super();
@@ -592,7 +592,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   }
 
   private saveFile(content: string, mimeType: string, filename: string): void {
-    const blob = new Blob([content], { type: mimeType });
+    const blob = new Blob([content], {type: mimeType});
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement('a');
@@ -811,7 +811,4 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   private deleteOriginalAvatar(originalAvatarUrl: string): void {
     this.fileService.delete(originalAvatarUrl).subscribe();
   }
-
-  protected readonly StatusHelper = StatusHelper;
-  protected readonly Status = Status;
 }

@@ -1,13 +1,13 @@
-import { Component, inject } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
-import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
-import { RuDateTimePipe } from '../../pipes/ru.date.time.pipe';
-import { AlertService } from '../../services/alert.service';
-import { AuthService } from '../../services/auth.service';
+import {Component, inject} from '@angular/core';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatListModule} from '@angular/material/list';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {Router} from '@angular/router';
+import {PlaceholderImageDirective} from '../../directives/placeholder-image.directive';
+import {RuDateTimePipe} from '../../pipes/ru.date.time.pipe';
+import {AlertService} from '../../services/alert.service';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-accounts-manager',
@@ -23,10 +23,9 @@ import { AuthService } from '../../services/auth.service';
   ],
 })
 export class AccountsManagerComponent {
+  authService = inject(AuthService);
   private router = inject(Router);
   private alertService = inject(AlertService);
-
-  authService = inject(AuthService);
 
   switchAccount(accountId: string, event?: MouseEvent): void {
     event?.stopPropagation();

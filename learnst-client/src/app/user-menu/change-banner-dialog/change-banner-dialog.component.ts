@@ -1,7 +1,7 @@
 import {Component, inject, Inject, OnInit} from "@angular/core";
-import {FormGroup, FormBuilder, Validators, ReactiveFormsModule} from "@angular/forms";
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {MatButtonModule} from "@angular/material/button";
-import {MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatIconModule} from "@angular/material/icon";
 import {MatInputModule} from "@angular/material/input";
@@ -29,15 +29,14 @@ import {LogService} from '../../../services/log.service';
   ]
 })
 export class ChangeBannerDialogComponent extends MediumScreenSupport implements OnInit {
+  form: FormGroup;
+  previewUrl: string | null = null;
   private currentFile: File | null = null;
   private fb = inject(FormBuilder);
   private logService = inject(LogService);
   private fileService = inject(FileService);
   private alertService = inject(AlertService);
   private dialogRef = inject(MatDialogRef<ChangeBannerDialogComponent>);
-
-  form: FormGroup;
-  previewUrl: string | null = null;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { banner?: string }) {
     super();

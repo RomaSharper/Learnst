@@ -1,7 +1,7 @@
 <mat-card class="ticket-detail-container container">
   <div class="action-bar">
-    <button mat-stroked-button
-            class="back-btn"
+    <button class="back-btn"
+            mat-stroked-button
             routerLink="/support">
       <mat-icon>arrow_back</mat-icon>
       <span>Назад</span>
@@ -50,7 +50,7 @@
             <span class="username">{{ ticket.author?.username }}</span>
           </button>
           <mat-menu #userMenu>
-            <app-user-menu [user]="ticket.author!" [redirectOnly]="true" />
+            <app-user-menu [user]="ticket.author!" [redirectOnly]="true"/>
           </mat-menu>
         </div>
         <span class="creation-date">
@@ -108,7 +108,7 @@
                        alt="Аватар"
                        [matMenuTriggerFor]="answerMenu">
                   <mat-menu #answerMenu>
-                    <app-user-menu [user]="answer.author!" [redirectOnly]="true" />
+                    <app-user-menu [user]="answer.author!" [redirectOnly]="true"/>
                   </mat-menu>
 
                   <div class="user-details">

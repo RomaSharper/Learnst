@@ -1,5 +1,5 @@
-import { Activity } from './Activity';
-import { User } from './User';
+import {Activity} from './Activity';
+import {User} from './User';
 
 export interface UserActivity {
   userId: string;

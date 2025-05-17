@@ -1,5 +1,5 @@
-import { User } from './User';
-import { Lesson } from './Lesson';
+import {User} from './User';
+import {Lesson} from './Lesson';
 
 export interface UserLesson {
   userId: string;

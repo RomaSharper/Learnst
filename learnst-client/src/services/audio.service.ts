@@ -5,14 +5,6 @@ import {LogService} from './log.service';
   providedIn: 'root'
 })
 export class AudioService {
-  private tabId!: string;
-  private nextTrackTimeout: any;
-  private fadeDuration = 2000;
-  private isActiveTab = false;
-  private isScheduling = false;
-  private syncChannel!: BroadcastChannel;
-  private currentTrackIndex = -1;
-  private userInteracted = false;
   readonly tracks: string[] = [
     '/assets/sounds/music/01 My Burden Is Light.mp3',
     '/assets/sounds/music/02 Someplace I Know.mp3',
@@ -54,6 +46,14 @@ export class AudioService {
     '/assets/sounds/music/41 Countdown.mp3',
     '/assets/sounds/music/42 IT\'S TIME TO FIGHT CRIME.mp3'
   ];
+  private tabId!: string;
+  private nextTrackTimeout: any;
+  private fadeDuration = 2000;
+  private isActiveTab = false;
+  private isScheduling = false;
+  private syncChannel!: BroadcastChannel;
+  private currentTrackIndex = -1;
+  private userInteracted = false;
   private logService = inject(LogService);
   private audioElement = new Audio();
   private readonly sounds: string[] = [
@@ -61,7 +61,9 @@ export class AudioService {
     '/assets/sounds/sfx/37 Sun.mp3'
   ];
   private readonly MUSIC_STORAGE_KEY = 'music';
+  isEnabled = signal(localStorage.getItem(this.MUSIC_STORAGE_KEY) === 'on');
   private readonly VOLUME_STORAGE_KEY = 'volume';
+  targetVolume = signal(parseFloat(localStorage.getItem(this.VOLUME_STORAGE_KEY) ?? '20'));
   private readonly trackNames: string[] = [
     'My Burden Is Light', 'Someplace I Know', 'Phosphor', 'The Prophecy',
     'Abandoned Factory', 'Silverpoint', "A God's Machine", 'Rowbot',
@@ -77,9 +79,6 @@ export class AudioService {
   ];
   private readonly SYNC_CHANNEL_NAME = 'music_channel';
   private readonly ACTIVE_TAB_KEY = 'active_music_tab';
-
-  isEnabled = signal(localStorage.getItem(this.MUSIC_STORAGE_KEY) === 'on');
-  targetVolume = signal(parseFloat(localStorage.getItem(this.VOLUME_STORAGE_KEY) ?? '20'));
 
   constructor() {
     this.audioElement.loop = false;
@@ -98,7 +97,7 @@ export class AudioService {
     const newState = state ?? !this.isEnabled();
 
     if (newState === this.isEnabled()) {
-      this.logService.log('Состояние музыки не изменилось', { current: this.isEnabled() });
+      this.logService.log('Состояние музыки не изменилось', {current: this.isEnabled()});
       return;
     }
 
@@ -140,7 +139,7 @@ export class AudioService {
 
   setVolume(value: number): boolean {
     if (value < 0 || value > 100) {
-      this.logService.log('Некорректное значение громкости', { value });
+      this.logService.log('Некорректное значение громкости', {value});
       return false;
     }
 
@@ -499,7 +498,7 @@ export class AudioService {
     try {
       return decodeURIComponent(path.split('/').pop()?.split('.')[0] || path);
     } catch (e) {
-      this.logService.log('Ошибка декодирования названия трека', { path, error: e });
+      this.logService.log('Ошибка декодирования названия трека', {path, error: e});
       return path;
     }
   }
@@ -571,7 +570,7 @@ export class AudioService {
       }
     };
 
-    window.addEventListener('keydown', handler, { once: true });
-    document.addEventListener('click', handler, { once: true });
+    window.addEventListener('keydown', handler, {once: true});
+    document.addEventListener('click', handler, {once: true});
   }
 }

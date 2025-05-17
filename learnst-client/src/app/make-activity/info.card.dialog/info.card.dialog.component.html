@@ -1,12 +1,14 @@
-<h2 mat-dialog-title>{{ data.infoCard ? 'Редактировать инфокарту'
-  : 'Добавить инфокарту' }}</h2>
+<h2 mat-dialog-title>{{
+    data.infoCard ? 'Редактировать инфокарту'
+      : 'Добавить инфокарту'
+  }}</h2>
 
 <mat-dialog-content>
   <form [formGroup]="infoCardForm">
     <!-- Поле "Текст инфокарты" -->
     <mat-form-field appearance="outline">
       <mat-label>Текст инфокарты</mat-label>
-      <input matInput formControlName="text" (keydown.enter)="onSave()" required maxlength="2048">
+      <input (keydown.enter)="onSave()" formControlName="text" matInput maxlength="2048" required>
       @if (infoCardForm.get('text')?.invalid && infoCardForm.get('text')?.touched) {
         <mat-error>Текст обязателен для заполнения</mat-error>
       }
@@ -14,14 +16,14 @@
 
     <!-- Поле для выбора файла -->
     <div class="file-input-section">
-      <button type="button" mat-flat-button (click)="openFilePicker()">
+      <button (click)="openFilePicker()" mat-flat-button type="button">
         Выбрать иконку
       </button>
-      <input type="file" id="iconInput" accept="image/png, image/jpeg, image/jpg"
-        (change)="onFileSelected($event)" class="hidden">
+      <input (change)="onFileSelected($event)" accept="image/png, image/jpeg, image/jpg" class="hidden"
+             id="iconInput" type="file">
       @if (previewIconUrl) {
         <img [src]="previewIconUrl" alt="Превью иконки" class="icon-preview"
-          inspectable>
+             inspectable>
       }
       @if (infoCardForm.get('iconUrl')?.invalid && infoCardForm.get('iconUrl')?.touched) {
         <mat-error>Иконка обязательна для добавления</mat-error>
@@ -43,7 +45,8 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button type="button" mat-button (click)="onCancel()">Отмена</button>
-  <button type="button" mat-button [disabled]="infoCardForm.invalid"
-    (click)="onSave()">Сохранить</button>
+  <button (click)="onCancel()" mat-button type="button">Отмена</button>
+  <button (click)="onSave()" [disabled]="infoCardForm.invalid" mat-button
+          type="button">Сохранить
+  </button>
 </mat-dialog-actions>

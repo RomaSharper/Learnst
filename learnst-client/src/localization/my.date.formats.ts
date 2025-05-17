@@ -1,4 +1,4 @@
-import { MatDateFormats } from "@angular/material/core";
+import {MatDateFormats} from "@angular/material/core";
 
 export const MY_DATE_FORMATS: MatDateFormats = {
   parse: {

@@ -1,19 +1,19 @@
-<mat-card class="container" appearance="outlined"
-  [class.mb-4]="isMediumScreen">
+<mat-card [class.mb-4]="isMediumScreen" appearance="outlined"
+          class="container">
   <a class="mb" mat-button routerLink="/">На главную</a>
 
   <!-- Поле поиска с автозаполнением -->
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Поиск пользователей</mat-label>
-    <input matInput [(ngModel)]="searchInput" [matAutocomplete]="auto" (input)="onInputChange()" maxlength="2048"
-      (keydown.enter)="onSearch()" placeholder="Начните вводить имя или роль (например, #админ)..." />
-    <button type="button" mat-icon-button matSuffix (click)="onSearch()">
+    <input (input)="onInputChange()" (keydown.enter)="onSearch()" [(ngModel)]="searchInput" [matAutocomplete]="auto" matInput
+           maxlength="2048" placeholder="Начните вводить имя или роль (например, #админ)..."/>
+    <button (click)="onSearch()" mat-icon-button matSuffix type="button">
       <mat-icon>search</mat-icon>
     </button>
   </mat-form-field>
 
   <!-- Автозаполнение -->
-  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelected($event)">
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelected($event)" [displayWith]="displayFn">
     @for (user of hintUsers; track user.id) {
       <mat-option [value]="user.username">
         {{ user.username }}
@@ -49,7 +49,8 @@
             </p>
           </div>
           @if (currentUser?.role === Role.Admin && user.role !== Role.Admin && user.id !== currentUser?.id) {
-            <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+            <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="menu"
+                    (click)="$event.stopPropagation()">
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
@@ -91,7 +92,7 @@
     }
   </div>
 
-  <mat-paginator [length]="users.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
-    (page)="onPageChange($event)" showFirstLastButtons>
+  <mat-paginator (page)="onPageChange($event)" [length]="users.length" [pageSizeOptions]="pageSizeOptions"
+                 [pageSize]="pageSize" showFirstLastButtons>
   </mat-paginator>
 </mat-card>

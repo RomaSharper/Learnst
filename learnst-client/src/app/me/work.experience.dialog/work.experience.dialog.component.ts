@@ -1,17 +1,17 @@
-import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MediumScreenSupport } from '../../../helpers/MediumScreenSupport';
-import { Return } from '../../../helpers/Return';
-import { WorkExperience } from '../../../models/WorkExperience';
-import { DateService } from '../../../services/date.service';
-import { Router } from '@angular/router';
-import { Location } from '@angular/common';
+import {Component, Inject} from '@angular/core';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatNativeDateModule} from '@angular/material/core';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MediumScreenSupport} from '../../../helpers/MediumScreenSupport';
+import {Return} from '../../../helpers/Return';
+import {WorkExperience} from '../../../models/WorkExperience';
+import {DateService} from '../../../services/date.service';
+import {Router} from '@angular/router';
+import {Location} from '@angular/common';
 
 @Return()
 @Component({

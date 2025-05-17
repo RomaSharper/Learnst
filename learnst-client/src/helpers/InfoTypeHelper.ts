@@ -1,4 +1,4 @@
-import { InfoType } from "../enums/InfoType";
+import {InfoType} from "../enums/InfoType";
 
 export class InfoTypeHelper {
   static getName(infoType: InfoType): string {
@@ -14,8 +14,8 @@ export class InfoTypeHelper {
 
   static getInfoTypes(): { value: InfoType, label: string }[] {
     return [
-      { value: InfoType.Benefit, label: 'Почему стоит учиться' },
-      { value: InfoType.WayToLearn, label: 'Как проходит обучение' }
+      {value: InfoType.Benefit, label: 'Почему стоит учиться'},
+      {value: InfoType.WayToLearn, label: 'Как проходит обучение'}
     ];
   }
 }

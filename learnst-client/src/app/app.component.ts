@@ -18,7 +18,7 @@ import {UserMenuComponent} from './user-menu/user-menu.component';
 import {MascotComponent} from './mascot/mascot.component';
 import {UserStatusService} from '../services/user.status.service';
 import {AudioService} from '../services/audio.service';
-import { Status } from '../enums/Status';
+import {Status} from '../enums/Status';
 import {LogService} from '../services/log.service';
 
 @Component({
@@ -43,6 +43,10 @@ import {LogService} from '../services/log.service';
   ],
 })
 export class AppComponent extends MediumScreenSupport {
+  loading = signal(true);
+  isMenuOpen = signal(false);
+  user = signal<User | null>(null);
+
   protected router = inject(Router);
   protected audioService = inject(AudioService);
 
@@ -51,10 +55,6 @@ export class AppComponent extends MediumScreenSupport {
   private alertService = inject(AlertService);
   private themeService = inject(ThemeService);
   private userStatusService = inject(UserStatusService);
-
-  loading = signal(true);
-  isMenuOpen = signal(false);
-  user = signal<User | null>(null);
 
   constructor() {
     super();
@@ -108,11 +108,17 @@ export class AppComponent extends MediumScreenSupport {
     const el = event.target as HTMLElement;
     const clickedOnLink = el.closest('a');
     const clickedInsideMenu = el.closest('.main-navigation');
-    const clickedOnOverlay = el.classList.contains('background-overlay') || el.closest('.cdk-overlay-backdrop')
-      || el.classList.contains('cdk-overlay-backdrop') || el.closest('.background-overlay');
+    const clickedOnOverlay = el.classList.contains('background-overlay')
+      || el.classList.contains('cdk-overlay-backdrop')
+      || el.closest('.cdk-overlay-backdrop')
+      || el.closest('.background-overlay');
+
     const clickedOnAlerts = el.closest('.mat-mdc-dialog-actions') || el.closest('.cdk-overlay-container');
     const clickedOnBannerEditBtn = el.classList.contains('edit-banner-btn');
-    const clickedOnMenuItem = el.classList.contains('user-menu-item');
+    const clickedOnMenuItem = el.closest('.user-menu')
+      || el.closest('.user-menu-item')
+      || el.closest('.mobile-menu li')
+      || el.closest('.desktop-menu li');
 
     if (this.isMenuOpen() && !clickedOnOverlay && !clickedInsideMenu && !clickedOnAlerts && !clickedOnBannerEditBtn
       || clickedOnLink || clickedOnMenuItem)

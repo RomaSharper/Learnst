@@ -1,6 +1,6 @@
-import { BrowserInfo } from "./BrowserInfo";
-import { NetworkInfo } from "./NetworkInfo";
-import { GeolocationInfo } from "./GeolocationInfo";
+import {BrowserInfo} from "./BrowserInfo";
+import {NetworkInfo} from "./NetworkInfo";
+import {GeolocationInfo} from "./GeolocationInfo";
 
 export interface ClientInfo {
   browserInfo: BrowserInfo;

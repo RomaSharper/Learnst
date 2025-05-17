@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { catchError, Observable, of } from 'rxjs';
-import { environment } from '../environments/environment';
-import { Lesson } from '../models/Lesson';
-import { UserLesson } from '../models/UserLesson';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {catchError, Observable, of} from 'rxjs';
+import {environment} from '../environments/environment';
+import {Lesson} from '../models/Lesson';
+import {UserLesson} from '../models/UserLesson';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,8 @@ import { UserLesson } from '../models/UserLesson';
 export class LessonsService {
   private apiUrl = environment.apiBaseUrl;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
   getLessonById(lessonId: string): Observable<Lesson> {
     return this.http.get<Lesson>(`${this.apiUrl}/lessons/${lessonId}`);

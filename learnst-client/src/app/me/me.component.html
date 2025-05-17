@@ -87,24 +87,25 @@
         <div class="user-info">
           <mat-form-field appearance="outline">
             <mat-label>ФИО</mat-label>
-            <input matInput id="fullname" [(ngModel)]="user()!.fullName" placeholder="Иванов Иван Иванович" maxlength="48"
-              (input)="onUserInfoChange()">
+            <input matInput id="fullname" [(ngModel)]="user()!.fullName" placeholder="Иванов Иван Иванович"
+                   maxlength="48"
+                   (input)="onUserInfoChange()">
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Имя пользователя</mat-label>
             <input matInput id="username" [(ngModel)]="user()!.username" placeholder="Имя пользователя" maxlength="20"
-              minlength="3" (input)="onUserInfoChange()" required>
+                   minlength="3" (input)="onUserInfoChange()" required>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Дата рождения</mat-label>
             <input matInput id="date" [(ngModel)]="user()!.dateOfBirth" placeholder="Выберите день рождения" readonly
-              (dateChange)="onUserInfoChange()" [matDatepicker]="picker" [min]="minDate" [max]="maxDate">
+                   (dateChange)="onUserInfoChange()" [matDatepicker]="picker" [min]="minDate" [max]="maxDate">
             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker [touchUi]="isMediumScreen"></mat-datepicker>
             <button type="button" mat-icon-button matTooltip="Очистить дату" class="clear-date-btn"
-              (click)="clearDate()">
+                    (click)="clearDate()">
               <mat-icon>close</mat-icon>
             </button>
             <mat-hint>dd.mm.yyyy</mat-hint>
@@ -113,25 +114,26 @@
           <mat-form-field appearance="outline">
             <mat-label>Электронная почта</mat-label>
             <input matInput id="email" type="email" [(ngModel)]="user()!.emailAddress" placeholder="Электронная почта"
-              maxlength="255" (input)="onUserInfoChange()">
+                   maxlength="255" (input)="onUserInfoChange()">
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Город</mat-label>
             <input matInput id="city" type="text" [(ngModel)]="user()!.city" placeholder="Город" maxlength="50"
-              (input)="onUserInfoChange()">
+                   (input)="onUserInfoChange()">
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Резюме</mat-label>
             <textarea matInput id="resume" [(ngModel)]="user()!.resumeText" maxlength="500"
-              placeholder="Введите ваше резюме" rows="4" (input)="onUserInfoChange()"></textarea>
+                      placeholder="Введите ваше резюме" rows="4" (input)="onUserInfoChange()"></textarea>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Обо мне</mat-label>
-            <textarea matInput id="aboutMe" [(ngModel)]="user()!.aboutMe" maxlength="500" placeholder="Расскажите о себе"
-              rows="4" (input)="onUserInfoChange()"></textarea>
+            <textarea matInput id="aboutMe" [(ngModel)]="user()!.aboutMe" maxlength="500"
+                      placeholder="Расскажите о себе"
+                      rows="4" (input)="onUserInfoChange()"></textarea>
           </mat-form-field>
 
           <div class="full-width">
@@ -211,20 +213,20 @@
         </button>
         <div class="cards">
           @for (socialMediaProfile of user()!.socialMediaProfiles; track socialMediaProfile.id) {
-          <div class="social-card">
-            <a [href]="socialMediaProfile.url" target="_blank">
-              <img [src]="SocialMediaPlatformHelper.getImagePath(socialMediaProfile.platform)"
-                   [matTooltip]="socialMediaProfile.url" alt="Social Media" noDownloading>
-              <div>{{ SocialMediaPlatformHelper.getName(socialMediaProfile.platform) }}</div>
-            </a>
-            <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="socialMenu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #socialMenu="matMenu">
-              <button type="button" mat-menu-item (click)="openSocialMediaModal(socialMediaProfile)">Изменить</button>
-              <button type="button" mat-menu-item (click)="deleteSocialMedia(socialMediaProfile)">Удалить</button>
-            </mat-menu>
-          </div>
+            <div class="social-card">
+              <a [href]="socialMediaProfile.url" target="_blank">
+                <img [src]="SocialMediaPlatformHelper.getImagePath(socialMediaProfile.platform)"
+                     [matTooltip]="socialMediaProfile.url" alt="Social Media" noDownloading>
+                <div>{{ SocialMediaPlatformHelper.getName(socialMediaProfile.platform) }}</div>
+              </a>
+              <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="socialMenu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #socialMenu="matMenu">
+                <button type="button" mat-menu-item (click)="openSocialMediaModal(socialMediaProfile)">Изменить</button>
+                <button type="button" mat-menu-item (click)="deleteSocialMedia(socialMediaProfile)">Удалить</button>
+              </mat-menu>
+            </div>
           }
         </div>
       </mat-card>
@@ -237,18 +239,18 @@
         </button>
         <div class="cards">
           @for (education of user()!.educations; track education) {
-          <div class="education-item">
-            <div><strong>Вуз:</strong> {{ education.institutionName }}</div>
-            <div><strong>Факультет:</strong> {{ education.degree }}</div>
-            <div><strong>Год выпуска:</strong> {{ education.graduationYear }}</div>
-            <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="educationMenu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #educationMenu="matMenu">
-              <button type="button" mat-menu-item (click)="openEducationModal(education)">Изменить</button>
-              <button type="button" mat-menu-item (click)="deleteEducation(education)">Удалить</button>
-            </mat-menu>
-          </div>
+            <div class="education-item">
+              <div><strong>Вуз:</strong> {{ education.institutionName }}</div>
+              <div><strong>Факультет:</strong> {{ education.degree }}</div>
+              <div><strong>Год выпуска:</strong> {{ education.graduationYear }}</div>
+              <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="educationMenu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #educationMenu="matMenu">
+                <button type="button" mat-menu-item (click)="openEducationModal(education)">Изменить</button>
+                <button type="button" mat-menu-item (click)="deleteEducation(education)">Удалить</button>
+              </mat-menu>
+            </div>
           }
         </div>
       </mat-card>
@@ -261,19 +263,19 @@
         </button>
         <div class="cards">
           @for (job of user()!.workExperiences; track job) {
-          <div class="work-item">
-            <div><strong>Компания:</strong> {{ job.companyName }}</div>
-            <div><strong>Должность:</strong> {{ job.position }}</div>
-            <div><strong>Период работы:</strong> {{ job.startDate | dateRange: job.endDate }}</div>
-            <div><strong>Описание:</strong> {{ job.description || 'Отсутствует' }}</div>
-            <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="workMenu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #workMenu="matMenu">
-              <button type="button" mat-menu-item (click)="openWorkExperienceModal(job)">Изменить</button>
-              <button type="button" mat-menu-item (click)="deleteWorkExperience(job)">Удалить</button>
-            </mat-menu>
-          </div>
+            <div class="work-item">
+              <div><strong>Компания:</strong> {{ job.companyName }}</div>
+              <div><strong>Должность:</strong> {{ job.position }}</div>
+              <div><strong>Период работы:</strong> {{ job.startDate | dateRange: job.endDate }}</div>
+              <div><strong>Описание:</strong> {{ job.description || 'Отсутствует' }}</div>
+              <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="workMenu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #workMenu="matMenu">
+                <button type="button" mat-menu-item (click)="openWorkExperienceModal(job)">Изменить</button>
+                <button type="button" mat-menu-item (click)="deleteWorkExperience(job)">Удалить</button>
+              </mat-menu>
+            </div>
           }
         </div>
       </mat-card>
@@ -305,7 +307,7 @@
 
     <!-- Настройка вида сайта -->
     <mat-card class="full-width mb-2" appearance="outlined">
-      <app-theme-picker />
+      <app-theme-picker/>
     </mat-card>
 
     <!-- Удалить профиль -->
@@ -324,15 +326,15 @@
     </mat-card>
 
     @if (unsavedChanges) {
-    <div class="save-button-wrapper">
-      <button type="button" mat-flat-button class="save-button" (click)="saveChanges()">
-        @if (changesSaving) {
-          <mat-spinner diameter="20"></mat-spinner>
-        } @else {
-          Сохранить изменения
-        }
-      </button>
-    </div>
+      <div class="save-button-wrapper">
+        <button type="button" mat-flat-button class="save-button" (click)="saveChanges()">
+          @if (changesSaving) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            Сохранить изменения
+          }
+        </button>
+      </div>
     }
   }
 </div>

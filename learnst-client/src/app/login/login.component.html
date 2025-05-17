@@ -4,10 +4,11 @@
   </mat-card-header>
   <mat-card-content>
     <!-- Форма авторизации -->
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <form (ngSubmit)="onSubmit()" [formGroup]="form">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Имя пользователя</mat-label>
-        <input matInput id="login" autocomplete="login" formControlName="login" maxlength="100" placeholder="Введите имя пользователя или email">
+        <input autocomplete="login" formControlName="login" id="login" matInput maxlength="100"
+               placeholder="Введите имя пользователя или email">
         @if (form.get('login')?.invalid && form.get('login')?.touched) {
           <mat-error>Пожалуйста, введите имя пользователя.</mat-error>
         }
@@ -15,22 +16,22 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Пароль</mat-label>
         <input
-          matInput
-          id="password"
-          maxlength="50"
-          formControlName="password"
-          placeholder="Введите пароль"
-          autocomplete="current-password"
           [type]="hidePassword() ? 'password' : 'text'"
+          autocomplete="current-password"
+          formControlName="password"
+          id="password"
+          matInput
+          maxlength="50"
+          placeholder="Введите пароль"
         >
         <button
+          (click)="hidePassword.set(!hidePassword())"
+          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
+          [matTooltip]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
+          class="input-button"
+          mat-icon-button
           matSuffix
           type="button"
-          mat-icon-button
-          class="input-button"
-          (click)="hidePassword.set(!hidePassword())"
-          [matTooltip]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
-          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
         >
           <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
@@ -38,7 +39,7 @@
           <mat-error>Пожалуйста, введите пароль.</mat-error>
         }
       </mat-form-field>
-      <button mat-flat-button [disabled]="form.invalid || loading()" class="full-width" color="primary" type="submit">
+      <button [disabled]="form.invalid || loading()" class="full-width" color="primary" mat-flat-button type="submit">
         @if (loading()) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else {
@@ -54,80 +55,80 @@
     <!-- Социальные сети -->
     <div class="social-grid">
       <a
-        mat-raised-button
-        matTooltipPosition="below"
-        matTooltip="Войти с Google"
         class="social-btn google-btn"
         href="https://api-learnst.runasp.net/oauth2/google/init"
+        mat-raised-button
+        matTooltip="Войти с Google"
+        matTooltipPosition="below"
       >
-        <img src="assets/icons/socials/google.png" alt="Google"
-          class="social-icon" noDownloading>
+        <img alt="Google" class="social-icon"
+             noDownloading src="assets/icons/socials/google.png">
       </a>
 
       <a
-        mat-raised-button
-        matTooltipPosition="below"
-        matTooltip="Войти с Яндекс"
         class="social-btn yandex-btn"
         href="https://api-learnst.runasp.net/oauth2/yandex/init"
+        mat-raised-button
+        matTooltip="Войти с Яндекс"
+        matTooltipPosition="below"
       >
-        <img src="assets/icons/socials/yandex.png" alt="Yandex"
-          class="social-icon" noDownloading>
+        <img alt="Yandex" class="social-icon"
+             noDownloading src="assets/icons/socials/yandex.png">
       </a>
 
       <a
-        mat-raised-button
         class="social-btn vk-btn"
-        matTooltipPosition="below"
-        matTooltip="Войти через ВКонтакте"
         href="https://api-learnst.runasp.net/oauth2/vk/init"
+        mat-raised-button
+        matTooltip="Войти через ВКонтакте"
+        matTooltipPosition="below"
       >
-        <img src="assets/icons/socials/vk.png" alt="VK"
-          class="social-icon" noDownloading>
+        <img alt="VK" class="social-icon"
+             noDownloading src="assets/icons/socials/vk.png">
       </a>
 
       <a
-        mat-raised-button
-        matTooltipPosition="below"
-        matTooltip="Войти через Github"
         class="social-btn github-btn"
         href="https://api-learnst.runasp.net/oauth2/github/init"
+        mat-raised-button
+        matTooltip="Войти через Github"
+        matTooltipPosition="below"
       >
-        <img src="assets/icons/socials/github.png" alt="GitHub"
-          class="social-icon" noDownloading>
+        <img alt="GitHub" class="social-icon"
+             noDownloading src="assets/icons/socials/github.png">
       </a>
 
       <a
-        mat-raised-button
-        matTooltipPosition="below"
         class="social-btn discord-btn"
-        matTooltip="Войти через Discord"
         href="https://api-learnst.runasp.net/oauth2/discord/init"
+        mat-raised-button
+        matTooltip="Войти через Discord"
+        matTooltipPosition="below"
       >
-        <img src="assets/icons/socials/discord.png" alt="Discord"
-          class="social-icon" noDownloading>
+        <img alt="Discord" class="social-icon"
+             noDownloading src="assets/icons/socials/discord.png">
       </a>
 
       <a
-        mat-raised-button
-        matTooltipPosition="below"
         class="social-btn steam-btn"
-        matTooltip="Войти через Steam"
         href="https://api-learnst.runasp.net/oauth2/steam/init"
+        mat-raised-button
+        matTooltip="Войти через Steam"
+        matTooltipPosition="below"
       >
-        <img src="assets/icons/socials/steam.png" alt="Steam"
-          class="social-icon" noDownloading>
+        <img alt="Steam" class="social-icon"
+             noDownloading src="assets/icons/socials/steam.png">
       </a>
 
       <a
-        mat-raised-button
-        matTooltipPosition="below"
         class="social-btn twitch-btn"
-        matTooltip="Войти через Twitch"
         href="https://api-learnst.runasp.net/oauth2/twitch/init"
+        mat-raised-button
+        matTooltip="Войти через Twitch"
+        matTooltipPosition="below"
       >
-        <img src="assets/icons/socials/twitch.png" alt="Twitch"
-          class="social-icon" noDownloading>
+        <img alt="Twitch" class="social-icon"
+             noDownloading src="assets/icons/socials/twitch.png">
       </a>
     </div>
 
@@ -135,16 +136,16 @@
 
   </mat-card-content>
   <mat-card-actions class="center-control form-actions">
-    <button type="button" mat-raised-button routerLink="/register">
+    <button mat-raised-button routerLink="/register" type="button">
       Создать аккаунт
     </button>
-    <button type="button" mat-button (click)="openResetPasswordDialog()"> <!-- Добавлено -->
+    <button (click)="openResetPasswordDialog()" mat-button type="button"> <!-- Добавлено -->
       Восстановить пароль
     </button>
-    <button type="button" mat-button routerLink="/manuals/privacypolicy">
+    <button mat-button routerLink="/manuals/privacypolicy" type="button">
       Политика конфиденциальности
     </button>
-    <button type="button" mat-button routerLink="/manuals/termsofuse">
+    <button mat-button routerLink="/manuals/termsofuse" type="button">
       Условия использования
     </button>
   </mat-card-actions>

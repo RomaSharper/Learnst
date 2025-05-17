@@ -1,5 +1,5 @@
-<mat-card class="container" appearance="outlined">
-  <a mat-button class="mb nav-btn" (click)="goBack()" [class.full-width]="isMediumScreen">
+<mat-card appearance="outlined" class="container">
+  <a (click)="goBack()" [class.full-width]="isMediumScreen" class="mb nav-btn" mat-button>
     Назад
   </a>
 
@@ -13,7 +13,7 @@
         <div class="md-container" [innerHTML]="innerHTML"></div>
       }
       @case (LessonType.Video) {
-        <h1>{{lesson.title}}</h1>
+        <h1>{{ lesson.title }}</h1>
         <media-theme-sutro
           style="--media-secondary-color: var(--mat-sys-secondary-container); --media-accent-color: var(--mat-sys-primary-container);"
         >

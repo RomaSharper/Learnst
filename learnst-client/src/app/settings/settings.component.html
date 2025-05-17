@@ -1,4 +1,4 @@
-<mat-card class="settings-container" appearance="outlined">
+<mat-card appearance="outlined" class="settings-container">
   <a class="mb" mat-button routerLink="/">На главную</a>
   <h1>Настройки сайта</h1>
 
@@ -12,21 +12,21 @@
     }
 
     <mat-slide-toggle
-      [checked]="audioService.isEnabled()"
-      (change)="audioService.toggleMusic($event.checked)">
+      (change)="audioService.toggleMusic($event.checked)"
+      [checked]="audioService.isEnabled()">
       Фоновая музыка
     </mat-slide-toggle>
 
     <div>Громкость</div>
     <mat-slider
-      min="0"
-      step="1"
+      (change)="setVolumeFromEvent($event)"
+      class="full-width"
       discrete
       max="100"
+      min="0"
       showTickMarks
-      class="full-width"
-      (change)="setVolumeFromEvent($event)">
-      <input matSliderThumb [(ngModel)]="audioService.targetVolume">
+      step="1">
+      <input [(ngModel)]="audioService.targetVolume" matSliderThumb>
     </mat-slider>
   </mat-card-content>
 </mat-card>

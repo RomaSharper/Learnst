@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { environment } from '../environments/environment';
-import { Activity } from '../models/Activity';
-import { UserActivity } from '../models/UserActivity';
+import {HttpClient} from '@angular/common/http';
+import {inject, Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {environment} from '../environments/environment';
+import {Activity} from '../models/Activity';
+import {UserActivity} from '../models/UserActivity';
 
 @Injectable({
   providedIn: 'root'
@@ -37,11 +37,11 @@ export class ActivitiesService {
     return this.http.get<UserActivity[]>(`${environment.apiBaseUrl}/userActivities/${userId}`);
   }
 
-  isUserActivityExists(userId: string, activityId: string): Observable<boolean>  {
+  isUserActivityExists(userId: string, activityId: string): Observable<boolean> {
     return this.http.get<boolean>(`${environment.apiBaseUrl}/userActivities/checkUserActivity/${userId}/${activityId}`);
   }
 
-  createUserActivity(userActivity: UserActivity): Observable<UserActivity>  {
+  createUserActivity(userActivity: UserActivity): Observable<UserActivity> {
     return this.http.post<UserActivity>(`${environment.apiBaseUrl}/userActivities`, userActivity);
   }
 

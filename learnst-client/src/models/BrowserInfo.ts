@@ -1,5 +1,5 @@
 export interface BrowserInfo {
-    name: string;
-    userAgent: string;
-    version: string;
+  name: string;
+  userAgent: string;
+  version: string;
 }

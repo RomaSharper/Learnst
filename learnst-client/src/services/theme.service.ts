@@ -1,13 +1,13 @@
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { effect, Injectable, signal, DestroyRef, inject } from '@angular/core';
-import { FrontendTheme } from '../models/FrontendTheme';
-import { AuthService } from './auth.service';
-import { User } from '../models/User';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../environments/environment';
-import { AlertService } from './alert.service';
-import { SignalRService } from './signalr.service';
-import { Observable, Subject } from 'rxjs';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {DestroyRef, effect, inject, Injectable, signal} from '@angular/core';
+import {FrontendTheme} from '../models/FrontendTheme';
+import {AuthService} from './auth.service';
+import {User} from '../models/User';
+import {HttpClient} from '@angular/common/http';
+import {environment} from '../environments/environment';
+import {AlertService} from './alert.service';
+import {SignalRService} from './signalr.service';
+import {Observable, Subject} from 'rxjs';
 import {LogService} from './log.service';
 
 @Injectable({
@@ -168,9 +168,13 @@ export class ThemeService {
       preview: 'linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), linear-gradient(47.61deg, rgb(44, 63, 231) 11.18%, rgb(38, 29, 131) 64.54%)'
     },
   ];
-  private readonly CURSOR_STORAGE_KEY = 'custom_cursors';
-
   currentTheme = signal<FrontendTheme>(this.themes[0]);
+  updateThemeClass = effect(() => {
+    const theme = this.currentTheme();
+    document.body.classList.remove(...this.themes.map(t => `${t.id}-theme`));
+    document.body.classList.add(`${theme.id}-theme`);
+  });
+  private readonly CURSOR_STORAGE_KEY = 'custom_cursors';
   cursorsEnabled = signal(localStorage.getItem(this.CURSOR_STORAGE_KEY) === 'on');
 
   constructor() {
@@ -232,12 +236,6 @@ export class ThemeService {
     this.cursorsEnabled.set(enabled);
   }
 
-  updateThemeClass = effect(() => {
-    const theme = this.currentTheme();
-    document.body.classList.remove(...this.themes.map(t => `${t.id}-theme`));
-    document.body.classList.add(`${theme.id}-theme`);
-  });
-
   private setupCursorsEffect(): void {
     effect(() => {
       const enabled = this.cursorsEnabled();
@@ -248,7 +246,7 @@ export class ThemeService {
   }
 
   private forceCursorUpdate(): void {
-    const { style } = document.documentElement;
+    const {style} = document.documentElement;
     style.setProperty('cursor', 'inherit', 'important');
     setTimeout(() => style.removeProperty('cursor'));
   }

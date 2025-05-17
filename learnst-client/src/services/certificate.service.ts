@@ -1,8 +1,8 @@
-import { CertificateRequest } from '../models/CertificateRequest';
-import { HttpClient } from '@angular/common/http';
+import {CertificateRequest} from '../models/CertificateRequest';
+import {HttpClient} from '@angular/common/http';
 import {inject, Injectable} from '@angular/core';
-import { Observable } from 'rxjs';
-import { environment } from '../environments/environment';
+import {Observable} from 'rxjs';
+import {environment} from '../environments/environment';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable({
@@ -14,7 +14,7 @@ export class CertificateService {
 
   generateCertificate(userId: string, activityId: string): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/generate`, {
-      params: { userId, activityId },
+      params: {userId, activityId},
       responseType: 'blob', // Указываем, что ожидаем бинарные данные (Blob)
     });
   }

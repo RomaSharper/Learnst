@@ -3,7 +3,7 @@
   <form [formGroup]="topicForm">
     <mat-form-field appearance="outline">
       <mat-label>Название темы</mat-label>
-      <input matInput formControlName="title" (keydown.enter)="onSave()" required maxlength="50">
+      <input (keydown.enter)="onSave()" formControlName="title" matInput maxlength="50" required>
       @if (topicForm.get('title')?.invalid && topicForm.get('title')?.touched) {
         <mat-error>Название темы обязательно</mat-error>
       }
@@ -32,6 +32,6 @@
   }
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button type="button" mat-button (click)="onCancel()">Отмена</button>
-  <button type="button" mat-button [disabled]="topicForm.invalid" (click)="onSave()">Сохранить</button>
+  <button (click)="onCancel()" mat-button type="button">Отмена</button>
+  <button (click)="onSave()" [disabled]="topicForm.invalid" mat-button type="button">Сохранить</button>
 </mat-dialog-actions>

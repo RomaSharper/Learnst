@@ -4,6 +4,6 @@
     <p>{{ data.message }}</p>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
-    <button type="button" mat-button (click)="onOk()">{{ data.okText }}</button>
+    <button (click)="onOk()" mat-button type="button">{{ data.okText }}</button>
   </mat-dialog-actions>
 </ng-container>

@@ -1,5 +1,5 @@
-import { SocialMediaPlatform } from '../enums/SocialMediaPlatform';
-import { User } from './User';
+import {SocialMediaPlatform} from '../enums/SocialMediaPlatform';
+import {User} from './User';
 
 export interface SocialMediaProfile {
   id: number;

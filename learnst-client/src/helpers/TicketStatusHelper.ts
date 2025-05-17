@@ -1,4 +1,4 @@
-import { TicketStatus } from "../enums/TicketStatus";
+import {TicketStatus} from "../enums/TicketStatus";
 
 export class TicketStatusHelper {
   static getName(status: TicketStatus): string {

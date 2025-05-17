@@ -152,7 +152,7 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
   ];
   separatorKeysCodes: number[] = [ENTER];
   levels = LevelHelper.getLevels();
-
+  protected readonly InfoTypeHelper = InfoTypeHelper;
   private fb = inject(FormBuilder);
   private logService = inject(LogService);
   private fileService = inject(FileService);
@@ -582,6 +582,4 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
     this.alertService.showSnackBar(message);
     if (error) this.logService.errorWithData(message, error);
   }
-
-  protected readonly InfoTypeHelper = InfoTypeHelper;
 }

@@ -1,10 +1,10 @@
 import {Component, Inject, signal} from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { ValidationService } from '../../services/validation.service';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MatButtonModule} from '@angular/material/button';
+import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {ValidationService} from '../../services/validation.service';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 
@@ -75,7 +75,8 @@ export class ResetPasswordNewPasswordDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<ResetPasswordNewPasswordDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { email: string, code: string, newPassword: string }
-  ) {}
+  ) {
+  }
 
   onCancel(): void {
     this.dialogRef.close();

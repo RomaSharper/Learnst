@@ -1,16 +1,16 @@
-import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { LessonTypeHelper } from '../../../helpers/LessonTypeHelper';
-import { Topic } from '../../../models/Topic';
-import { ValidationService } from '../../../services/validation.service';
-import { LessonDialogComponent } from '../lesson.dialog/lesson.dialog.component';
-import { AlertService } from '../../../services/alert.service';
+import {Component, Inject} from '@angular/core';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {LessonTypeHelper} from '../../../helpers/LessonTypeHelper';
+import {Topic} from '../../../models/Topic';
+import {ValidationService} from '../../../services/validation.service';
+import {LessonDialogComponent} from '../lesson.dialog/lesson.dialog.component';
+import {AlertService} from '../../../services/alert.service';
 
 @Component({
   selector: 'app-topic-dialog',
@@ -45,7 +45,7 @@ export class TopicDialogComponent {
   addLesson(topic: Topic): void {
     const dialogRef = this.alertService.getDialog().open(LessonDialogComponent, {
       width: '600px',
-      data: { lesson: null, topicId: topic.id }
+      data: {lesson: null, topicId: topic.id}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -61,7 +61,7 @@ export class TopicDialogComponent {
   editLesson(topic: Topic, index: number): void {
     const dialogRef = this.alertService.getDialog().open(LessonDialogComponent, {
       width: '600px',
-      data: { lesson: topic.lessons[index], topicId: topic.id }
+      data: {lesson: topic.lessons[index], topicId: topic.id}
     });
 
     dialogRef.afterClosed().subscribe(result => {

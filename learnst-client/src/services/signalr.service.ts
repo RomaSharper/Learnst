@@ -1,11 +1,19 @@
 import {inject, Injectable} from '@angular/core';
-import { HttpTransportType, HubConnection, HubConnectionBuilder, HubConnectionState, IHttpConnectionOptions, IRetryPolicy, RetryContext } from '@microsoft/signalr';
-import { ReplaySubject, Subject } from 'rxjs';
-import { Status } from '../enums/Status';
-import { environment } from '../environments/environment';
+import {
+  HttpTransportType,
+  HubConnection,
+  HubConnectionBuilder,
+  HubConnectionState,
+  IHttpConnectionOptions,
+  IRetryPolicy,
+  RetryContext
+} from '@microsoft/signalr';
+import {ReplaySubject, Subject} from 'rxjs';
+import {Status} from '../enums/Status';
+import {environment} from '../environments/environment';
 import {LogService} from './log.service';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class SignalRService {
   private logService = inject(LogService);
   private themeUpdates = new Subject<string>();
@@ -32,24 +40,6 @@ export class SignalRService {
     this.initializeConnection();
   }
 
-  private initializeConnection(): void {
-    this.connection.start()
-      .then(() => {
-        this.logService.log('Подключение к SignalR установлено');
-        this.connectionSubject.next(this.connection!);
-      })
-      .catch(err => this.logService.errorWithData('Ошибка при подключении к SignalR:', err));
-
-    // Подписка на события
-    this.connection.on('ReceiveStatus', (userId: string, status: Status) => {
-      this.statusUpdates.next({ userId, status });
-    });
-
-    this.connection.on('ReceiveThemeUpdate', (themeId: string) => {
-      this.themeUpdates.next(themeId);
-    });
-  }
-
   onStatusUpdate() {
     return this.statusUpdates.asObservable();
   }
@@ -72,6 +62,24 @@ export class SignalRService {
       this.logService.errorWithData('Ошибка при вызове метода SignalR:', err);
       throw new Error('Ошибка на сервере. Пожалуйста, попробуйте позже.');
     }
+  }
+
+  private initializeConnection(): void {
+    this.connection.start()
+      .then(() => {
+        this.logService.log('Подключение к SignalR установлено');
+        this.connectionSubject.next(this.connection!);
+      })
+      .catch(err => this.logService.errorWithData('Ошибка при подключении к SignalR:', err));
+
+    // Подписка на события
+    this.connection.on('ReceiveStatus', (userId: string, status: Status) => {
+      this.statusUpdates.next({userId, status});
+    });
+
+    this.connection.on('ReceiveThemeUpdate', (themeId: string) => {
+      this.themeUpdates.next(themeId);
+    });
   }
 
   private async waitForConnection(): Promise<void> {

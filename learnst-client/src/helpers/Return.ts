@@ -1,9 +1,11 @@
-import { Location } from '@angular/common';
-import { Router } from '@angular/router';
+import {Location} from '@angular/common';
+import {Router} from '@angular/router';
 
 export function Return() {
-  return function <T extends { new (...args: any[]): {} }>(constructor: T) {
+  return function <T extends { new(...args: any[]): {} }>(constructor: T) {
     return class extends constructor {
+      goBack: () => void;
+
       constructor(...args: any[]) {
         super(...args);
 
@@ -19,8 +21,6 @@ export function Return() {
               router.navigate(['/']);
         };
       }
-
-      goBack: () => void;
     };
   };
 }

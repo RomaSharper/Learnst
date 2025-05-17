@@ -1,16 +1,17 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { Ticket } from "../models/Ticket";
-import { TicketAnswer } from "../models/TicketAnswer";
-import { TicketStatus } from "../enums/TicketStatus";
-import { environment } from "../environments/environment";
+import {HttpClient} from "@angular/common/http";
+import {Injectable} from "@angular/core";
+import {Observable} from "rxjs";
+import {Ticket} from "../models/Ticket";
+import {TicketAnswer} from "../models/TicketAnswer";
+import {TicketStatus} from "../enums/TicketStatus";
+import {environment} from "../environments/environment";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class TicketService {
   private apiUrl = `${environment.apiBaseUrl}/tickets`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
   getTickets(): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(this.apiUrl);

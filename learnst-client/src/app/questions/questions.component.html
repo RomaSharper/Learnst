@@ -17,7 +17,7 @@
               [class.correct-step]="isAnswerCorrect(question.id)"
               [class.incorrect-step]="isQuestionAnswered(question.id) && !isAnswerCorrect(question.id)"
             >
-              Вопрос {{i + 1}}
+              Вопрос {{ i + 1 }}
             </span>
           </ng-template>
 
@@ -36,9 +36,10 @@
               } @else {
                 @if (isQuestionAnswered(question.id)) {
                   <p>Вы ответили {{
-                    isAnswerCorrect(question.id)
-                      ? 'правильно'
-                      : 'неправильно' }} на этот вопрос</p>
+                      isAnswerCorrect(question.id)
+                        ? 'правильно'
+                        : 'неправильно'
+                    }} на этот вопрос</p>
                   @if (question.answers && question.answers.length > 0) {
                     @switch (question.answerType) {
                       @case (AnswerType.Single) {
@@ -145,7 +146,7 @@
             <mat-card-title>Результаты теста</mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <h2>Правильных ответов: {{correctAnswersCount}} из {{questions.length}}</h2>
+            <h2>Правильных ответов: {{ correctAnswersCount }} из {{ questions.length }}</h2>
             <p>Процент правильных ответов: {{ (correctAnswersCount / questions.length * 100).toFixed(1) }}%</p>
             <mat-divider></mat-divider>
             <div class="detailed-results">
@@ -155,7 +156,7 @@
                   [class.correct]="isAnswerCorrect(question.id)"
                   [class.incorrect]="!isAnswerCorrect(question.id)"
                 >
-                  Вопрос {{i + 1}}: {{ isAnswerCorrect(question.id) ? '✓' : '✗' }}
+                  Вопрос {{ i + 1 }}: {{ isAnswerCorrect(question.id) ? '✓' : '✗' }}
                 </div>
               }
             </div>

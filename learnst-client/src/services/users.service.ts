@@ -1,14 +1,14 @@
-import { HttpClient } from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {inject, Injectable} from '@angular/core';
-import { Observable } from 'rxjs';
-import { environment } from '../environments/environment';
-import { UpdatedResponse } from '../models/UpdatedResponse';
-import { UpdatePasswordRequest } from '../models/UpdatePasswordRequest';
-import { UpdateRoleRequest } from '../models/UpdateRoleRequest';
-import { UpdateUserResponse } from '../models/UpdateUserResponse';
-import { User } from '../models/User';
+import {Observable} from 'rxjs';
+import {environment} from '../environments/environment';
+import {UpdatedResponse} from '../models/UpdatedResponse';
+import {UpdatePasswordRequest} from '../models/UpdatePasswordRequest';
+import {UpdateRoleRequest} from '../models/UpdateRoleRequest';
+import {UpdateUserResponse} from '../models/UpdateUserResponse';
+import {User} from '../models/User';
 import {Status} from '../enums/Status';
-import { UserActivityStats } from '../models/UserActivityStats';
+import {UserActivityStats} from '../models/UserActivityStats';
 
 @Injectable({
   providedIn: 'root'
@@ -59,13 +59,13 @@ export class UsersService {
 
   checkUsernameExists(username: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/checkName`, {
-      params: { username }
+      params: {username}
     });
   }
 
   checkEmailExists(emailAddress: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/checkEmail`, {
-      params: { emailAddress }
+      params: {emailAddress}
     });
   }
 

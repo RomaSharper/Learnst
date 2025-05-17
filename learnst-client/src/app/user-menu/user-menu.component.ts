@@ -1,21 +1,21 @@
-import { Component, DestroyRef, inject, Input, OnInit, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
-import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
-import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
-import { EllipsisPipe } from '../../pipes/ellipsis.pipe';
-import { PluralPipe } from '../../pipes/plural.pipe';
-import { AlertService } from '../../services/alert.service';
-import { AuthService } from '../../services/auth.service';
-import { UsersService } from '../../services/users.service';
-import { User } from '../../models/User';
-import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
+import {Component, DestroyRef, inject, Input, OnInit, signal} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {Router, RouterLink} from '@angular/router';
+import {finalize} from 'rxjs';
+import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
+import {PlaceholderImageDirective} from '../../directives/placeholder-image.directive';
+import {EllipsisPipe} from '../../pipes/ellipsis.pipe';
+import {PluralPipe} from '../../pipes/plural.pipe';
+import {AlertService} from '../../services/alert.service';
+import {AuthService} from '../../services/auth.service';
+import {UsersService} from '../../services/users.service';
+import {User} from '../../models/User';
+import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {LogService} from '../../services/log.service';
 
 @Component({
@@ -38,20 +38,18 @@ import {LogService} from '../../services/log.service';
 export class UserMenuComponent implements OnInit {
   @Input() user: User | null = null;
   @Input() redirectOnly: boolean | null = null;
-
+  loading = signal(true);
+  followersCount = signal(0);
+  isFollowing = signal(false);
+  currentUser = signal<User | null>(null);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
   private logService = inject(LogService);
   private sanitizer = inject(DomSanitizer);
   private authService = inject(AuthService);
+  accounts = this.authService.accounts;
   private usersService = inject(UsersService);
   private alertService = inject(AlertService);
-
-  loading = signal(true);
-  followersCount = signal(0);
-  isFollowing = signal(false);
-  accounts = this.authService.accounts;
-  currentUser = signal<User | null>(null);
 
   ngOnInit(): void {
     if (!this.user?.id)

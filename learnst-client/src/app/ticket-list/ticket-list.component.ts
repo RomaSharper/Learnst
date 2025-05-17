@@ -51,11 +51,6 @@ import {LogService} from '../../services/log.service';
   ]
 })
 export class TicketListComponent extends MediumScreenSupport implements OnInit {
-  private dialog = inject(MatDialog);
-  private logService = inject(LogService);
-  private usersService = inject(UsersService);
-  private ticketService = inject(TicketService);
-
   goBack!: () => void;
   pageSize = 20;
   pageIndex = 0;
@@ -63,6 +58,14 @@ export class TicketListComponent extends MediumScreenSupport implements OnInit {
   tickets: Ticket[] = [];
   paginatedTickets: Ticket[] = [];
   pageSizeOptions = [20, 50, 100];
+  protected readonly TicketType = TicketType;
+  protected readonly TicketStatus = TicketStatus;
+  protected readonly TicketTypeHelper = TicketTypeHelper;
+  protected readonly TicketStatusHelper = TicketStatusHelper;
+  private dialog = inject(MatDialog);
+  private logService = inject(LogService);
+  private usersService = inject(UsersService);
+  private ticketService = inject(TicketService);
 
   constructor(private router: Router, public location: Location) {
     super();
@@ -143,9 +146,4 @@ export class TicketListComponent extends MediumScreenSupport implements OnInit {
   navigateToTicketDetails(ticketId: string): void {
     this.router.navigate(['/ticket', ticketId]);
   }
-
-  protected readonly TicketType = TicketType;
-  protected readonly TicketStatus = TicketStatus;
-  protected readonly TicketTypeHelper = TicketTypeHelper;
-  protected readonly TicketStatusHelper = TicketStatusHelper;
 }

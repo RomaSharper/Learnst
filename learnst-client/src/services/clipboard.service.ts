@@ -29,7 +29,7 @@ export class ClipboardService {
   copyText(text: string, alertService: AlertService, snackBarMessage?: string): void {
     this.copy({
       type: 'text/plain',
-      blob: new Blob([text], { type: 'text/plain' })
+      blob: new Blob([text], {type: 'text/plain'})
     })
       .then(() => alertService.showSnackBar(snackBarMessage ?? 'Текст успешно скопирован'))
       .catch(err => this.logService.errorWithData('Копирование в буфер обмена не удалось: ', err));
@@ -39,7 +39,7 @@ export class ClipboardService {
     if (!this.isSupported)
       throw this.createError('Clipboard API is not supported');
 
-    const clipboardItem = new ClipboardItem({ [content.type]: content.blob });
+    const clipboardItem = new ClipboardItem({[content.type]: content.blob});
 
     await this.ngZone.runOutsideAngular(async () =>
       await this.clipboard.write([clipboardItem])

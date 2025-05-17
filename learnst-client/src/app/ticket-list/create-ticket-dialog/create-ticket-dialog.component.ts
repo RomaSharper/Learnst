@@ -30,6 +30,7 @@ export class CreateTicketDialogComponent implements OnInit {
     TicketType.Maintenance
   ];
   selectedType = this.ticketTypes[0];
+  protected readonly TicketTypeHelper = TicketTypeHelper;
 
   constructor(
     public dialogRef: MatDialogRef<CreateTicketDialogComponent>,
@@ -38,7 +39,8 @@ export class CreateTicketDialogComponent implements OnInit {
     private ticketService: TicketService,
     private alertService: AlertService,
     private authService: AuthService
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.ticketForm = this.fb.group({
@@ -79,6 +81,4 @@ export class CreateTicketDialogComponent implements OnInit {
   onCancel(): void {
     this.dialogRef.close();
   }
-
-  protected readonly TicketTypeHelper = TicketTypeHelper;
 }

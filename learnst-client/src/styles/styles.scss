@@ -101,6 +101,7 @@ input::-ms-reveal {
 }
 
 img {
+  pointer-events: none;
   transform: translateZ(30px);
   transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
@@ -205,7 +206,7 @@ img {
   }
 }
 
-.mat-internal-form-field>label {
+.mat-internal-form-field > label {
   width: 100%;
 }
 
@@ -474,7 +475,7 @@ table:not(.mat-calendar-table) {
     .stat-value {
       font-weight: 700;
       font-size: 2.5rem;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .stat-label {
@@ -1145,6 +1146,7 @@ mat-date-range-input {
 
   .registration-info {
     flex: 1;
+
     .date-container {
       display: flex;
       align-items: center;

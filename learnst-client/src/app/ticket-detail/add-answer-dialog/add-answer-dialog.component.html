@@ -3,11 +3,12 @@
   <form [formGroup]="answerForm">
     <mat-form-field appearance="outline">
       <mat-label>Ответ</mat-label>
-      <textarea matInput formControlName="content" required></textarea>
+      <textarea formControlName="content" matInput required></textarea>
     </mat-form-field>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button type="button" mat-button (click)="onCancel()">Отмена</button>
-  <button type="button" mat-button (click)="onSubmit()" [disabled]="answerForm.invalid" color="primary">Добавить</button>
+  <button (click)="onCancel()" mat-button type="button">Отмена</button>
+  <button (click)="onSubmit()" [disabled]="answerForm.invalid" color="primary" mat-button type="button">Добавить
+  </button>
 </mat-dialog-actions>

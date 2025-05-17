@@ -1,8 +1,8 @@
-import { Level } from '../enums/Level';
-import { InfoCard } from './InfoCard';
-import { Topic } from './Topic';
-import { User } from './User';
-import { UserActivity } from './UserActivity';
+import {Level} from '../enums/Level';
+import {InfoCard} from './InfoCard';
+import {Topic} from './Topic';
+import {User} from './User';
+import {UserActivity} from './UserActivity';
 
 export interface Activity {
   isEnrolled: boolean;

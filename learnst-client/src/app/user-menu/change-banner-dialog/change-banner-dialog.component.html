@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>Изменить баннер</h2>
 <mat-dialog-content>
   <form [formGroup]="form" class="banner-dialog">
-    <mat-radio-group formControlName="bannerType" class="type-selector">
+    <mat-radio-group class="type-selector" formControlName="bannerType">
       <!-- Изменена структура радио-кнопок -->
       <mat-radio-button class="type-option" value="color">
         <div class="option-content">
@@ -72,12 +72,12 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button (click)="cancel()">Отмена</button>
+  <button (click)="cancel()" mat-button>Отмена</button>
   <button
-    mat-raised-button
-    color="primary"
     (click)="confirm()"
-    [disabled]="!form.valid">
+    [disabled]="!form.valid"
+    color="primary"
+    mat-raised-button>
     Сохранить
   </button>
 </mat-dialog-actions>

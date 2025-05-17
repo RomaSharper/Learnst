@@ -1,21 +1,22 @@
-import { Injectable } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar'; // Импортируем MatSnackBar
-import { ConfirmDialogComponent } from '../app/confirm-dialog/confirm-dialog.component';
-import { MessageDialogComponent } from '../app/message-dialog/message-dialog.component';
-import { VerificationDialogComponent } from '../app/verification-dialog/verification-dialog.component';
-import { ChangeBannerDialogComponent } from '../app/user-menu/change-banner-dialog/change-banner-dialog.component';
+import {Injectable} from '@angular/core';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MatSnackBar, MatSnackBarRef, TextOnlySnackBar} from '@angular/material/snack-bar'; // Импортируем MatSnackBar
+import {ConfirmDialogComponent} from '../app/confirm-dialog/confirm-dialog.component';
+import {MessageDialogComponent} from '../app/message-dialog/message-dialog.component';
+import {VerificationDialogComponent} from '../app/verification-dialog/verification-dialog.component';
+import {ChangeBannerDialogComponent} from '../app/user-menu/change-banner-dialog/change-banner-dialog.component';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AlertService {
-  constructor(private dialog: MatDialog, private snackBar: MatSnackBar) { }
-
   /**
    * Заголовок для диалога с подтверждением.
    */
   static CONFIRM_TITLE = 'Требуется подтверждение';
+
+  constructor(private dialog: MatDialog, private snackBar: MatSnackBar) {
+  }
 
   getDialog() {
     return this.dialog;
@@ -37,7 +38,7 @@ export class AlertService {
   ): MatDialogRef<ConfirmDialogComponent, boolean> {
     return this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
-      data: { title, message, confirmText, cancelText },
+      data: {title, message, confirmText, cancelText},
     });
   }
 
@@ -55,21 +56,21 @@ export class AlertService {
   ): MatDialogRef<MessageDialogComponent, void> {
     return this.dialog.open(MessageDialogComponent, {
       width: '400px',
-      data: { title, message, okText },
+      data: {title, message, okText},
     });
   }
 
   openVerificationCodeDialog(email: string): MatDialogRef<VerificationDialogComponent, number> {
     return this.dialog.open(VerificationDialogComponent, {
       width: '400px',
-      data: { email }
+      data: {email}
     });
   }
 
   openChangeBannerDialog(banner?: string): MatDialogRef<ChangeBannerDialogComponent, string> {
     return this.dialog.open(ChangeBannerDialogComponent, {
       width: '400px',
-      data: { banner }
+      data: {banner}
     });
   }
 
@@ -80,7 +81,7 @@ export class AlertService {
    * @param duration Длительность отображения (по умолчанию 3000 мс).
    */
   showSnackBar(message: string, actionText: string = 'Закрыть', duration: number | null = null): MatSnackBarRef<TextOnlySnackBar> {
-    if (duration) return this.snackBar.open(message, actionText, { duration });
+    if (duration) return this.snackBar.open(message, actionText, {duration});
     return this.snackBar.open(message, actionText);
   }
 }

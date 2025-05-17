@@ -1,6 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 declare global {
   interface Window {
@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class TurnstileService {
   private widgetId: string | null = null;
 

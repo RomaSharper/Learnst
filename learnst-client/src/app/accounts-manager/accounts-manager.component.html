@@ -23,8 +23,8 @@
                 </mat-icon>
               }
               <button type="button" mat-icon-button color="error warn"
-                (click)="removeAccount(account.id, $event)"
-                matTooltip="Выйти из аккаунта">
+                      (click)="removeAccount(account.id, $event)"
+                      matTooltip="Выйти из аккаунта">
                 <mat-icon>logout</mat-icon>
               </button>
             </div>
@@ -40,8 +40,8 @@
     <div class="actions">
       @if (authService.accounts()?.length) {
         <button type="button" mat-raised-button
-          (click)="logoutAll()" color="warn"
-          matTooltip="Выйти из всех аккаунтов">
+                (click)="logoutAll()" color="warn"
+                matTooltip="Выйти из всех аккаунтов">
           <mat-icon>logout</mat-icon>
           Полностью выйти
         </button>

@@ -1,5 +1,5 @@
-import {Injectable, inject} from '@angular/core';
-import {Router, NavigationEnd} from '@angular/router';
+import {inject, Injectable} from '@angular/core';
+import {NavigationEnd, Router} from '@angular/router';
 import {Status} from '../enums/Status';
 import {SignalRService} from './signalr.service';
 import {UsersService} from './users.service';
@@ -25,6 +25,25 @@ export class UserStatusService {
     this.currentUserId = userId;
     this.setupActivityTracking();
     this.setupVisibilityChangeHandler();
+  }
+
+  async updateStatus(status: Status, userId?: string): Promise<void> {
+    const targetUserId = userId || this.currentUserId;
+
+    if (!targetUserId) {
+      this.logService.errorWithData('Не установлен ID пользователя');
+      return;
+    }
+
+    try {
+      // Обновляем статус на сервере
+      await lastValueFrom(this.usersService.updateStatus(targetUserId, status));
+
+      // Уведомляем других клиентов через SignalR
+      await this.signalRService.invoke('SendStatusUpdate', targetUserId, status);
+    } catch (err) {
+      // this.logService.errorWithData('Ошибка при обновлении статуса:', err);
+    }
   }
 
   private setupActivityTracking(): void {
@@ -87,24 +106,5 @@ export class UserStatusService {
           ? Status.Activity
           : Status.Online);
     });
-  }
-
-  async updateStatus(status: Status, userId?: string): Promise<void> {
-    const targetUserId = userId || this.currentUserId;
-
-    if (!targetUserId) {
-      this.logService.errorWithData('Не установлен ID пользователя');
-      return;
-    }
-
-    try {
-      // Обновляем статус на сервере
-      await lastValueFrom(this.usersService.updateStatus(targetUserId, status));
-
-      // Уведомляем других клиентов через SignalR
-      await this.signalRService.invoke('SendStatusUpdate', targetUserId, status);
-    } catch (err) {
-      // this.logService.errorWithData('Ошибка при обновлении статуса:', err);
-    }
   }
 }

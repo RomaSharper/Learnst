@@ -1,9 +1,9 @@
-import { AbstractControl, AsyncValidatorFn, FormControl, ValidationErrors } from "@angular/forms";
-import { SocialMediaPlatform } from "../enums/SocialMediaPlatform";
-import { SocialMediaPlatformHelper } from "../helpers/SocialMediaPlatformHelper";
-import { debounceTime } from 'rxjs/operators';
-import { Observable, of, map, catchError } from "rxjs";
-import { UsersService } from "./users.service";
+import {AbstractControl, AsyncValidatorFn, FormControl, ValidationErrors} from "@angular/forms";
+import {SocialMediaPlatform} from "../enums/SocialMediaPlatform";
+import {SocialMediaPlatformHelper} from "../helpers/SocialMediaPlatformHelper";
+import {debounceTime} from 'rxjs/operators';
+import {catchError, map, Observable, of} from "rxjs";
+import {UsersService} from "./users.service";
 
 export class ValidationService {
   static emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -86,16 +86,16 @@ export class ValidationService {
 
   static loginValidator(control: FormControl): ValidationErrors | null {
     return ValidationService.emailPattern.test(control.value) || ValidationService.usernamePattern.test(control.value)
-      ? null : { invalidLogin: true };
+      ? null : {invalidLogin: true};
   }
 
   static domainValidator(control: FormControl): ValidationErrors | null {
     const email = control.value;
     if (!email) return null;
     const emailParts = email.split('@');
-    if (emailParts.length !== 2) return { invalidEmailFormat: true }; // Пустое или некорректное
+    if (emailParts.length !== 2) return {invalidEmailFormat: true}; // Пустое или некорректное
     const domain = emailParts[1];
-    return ValidationService.emailDomains.includes(domain) ? null : { invalidDomain: true };
+    return ValidationService.emailDomains.includes(domain) ? null : {invalidDomain: true};
   }
 
   static usernameValidator(control: FormControl): { [s: string]: any } | null {
@@ -127,11 +127,11 @@ export class ValidationService {
   }
 
   static passwordValidator(control: FormControl): ValidationErrors | null {
-    return ValidationService.passwordPattern.test(control.value) ? null : { invalidPassword: true };
+    return ValidationService.passwordPattern.test(control.value) ? null : {invalidPassword: true};
   }
 
   static urlValidator(control: AbstractControl): ValidationErrors | null {
-    return ValidationService.urlPattern.test(control.value) ? null : { invalidUrl: true };
+    return ValidationService.urlPattern.test(control.value) ? null : {invalidUrl: true};
   }
 
   // Валидатор для проверки, что ссылка соответствует поддерживаемым социальным сетям
@@ -193,7 +193,7 @@ export class ValidationService {
       return userService.checkEmailExists(control.value).pipe(
         debounceTime(500),
         map(exists => {
-          if (exists) return { duplicateEmail: true };
+          if (exists) return {duplicateEmail: true};
           return null;
         }),
         catchError(() => of(null))
@@ -208,7 +208,7 @@ export class ValidationService {
       return userService.checkUsernameExists(control.value).pipe(
         debounceTime(500),
         map(exists => {
-          if (exists) return { duplicateUsername: true };
+          if (exists) return {duplicateUsername: true};
           return null;
         }),
         catchError(() => of(null))
@@ -221,7 +221,7 @@ export class ValidationService {
       if (!control.value || control.invalid) return of(null);
 
       return usersService.checkEmailExists(control.value).pipe(
-        map(exists => (exists ? null : { emailNotFound: true })),
+        map(exists => (exists ? null : {emailNotFound: true})),
         catchError(() => of(null))
       );
     };

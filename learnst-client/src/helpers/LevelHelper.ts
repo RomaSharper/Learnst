@@ -1,4 +1,4 @@
-import { Level } from "../enums/Level";
+import {Level} from "../enums/Level";
 
 export class LevelHelper {
   static getName(level: Level): string {
@@ -16,9 +16,9 @@ export class LevelHelper {
 
   static getLevels(): { value: Level, label: string }[] {
     return [
-      { value: Level.Easy, label: 'Легко' },
-      { value: Level.Medium, label: 'Умеренно' },
-      { value: Level.Hard, label: 'Сложно' }
+      {value: Level.Easy, label: 'Легко'},
+      {value: Level.Medium, label: 'Умеренно'},
+      {value: Level.Hard, label: 'Сложно'}
     ];
   }
 }

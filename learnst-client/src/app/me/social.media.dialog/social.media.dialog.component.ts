@@ -1,12 +1,12 @@
-import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { SocialMediaPlatformHelper } from '../../../helpers/SocialMediaPlatformHelper';
-import { SocialMediaProfile } from '../../../models/SocialMediaProfile';
-import { ValidationService } from '../../../services/validation.service';
+import {Component, Inject} from '@angular/core';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {SocialMediaPlatformHelper} from '../../../helpers/SocialMediaPlatformHelper';
+import {SocialMediaProfile} from '../../../models/SocialMediaProfile';
+import {ValidationService} from '../../../services/validation.service';
 
 @Component({
   selector: 'app-social-media-dialog',

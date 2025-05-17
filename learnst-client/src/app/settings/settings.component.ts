@@ -33,13 +33,13 @@ export class SettingsComponent {
   deviceService = inject(DeviceService);
   private alertService = inject(AlertService);
 
+  get isDesktop(): boolean {
+    return this.deviceService.getDeviceType() === DeviceType.Desktop;
+  }
+
   setVolumeFromEvent(event: Event): void {
     const value = parseInt((event.target as HTMLInputElement).value);
     if (!this.audioService.setVolume(value))
       this.alertService.showSnackBar('Не удалось изменить звук (неверное значение)');
-  }
-
-  get isDesktop(): boolean {
-    return this.deviceService.getDeviceType() === DeviceType.Desktop;
   }
 }

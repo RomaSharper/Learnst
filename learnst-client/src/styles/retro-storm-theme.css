@@ -7,7 +7,7 @@
   --background: linear-gradient(
     rgba(0, 0, 0, 0.2),
     rgba(0, 0, 0, 0.2)),
-    linear-gradient(148.71deg, rgb(58, 124, 161) 5.64%, rgb(88, 87, 154) 26.38%, rgb(88, 87, 154) 49.92%, rgb(58, 124, 161) 73.12%);
+  linear-gradient(148.71deg, rgb(58, 124, 161) 5.64%, rgb(88, 87, 154) 26.38%, rgb(88, 87, 154) 49.92%, rgb(58, 124, 161) 73.12%);
 
   /* Primary palette variables */
   --mat-sys-primary: light-dark(#615981, #cac0ee);

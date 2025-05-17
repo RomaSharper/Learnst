@@ -31,19 +31,18 @@ import {LogService} from '../../services/log.service';
   ]
 })
 export class LessonComponent extends MediumScreenSupport implements OnInit {
-  private logService = inject(LogService);
-  private route = inject(ActivatedRoute);
-  private authService = inject(AuthService);
-  private alertService = inject(AlertService);
-  private lessonsService = inject(LessonsService);
-  private documentService = inject(DocumentService);
-
   lesson?: Lesson;
   userId?: string;
   goBack!: () => void;
   innerHTML = '';
   LessonType = LessonType;
   loading = signal(true);
+  private logService = inject(LogService);
+  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private lessonsService = inject(LessonsService);
+  private documentService = inject(DocumentService);
 
   constructor(protected router: Router, protected location: Location) {
     super();

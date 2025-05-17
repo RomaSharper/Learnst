@@ -3,7 +3,7 @@
   <form [formGroup]="ticketForm">
     <mat-form-field appearance="outline">
       <mat-label>Заголовок</mat-label>
-      <input matInput formControlName="title" required>
+      <input formControlName="title" matInput required>
       @if (ticketForm.get('title')?.hasError('required')) {
         <mat-error>Заголовок обязателен</mat-error>
       }
@@ -16,14 +16,14 @@
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Описание</mat-label>
-      <textarea matInput formControlName="description"></textarea>
+      <textarea formControlName="description" matInput></textarea>
       @if (ticketForm.get('description')?.hasError('maxlength')) {
         <mat-error>Максимум 500 символов</mat-error>
       }
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Тип</mat-label>
-      <mat-select required [(value)]="selectedType">
+      <mat-select [(value)]="selectedType" required>
         @for (type of ticketTypes; track type) {
           <mat-option [value]="type">
             {{ TicketTypeHelper.getName(type) }}
@@ -34,6 +34,6 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button type="button" mat-button (click)="onCancel()">Отмена</button>
-  <button type="button" mat-button (click)="onSubmit()" [disabled]="ticketForm.invalid" color="primary">Создать</button>
+  <button (click)="onCancel()" mat-button type="button">Отмена</button>
+  <button (click)="onSubmit()" [disabled]="ticketForm.invalid" color="primary" mat-button type="button">Создать</button>
 </mat-dialog-actions>

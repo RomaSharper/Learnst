@@ -1,5 +1,5 @@
-<mat-card class="container" appearance="outlined">
-  <a mat-button class="nav-btn mb" routerLink="/activities" [class.full-width]="isMediumScreen">
+<mat-card appearance="outlined" class="container">
+  <a [class.full-width]="isMediumScreen" class="nav-btn mb" mat-button routerLink="/activities">
     Назад
   </a>
 
@@ -30,15 +30,15 @@
                 </div>
                 <div class="author-container">
                   <a mat-stroked-button [matMenuTriggerFor]="userMenu"
-                    [matTooltip]="activity.author?.username" class="user-btn">
+                     [matTooltip]="activity.author?.username" class="user-btn">
                     <img [src]="activity.author?.avatarUrl!" class="user-avatar"
-                      [alt]="activity.author?.username" noDownloading
-                      placeholder="/assets/icons/user-192x192.png">
+                         [alt]="activity.author?.username" noDownloading
+                         placeholder="/assets/icons/user-192x192.png">
                     <span class="username">{{ (activity.author?.username || '') | ellipsis:8 }}</span>
                   </a>
 
                   <mat-menu #userMenu="matMenu" class="user-menu-container">
-                    <app-user-menu [user]="activity.author!" [redirectOnly]="true" />
+                    <app-user-menu [user]="activity.author!" [redirectOnly]="true"/>
                   </mat-menu>
                 </div>
                 <p><strong>Дата создания:</strong> {{ activity.createdAt | ruDate }}</p>

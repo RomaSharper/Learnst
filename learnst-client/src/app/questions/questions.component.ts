@@ -34,10 +34,6 @@ import {LogService} from '../../services/log.service';
   ]
 })
 export class QuestionsComponent implements OnChanges {
-  private logService = inject(LogService);
-  private authService = inject(AuthService);
-  private answersService = inject(AnswersService);
-
   userId!: string;
   isTestEnded = false;
   selectedStepIndex = 0;
@@ -49,6 +45,9 @@ export class QuestionsComponent implements OnChanges {
   loadingQuestions: Set<string> = new Set();
   @ViewChild("stepper") stepper!: MatStepper;
   selectedAnswers: { answerId: number, questionId: string }[] = [];
+  private logService = inject(LogService);
+  private authService = inject(AuthService);
+  private answersService = inject(AnswersService);
 
   ngOnChanges(): void {
     this.authService.getUser().subscribe(user => {

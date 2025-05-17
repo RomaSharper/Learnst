@@ -1,4 +1,4 @@
-import { Directive, ElementRef, HostListener, Renderer2 } from '@angular/core';
+import {Directive, ElementRef, HostListener, Renderer2} from '@angular/core';
 
 @Directive({
   selector: '[inspectable]'
@@ -13,6 +13,30 @@ export class InspectableDirective {
     this.element = el.nativeElement;
     this.lightSpot = this.createLightSpot();
     this.initStyles();
+  }
+
+  @HostListener('mousemove', ['$event'])
+  onMouseMove(e: MouseEvent): void {
+    const rect = this.element.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    // Анимация светового пятна
+    this.renderer.setStyle(this.lightSpot, 'transform',
+      `translate(${mouseX - 100}px, ${mouseY - 100}px)`);
+    this.renderer.setStyle(this.lightSpot, 'opacity', '0.8');
+
+    // Плавное отклонение элемента
+    const rotateY = (mouseX - rect.width / 2) / this.sensitivity;
+    const rotateX = (rect.height / 2 - mouseY) / this.sensitivity;
+
+    this.applyTransform(rotateX, rotateY, 1.02);
+  }
+
+  @HostListener('mouseleave')
+  onMouseLeave(): void {
+    this.renderer.setStyle(this.lightSpot, 'opacity', '0');
+    this.resetTransform();
   }
 
   private initStyles(): void {
@@ -70,30 +94,6 @@ export class InspectableDirective {
 
     this.renderer.appendChild(this.element, spot);
     return spot;
-  }
-
-  @HostListener('mousemove', ['$event'])
-  onMouseMove(e: MouseEvent): void {
-    const rect = this.element.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    // Анимация светового пятна
-    this.renderer.setStyle(this.lightSpot, 'transform',
-      `translate(${mouseX - 100}px, ${mouseY - 100}px)`);
-    this.renderer.setStyle(this.lightSpot, 'opacity', '0.8');
-
-    // Плавное отклонение элемента
-    const rotateY = (mouseX - rect.width / 2) / this.sensitivity;
-    const rotateX = (rect.height / 2 - mouseY) / this.sensitivity;
-
-    this.applyTransform(rotateX, rotateY, 1.02);
-  }
-
-  @HostListener('mouseleave')
-  onMouseLeave(): void {
-    this.renderer.setStyle(this.lightSpot, 'opacity', '0');
-    this.resetTransform();
   }
 
   private applyTransform(rotateX: number, rotateY: number, scale: number): void {

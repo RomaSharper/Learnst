@@ -7,42 +7,44 @@
 
   <!-- Основные мета-теги -->
   <meta charset="utf-8">
-  <meta name="author" content="Roman Java">
-  <meta name="theme-color" content="#1976d2">
-  <meta name="robots" content="index, follow">
-  <meta name="yandex-verification" content="c361b35d0a598d54">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="google-site-verification" content="AvTvFawmRX0EM2IUbUBtkyccf9PNaVwdJf8fmudn94Y">
-  <meta name="keywords" content="курсы, обучение, образование, онлайн-курсы, Learnst, платформа для обучения">
-  <meta name="google-signin-client_id" content="69130811767-414flf013h44mr97i4cf8svksrtttmjs.apps.googleusercontent.com">
-  <meta name="description" content="Learnst — это платформа для обучения, где вы можете найти курсы и улучшать свои навыки. Присоединяйтесь к нам!">
+  <meta content="Roman Java" name="author">
+  <meta content="#1976d2" name="theme-color">
+  <meta content="index, follow" name="robots">
+  <meta content="c361b35d0a598d54" name="yandex-verification">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <meta content="AvTvFawmRX0EM2IUbUBtkyccf9PNaVwdJf8fmudn94Y" name="google-site-verification">
+  <meta content="курсы, обучение, образование, онлайн-курсы, Learnst, платформа для обучения" name="keywords">
+  <meta content="69130811767-414flf013h44mr97i4cf8svksrtttmjs.apps.googleusercontent.com"
+        name="google-signin-client_id">
+  <meta content="Learnst — это платформа для обучения, где вы можете найти курсы и улучшать свои навыки. Присоединяйтесь к нам!"
+        name="description">
 
   <!-- Open Graph / Социальные сети -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Learnst">
-  <meta property="og:site_name" content="Learnst">
-  <meta property="og:url" content="https://learnst.runasp.net">
-  <meta property="og:image" content="https://learnst.runasp.net/assets/screenshots/social-preview.png">
-  <meta property="og:description"
-    content="Learnst — это платформа для обучения, где вы можете найти курсы и улучшать свои навыки. Присоединяйтесь к нам!">
+  <meta content="website" property="og:type">
+  <meta content="Learnst" property="og:title">
+  <meta content="Learnst" property="og:site_name">
+  <meta content="https://learnst.runasp.net" property="og:url">
+  <meta content="https://learnst.runasp.net/assets/screenshots/social-preview.png" property="og:image">
+  <meta content="Learnst — это платформа для обучения, где вы можете найти курсы и улучшать свои навыки. Присоединяйтесь к нам!"
+        property="og:description">
 
   <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Learnst">
-  <meta name="twitter:image" content="https://learnst.runasp.net/assets/screenshots/social-preview.png">
-  <meta name="twitter:description"
-    content="Learnst — это платформа для обучения, где вы можете найти курсы и улучшать свои навыки. Присоединяйтесь к нам!">
+  <meta content="summary_large_image" name="twitter:card">
+  <meta content="Learnst" name="twitter:title">
+  <meta content="https://learnst.runasp.net/assets/screenshots/social-preview.png" name="twitter:image">
+  <meta content="Learnst — это платформа для обучения, где вы можете найти курсы и улучшать свои навыки. Присоединяйтесь к нам!"
+        name="twitter:description">
 
   <!-- Манифест -->
-  <link rel="manifest" href="assets/manifest.webmanifest">
+  <link href="assets/manifest.webmanifest" rel="manifest">
 
   <!-- Иконки -->
-  <link rel="icon" type="image/png" href="assets/icons/favicon.png">
-  <link rel="apple-touch-icon" href="assets/icons/favicon-180x180.png">
-  <link rel="icon" type="image/x-icon" href="assets/icons/favicon.svg">
+  <link href="assets/icons/favicon.png" rel="icon" type="image/png">
+  <link href="assets/icons/favicon-180x180.png" rel="apple-touch-icon">
+  <link href="assets/icons/favicon.svg" rel="icon" type="image/x-icon">
 
   <!-- Стили и шрифты -->
-  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
+  <link href="https://cdn.plyr.io/3.7.8/plyr.css" rel="stylesheet">
   <link href="https://fonts.cdnfonts.com/css/motiva-sans" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&amp;display=swap" rel="stylesheet">
@@ -54,12 +56,12 @@
       console.log(`[${new Date().toISOString()}] Cloudflare Turnstile загружена`);
     }
   </script>
-  <script type="module" src="https://cdn.jsdelivr.net/npm/player.style/sutro/+esm"></script>
-  <script type="module" src="https://cdn.jsdelivr.net/npm/hls-video-element@1.2/+esm"></script>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/player.style/sutro/+esm" type="module"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls-video-element@1.2/+esm" type="module"></script>
+  <script defer src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback"></script>
 </head>
 <body class="mat-typography">
-  <app-root></app-root>
-  <noscript class="error with-background">Пожалуйста, включите JavaScript, чтобы использовать приложение.</noscript>
+<app-root></app-root>
+<noscript class="error with-background">Пожалуйста, включите JavaScript, чтобы использовать приложение.</noscript>
 </body>
 </html>

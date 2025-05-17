@@ -1,25 +1,25 @@
-import { CommonModule } from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {Component, inject, Inject} from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { AnswerTypeHelper } from '../../../helpers/AnswerTypeHelper';
-import { LessonTypeHelper } from '../../../helpers/LessonTypeHelper';
-import { Answer } from '../../../models/Answer';
-import { Question } from '../../../models/Question';
-import { AlertService } from '../../../services/alert.service';
-import { FileService } from '../../../services/file.service';
-import { ValidationService } from '../../../services/validation.service';
-import { AnswerType } from '../../../enums/AnswerType';
-import { LessonType } from '../../../enums/LessonType';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatSelectModule} from '@angular/material/select';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {of} from 'rxjs';
+import {catchError} from 'rxjs/operators';
+import {AnswerTypeHelper} from '../../../helpers/AnswerTypeHelper';
+import {LessonTypeHelper} from '../../../helpers/LessonTypeHelper';
+import {Answer} from '../../../models/Answer';
+import {Question} from '../../../models/Question';
+import {AlertService} from '../../../services/alert.service';
+import {FileService} from '../../../services/file.service';
+import {ValidationService} from '../../../services/validation.service';
+import {AnswerType} from '../../../enums/AnswerType';
+import {LessonType} from '../../../enums/LessonType';
 import {LogService} from '../../../services/log.service';
 
 @Component({
@@ -46,7 +46,7 @@ export class LessonDialogComponent {
   lessonForm: FormGroup;
   answerTypes = AnswerTypeHelper.getAnswerTypes();
   lessonTypes = LessonTypeHelper.getLessonTypes();
-
+  protected readonly LessonType = LessonType;
   private logService = inject(LogService);
 
   constructor(
@@ -71,6 +71,11 @@ export class LessonDialogComponent {
     // Отслеживаем изменение типа урока
     this.lessonForm.get('lessonType')?.valueChanges.subscribe((value: LessonType) =>
       this.updateFormValidation(value));
+  }
+
+  // Получение массива вопросов
+  get questions(): FormArray {
+    return this.lessonForm.get('questions') as FormArray;
   }
 
   // Создание группы для вопроса
@@ -121,15 +126,10 @@ export class LessonDialogComponent {
       // Если тип ответа Single, оставляем только один правильный ответ
       answers.controls.forEach((answer, index) => {
         if (index !== answerIndex) {
-          answer.get('isCorrect')?.setValue(false, { emitEvent: false });
+          answer.get('isCorrect')?.setValue(false, {emitEvent: false});
         }
       });
     }
-  }
-
-  // Получение массива вопросов
-  get questions(): FormArray {
-    return this.lessonForm.get('questions') as FormArray;
   }
 
   // Добавление вопроса
@@ -251,6 +251,4 @@ export class LessonDialogComponent {
   onCancel(): void {
     this.dialogRef.close();
   }
-
-  protected readonly LessonType = LessonType;
 }

@@ -1,5 +1,5 @@
-<mat-card class="md-container" appearance="outlined">
-  <a mat-button routerLink="/manuals" class="nav-btn" [class.full-width]="isMediumScreen">
+<mat-card appearance="outlined" class="md-container">
+  <a [class.full-width]="isMediumScreen" class="nav-btn" mat-button routerLink="/manuals">
     Назад
   </a>
 
@@ -19,10 +19,10 @@
     <div class="contact-list">
       <div class="contact-item">
         <mat-form-field appearance="outline" class="copy-field">
-          <input matInput value="oraclehub-tech@mail.ru" readonly>
+          <input matInput readonly value="oraclehub-tech@mail.ru">
           <mat-label>Электронная почта</mat-label>
-          <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
-                  matTooltipPosition="below" (click)="copyToClipboard('oraclehub-tech@mail.ru', 'Электронная почта')">
+          <button (click)="copyToClipboard('oraclehub-tech@mail.ru', 'Электронная почта')" mat-icon-button matSuffix matTooltip="Скопировать"
+                  matTooltipPosition="below" type="button">
             <mat-icon>content_copy</mat-icon>
           </button>
         </mat-form-field>

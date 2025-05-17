@@ -1,5 +1,5 @@
-import { Answer } from './Answer';
-import { User } from './User';
+import {Answer} from './Answer';
+import {User} from './User';
 
 export interface UserAnswer {
   userId: string;

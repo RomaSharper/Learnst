@@ -1,5 +1,5 @@
-import { InfoType } from '../enums/InfoType';
-import { Activity } from './Activity';
+import {InfoType} from '../enums/InfoType';
+import {Activity} from './Activity';
 
 export interface InfoCard {
   id: number;

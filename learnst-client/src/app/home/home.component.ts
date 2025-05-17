@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { RouterLink } from '@angular/router';
+import {Component} from '@angular/core';
+import {MatButtonModule} from '@angular/material/button';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -8,4 +8,5 @@ import { RouterLink } from '@angular/router';
   styleUrls: ['./home.component.scss'],
   imports: [RouterLink, MatButtonModule]
 })
-export class HomeComponent { }
+export class HomeComponent {
+}

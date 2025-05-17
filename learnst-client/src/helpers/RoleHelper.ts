@@ -1,4 +1,4 @@
-import { Role } from '../enums/Role';
+import {Role} from '../enums/Role';
 
 export class RoleHelper {
   static getName(role: Role): string {

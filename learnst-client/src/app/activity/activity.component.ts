@@ -66,16 +66,6 @@ import {LogService} from '../../services/log.service';
   ]
 })
 export class ActivityComponent extends MediumScreenSupport implements OnInit {
-  private logService = inject(LogService);
-  private route = inject(ActivatedRoute);
-  private authService = inject(AuthService);
-  private alertService = inject(AlertService);
-  private audioService = inject(AudioService);
-  private answersService = inject(AnswersService);
-  private lessonsService = inject(LessonsService);
-  private activitiesService = inject(ActivitiesService);
-  private certificateService = inject(CertificateService);
-
   activity?: Activity;
   goBack!: () => void;
   activeTab = 0;
@@ -90,8 +80,16 @@ export class ActivityComponent extends MediumScreenSupport implements OnInit {
   loading = signal(true);
   isCertificateLoading = signal(false);
   isCertificateAvailable = signal(false);
-
   protected readonly LevelHelper = LevelHelper;
+  private logService = inject(LogService);
+  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private audioService = inject(AudioService);
+  private answersService = inject(AnswersService);
+  private lessonsService = inject(LessonsService);
+  private activitiesService = inject(ActivitiesService);
+  private certificateService = inject(CertificateService);
 
   constructor(public router: Router, public location: Location) {
     super();

@@ -1,31 +1,31 @@
-import { CommonModule, Location } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule, MatIconButton } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { catchError, forkJoin, map, Observable, of } from 'rxjs';
-import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
-import { PlaceholderImageDirective } from '../../directives/placeholder-image.directive';
-import { Level } from '../../enums/Level';
-import { Role } from '../../enums/Role';
-import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
-import { Return } from '../../helpers/Return';
-import { TagHelper } from '../../helpers/TagHelper';
-import { getRussianPaginatorIntl } from '../../localization/russian.paginator.intl';
-import { Activity } from '../../models/Activity';
-import { User } from '../../models/User';
-import { RuDatePipe } from '../../pipes/ru.date.pipe';
-import { ActivitiesService } from '../../services/activities.service';
-import { AlertService } from '../../services/alert.service';
-import { AuthService } from '../../services/auth.service';
-import { LessonType } from '../../enums/LessonType';
-import { FileService } from '../../services/file.service';
+import {CommonModule, Location} from '@angular/common';
+import {Component, inject, OnInit} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule, MatIconButton} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatPaginatorIntl, MatPaginatorModule} from '@angular/material/paginator';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {catchError, forkJoin, map, Observable, of} from 'rxjs';
+import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
+import {PlaceholderImageDirective} from '../../directives/placeholder-image.directive';
+import {Level} from '../../enums/Level';
+import {Role} from '../../enums/Role';
+import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
+import {Return} from '../../helpers/Return';
+import {TagHelper} from '../../helpers/TagHelper';
+import {getRussianPaginatorIntl} from '../../localization/russian.paginator.intl';
+import {Activity} from '../../models/Activity';
+import {User} from '../../models/User';
+import {RuDatePipe} from '../../pipes/ru.date.pipe';
+import {ActivitiesService} from '../../services/activities.service';
+import {AlertService} from '../../services/alert.service';
+import {AuthService} from '../../services/auth.service';
+import {LessonType} from '../../enums/LessonType';
+import {FileService} from '../../services/file.service';
 import {LogService} from '../../services/log.service';
 
 @Return()
@@ -33,7 +33,7 @@ import {LogService} from '../../services/log.service';
   selector: 'app-activities',
   templateUrl: './activities.component.html',
   styleUrls: ['./activities.component.scss'],
-  providers: [{ provide: MatPaginatorIntl, useValue: getRussianPaginatorIntl() }],
+  providers: [{provide: MatPaginatorIntl, useValue: getRussianPaginatorIntl()}],
   imports: [
     RuDatePipe,
     RouterLink,
@@ -52,13 +52,6 @@ import {LogService} from '../../services/log.service';
   ]
 })
 export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
-  private logService = inject(LogService);
-  private fileService = inject(FileService);
-  private route = inject(ActivatedRoute);
-  private authService = inject(AuthService);
-  private alertService = inject(AlertService);
-  private activitiesService = inject(ActivitiesService);
-
   tags: string[] = [];
   pageSize = 6;
   pageIndex = 0;
@@ -71,9 +64,49 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
   activities: Activity[] = [];
   paginatedActivities: Activity[] = [];
   pageSizeOptions = [6, 12, 24];
+  protected readonly Role = Role;
+  private logService = inject(LogService);
+  private fileService = inject(FileService);
+  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private activitiesService = inject(ActivitiesService);
 
   constructor(public location: Location, public router: Router) {
     super();
+  }
+
+  // Фильтрация активностей по searchQuery и тегам
+  get filteredActivities(): Activity[] {
+    return this.activities.filter(activity => {
+      if ([Role.User, Role.Backup].includes(this.user?.role!) && activity.isClosed)
+        return false;
+
+      // Если searchQuery пустой, пропускаем фильтрацию по нему
+      const matchesSearchQuery = this.searchQuery === ''
+        || activity.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+
+      // Если тегов нет, пропускаем фильтрацию по ним
+      const matchesTags = this.tags.length === 0 || this.tags.some(tag => {
+        const normalizedTag = TagHelper.toDisplayFormat(tag); // Преобразуем тег из URL-формата в читаемый
+        return activity.tags?.some(activityTag => activityTag.toLowerCase().includes(normalizedTag.toLowerCase()));
+      });
+
+      let matchesLevel = !this.level;
+      switch (this.level?.toLowerCase()) {
+        case 'легко':
+          matchesLevel = activity.level === Level.Easy;
+          break;
+        case 'умеренно':
+          matchesLevel = activity.level === Level.Medium;
+          break;
+        case 'сложно':
+          matchesLevel = activity.level === Level.Hard;
+          break;
+      }
+
+      return matchesSearchQuery && matchesTags && matchesLevel;
+    });
   }
 
   ngOnInit(): void {
@@ -155,39 +188,6 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
     const parts = this.searchInput.split('#');
     this.searchQuery = parts[0].trim();
     this.tags = parts.slice(1).map(tag => TagHelper.toUrlFormat(tag.trim()));
-  }
-
-  // Фильтрация активностей по searchQuery и тегам
-  get filteredActivities(): Activity[] {
-    return this.activities.filter(activity => {
-      if ([Role.User, Role.Backup].includes(this.user?.role!) && activity.isClosed)
-        return false;
-
-      // Если searchQuery пустой, пропускаем фильтрацию по нему
-      const matchesSearchQuery = this.searchQuery === ''
-        || activity.title.toLowerCase().includes(this.searchQuery.toLowerCase());
-
-      // Если тегов нет, пропускаем фильтрацию по ним
-      const matchesTags = this.tags.length === 0 || this.tags.some(tag => {
-        const normalizedTag = TagHelper.toDisplayFormat(tag); // Преобразуем тег из URL-формата в читаемый
-        return activity.tags?.some(activityTag => activityTag.toLowerCase().includes(normalizedTag.toLowerCase()));
-      });
-
-      let matchesLevel = !this.level;
-      switch (this.level?.toLowerCase()) {
-        case 'легко':
-          matchesLevel = activity.level === Level.Easy;
-          break;
-        case 'умеренно':
-          matchesLevel = activity.level === Level.Medium;
-          break;
-        case 'сложно':
-          matchesLevel = activity.level === Level.Hard;
-          break;
-      }
-
-      return matchesSearchQuery && matchesTags && matchesLevel;
-    });
   }
 
   // Подписка или отписка от курса
@@ -294,6 +294,10 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
     });
   }
 
+  toDate(date?: string | number | Date): Date {
+    return date ? new Date(date) : new Date();
+  }
+
   private deleteActivityFiles(activity: Activity): Observable<void> {
     const deleteObservables: Observable<void>[] = [];
 
@@ -332,17 +336,12 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
 
     // Объединяем все запросы на удаление в один поток
     return forkJoin(deleteObservables).pipe(
-      map(() => {}),
+      map(() => {
+      }),
       catchError(error => {
         this.logService.errorWithData('Ошибка при удалении файлов:', error);
         throw error;
       })
     );
   }
-
-  toDate(date?: string | number | Date): Date {
-    return date ? new Date(date) : new Date();
-  }
-
-  protected readonly Role = Role;
 }

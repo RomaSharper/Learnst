@@ -1,4 +1,4 @@
-import { AnswerType } from "../enums/AnswerType";
+import {AnswerType} from "../enums/AnswerType";
 
 export class AnswerTypeHelper {
   static getName(infoType: AnswerType): string {
@@ -14,8 +14,8 @@ export class AnswerTypeHelper {
 
   static getAnswerTypes(): { value: AnswerType, label: string }[] {
     return [
-      { value: AnswerType.Single, label: 'Один правильный ответ' },
-      { value: AnswerType.Multiple, label: 'Несколько правильных ответов' }
+      {value: AnswerType.Single, label: 'Один правильный ответ'},
+      {value: AnswerType.Multiple, label: 'Несколько правильных ответов'}
     ];
   }
 }

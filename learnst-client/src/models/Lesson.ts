@@ -1,7 +1,7 @@
-import { LessonType } from '../enums/LessonType';
-import { Question } from './Question';
-import { Topic } from './Topic';
-import { UserLesson } from './UserLesson';
+import {LessonType} from '../enums/LessonType';
+import {Question} from './Question';
+import {Topic} from './Topic';
+import {UserLesson} from './UserLesson';
 
 export interface Lesson {
   id: string; // Guid

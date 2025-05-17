@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
-import { MatListModule } from '@angular/material/list';
-import { MatIconModule } from '@angular/material/icon';
-import { RouterModule } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
+import {Component} from '@angular/core';
+import {MatCardModule} from '@angular/material/card';
+import {MatListModule} from '@angular/material/list';
+import {MatIconModule} from '@angular/material/icon';
+import {RouterModule} from '@angular/router';
+import {MatButtonModule} from '@angular/material/button';
 import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
 
 @Component({
@@ -20,8 +20,8 @@ import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
 })
 export class ManualsComponent extends MediumScreenSupport {
   links = [
-    { path: '/manuals/privacypolicy', title: 'Конфиденциальность' },
-    { path: '/manuals/termsofuse', title: 'Условия использования' },
+    {path: '/manuals/privacypolicy', title: 'Конфиденциальность'},
+    {path: '/manuals/termsofuse', title: 'Условия использования'},
     /*{ path: '/manuals/oferta', title: 'Публичная оферта' },
     { path: '/manuals/subscription', title: 'О подписке' },
     { path: '/manuals/contacts', title: 'Контакты' }*/

@@ -58,18 +58,16 @@ import {LogService} from '../../services/log.service';
   ]
 })
 export class RegisterComponent extends MediumScreenSupport implements AfterViewInit {
+  form: FormGroup;
+  loading = signal(false);
+  hidePassword = signal(true);
+  @ViewChild('turnstileContainer') turnstileContainer!: ElementRef;
   private logService = inject(LogService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private emailService = inject(EmailService);
   private usersService = inject(UsersService);
   private turnstile = inject(TurnstileService);
-
-  form: FormGroup;
-  loading = signal(false);
-  hidePassword = signal(true);
-
-  @ViewChild('turnstileContainer') turnstileContainer!: ElementRef;
 
   constructor(private router: Router, public location: Location) {
     super();

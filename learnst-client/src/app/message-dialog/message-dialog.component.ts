@@ -1,6 +1,6 @@
-import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
+import {Component, Inject} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MatButtonModule} from '@angular/material/button';
 
 @Component({
   selector: 'app-message-dialog',
@@ -18,7 +18,8 @@ export class MessageDialogComponent {
       message: string;
       okText: string;
     }
-  ) { }
+  ) {
+  }
 
   onOk(): void {
     this.dialogRef.close();

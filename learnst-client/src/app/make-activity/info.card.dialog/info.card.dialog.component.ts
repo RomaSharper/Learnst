@@ -1,17 +1,17 @@
 import {Component, inject, Inject} from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { InspectableDirective } from '../../../directives/inspectable.directive';
-import { InfoType } from '../../../enums/InfoType';
-import { InfoTypeHelper } from '../../../helpers/InfoTypeHelper';
-import { AlertService } from '../../../services/alert.service';
-import { FileService } from '../../../services/file.service';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {of} from 'rxjs';
+import {catchError} from 'rxjs/operators';
+import {InspectableDirective} from '../../../directives/inspectable.directive';
+import {InfoType} from '../../../enums/InfoType';
+import {InfoTypeHelper} from '../../../helpers/InfoTypeHelper';
+import {AlertService} from '../../../services/alert.service';
+import {FileService} from '../../../services/file.service';
 import {LogService} from '../../../services/log.service';
 
 @Component({
@@ -34,14 +34,12 @@ export class InfoCardDialogComponent {
   infoCardForm: FormGroup;
   previewIconUrl?: string;
   infoTypes = InfoTypeHelper.getInfoTypes();
-
+  public dialogRef = inject(MatDialogRef<InfoCardDialogComponent>);
   private readonly MAX_FILE_SIZE = 5 * 1024 * 1024;
-
   private fb = inject(FormBuilder);
   private logService = inject(LogService);
   private fileService = inject(FileService);
   private alertService = inject(AlertService);
-  public dialogRef = inject(MatDialogRef<InfoCardDialogComponent>);
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { infoCard: any }) {
     this.infoCardForm = this.fb.group({
@@ -75,13 +73,7 @@ export class InfoCardDialogComponent {
 
     this.selectedFile = file;
     this.readFile(file);
-    this.infoCardForm.patchValue({ iconUrl: 'file_selected' }); // Устанавливаем значение для валидации
-  }
-
-  private readFile(file: File): void {
-    const reader = new FileReader();
-    reader.onload = (e) => this.previewIconUrl = e.target!.result as string;
-    reader.readAsDataURL(file);
+    this.infoCardForm.patchValue({iconUrl: 'file_selected'}); // Устанавливаем значение для валидации
   }
 
   onCancel(): void {
@@ -133,5 +125,11 @@ export class InfoCardDialogComponent {
       });
       this.dialogRef.close(this.infoCardForm.value);
     });
+  }
+
+  private readFile(file: File): void {
+    const reader = new FileReader();
+    reader.onload = (e) => this.previewIconUrl = e.target!.result as string;
+    reader.readAsDataURL(file);
   }
 }

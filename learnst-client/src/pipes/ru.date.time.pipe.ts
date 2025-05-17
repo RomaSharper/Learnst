@@ -1,7 +1,7 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { format } from 'date-fns';
-import { formatInTimeZone } from 'date-fns-tz';
-import { ru } from 'date-fns/locale';
+import {Pipe, PipeTransform} from '@angular/core';
+import {format} from 'date-fns';
+import {formatInTimeZone} from 'date-fns-tz';
+import {ru} from 'date-fns/locale';
 
 @Pipe({
   name: 'ruDateTime',

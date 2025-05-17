@@ -26,7 +26,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {UserMenuComponent} from '../user-menu/user-menu.component';
 import {TicketType} from '../../enums/TicketType';
 import {forkJoin, of} from 'rxjs';
-import {catchError, switchMap, map} from 'rxjs/operators';
+import {catchError, map, switchMap} from 'rxjs/operators';
 import {LogService} from '../../services/log.service';
 
 
@@ -49,14 +49,6 @@ import {LogService} from '../../services/log.service';
   ]
 })
 export class TicketDetailComponent extends MediumScreenSupport implements OnInit {
-  private router = inject(Router);
-  private logService = inject(LogService);
-  private route = inject(ActivatedRoute);
-  private authService = inject(AuthService);
-  private usersService = inject(UsersService);
-  private alertService = inject(AlertService);
-  private ticketService = inject(TicketService);
-
   user!: User;
   ticket!: Ticket;
   ticketId!: string;
@@ -64,6 +56,19 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
   canChangeStatus = false;
   canAnswerOrDelete = false;
   errorMessage = signal('');
+  protected readonly Role = Role;
+  protected readonly RoleHelper = RoleHelper;
+  protected readonly TicketType = TicketType;
+  protected readonly TicketStatus = TicketStatus;
+  protected readonly TicketTypeHelper = TicketTypeHelper;
+  protected readonly TicketStatusHelper = TicketStatusHelper;
+  private router = inject(Router);
+  private logService = inject(LogService);
+  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private usersService = inject(UsersService);
+  private alertService = inject(AlertService);
+  private ticketService = inject(TicketService);
 
   ngOnInit(): void {
     this.route.paramMap.pipe(
@@ -127,30 +132,6 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
     });
   }
 
-  private processTicketData(ticket: Ticket): Ticket {
-    return {
-      ...ticket,
-      ticketAnswers: ticket.ticketAnswers.sort(
-        (a, b) => new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime()
-      ),
-      statusHistories: ticket.statusHistories.sort(
-        (a, b) => new Date(a.changedAt!).getTime() - new Date(b.changedAt!).getTime()
-      )
-    };
-  }
-
-  private updatePermissions(): void {
-    this.canChangeStatus = this.user.role !== Role.User;
-    this.canAnswerOrDelete = this.canChangeStatus || this.user.id === this.ticket.authorId;
-  }
-
-  private handleError(message: string, err?: any): void {
-    this.loading = false;
-    this.errorMessage.set(message);
-    this.logService.errorWithData(err || message);
-    this.alertService.showSnackBar(message);
-  }
-
   updateStatus(newStatus: TicketStatus): void {
     this.ticketService.updateStatus(this.ticketId, newStatus).subscribe({
       next: () => {
@@ -193,10 +174,27 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
     });
   }
 
-  protected readonly Role = Role;
-  protected readonly RoleHelper = RoleHelper;
-  protected readonly TicketType = TicketType;
-  protected readonly TicketStatus = TicketStatus;
-  protected readonly TicketTypeHelper = TicketTypeHelper;
-  protected readonly TicketStatusHelper = TicketStatusHelper;
+  private processTicketData(ticket: Ticket): Ticket {
+    return {
+      ...ticket,
+      ticketAnswers: ticket.ticketAnswers.sort(
+        (a, b) => new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime()
+      ),
+      statusHistories: ticket.statusHistories.sort(
+        (a, b) => new Date(a.changedAt!).getTime() - new Date(b.changedAt!).getTime()
+      )
+    };
+  }
+
+  private updatePermissions(): void {
+    this.canChangeStatus = this.user.role !== Role.User;
+    this.canAnswerOrDelete = this.canChangeStatus || this.user.id === this.ticket.authorId;
+  }
+
+  private handleError(message: string, err?: any): void {
+    this.loading = false;
+    this.errorMessage.set(message);
+    this.logService.errorWithData(err || message);
+    this.alertService.showSnackBar(message);
+  }
 }

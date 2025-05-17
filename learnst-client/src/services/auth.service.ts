@@ -1,8 +1,8 @@
-import {Injectable, inject, OnInit} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
-import {Observable, BehaviorSubject, of} from 'rxjs';
-import {tap, catchError, map, switchMap} from 'rxjs/operators';
+import {BehaviorSubject, Observable, of} from 'rxjs';
+import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import {environment} from '../environments/environment';
 import {UserDao} from '../models/UserDao';
 import {UsersService} from './users.service';
@@ -18,24 +18,21 @@ import {LogService} from './log.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService implements OnInit {
+export class AuthService {
   private router = inject(Router);
   private http = inject(HttpClient);
   private logService = inject(LogService);
-  private usersService = inject(UsersService);
   private userStatusService = inject(UserStatusService);
   private accountsSubject = new BehaviorSubject<StoredUser[]>([]);
+  public accounts = toSignal(this.accountsSubject);
   private currentUserSubject = new BehaviorSubject<UserDao | null>(null);
-
+  public currentUser$ = this.currentUserSubject.asObservable();
   private readonly TOKEN_KEY = 'auth_token';
   private readonly ACCOUNTS_KEY = 'user_accounts';
   private readonly ENCRYPTION_KEY = environment.encryptionKey;
   private readonly API_URL = `${environment.apiBaseUrl}/sessions`;
 
-  public accounts = toSignal(this.accountsSubject);
-  public currentUser$ = this.currentUserSubject.asObservable();
-
-  ngOnInit() {
+  constructor(private usersService: UsersService) {
     this.initializeAuthState();
   }
 
@@ -140,7 +137,7 @@ export class AuthService implements OnInit {
 
   private updateAccountInfo(user: User): void {
     const accounts: StoredUser[] = this.accountsSubject.value.map(a => a.id === user.id
-      ? { ...a, username: user.username, avatarUrl: user.avatarUrl }
+      ? {...a, username: user.username, avatarUrl: user.avatarUrl}
       : a);
     this.saveAccounts(accounts);
   }

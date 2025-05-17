@@ -1,5 +1,5 @@
-import { Activity } from './Activity';
-import { Lesson } from './Lesson';
+import {Activity} from './Activity';
+import {Lesson} from './Lesson';
 
 export interface Topic {
   id?: string; // Guid

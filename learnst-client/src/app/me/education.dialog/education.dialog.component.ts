@@ -1,10 +1,10 @@
-import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
-import { Education } from '../../../models/Education';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
+import {Component, Inject} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import {Education} from '../../../models/Education';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
 
 @Component({
   selector: 'app-education-dialog',
@@ -39,7 +39,7 @@ export class EducationDialogComponent {
 
   save(): void {
     if (this.educationForm.invalid) return;
-    const updatedEducation = { ...this.data.education, ...this.educationForm.value };
+    const updatedEducation = {...this.data.education, ...this.educationForm.value};
     this.dialogRef.close(updatedEducation);
   }
 }

@@ -3,7 +3,8 @@
   <form [formGroup]="educationForm">
     <mat-form-field appearance="outline">
       <mat-label>Вуз</mat-label>
-      <input matInput formControlName="institutionName" placeholder="Название вуза" (keydown.enter)="save()" required minlength="3" maxlength="100">
+      <input (keydown.enter)="save()" formControlName="institutionName" matInput maxlength="100" minlength="3"
+             placeholder="Название вуза" required>
       @if (educationForm.get('institutionName')?.hasError('required')) {
         <mat-error>Поле обязательно для заполнения.</mat-error>
       } @else if (educationForm.get('institutionName')?.hasError('minlength')) {
@@ -14,7 +15,8 @@
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Факультет</mat-label>
-      <input matInput formControlName="degree" placeholder="Факультет" (keydown.enter)="save()" required minlength="3" maxlength="100">
+      <input (keydown.enter)="save()" formControlName="degree" matInput maxlength="100" minlength="3" placeholder="Факультет"
+             required>
       @if (educationForm.get('degree')?.hasError('required')) {
         <mat-error>Поле обязательно для заполнения.</mat-error>
       } @else if (educationForm.get('institutionName')?.hasError('minlength')) {
@@ -25,7 +27,8 @@
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Год выпуска</mat-label>
-      <input matInput type="number" formControlName="graduationYear" placeholder="Год выпуска" (keydown.enter)="save()" required>
+      <input (keydown.enter)="save()" formControlName="graduationYear" matInput placeholder="Год выпуска" required
+             type="number">
       @if (educationForm.get('graduationYear')?.hasError('required')) {
         <mat-error>Поле обязательно для заполнения.</mat-error>
       }
@@ -36,6 +39,6 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button type="button" mat-button (click)="onNoClick()">Закрыть</button>
-  <button type="button" mat-button [disabled]="educationForm.invalid" (click)="save()">Сохранить</button>
+  <button (click)="onNoClick()" mat-button type="button">Закрыть</button>
+  <button (click)="save()" [disabled]="educationForm.invalid" mat-button type="button">Сохранить</button>
 </mat-dialog-actions>

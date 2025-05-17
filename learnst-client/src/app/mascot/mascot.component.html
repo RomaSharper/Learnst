@@ -1,21 +1,24 @@
 <div class="mascot-container">
-  <div class="mascot-avatar" (click)="toggleChat()" [class.avatar-bounce]="bounceTrigger()">
+  <div (click)="toggleChat()" [class.avatar-bounce]="bounceTrigger()" class="mascot-avatar">
     <div class="avatar-wrapper">
       <img
         alt="Nico"
-        noDownloading
         class="nico-avatar"
         [@avatarBounce]="currentMood"
         matTooltip="Поговори со мной!"
         [src]="'assets/niko/' + currentMood + '.webp'">
-      <div class="status-indicator" [class.active]="isTyping()"></div>
+      <div [class.active]="isTyping()" class="status-indicator"></div>
     </div>
   </div>
 
   @if (isChatOpen()) {
+    <div class="chat-overlay"
+         (click)="toggleChat()"
+         [class.mobile]="isMediumScreen"></div>
+
     <div class="chat-box"
-        [class.active]="isChatOpen()"
-        [class.mobile]="isMediumScreen">
+         [class.active]="isChatOpen()"
+         [class.mobile]="isMediumScreen">
       <div class="chat-content">
         <div class="chat-header">
           <div class="title-group">
@@ -34,8 +37,7 @@
               mat-icon-button
               class="action-button"
               matTooltip="Очистить историю"
-              (click)="clearChatHistoryHandle($event)"
-            >
+              (click)="clearChatHistoryHandle($event)">
               <mat-icon>delete</mat-icon>
             </button>
             <button
@@ -82,9 +84,6 @@
                 Здесь пусто... Давай пообщаемся!
               </div>
             </div>
-          }
-          @if (isMediumScreen) {
-            <div [class.mobile-overlay]="isChatOpen()"></div>
           }
         </div>
       </div>

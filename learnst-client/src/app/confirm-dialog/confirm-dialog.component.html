@@ -4,7 +4,7 @@
     <p>{{ data.message }}</p>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
-    <button type="button" mat-button color="warn" (click)="onCancel()">{{ data.cancelText }}</button>
-    <button type="button" mat-button color="primary" (click)="onConfirm()">{{ data.confirmText }}</button>
+    <button (click)="onCancel()" color="warn" mat-button type="button">{{ data.cancelText }}</button>
+    <button (click)="onConfirm()" color="primary" mat-button type="button">{{ data.confirmText }}</button>
   </mat-dialog-actions>
 </ng-container>
