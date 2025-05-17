@@ -1,11 +1,10 @@
 <div class="mascot-container">
   <div (click)="toggleChat()" [class.avatar-bounce]="bounceTrigger()" class="mascot-avatar">
-    <div class="avatar-wrapper">
+    <div class="avatar-wrapper" matTooltip="Поговори со мной!">
       <img
-        alt="Nico"
+        alt="Нико"
         class="nico-avatar"
         [@avatarBounce]="currentMood"
-        matTooltip="Поговори со мной!"
         [src]="'assets/niko/' + currentMood + '.webp'">
       <div [class.active]="isTyping()" class="status-indicator"></div>
     </div>
