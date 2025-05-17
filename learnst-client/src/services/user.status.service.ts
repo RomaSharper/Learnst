@@ -4,17 +4,20 @@ import {Status} from '../enums/Status';
 import {SignalRService} from './signalr.service';
 import {UsersService} from './users.service';
 import {environment} from '../environments/environment';
+import {lastValueFrom} from 'rxjs';
+import {LogService} from './log.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserStatusService {
-  private currentUserId?: string;
   private activityTimeout?: any;
+  private currentUserId?: string;
   private isWindowActive = true;
   private readonly INACTIVITY_TIMEOUT = 300000;
 
   private router = inject(Router);
+  private logService = inject(LogService);
   private usersService = inject(UsersService);
   private signalRService = inject(SignalRService);
 
@@ -90,18 +93,18 @@ export class UserStatusService {
     const targetUserId = userId || this.currentUserId;
 
     if (!targetUserId) {
-      console.error('Не установлен ID пользователя');
+      this.logService.errorWithData('Не установлен ID пользователя');
       return;
     }
 
     try {
       // Обновляем статус на сервере
-      await this.usersService.updateStatus(targetUserId, status).toPromise();
+      await lastValueFrom(this.usersService.updateStatus(targetUserId, status));
 
       // Уведомляем других клиентов через SignalR
       await this.signalRService.invoke('SendStatusUpdate', targetUserId, status);
     } catch (err) {
-      // console.error('Ошибка при обновлении статуса:', err);
+      // this.logService.errorWithData('Ошибка при обновлении статуса:', err);
     }
   }
 }

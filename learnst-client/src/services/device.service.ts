@@ -7,8 +7,7 @@ import { DeviceType } from "../models/DeviceType";
 export class DeviceService {
   private readonly mobileAgentRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
 
-  getDeviceType(): DeviceType {
-    return this.mobileAgentRegex.test(navigator.userAgent)
-      ? DeviceType.Mobile : DeviceType.Desktop;
-  }
+  getDeviceType = () => this.mobileAgentRegex.test(navigator.userAgent)
+     ? DeviceType.Mobile
+     : DeviceType.Desktop;
 }

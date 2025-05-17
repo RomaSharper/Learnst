@@ -1,50 +1,50 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, of } from 'rxjs';
-import { tap, catchError, map, switchMap } from 'rxjs/operators';
-import { environment } from '../environments/environment';
-import { UserDao } from '../models/UserDao';
-import { UsersService } from './users.service';
-import { StoredUser } from '../models/StoredUser';
-import { Role } from '../enums/Role';
-import { User } from '../models/User';
-import { AES, enc } from 'crypto-js';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { UserStatusService } from './user.status.service'; // Импортируем UserStatusService
-import { Status } from '../enums/Status'; // Импортируем Status
+import {Injectable, inject, OnInit} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Router} from '@angular/router';
+import {Observable, BehaviorSubject, of} from 'rxjs';
+import {tap, catchError, map, switchMap} from 'rxjs/operators';
+import {environment} from '../environments/environment';
+import {UserDao} from '../models/UserDao';
+import {UsersService} from './users.service';
+import {StoredUser} from '../models/StoredUser';
+import {Role} from '../enums/Role';
+import {User} from '../models/User';
+import {AES, enc} from 'crypto-js';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {UserStatusService} from './user.status.service';
+import {Status} from '../enums/Status';
+import {LogService} from './log.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthService implements OnInit {
+  private router = inject(Router);
+  private http = inject(HttpClient);
+  private logService = inject(LogService);
   private usersService = inject(UsersService);
   private userStatusService = inject(UserStatusService);
+  private accountsSubject = new BehaviorSubject<StoredUser[]>([]);
+  private currentUserSubject = new BehaviorSubject<UserDao | null>(null);
 
   private readonly TOKEN_KEY = 'auth_token';
   private readonly ACCOUNTS_KEY = 'user_accounts';
   private readonly ENCRYPTION_KEY = environment.encryptionKey;
+  private readonly API_URL = `${environment.apiBaseUrl}/sessions`;
 
-  private accountsSubject = new BehaviorSubject<StoredUser[]>([]);
-  private currentUserSubject = new BehaviorSubject<UserDao | null>(null);
   public accounts = toSignal(this.accountsSubject);
-
-  private router = inject(Router);
-  private http = inject(HttpClient);
-  private apiUrl = `${environment.apiBaseUrl}/sessions`;
-
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor() {
+  ngOnInit() {
     this.initializeAuthState();
   }
 
   login(login: string, password: string): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(`${this.apiUrl}/auth`, { login, password })
+    return this.http.post<{ token: string }>(`${this.API_URL}/auth`, {login, password})
       .pipe(
-        tap(({ token }) => this.handleAuthenticationSuccess(token)),
+        tap(({token}) => this.handleAuthenticationSuccess(token)),
         catchError(error => {
-          console.error('Ошибка входа:', error);
+          this.logService.errorWithData('Ошибка входа:', error);
           throw error;
         })
       );
@@ -63,18 +63,15 @@ export class AuthService {
       this.router.navigate(['/login']);
 
       // Обновляем статус для всех аккаунтов
-      accountIds.forEach(id => {
-        this.userStatusService.updateStatus(Status.Offline, id);
-      });
+      accountIds.forEach(id => this.userStatusService.updateStatus(Status.Offline, id));
     } else {
       // Сохраняем ID текущего пользователя перед очисткой
       const currentUserId = this.currentUserSubject.value?.openid;
       this.clearAuthData();
 
       // Обновляем статус только текущего пользователя
-      if (currentUserId) {
+      if (currentUserId)
         this.userStatusService.updateStatus(Status.Offline, currentUserId);
-      }
     }
   }
 
@@ -87,10 +84,9 @@ export class AuthService {
     const previousCurrent = this.accountsSubject.value.find(acc => acc.isCurrent);
     const newCurrent = accounts.find(acc => acc.isCurrent);
 
-    if (previousCurrent) {
+    if (previousCurrent)
       // Устанавливаем статус Offline для предыдущего аккаунта
       this.userStatusService.updateStatus(Status.Offline, previousCurrent.id);
-    }
 
     if (newCurrent) {
       this.saveAccounts(accounts);
@@ -107,17 +103,13 @@ export class AuthService {
       .filter(acc => acc.id !== accountId);
     this.saveAccounts(filteredAccounts);
 
-    if (this.currentUserSubject.value?.openid === accountId) {
+    if (this.currentUserSubject.value?.openid === accountId)
       this.clearAuthData();
-    }
   }
 
   getUser(): Observable<User | null> {
     return this.currentUser$.pipe(
-      switchMap(userDao => {
-        if (!userDao?.openid) return of(null);
-        return this.usersService.getUserById(userDao.openid);
-      }),
+      switchMap(userDao => userDao?.openid ? this.usersService.getUserById(userDao.openid) : of(null)),
       tap(user => {
         if (user) this.updateAccountInfo(user);
       }),
@@ -147,11 +139,9 @@ export class AuthService {
   }
 
   private updateAccountInfo(user: User): void {
-    const accounts: StoredUser[] = this.accountsSubject.value.map(a => {
-      if (a.id === user.id)
-        return { ...a, username: user.username, avatarUrl: user.avatarUrl };
-      return a;
-    });
+    const accounts: StoredUser[] = this.accountsSubject.value.map(a => a.id === user.id
+      ? { ...a, username: user.username, avatarUrl: user.avatarUrl }
+      : a);
     this.saveAccounts(accounts);
   }
 
@@ -178,20 +168,17 @@ export class AuthService {
       const decryptedToken = this.decryptData(encryptedToken);
       const payload = this.decodeToken(decryptedToken);
 
-      if (payload) {
-        const accounts = this.accountsSubject.value;
-        const account = accounts.find(acc => acc.id === payload.openid);
+      if (!payload) return;
+      const accounts = this.accountsSubject.value;
+      const account = accounts.find(acc => acc.id === payload.openid);
 
-        if (account) {
-          this.setCurrentUser(account);
-          localStorage.setItem(this.TOKEN_KEY, account.accessToken);
-
-          // Устанавливаем статус Online при восстановлении сессии
-          this.userStatusService.updateStatus(Status.Online, account.id);
-        }
-      }
+      if (!account) return;
+      this.setCurrentUser(account);
+      localStorage.setItem(this.TOKEN_KEY, account.accessToken);
+      this.userStatusService.updateStatus(Status.Online, account.id);
     } catch (error) {
-      console.error('Ошибка восстановления сессии:', error);
+      if (!(error instanceof Error)) return;
+      this.logService.errorWithData('Ошибка восстановления сессии:', error);
       this.clearAuthData();
     }
   }
@@ -259,12 +246,13 @@ export class AuthService {
       const current = accounts.find(acc => acc.isCurrent);
 
       this.accountsSubject.next(accounts);
-      if (current) {
-        this.setCurrentUser(current);
-        localStorage.setItem(this.TOKEN_KEY, current.accessToken);
-      }
+
+      if (!current) return;
+      this.setCurrentUser(current);
+      localStorage.setItem(this.TOKEN_KEY, current.accessToken);
     } catch (error) {
-      console.error('Не удалось загрузить аккаунты:', error);
+      if (!(error instanceof Error)) return;
+      this.logService.errorWithData('Не удалось загрузить аккаунты:', error);
     }
   }
 
@@ -288,12 +276,10 @@ export class AuthService {
         .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
         .join('')));
 
-      if (payload?.openid && payload?.username && payload?.role) {
-        return payload;
-      }
-      return null;
+      return payload?.openid && payload?.username && payload?.role ? payload : null;
     } catch (error) {
-      console.error('Ошибка обработки токена:', error);
+      if (!(error instanceof Error)) return;
+      this.logService.errorWithData('Ошибка обработки токена:', error);
       return null;
     }
   }
@@ -302,13 +288,12 @@ export class AuthService {
     const decryptedToken = this.decryptData(account.accessToken);
     const payload = this.decodeToken(decryptedToken);
 
-    if (payload) {
-      this.currentUserSubject.next({
-        openid: payload.openid,
-        username: payload.username,
-        role: payload.role
-      });
-    }
+    if (!payload) return;
+    this.currentUserSubject.next({
+      openid: payload.openid,
+      username: payload.username,
+      role: payload.role
+    });
   }
 
   private clearAuthData(): void {

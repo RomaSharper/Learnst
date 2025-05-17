@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import {Component, inject, Inject} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -12,6 +12,7 @@ import { InfoType } from '../../../enums/InfoType';
 import { InfoTypeHelper } from '../../../helpers/InfoTypeHelper';
 import { AlertService } from '../../../services/alert.service';
 import { FileService } from '../../../services/file.service';
+import {LogService} from '../../../services/log.service';
 
 @Component({
   selector: 'app-info-card-dialog',
@@ -33,33 +34,31 @@ export class InfoCardDialogComponent {
   infoCardForm: FormGroup;
   previewIconUrl?: string;
   infoTypes = InfoTypeHelper.getInfoTypes();
+
   private readonly MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-  constructor(
-    private fb: FormBuilder,
-    public dialogRef: MatDialogRef<InfoCardDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { infoCard: any },
-    private fileService: FileService,
-    private alertService: AlertService
-  ) {
+  private fb = inject(FormBuilder);
+  private logService = inject(LogService);
+  private fileService = inject(FileService);
+  private alertService = inject(AlertService);
+  public dialogRef = inject(MatDialogRef<InfoCardDialogComponent>);
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { infoCard: any }) {
     this.infoCardForm = this.fb.group({
       text: [data.infoCard?.text || '', Validators.required],
       iconUrl: [data.infoCard?.iconUrl || '', Validators.required], // Иконка обязательна
       infoType: [data.infoCard?.infoType || InfoType.Benefit, Validators.required]
     });
 
-    if (data.infoCard?.iconUrl) {
-      this.previewIconUrl = data.infoCard.iconUrl;
-      this.oldIconUrl = data.infoCard.iconUrl;
-    }
+    if (!data.infoCard?.iconUrl) return;
+    this.previewIconUrl = data.infoCard.iconUrl;
+    this.oldIconUrl = data.infoCard.iconUrl;
   }
 
   // Метод для открытия файлового диалога
   openFilePicker(): void {
     const fileInput = document.getElementById('iconInput') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.click();
-    }
+    fileInput?.click();
   }
 
   // Метод для обработки выбора файла
@@ -116,24 +115,23 @@ export class InfoCardDialogComponent {
     // Если файл выбран, загружаем его на сервер
     this.fileService.upload(this.selectedFile).pipe(
       catchError(err => {
-        console.error('Ошибка при загрузке файла:', err);
+        this.logService.errorWithData('Ошибка при загрузке файла:', err);
         this.alertService.showSnackBar('Произошла ошибка при загрузке файла. Пожалуйста, попробуйте снова.');
         this.dialogRef.close();
         return of(null);
       })
     ).subscribe(response => {
-      if (response) {
-        // Если это редактирование и старая иконка была, удаляем её
-        if (this.oldIconUrl) {
-          this.fileService.delete(this.oldIconUrl).subscribe({
-            error: (err) => console.error('Ошибка при удалении старой иконки:', err)
-          });
-        }
+      if (!response) return;
 
-        // Обновляем URL иконки в форме
-        this.infoCardForm.patchValue({ iconUrl: encodeURIComponent(response.fileUrl) });
-        this.dialogRef.close(this.infoCardForm.value);
-      }
+      if (this.oldIconUrl)
+        this.fileService.delete(this.oldIconUrl).subscribe({
+          error: err => this.logService.errorWithData('Ошибка при удалении старой иконки:', err)
+        });
+
+      this.infoCardForm.patchValue({
+        iconUrl: encodeURIComponent(response.fileUrl)
+      });
+      this.dialogRef.close(this.infoCardForm.value);
     });
   }
 }

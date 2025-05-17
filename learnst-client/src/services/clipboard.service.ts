@@ -1,5 +1,6 @@
-import { Injectable, NgZone } from '@angular/core';
+import {inject, Injectable, NgZone} from '@angular/core';
 import {AlertService} from './alert.service';
+import {LogService} from './log.service';
 
 export type ClipboardContentType =
   'text/plain' |
@@ -17,11 +18,9 @@ interface ClipboardError extends Error {
   providedIn: 'root'
 })
 export class ClipboardService {
-  private readonly clipboard: Clipboard;
-
-  constructor(private ngZone: NgZone) {
-    this.clipboard = navigator.clipboard;
-  }
+  private ngZone = inject(NgZone);
+  private logService = inject(LogService);
+  private readonly clipboard = navigator.clipboard;
 
   get isSupported(): boolean {
     return !!this.clipboard && !!document.hasFocus && document.hasFocus();
@@ -33,7 +32,7 @@ export class ClipboardService {
       blob: new Blob([text], { type: 'text/plain' })
     })
       .then(() => alertService.showSnackBar(snackBarMessage ?? 'Текст успешно скопирован'))
-      .catch(err => console.error('Копирование в буфер обмена не удалось: ', err));
+      .catch(err => this.logService.errorWithData('Копирование в буфер обмена не удалось: ', err));
   }
 
   async copy(content: { type: ClipboardContentType, blob: Blob }): Promise<void> {

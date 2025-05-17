@@ -804,14 +804,12 @@ mat-date-range-input {
 // Авторизация-регистрация
 .form-container {
   padding: 20px;
+  max-width: 560px;
   margin: 20px auto;
-  max-width: 4px * 140;
   border-radius: 20px;
-  // background-color: #232527;
-  // box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 
   form > *:not(:last-child) {
-    margin-bottom: 4px * 4;
+    margin-bottom: 16px;
   }
 
   // Адаптивные стили для контейнера
@@ -873,7 +871,6 @@ mat-date-range-input {
       position: relative;
 
       h2 {
-        // color: @accent;
         margin-bottom: 8px;
         padding-right: 40px;
       }
@@ -898,8 +895,6 @@ mat-date-range-input {
     width: 200px;
     height: 200px;
     margin: 0 auto 8px;
-    // border: 4px * 0.25 solid @online;
-    // background: linear-gradient(to bottom, #41778f 5%, #3d697b 95%);
 
     .avatar {
       width: 100%;
@@ -922,7 +917,6 @@ mat-date-range-input {
     position: relative;
     margin-bottom: 8px;
     border-radius: 20px;
-    // border: 4px * 0.25 solid @border-color;
 
     > a {
       gap: 16px;
@@ -996,12 +990,7 @@ mat-date-range-input {
     width: 100%;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  h1, h2, h3, h4, h5, h6 {
     margin-top: 1.5em;
     font-weight: bold;
     margin-bottom: 0.5em;
@@ -1054,10 +1043,7 @@ mat-date-range-input {
       font-size: 0.9em;
       border-radius: 20px;
       padding: 0.2em 0.4em;
-      // border: 1px solid #555;
-      // color: hsla(0, 0%, 100%, 0.8);
       font-family: "JetBrains Mono", monospace;
-      // background-color: rgba(255, 255, 255, 0.05);
     }
   }
 
@@ -1135,7 +1121,7 @@ mat-date-range-input {
         background: linear-gradient(
             120deg,
             rgba(255, 255, 255, 0.15) 25%,
-            transparent 50%,
+            transparent 0.5,
             rgba(255, 255, 255, 0.15) 75%
         );
         animation: shine 3s infinite;
@@ -1192,6 +1178,10 @@ mat-date-range-input {
 }
 
 @keyframes shine {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }

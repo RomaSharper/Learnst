@@ -27,6 +27,7 @@ import {UserMenuComponent} from '../user-menu/user-menu.component';
 import {TicketType} from '../../enums/TicketType';
 import {forkJoin, of} from 'rxjs';
 import {catchError, switchMap, map} from 'rxjs/operators';
+import {LogService} from '../../services/log.service';
 
 
 @Component({
@@ -49,6 +50,7 @@ import {catchError, switchMap, map} from 'rxjs/operators';
 })
 export class TicketDetailComponent extends MediumScreenSupport implements OnInit {
   private router = inject(Router);
+  private logService = inject(LogService);
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private usersService = inject(UsersService);
@@ -83,15 +85,14 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
               ? forkJoin(ticket.ticketAnswers.map(answer =>
                 this.usersService.getUserById(answer.authorId).pipe(
                   catchError(() => of({fullName: 'Неизвестный автор'} as User))
-                ))
-              ) : of([]);
+                )))
+              : of([]);
 
             return forkJoin([author$, answers$]).pipe(
               map(([author, authors]) => {
                 ticket.author = author;
-                ticket.ticketAnswers.forEach((answer, index) => {
-                  answer.author = authors[index] || {fullName: 'Неизвестный автор'};
-                });
+                ticket.ticketAnswers.forEach((answer, index) =>
+                  answer.author = authors[index] || {fullName: 'Неизвестный автор'});
                 return ticket;
               })
             );
@@ -108,9 +109,7 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
           return of(null);
         }
 
-        return this.authService.getUser().pipe(
-          map(user => ({ticket, user}))
-        );
+        return this.authService.getUser().pipe(map(user => ({ticket, user})));
       })
     ).subscribe({
       next: result => {
@@ -148,7 +147,7 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
   private handleError(message: string, err?: any): void {
     this.loading = false;
     this.errorMessage.set(message);
-    console.error(err || message);
+    this.logService.errorWithData(err || message);
     this.alertService.showSnackBar(message);
   }
 
@@ -170,7 +169,9 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
   openAddAnswerDialog(): void {
     const dialogRef = this.alertService.getDialog().open(AddAnswerDialogComponent, {
       width: '500px',
-      data: {ticketId: this.ticketId}
+      data: {
+        ticketId: this.ticketId
+      }
     });
 
     dialogRef.afterClosed().subscribe((newAnswer: TicketAnswer) => {
@@ -187,7 +188,7 @@ export class TicketDetailComponent extends MediumScreenSupport implements OnInit
       if (!confirmed) return;
       this.ticketService.deleteTicket(this.ticketId).subscribe({
         next: () => this.router.navigate(['/support']),
-        error: err => console.error(err)
+        error: err => this.logService.errorWithData(err)
       });
     });
   }

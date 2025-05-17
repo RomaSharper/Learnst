@@ -26,6 +26,7 @@ import {RuDatePipe} from '../../pipes/ru.date.pipe';
 import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
 import {ClipboardService} from '../../services/clipboard.service';
 import {catchError} from 'rxjs/operators';
+import {LogService} from '../../services/log.service';
 
 @Return()
 @Component({
@@ -49,6 +50,7 @@ import {catchError} from 'rxjs/operators';
   ]
 })
 export class UserComponent extends MediumScreenSupport implements OnInit {
+  private logService = inject(LogService);
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
@@ -139,7 +141,7 @@ export class UserComponent extends MediumScreenSupport implements OnInit {
         this.alertService.showSnackBar('Успешно обновлено');
       },
       error: err => {
-        console.error(err);
+        this.logService.errorWithData(err);
         this.alertService.showSnackBar('Ошибка обновления');
       }
     });

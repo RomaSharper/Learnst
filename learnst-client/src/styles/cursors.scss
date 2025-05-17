@@ -169,6 +169,10 @@ input[type="number"] {
 
 // Анимации с обновленными переменными
 @keyframes system-busy {
-  0% { cursor: var(--cursor-wait) !important; }
-  50% { cursor: var(--cursor-progress) !important; }
+  0% {
+    cursor: var(--cursor-wait) !important;
+  }
+  50% {
+    cursor: var(--cursor-progress) !important;
+  }
 }

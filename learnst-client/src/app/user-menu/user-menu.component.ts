@@ -16,6 +16,7 @@ import { AuthService } from '../../services/auth.service';
 import { UsersService } from '../../services/users.service';
 import { User } from '../../models/User';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
+import {LogService} from '../../services/log.service';
 
 @Component({
   selector: 'app-user-menu',
@@ -40,6 +41,7 @@ export class UserMenuComponent implements OnInit {
 
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  private logService = inject(LogService);
   private sanitizer = inject(DomSanitizer);
   private authService = inject(AuthService);
   private usersService = inject(UsersService);
@@ -52,12 +54,10 @@ export class UserMenuComponent implements OnInit {
   currentUser = signal<User | null>(null);
 
   ngOnInit(): void {
-    if (!this.user?.id) {
+    if (!this.user?.id)
       this.loading.set(false);
-      return;
-    }
-
-    this.loadData();
+    else
+      this.loadData();
   }
 
   handleFollow(): void {
@@ -81,7 +81,7 @@ export class UserMenuComponent implements OnInit {
         this.alertService.showSnackBar('Успешно обновлено');
       },
       error: (err) => {
-        console.error(err);
+        this.logService.error(err);
         this.alertService.showSnackBar('Ошибка обновления');
       }
     });
@@ -97,8 +97,7 @@ export class UserMenuComponent implements OnInit {
       'Выход из дополнительного аккаунта',
       'Вы уверены, что хотите выйти из дополнительного аккаунта?'
     ).afterClosed().subscribe(result => {
-      if (result)
-        this.authService.removeAccount(accountId);
+      if (result) this.authService.removeAccount(accountId);
     });
   }
 
@@ -130,12 +129,12 @@ export class UserMenuComponent implements OnInit {
           },
           error: error => {
             this.alertService.showSnackBar('Не удалось обновить данные пользователя.');
-            console.error('Ошибка при обновлении данных:', error);
+            this.logService.errorWithData('Ошибка при обновлении данных:', error);
           }
         });
       },
       error: error => {
-        console.error(error);
+        this.logService.error(error);
         this.alertService.showSnackBar('Ошибка при изменении баннера');
       }
     });
@@ -164,9 +163,9 @@ export class UserMenuComponent implements OnInit {
         });
       });
     } catch (error) {
-      if (error instanceof Error)
-        this.alertService.showSnackBar(error.message);
-      console.error(error);
+      if (!(error instanceof Error)) return;
+      this.alertService.showSnackBar(error.message);
+      this.logService.error(error);
     } finally {
       this.loading.set(false);
     }

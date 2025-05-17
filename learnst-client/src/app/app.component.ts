@@ -19,6 +19,7 @@ import {MascotComponent} from './mascot/mascot.component';
 import {UserStatusService} from '../services/user.status.service';
 import {AudioService} from '../services/audio.service';
 import { Status } from '../enums/Status';
+import {LogService} from '../services/log.service';
 
 @Component({
   selector: 'app-root',
@@ -45,6 +46,7 @@ export class AppComponent extends MediumScreenSupport {
   protected router = inject(Router);
   protected audioService = inject(AudioService);
 
+  private logService = inject(LogService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private themeService = inject(ThemeService);
@@ -78,15 +80,13 @@ export class AppComponent extends MediumScreenSupport {
             this.userStatusService.updateStatus(Status.Offline));
 
           this.themeService.setTheme(themeId).subscribe({
-            next: () => setTimeout(() => {
-              this.loading.set(false);
-            }, 1600),
+            next: () => setTimeout(() => this.loading.set(false), 1600),
             error: _err => this.loading.set(false)
           });
         },
-        error: err => {
-          console.error('Ошибка при получении данных пользователя:', err);
-          this.alertService.showSnackBar(err);
+        error: error => {
+          this.logService.errorWithData('Ошибка при получении данных пользователя:', error);
+          this.alertService.showSnackBar(error);
           this.loading.set(false);
         }
       });
@@ -100,8 +100,7 @@ export class AppComponent extends MediumScreenSupport {
 
   closeMenu(event: Event): void {
     event.stopPropagation();
-    if (this.isMenuOpen())
-      this.isMenuOpen.set(false);
+    if (this.isMenuOpen()) this.isMenuOpen.set(false);
   }
 
   @HostListener('document:click', ['$event'])

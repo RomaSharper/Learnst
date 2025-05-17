@@ -52,6 +52,7 @@ import {RuDatePipe} from '../../pipes/ru.date.pipe';
 import {Role} from '../../enums/Role';
 import {TicketStatus} from '../../enums/TicketStatus';
 import {TicketType} from '../../enums/TicketType';
+import {LogService} from '../../services/log.service';
 
 @Return()
 @Component({
@@ -59,6 +60,8 @@ import {TicketType} from '../../enums/TicketType';
   templateUrl: './me.component.html',
   styleUrls: ['./me.component.scss'],
   imports: [
+    NgClass,
+    RuDatePipe,
     FormsModule,
     MatFormField,
     MatIconModule,
@@ -76,9 +79,7 @@ import {TicketType} from '../../enums/TicketType';
     MatSlideToggleModule,
     NoDownloadingDirective,
     MatProgressSpinnerModule,
-    PlaceholderImageDirective,
-    NgClass,
-    RuDatePipe
+    PlaceholderImageDirective
   ]
 })
 export class MeComponent extends MediumScreenSupport implements OnInit, CanComponentDeactivate {
@@ -86,6 +87,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   themeService = inject(ThemeService);
 
   private dialog = inject(MatDialog);
+  private logService = inject(LogService);
   private fileService = inject(FileService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
@@ -235,7 +237,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
     }).pipe(
       catchError(err => {
         this.alertService.showSnackBar(err.error.message);
-        console.error(err);
+        this.logService.errorWithData(err);
         return of(null);
       })
     ).subscribe(updateUserResponse => {
@@ -243,7 +245,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
       if (!updateUserResponse || !updateUserResponse.succeed) {
         this.alertService.showSnackBar('Не удалось изменить пароль');
-        console.error(updateUserResponse?.message);
+        this.logService.errorWithData(updateUserResponse?.message);
         return;
       }
 
@@ -456,7 +458,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
         },
         error: err => {
           this.alertService.showSnackBar('Не удалось удалить аккаунт.');
-          console.error(err);
+          this.logService.errorWithData(err);
           return of(null);
         }
       });
@@ -491,9 +493,10 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       }
 
       this.saveFile(content, mimeType, `user_profile_${new Date().toISOString()}.${extension}`);
-    } catch (err) {
+    } catch (error) {
+      if (!(error instanceof Error)) return;
       this.alertService.showSnackBar('Ошибка при генерации файла');
-      console.error('Export error:', err);
+      this.logService.errorWithData('Export error:', error);
     }
   }
 
@@ -706,7 +709,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       catchError(errorObj => {
         this.alertService.showSnackBar('Ошибка при отправке кода подтверждения.');
         this.changesSaving = false;
-        console.error(errorObj);
+        this.logService.errorWithData(errorObj);
         return of(null);
       })
     ).subscribe(codeResponse => {
@@ -744,7 +747,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       this.fileService.upload(this.selectedFile).pipe(
         catchError(err => {
           this.alertService.showSnackBar('Не удалось загрузить новое изображение.');
-          console.error(err);
+          this.logService.errorWithData(err);
           this.changesSaving = false;
           throw err;
         })
@@ -758,7 +761,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
         },
         error: error => {
           this.alertService.showSnackBar('Не удалось загрузить файл');
-          console.error('Не удалось загрузить файл:', error);
+          this.logService.errorWithData('Не удалось загрузить файл:', error);
           this.changesSaving = false;
         }
       });
@@ -778,7 +781,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       catchError(err => {
         this.changesSaving = false;
         this.alertService.showSnackBar(err.error.message || 'Не удалось обновить данные.');
-        console.error(err);
+        this.logService.errorWithData(err);
         return of(null); // Возвращаем null, чтобы завершить поток
       })
     ).subscribe(updatedResponse => {

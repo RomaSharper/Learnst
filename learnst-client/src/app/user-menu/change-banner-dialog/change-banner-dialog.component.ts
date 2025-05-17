@@ -11,6 +11,7 @@ import {FileService} from "../../../services/file.service";
 import {lastValueFrom} from "rxjs";
 import {MediumScreenSupport} from '../../../helpers/MediumScreenSupport';
 import {NoDownloadingDirective} from '../../../directives/no-downloading.directive';
+import {LogService} from '../../../services/log.service';
 
 @Component({
   selector: 'app-change-banner-dialog',
@@ -28,14 +29,15 @@ import {NoDownloadingDirective} from '../../../directives/no-downloading.directi
   ]
 })
 export class ChangeBannerDialogComponent extends MediumScreenSupport implements OnInit {
+  private currentFile: File | null = null;
   private fb = inject(FormBuilder);
+  private logService = inject(LogService);
   private fileService = inject(FileService);
   private alertService = inject(AlertService);
   private dialogRef = inject(MatDialogRef<ChangeBannerDialogComponent>);
 
   form: FormGroup;
   previewUrl: string | null = null;
-  private currentFile: File | null = null;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { banner?: string }) {
     super();
@@ -43,9 +45,9 @@ export class ChangeBannerDialogComponent extends MediumScreenSupport implements 
     this.previewUrl = data.banner || null;
 
     this.form = this.fb.group({
+      imageFile: [null, Validators.required],
       bannerType: [bannerIsColor ? 'color' : 'image', Validators.required],
-      color: [bannerIsColor ? data.banner || '#ffffff' : '#ffffff', Validators.required],
-      imageFile: [null, Validators.required]
+      color: [bannerIsColor ? data.banner || '#ffffff' : '#ffffff', Validators.required]
     });
   }
 
@@ -75,17 +77,17 @@ export class ChangeBannerDialogComponent extends MediumScreenSupport implements 
     const fileInput = event.target as HTMLInputElement;
     const file = fileInput.files?.[0];
 
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        this.alertService.showSnackBar('Нельзя загружать файлы больше 5 МБ!');
-        fileInput.value = '';
-        return;
-      }
+    if (!file) return;
 
-      this.currentFile = file;
-      this.previewUrl = URL.createObjectURL(file);
-      this.form.patchValue({imageFile: file});
+    if (file.size > 5 * 1024 * 1024) {
+      this.alertService.showSnackBar('Нельзя загружать файлы больше 5 МБ!');
+      fileInput.value = '';
+      return;
     }
+
+    this.currentFile = file;
+    this.previewUrl = URL.createObjectURL(file);
+    this.form.patchValue({imageFile: file});
   }
 
   async confirm() {
@@ -101,9 +103,8 @@ export class ChangeBannerDialogComponent extends MediumScreenSupport implements 
       const oldBannerIsImage = this.data.banner && !this.data.banner.startsWith('#');
 
       if (formValue.bannerType === 'color' && oldBannerIsImage
-        || formValue.bannerType === 'image' && this.currentFile && oldBannerIsImage) {
+        || formValue.bannerType === 'image' && this.currentFile && oldBannerIsImage)
         await lastValueFrom(this.fileService.delete(this.data.banner!));
-      }
 
       // Обработка нового контента
       if (formValue.bannerType === 'image' && this.currentFile) {
@@ -115,7 +116,8 @@ export class ChangeBannerDialogComponent extends MediumScreenSupport implements 
       this.dialogRef.close(resultBanner);
     } catch (error) {
       this.alertService.showSnackBar('Ошибка при обновлении баннера');
-      console.error(error);
+      if (error instanceof Error)
+        this.logService.error(error);
     }
   }
 

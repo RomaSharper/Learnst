@@ -132,22 +132,22 @@
             </a>
           </li>
           <li>
-            <a routerLink="/activities" routerLinkActive="active">
+            <a routerLink="/activities" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">
               <span>Обучение</span>
             </a>
           </li>
           <li>
-            <a routerLink="/community" routerLinkActive="active">
+            <a routerLink="/community" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">
               <span>Сообщество</span>
             </a>
           </li>
           <li>
-            <a routerLink="/support" routerLinkActive="active">
+            <a routerLink="/support" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">
               <span>Поддержка</span>
             </a>
           </li>
           <li>
-            <a routerLink="/manuals" routerLinkActive="active">
+            <a routerLink="/manuals" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">
               <span>Информация</span>
             </a>
           </li>
@@ -158,8 +158,7 @@
               class="donate-btn"
               rel="noopener noreferrer"
               matTooltip="Поддержать разработчика ♡"
-              href="https://www.donationalerts.com/r/romasharper"
-            >
+              href="https://www.donationalerts.com/r/romasharper">
               <img src="./assets/icons/donation_alerts.png" alt="Donation Alerts">
             </a>
           </li>

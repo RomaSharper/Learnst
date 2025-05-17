@@ -1,30 +1,25 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 import { Marked } from 'marked';
 import hljs from 'highlight.js';
 import { markedHighlight } from "marked-highlight";
 
-// noinspection JSUnusedGlobalSymbols
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentService {
-  private marked: Marked;
-
-  constructor(private http: HttpClient) {
-    // Инициализация Marked с подсветкой синтаксиса
-    this.marked = new Marked(
-      markedHighlight({
-        langPrefix: 'hljs language-', // Префикс для классов языка
-        highlight: (code: string, lang: string) => {
-          const validLanguage = hljs.getLanguage(lang) ? lang : 'plaintext';
-          return hljs.highlight(code, { language: validLanguage }).value;
-        },
-      })
-    );
-  }
+  private http = inject(HttpClient);
+  private marked: Marked = new Marked(
+    markedHighlight({
+      langPrefix: 'hljs language-', // Префикс для классов языка
+      highlight: (code: string, lang: string) => {
+        const validLanguage = hljs.getLanguage(lang) ? lang : 'plaintext';
+        return hljs.highlight(code, { language: validLanguage }).value;
+      },
+    })
+  );
 
   // Метод для загрузки Markdown-файла
   getMarkdown(url: string): Observable<string> {

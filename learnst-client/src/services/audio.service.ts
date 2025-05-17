@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import {inject, Injectable, signal} from '@angular/core';
+import {LogService} from './log.service';
 
 @Injectable({
   providedIn: 'root'
@@ -7,11 +8,11 @@ export class AudioService {
   private tabId!: string;
   private nextTrackTimeout: any;
   private fadeDuration = 2000;
-  private isClaiming = false;
   private isActiveTab = false;
   private isScheduling = false;
-  private userInteracted = false;
+  private syncChannel!: BroadcastChannel;
   private currentTrackIndex = -1;
+  private userInteracted = false;
   readonly tracks: string[] = [
     '/assets/sounds/music/01 My Burden Is Light.mp3',
     '/assets/sounds/music/02 Someplace I Know.mp3',
@@ -53,16 +54,14 @@ export class AudioService {
     '/assets/sounds/music/41 Countdown.mp3',
     '/assets/sounds/music/42 IT\'S TIME TO FIGHT CRIME.mp3'
   ];
+  private logService = inject(LogService);
   private audioElement = new Audio();
-  private syncChannel!: BroadcastChannel;
   private readonly sounds: string[] = [
     '/assets/sounds/sfx/03 Puzzle Solved.mp3',
     '/assets/sounds/sfx/37 Sun.mp3'
   ];
   private readonly MUSIC_STORAGE_KEY = 'music';
   private readonly VOLUME_STORAGE_KEY = 'volume';
-  private readonly ACTIVE_TAB_KEY = 'active_music_tab';
-  private readonly SYNC_CHANNEL_NAME = 'music_channel';
   private readonly trackNames: string[] = [
     'My Burden Is Light', 'Someplace I Know', 'Phosphor', 'The Prophecy',
     'Abandoned Factory', 'Silverpoint', "A God's Machine", 'Rowbot',
@@ -76,6 +75,8 @@ export class AudioService {
     'Self Contained Universe', 'Thanks For Everything', 'OneShot Trailer',
     'Countdown', 'IT\'S TIME TO FIGHT CRIME'
   ];
+  private readonly SYNC_CHANNEL_NAME = 'music_channel';
+  private readonly ACTIVE_TAB_KEY = 'active_music_tab';
 
   isEnabled = signal(localStorage.getItem(this.MUSIC_STORAGE_KEY) === 'on');
   targetVolume = signal(parseFloat(localStorage.getItem(this.VOLUME_STORAGE_KEY) ?? '20'));
@@ -94,40 +95,69 @@ export class AudioService {
   }
 
   toggleMusic(state?: boolean): void {
-    const newState = state !== undefined ? state : !this.isEnabled();
+    const newState = state ?? !this.isEnabled();
+
+    if (newState === this.isEnabled()) {
+      this.logService.log('Состояние музыки не изменилось', { current: this.isEnabled() });
+      return;
+    }
+
+    this.isEnabled.set(newState);
+    this.saveState();
+    this.logService.log(`Музыка ${newState ? 'ВКЛЮЧЕНА' : 'ВЫКЛЮЧЕНА'} пользователем`);
 
     if (newState) {
-      this.isEnabled.set(true);
-      this.saveState();
-
       this.attemptToClaimActiveTab().then(isActive => {
-        if (isActive && this.userInteracted)
-          this.scheduleNextTrack(); // Запускаем очередь сразу
+        if (isActive) {
+          this.logService.log('Успешный захват активности после включения музыки');
+          if (this.audioElement.paused) {
+            this.logService.log('Запуск нового трека (плеер был остановлен)');
+            this.scheduleNextTrack();
+          }
+        }
       });
     } else {
-      this.isEnabled.set(false);
-      this.saveState();
+      this.logService.log('Инициировано выключение музыки', {
+        activeTab: this.isActiveTab,
+        scheduled: !!this.nextTrackTimeout
+      });
       this.fadeOut();
       this.clearSchedule();
+      this.syncChannel.postMessage({
+        type: 'status_update',
+        isPlaying: false,
+        tabId: this.tabId
+      });
     }
   }
-
 
   playVictorySound(): void {
     const sound = new Audio(this.sounds[0]);
     sound.loop = false;
     sound.volume = this.targetVolume() / 100;
-    sound.play().catch(console.error);
+    sound.play().catch(this.logService.error);
   }
 
   setVolume(value: number): boolean {
-    if (value < 0 || value > 100)
+    if (value < 0 || value > 100) {
+      this.logService.log('Некорректное значение громкости', { value });
       return false;
+    }
 
-    const val = value / 100;
+    const oldVolume = this.targetVolume();
     this.targetVolume.set(value);
-    if (this.isEnabled())
-      this.audioElement.volume = val;
+    const logData = {
+      new: value,
+      old: oldVolume,
+      actual: this.audioElement.volume
+    };
+
+    if (this.isEnabled()) {
+      this.audioElement.volume = value / 100;
+      this.logService.log('Громкость изменена', logData);
+    } else
+      this.logService.log('Громкость изменена (но музыка выключена)', logData);
+
     localStorage.setItem(this.VOLUME_STORAGE_KEY, value.toString());
     return true;
   }
@@ -138,13 +168,11 @@ export class AudioService {
         localStorage.setItem(this.ACTIVE_TAB_KEY, this.tabId);
         this.isActiveTab = true;
         this.clearSchedule();
-
         this.syncChannel.postMessage({
-          type: 'forceStop',
+          type: 'force_stop',
           tabId: this.tabId,
           timestamp: Date.now()
         });
-
         await new Promise(resolve => setTimeout(resolve, 50));
       }
 
@@ -165,25 +193,24 @@ export class AudioService {
         this.syncChannel.postMessage({
           isPlaying: true,
           tabId: this.tabId,
-          type: 'statusUpdate',
+          type: 'status_update',
           track: this.getTrackName(this.audioElement.src)
         });
       } catch (error) {
         if ((error as Error).name !== 'AbortError') throw error;
-        this.log('Воспроизведение прервано, перезапуск...');
+        this.logService.log('Воспроизведение прервано, перезапуск...');
         await this.audioElement.play();
       }
 
       // плавное увеличение громкости
       this.fadeIn();
-      this.log('Воспроизведение успешно начато', {
+      this.logService.log('Воспроизведение успешно начато', {
         track: this.getTrackName(track),
         duration: `${this.audioElement.duration.toFixed(2)}s`
       });
-
       return true;
     } catch (error) {
-      this.log('Критическая ошибка воспроизведения', {
+      this.logService.log('Критическая ошибка воспроизведения', {
         tabId: this.tabId,
         error: (error as Error).message,
         track: this.getTrackName(track),
@@ -194,7 +221,7 @@ export class AudioService {
         }
       });
       return false;
-    };
+    }
   }
 
   private saveState(): void {
@@ -220,7 +247,7 @@ export class AudioService {
 
   private setupAudioHandlers(): void {
     this.audioElement.addEventListener('ended', () => {
-      this.log('Саундтрек закончился', {
+      this.logService.log('Саундтрек закончился', {
         track: this.getTrackName(this.audioElement.src),
         duration: `${this.audioElement.duration.toFixed(2)}s`
       });
@@ -231,7 +258,7 @@ export class AudioService {
 
     // Добавляем обработчик временных меток
     /*this.audioElement.addEventListener('timeupdate', () =>
-      this.log('Прогресс воспроизведения', {
+      this.logService.log('Прогресс воспроизведения', {
         current: this.audioElement.currentTime,
         duration: this.audioElement.duration
       }));*/
@@ -239,71 +266,73 @@ export class AudioService {
 
   private setupTabSync(): void {
     this.syncChannel = new BroadcastChannel(this.SYNC_CHANNEL_NAME);
-    this.log('Канал синхронизации создан', {
+    this.logService.log('Канал синхронизации создан', {
       tabId: this.tabId,
       name: this.SYNC_CHANNEL_NAME
     });
 
     this.syncChannel.onmessage = (event: MessageEvent) => {
       if (event.data.tabId === this.tabId) return;
-      this.log('Получено сообщение', event.data);
+      this.logService.log('Получено сообщение', event.data);
 
       const data = event.data;
       switch (data.type) {
-        case 'aliveCheck':
-          if (this.tabId === data.targetTabId) {
+        case 'alive_check':
+          if (this.tabId === data.targetTabId)
             this.syncChannel.postMessage({
               type: 'alive',
               tabId: this.tabId,
               timestamp: data.timestamp
             });
-          }
           break;
 
-        case 'forceStop':
+        case 'force_stop':
           if (this.tabId === data.tabId) {
-            this.log('Игнорируем собственный forceStop');
+            this.logService.log('Игнорируем собственный force_stop');
             return;
           }
-          this.log('Обработка forceStop от', data.tabId);
+          this.logService.log('Обработка force_stop от', data.tabId);
           this.handleInactive();
           this.syncChannel.postMessage({
-            type: 'forceStopAck',
+            type: 'force_stop_ack',
             tabId: data.tabId,
             timestamp: Date.now()
           });
           break;
 
-        case 'statusUpdate':
-          this.log('Обновление статуса воспроизведения', {
-            from: data.tabId,
+        case 'status_update':
+          this.logService.log('Синхронизация статуса воспроизведения', {
+            source: data.tabId,
             track: data.track,
-            isPlaying: data.isPlaying
+            status: data.isPlaying ? 'playing' : 'stopped'
           });
           if (data.isPlaying && this.isActiveTab) {
-            this.log(`Конфликт воспроизведения с вкладкой ${data.tabId}`);
+            this.logService.log(`Обнаружен конфликт воспроизведения! Вкладка-источник: ${data.tabId}`);
             this.handleInactive();
           }
           break;
 
-        case 'tabClosed':
-          this.log('Вкладка закрыта', data);
+        case 'tab_closed':
+          this.logService.log('Получено уведомление о закрытии вкладки', data);
           if (data.isActive && data.tabId === localStorage.getItem(this.ACTIVE_TAB_KEY)) {
-            this.log('Активная вкладка закрыта, запуск перехвата');
+            this.logService.log('Обнаружено закрытие активной вкладки', {
+              currentActiveTab: localStorage.getItem(this.ACTIVE_TAB_KEY),
+              isCurrentActive: this.isActiveTab
+            });
             localStorage.removeItem(this.ACTIVE_TAB_KEY);
             setTimeout(() => {
-              this.log('Попытка захвата после закрытия активной вкладки');
+              this.logService.log('Инициирован перехват активности после закрытия вкладки');
               this.attemptToClaimActiveTab();
             }, 1000 + Math.random() * 2000);
           }
           break;
 
-        case 'claimRequest':
-          this.log('Запрос захвата от', data.tabId);
+        case 'claim_request':
+          this.logService.log('Запрос захвата от', data.tabId);
           if (this.isActiveTab) {
-            this.log('Отправка отказа на запрос захвата');
+            this.logService.log('Отправка отказа на запрос захвата');
             this.syncChannel.postMessage({
-              type: 'claimResponse',
+              type: 'claim_response',
               tabId: this.tabId,
               success: false,
               timestamp: data.timestamp
@@ -311,21 +340,21 @@ export class AudioService {
           }
           break;
 
-        case 'claimResponse':
-          this.log('Ответ на запрос захвата', data);
+        case 'claim_response':
+          this.logService.log('Ответ на запрос захвата', data);
           break;
 
-        case 'forceStopAck':
-          this.log('Подтверждение forceStop получено', data);
+        case 'force_stop_ack':
+          this.logService.log('Подтверждение force_stop получено', data);
           break;
       }
     };
 
     const handler = () => {
       if (this.isActiveTab) {
-        this.log('Отправка уведомления о закрытии активной вкладки');
+        this.logService.log('Отправка уведомления о закрытии активной вкладки');
         this.syncChannel.postMessage({
-          type: 'tabClosed',
+          type: 'tab_closed',
           tabId: this.tabId,
           isActive: true,
           timestamp: Date.now()
@@ -338,7 +367,10 @@ export class AudioService {
   }
 
   private handleInactive(): void {
-    this.log('Переход в неактивное состояние');
+    this.logService.log('Переход в неактивное состояние', {
+      wasActive: this.isActiveTab,
+      hadSchedule: !!this.nextTrackTimeout
+    });
     this.isActiveTab = false;
     this.clearSchedule();
     this.fadeOut();
@@ -346,15 +378,14 @@ export class AudioService {
   }
 
   private async attemptToClaimActiveTab(): Promise<boolean> {
-    this.isClaiming = true;
-    this.log('Начало захвата активной вкладки');
+    this.logService.log('Начало захвата активной вкладки');
 
     // Атомарная проверка и установка статуса
     const currentActiveTab = localStorage.getItem(this.ACTIVE_TAB_KEY);
 
     // Сценарий 1: Нет активных вкладок
     if (!currentActiveTab) {
-      this.log('Нет активной вкладки - захватываем');
+      this.logService.log('Нет активной вкладки - захватываем');
       localStorage.setItem(this.ACTIVE_TAB_KEY, this.tabId);
       this.isActiveTab = true;
       this.scheduleNextTrack();
@@ -363,24 +394,24 @@ export class AudioService {
 
     // Сценарий 2: Текущая вкладка уже активна
     if (currentActiveTab === this.tabId) {
-      this.log('Вкладка уже активна');
+      this.logService.log('Вкладка уже активна');
       this.isActiveTab = true;
       return true;
     }
 
     // Сценарий 3: Проверка активности другой вкладки
-    this.log(`Проверка активности вкладки ${currentActiveTab}`);
+    this.logService.log(`Проверка активности вкладки ${currentActiveTab}`);
     const isAlive = await this.checkTabAlive(currentActiveTab);
 
     if (!isAlive) {
-      this.log('Вкладка неактивна - перехватываем контроль');
+      this.logService.log('Вкладка неактивна - перехватываем контроль');
       localStorage.setItem(this.ACTIVE_TAB_KEY, this.tabId);
       this.isActiveTab = true;
       this.scheduleNextTrack();
       return true;
     }
 
-    this.log('Активная вкладка уже планирует или воспроизводит музыку');
+    this.logService.log('Активная вкладка уже планирует или воспроизводит музыку');
     return false;
   }
 
@@ -391,7 +422,7 @@ export class AudioService {
 
       const timeoutId = setTimeout(() => {
         if (!responded) {
-          this.log('Таймаут проверки активности для ' + tabId);
+          this.logService.log('Таймаут проверки активности для ' + tabId);
           resolve(false);
         }
       }, checkTimeout);
@@ -401,14 +432,14 @@ export class AudioService {
           responded = true;
           clearTimeout(timeoutId);
           this.syncChannel.removeEventListener('message', listener);
-          this.log('Получен ответ активности от ' + tabId);
+          this.logService.log('Получен ответ активности от ' + tabId);
           resolve(true);
         }
       };
 
       this.syncChannel.addEventListener('message', listener);
       this.syncChannel.postMessage({
-        type: 'aliveCheck',
+        type: 'alive_check',
         targetTabId: tabId,
         timestamp: Date.now(),
         sourceTab: this.tabId
@@ -418,17 +449,17 @@ export class AudioService {
 
   private scheduleNextTrack(): void {
     if (this.isScheduling) {
-      this.log('Планирование уже активно');
+      this.logService.log('Планирование уже активно');
       return;
     }
 
     if (!this.isEnabled()) {
-      this.log('Планирование отменено: музыка выключена');
+      this.logService.log('Планирование отменено: музыка выключена');
       return;
     }
 
     if (!this.isActiveTab) {
-      this.log('Планирование отменено: вкладка неактивна');
+      this.logService.log('Планирование отменено: вкладка неактивна');
       return;
     }
 
@@ -439,7 +470,7 @@ export class AudioService {
     const nextTrack = this.selectNextTrack();
     const delay = this.getRandomDelay();
 
-    this.log('Запланирован следующий саундтрек', {
+    this.logService.log('Запланирован следующий саундтрек', {
       track: this.getTrackName(nextTrack),
       delay: `${delay / 1000}s`
     });
@@ -463,15 +494,23 @@ export class AudioService {
     return Math.floor(Math.random() * (300000 - 15000 + 1)) + 15000;
   }
 
-  private getTrackName(path: string): string {
-    return decodeURIComponent(path.split('/').pop()?.split('.')[0] || path);
+  private getTrackName(path?: string): string {
+    if (!path) return 'Неизвестный трек';
+    try {
+      return decodeURIComponent(path.split('/').pop()?.split('.')[0] || path);
+    } catch (e) {
+      this.logService.log('Ошибка декодирования названия трека', { path, error: e });
+      return path;
+    }
   }
 
   private clearSchedule(): void {
-    if (!this.nextTrackTimeout) return;
-    clearTimeout(this.nextTrackTimeout);
-    this.nextTrackTimeout = null;
-    this.isScheduling = false;
+    if (this.nextTrackTimeout) {
+      this.logService.log('Очистка расписания');
+      clearTimeout(this.nextTrackTimeout);
+      this.nextTrackTimeout = null;
+      this.isScheduling = false;
+    }
   }
 
   private fadeIn(): void {
@@ -497,6 +536,11 @@ export class AudioService {
   }
 
   private fadeOut(): void {
+    this.logService.log('Начало затухания музыки', {
+      currentVolume: this.audioElement.volume,
+      targetVolume: 0
+    });
+
     const initialVolume = this.audioElement.volume;
     const step = initialVolume / (this.fadeDuration / 100);
 
@@ -505,35 +549,29 @@ export class AudioService {
       if (newVolume <= 0) {
         this.audioElement.volume = 0;
         this.audioElement.pause();
-        this.audioElement.currentTime = 0; // Сбрасываем позицию
+        this.audioElement.currentTime = 0;
         clearInterval(fade);
+        this.logService.log('Музыка полностью остановлена (затухание завершено)');
       } else
         this.audioElement.volume = newVolume;
     }, 100);
-  }
-
-  private log(message: string, data?: any): void {
-    const timestamp = new Date().toISOString();
-    const logMessage = `[${timestamp}] ${message}`;
-    data ? console.log(logMessage, data) : console.log(logMessage);
   }
 
   private setupUserInteractionListener(): void {
     const handler = () => {
       if (!this.userInteracted) {
         this.userInteracted = true;
-        this.log('Первое взаимодействие пользователя');
-        this.toggleMusic(true);
+        this.logService.log('Первое взаимодействие пользователя');
         this.attemptToClaimActiveTab().then(success => {
           if (success) {
-            this.log('Успешный захват активности');
+            this.logService.log('Успешный захват активности');
             this.scheduleNextTrack();
           }
         });
       }
     };
 
-    document.addEventListener('click', handler, { once: true });
     window.addEventListener('keydown', handler, { once: true });
+    document.addEventListener('click', handler, { once: true });
   }
 }

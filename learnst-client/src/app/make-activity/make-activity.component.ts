@@ -1,6 +1,6 @@
 import {ENTER} from '@angular/cdk/keycodes';
 import {CommonModule, Location} from '@angular/common';
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -47,6 +47,7 @@ import {FileService} from '../../services/file.service';
 import {ValidationService} from '../../services/validation.service';
 import {InfoCardDialogComponent} from './info.card.dialog/info.card.dialog.component';
 import {TopicDialogComponent} from './topic.dialog/topic.dialog.component';
+import {LogService} from '../../services/log.service';
 
 @Return()
 @Component({
@@ -90,8 +91,6 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
   infoCards: InfoCard[] = [];
   filteredTags: string[] = [];
   targetAudience: string[] = [];
-  separatorKeysCodes: number[] = [ENTER]; // Клавиши для добавления чипсов
-  levels = LevelHelper.getLevels();
   allTags = [
     // Популярные языки программирования
     'JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'C++', 'C', 'Ruby', 'Go', 'Rust',
@@ -151,19 +150,18 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
     'Bluetooth', 'GPS', 'NFC', 'Аналитика', 'Геометрия', 'Алгебра', 'Биометрия', 'Кибербезопасность',
     'Фаервол', 'VPN', 'Цифровые подписи', 'Wi-Fi', 'Roblox'
   ];
+  separatorKeysCodes: number[] = [ENTER];
+  levels = LevelHelper.getLevels();
 
-  InfoTypeHelper = InfoTypeHelper;
+  private fb = inject(FormBuilder);
+  private logService = inject(LogService);
+  private fileService = inject(FileService);
+  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private activitiesService = inject(ActivitiesService);
 
-  constructor(
-    private fb: FormBuilder,
-    private activitiesService: ActivitiesService,
-    private authService: AuthService,
-    private fileService: FileService,
-    private alertService: AlertService,
-    private route: ActivatedRoute,
-    public location: Location,
-    public router: Router
-  ) {
+  constructor(public location: Location, public router: Router) {
     super();
     this.activityForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
@@ -367,11 +365,10 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
   }
 
   getTotalQuestionsCount(): number {
-    return this.topics.reduce((total, topic) => {
-      return total + topic.lessons.reduce((lessonTotal, lesson) => {
-        return lessonTotal + (lesson.questions?.length || 0);
-      }, 0);
-    }, 0);
+    return this.topics.reduce((total, topic) =>
+        total + topic.lessons.reduce((lessonTotal, lesson) => lessonTotal + (lesson.questions?.length ?? 0),
+          0),
+      0);
   }
 
   onSubmit(): void {
@@ -392,14 +389,20 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
 
   private maxScoreValidator(control: AbstractControl): ValidationErrors | null {
     const totalQuestions = this.getTotalQuestionsCount();
-    if (control.value > totalQuestions)
-      return {maxScore: {max: totalQuestions, actual: control.value}};
-    return null;
+    return control.value > totalQuestions
+      ? {
+        maxScore: {
+          max: totalQuestions,
+          actual: control.value
+        }
+      } : null;
   }
 
   private validateLists(): boolean {
     if (this.infoCards.length > 6) {
-      this.alertService.showSnackBar(`Количество инфокарт не должно превышать 6 (Текущее кол-во: ${this.infoCards.length}).`);
+      this.alertService.showSnackBar(
+        `Количество инфокарточек не должно превышать 6 (Текущее кол-во: ${this.infoCards.length}).`
+      );
       return false;
     }
 
@@ -408,17 +411,23 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
     const targetAudienceLen = this.targetAudience.join('').length;
 
     if (tagsLen > 2000) {
-      this.alertService.showSnackBar(`Длина тегов не должна превышать 2000 символов (Текущее кол-во: ${tagsLen}).`);
+      this.alertService.showSnackBar(
+        `Длина тегов не должна превышать 2000 символов (Текущее кол-во: ${tagsLen}).`
+      );
       return false;
     }
 
     if (checkListLen > 2000) {
-      this.alertService.showSnackBar(`Длина чек-листа не должна превышать 2000 символов (Текущее кол-во: ${checkListLen}).`);
+      this.alertService.showSnackBar(
+        `Длина чек-листа не должна превышать 2000 символов (Текущее кол-во: ${checkListLen}).`
+      );
       return false;
     }
 
     if (targetAudienceLen > 2000) {
-      this.alertService.showSnackBar(`Длина аудитории не должна превышать 2000 символов (Текущее кол-во: ${targetAudienceLen}).`);
+      this.alertService.showSnackBar(
+        `Длина аудитории не должна превышать 2000 символов (Текущее кол-во: ${targetAudienceLen}).`
+      );
       return false;
     }
 
@@ -427,16 +436,22 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
 
   private validateTopics(): boolean {
     if (this.topics.length > 30) {
-      this.alertService.showSnackBar(`Количество тем не должно превышать 30 (Текущее кол-во: ${this.topics.length}).`);
+      this.alertService.showSnackBar(
+        `Количество тем не должно превышать 30 (Текущее кол-во: ${this.topics.length}).`
+      );
       return false;
     }
 
     for (const topic of this.topics) {
       if (!topic.lessons || topic.lessons.length === 0) {
-        this.alertService.showSnackBar(`Тема "${topic.title}" должна содержать минимум один урок.`);
+        this.alertService.showSnackBar(
+          `Тема "${topic.title}" должна содержать минимум один урок.`
+        );
         return false;
       } else if (topic.lessons.length > 30) {
-        this.alertService.showSnackBar(`Количество уроков в теме "${topic.title}" не должно превышать 30 (Текущее кол-во: ${topic.lessons.length}).`);
+        this.alertService.showSnackBar(
+          `Количество уроков в теме "${topic.title}" не должно превышать 30 (Текущее кол-во: ${topic.lessons.length}).`
+        );
         return false;
       }
     }
@@ -444,56 +459,58 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
   }
 
   private validateLessons(): boolean {
-    for (const topic of this.topics) {
-      for (const lesson of topic.lessons) {
+    for (const topic of this.topics)
+      for (const lesson of topic.lessons)
         if (lesson.lessonType === LessonType.Test && (!lesson.questions || lesson.questions.length === 0)) {
-          this.alertService.showSnackBar(`Урок "${lesson.title}" из темы "${topic.title}" должен содержать минимум один вопрос.`);
+          this.alertService.showSnackBar(
+            `Урок "${lesson.title}" из темы "${topic.title}" должен содержать минимум один вопрос.`
+          );
           return false;
         }
-      }
-    }
     return true;
   }
 
   private validateQuestions(): boolean {
-    for (const topic of this.topics) {
-      for (const lesson of topic.lessons) {
+    for (const topic of this.topics)
+      for (const lesson of topic.lessons)
         if (lesson.lessonType === LessonType.Test) {
           for (const question of lesson.questions) {
             if (!question.answers || question.answers.length < 2) {
-              this.alertService.showSnackBar(`Вопрос "${question.text}" должен содержать минимум два ответа.`);
+              this.alertService.showSnackBar(
+                `Вопрос "${question.text}" должен содержать минимум два ответа.`
+              );
               return false;
             } else if (question.answers.length > 5) {
-              this.alertService.showSnackBar(`Количество ответов на вопрос "${question.text}" в уроке "${lesson.title}" по теме "${topic.title}" не должно превышать 5 (Текущее кол-во: ${question.answers.length}).`);
+              this.alertService.showSnackBar(
+                `Количество ответов на вопрос "${question.text}" в уроке "${lesson.title}" по теме "${topic.title}" не должно превышать 5 (Текущее кол-во: ${question.answers.length}).`
+              );
               return false;
             }
           }
         }
-      }
-    }
     return true;
   }
 
   private validateAnswers(): boolean {
-    for (const topic of this.topics) {
-      for (const lesson of topic.lessons) {
-        if (lesson.lessonType === LessonType.Test) {
-          for (const question of lesson.questions) {
-            const correctAnswersCount = question.answers.filter(answer => answer.isCorrect).length;
+    for (const topic of this.topics)
+      for (const lesson of topic.lessons)
+        if (lesson.lessonType === LessonType.Test) for (const question of lesson.questions) {
+          const correctAnswersCount = question.answers.filter(answer => answer.isCorrect).length;
 
-            if (question.answerType === AnswerType.Single && correctAnswersCount !== 1) {
-              this.alertService.showSnackBar(`Вопрос "${question.text}" (одиночный выбор) должен содержать ровно один правильный ответ.`);
-              return false;
-            }
+          if (question.answerType === AnswerType.Single && correctAnswersCount !== 1) {
+            this.alertService.showSnackBar(
+              `Вопрос "${question.text}" (одиночный выбор) должен содержать ровно один правильный ответ.`
+            );
+            return false;
+          }
 
-            if (question.answerType === AnswerType.Multiple && correctAnswersCount < 2) {
-              this.alertService.showSnackBar(`Вопрос "${question.text}" (множественный выбор) должен содержать минимум два правильных ответа.`);
-              return false;
-            }
+          if (question.answerType === AnswerType.Multiple && correctAnswersCount < 2) {
+            this.alertService.showSnackBar(
+              `Вопрос "${question.text}" (множественный выбор) должен содержать минимум два правильных ответа.`
+            );
+            return false;
           }
         }
-      }
-    }
     return true;
   }
 
@@ -563,7 +580,8 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
 
   private handleError(message: string, error: Error | null = null): void {
     this.alertService.showSnackBar(message);
-    if (error)
-      console.error(message, error);
+    if (error) this.logService.errorWithData(message, error);
   }
+
+  protected readonly InfoTypeHelper = InfoTypeHelper;
 }

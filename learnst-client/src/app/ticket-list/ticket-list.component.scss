@@ -1,7 +1,7 @@
 .ticket-list-container {
   padding: 2rem;
-  background: var(--mat-sys-background);
   border-radius: 12px;
+  background: var(--mat-sys-background);
   box-shadow: 0 8px 24px rgba(0,0,0,0.05);
 
   .action-bar {
@@ -11,8 +11,8 @@
   }
 
   .ticket-grid {
-    display: grid;
     gap: 1.5rem;
+    display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
 
@@ -28,8 +28,8 @@
     }
 
     .type-banner {
-      color: white;
       display: flex;
+      color: white;
       font-size: 0.9rem;
       padding: 0.5rem 1rem;
       justify-content: space-between;
@@ -156,7 +156,10 @@
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }

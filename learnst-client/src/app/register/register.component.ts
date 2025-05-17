@@ -34,6 +34,7 @@ import {User} from '../../models/User';
 import {ColorsService} from '../../services/colors.service';
 import {TurnstileService} from '../../services/turnstile.service';
 import {Status} from '../../enums/Status';
+import {LogService} from '../../services/log.service';
 
 @Return()
 @Component({
@@ -57,6 +58,7 @@ import {Status} from '../../enums/Status';
   ]
 })
 export class RegisterComponent extends MediumScreenSupport implements AfterViewInit {
+  private logService = inject(LogService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private emailService = inject(EmailService);
@@ -97,7 +99,7 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
   }
 
   ngAfterViewInit() {
-    setTimeout(() => this.initTurnstile(), 0); // Даём Angular время на рендеринг
+    setTimeout(() => this.initTurnstile(), 0);
   }
 
   async onSubmit() {
@@ -149,7 +151,7 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
     this.emailService.sendVerificationCode(user.emailAddress!).pipe(
       catchError(errorObj => {
         this.alertService.showSnackBar('Ошибка при отправке кода подтверждения.');
-        console.error(errorObj);
+        this.logService.errorWithData(errorObj);
         return of(null);
       })
     ).subscribe(codeResponse => {
@@ -171,7 +173,7 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
           // Если код введен правильно, продолжаем создание пользователя
           this.usersService.createUser(user).pipe(
             catchError(errorObj => {
-              console.error('Полная ошибка:', errorObj);
+              this.logService.errorWithData('Полная ошибка:', errorObj);
               const error: string = errorObj?.message ?? 'Произошла ошибка при регистрации. Попробуйте еще раз.';
               this.alertService.showSnackBar(error);
               this.loading.set(false); // Выключаем состояние загрузки при ошибке
@@ -199,9 +201,8 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
       const control = abstractControl.get(controlName);
       const matchingControl = abstractControl.get(matchingControlName);
 
-      if (matchingControl!.errors && !matchingControl!.errors?.['passwordsDontMatch']) {
+      if (matchingControl!.errors && !matchingControl!.errors?.['passwordsDontMatch'])
         return null;
-      }
 
       if (control!.value !== matchingControl!.value) {
         matchingControl!.setErrors({passwordsDontMatch: true});
@@ -224,13 +225,14 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
       this.turnstile.init(
         'cf-turnstile',
         '0x4AAAAAAA-lpuh_BYavc73X',
-        (token: string) => {
+        token => {
           this.form.patchValue({cfToken: token});
           this.form.get('cfToken')?.markAsTouched();
         }
       );
     } catch (error) {
-      console.error('Turnstile init error:', error);
+      if (!(error instanceof Error)) return;
+      this.logService.errorWithData('Ошибка инициализации Turnstile:', error);
       this.alertService.showSnackBar('Ошибка инициализации защиты. Перезагрузите страницу.');
     }
   }

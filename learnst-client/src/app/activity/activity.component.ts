@@ -37,6 +37,7 @@ import {InfoCard} from '../../models/InfoCard';
 import {AudioService} from '../../services/audio.service';
 import {ActivityNode} from '../../models/ActivityNode';
 import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
+import {LogService} from '../../services/log.service';
 
 @Return()
 @Component({
@@ -65,6 +66,7 @@ import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
   ]
 })
 export class ActivityComponent extends MediumScreenSupport implements OnInit {
+  private logService = inject(LogService);
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
@@ -195,7 +197,7 @@ export class ActivityComponent extends MediumScreenSupport implements OnInit {
       userId, activityId, emailAddress
     }).pipe(
       catchError(error => {
-        console.error('Произошла ошибка при отправке сертификата', error);
+        this.logService.errorWithData('Произошла ошибка при отправке сертификата', error);
         this.alertService.showSnackBar('Произошла неожиданная ошибка. Попробуйте позже');
         this.isCertificateLoading.set(false);
         return of(null);
@@ -349,17 +351,16 @@ export class ActivityComponent extends MediumScreenSupport implements OnInit {
 
   private handleError(message: string, err: Error | null = null, consoleError: boolean = true): void {
     this.loading.set(false);
-    if (consoleError) console.error(err ?? message);
+    if (consoleError)
+      this.logService.errorWithData(err?.message || message);
     this.alertService.showSnackBar(message);
   }
 
   private nameToIndex(name: string | null): number {
-    if (name === 'plan') return 1;
-    return 0;
+    return name === 'info' ? 0 : 1;
   }
 
   private indexToName(index: number | null): string {
-    if (index === 1) return 'plan';
-    return 'info';
+    return index === 0 ? 'info' : 'plan';
   }
 }

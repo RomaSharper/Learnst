@@ -20,6 +20,7 @@ import {ResetPasswordEmailDialogComponent} from '../reset-password-email-dialog/
 import {
   ResetPasswordNewPasswordDialogComponent
 } from '../reset-password-new-password-dialog/reset-password-new-password-dialog.component';
+import {LogService} from '../../services/log.service';
 
 @Component({
   selector: 'app-login',
@@ -43,6 +44,7 @@ export class LoginComponent {
   private code = '';
   private router = inject(Router);
   private dialog = inject(MatDialog);
+  private logService = inject(LogService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private emailService = inject(EmailService);
@@ -66,7 +68,7 @@ export class LoginComponent {
     this.authService.login(formValue.login!, formValue.password!)
       .pipe(
         catchError(error => {
-          console.error('Ошибка', error.message);
+          this.logService.errorWithData('Ошибка', error.message);
           this.loading.set(false); // Выключаем состояние загрузки при ошибке
           this.alertService.showSnackBar('Произошла ошибка при авторизации.');
           return of(undefined);

@@ -1,13 +1,14 @@
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {effect, Injectable, signal, DestroyRef, inject} from '@angular/core';
-import {FrontendTheme} from '../models/FrontendTheme';
-import {AuthService} from './auth.service';
-import {User} from '../models/User';
-import {HttpClient} from '@angular/common/http';
-import {environment} from '../environments/environment';
-import {AlertService} from './alert.service';
-import {SignalRService} from './signalr.service';
-import {Observable, Subject} from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { effect, Injectable, signal, DestroyRef, inject } from '@angular/core';
+import { FrontendTheme } from '../models/FrontendTheme';
+import { AuthService } from './auth.service';
+import { User } from '../models/User';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../environments/environment';
+import { AlertService } from './alert.service';
+import { SignalRService } from './signalr.service';
+import { Observable, Subject } from 'rxjs';
+import {LogService} from './log.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,11 +16,11 @@ import {Observable, Subject} from 'rxjs';
 export class ThemeService {
   private user: User | null = null;
   private http = inject(HttpClient);
-  private signalr = inject(SignalRService);
+  private logService = inject(LogService);
+  private destroyRef = inject(DestroyRef);
   private authService = inject(AuthService);
+  private signalr = inject(SignalRService);
   private alertService = inject(AlertService);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly CURSOR_STORAGE_KEY = 'custom_cursors';
 
   private readonly themes: FrontendTheme[] = [
     {
@@ -167,10 +168,10 @@ export class ThemeService {
       preview: 'linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), linear-gradient(47.61deg, rgb(44, 63, 231) 11.18%, rgb(38, 29, 131) 64.54%)'
     },
   ];
-
-  readonly cursorsEnabled = signal(localStorage.getItem(this.CURSOR_STORAGE_KEY) === 'true');
+  private readonly CURSOR_STORAGE_KEY = 'custom_cursors';
 
   currentTheme = signal<FrontendTheme>(this.themes[0]);
+  cursorsEnabled = signal(localStorage.getItem(this.CURSOR_STORAGE_KEY) === 'on');
 
   constructor() {
     this.setupCursorsEffect();
@@ -209,7 +210,7 @@ export class ThemeService {
         themeChangeSubject.complete();
       },
       error: error => {
-        console.error(error);
+        this.logService.error(error);
         this.alertService.showSnackBar('Не удалось обновить тему');
         themeChangeSubject.error(error);
       }
@@ -220,11 +221,11 @@ export class ThemeService {
 
   setLocalTheme(themeId: string): void {
     const theme = this.themes.find(t => t.id === themeId);
-    if (theme) {
-      this.currentTheme.set(theme);
-      document.body.classList.remove(...this.themes.map(t => `${t.id}-theme`));
-      document.body.classList.add(`${theme.id}-theme`);
-    }
+    if (!theme) return;
+
+    this.currentTheme.set(theme);
+    document.body.classList.remove(...this.themes.map(t => `${t.id}-theme`));
+    document.body.classList.add(`${theme.id}-theme`);
   }
 
   toggleCursors(enabled: boolean): void {
@@ -242,21 +243,19 @@ export class ThemeService {
       const enabled = this.cursorsEnabled();
       document.body.classList.toggle('custom-cursors', enabled);
       this.forceCursorUpdate();
-      localStorage.setItem(this.CURSOR_STORAGE_KEY, enabled.toString());
+      localStorage.setItem(this.CURSOR_STORAGE_KEY, enabled ? 'on' : 'off');
     });
   }
 
   private forceCursorUpdate(): void {
-    const {style} = document.documentElement;
+    const { style } = document.documentElement;
     style.setProperty('cursor', 'inherit', 'important');
     setTimeout(() => style.removeProperty('cursor'));
   }
 
   private sendThemeUpdate(themeId: string): void {
     if (this.user?.id)
-      this.signalr.invoke('SendThemeUpdate', this.user.id, themeId)
-        .catch(() => {
-        });
+      this.signalr.invoke('SendThemeUpdate', this.user.id, themeId);
   }
 
   private applyRemoteTheme(themeId: string): void {
@@ -281,9 +280,8 @@ export class ThemeService {
   }
 
   private initializeSignalR(): void {
-    this.signalr.onThemeUpdate().subscribe((themeId: string) => {
-      this.applyRemoteTheme(themeId);
-    });
+    this.signalr.onThemeUpdate().subscribe((themeId: string) =>
+      this.applyRemoteTheme(themeId));
   }
 
   private async joinUserGroup(userId: string): Promise<void> {

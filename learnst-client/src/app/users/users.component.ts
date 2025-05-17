@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,6 +23,7 @@ import { AuthService } from '../../services/auth.service';
 import { NgClass } from '@angular/common';
 import { StatusHelper } from '../../helpers/StatusHelper';
 import { Status } from '../../enums/Status';
+import {LogService} from '../../services/log.service';
 
 @Component({
   selector: 'app-users',
@@ -47,62 +48,58 @@ import { Status } from '../../enums/Status';
   ],
 })
 export class UsersComponent extends MediumScreenSupport implements OnInit {
-  pageSize = 20;
-  loading = true;
-  currentPage = 0;
-  searchInput = ''; // Поле для отображения текста и тегов
-  searchQuery = ''; // Текст запроса (без тегов)
+  private router = inject(Router);
+  private logService = inject(LogService);
+  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private usersService = inject(UsersService);
+
   users: User[] = [];
-  tags: string[] = []; // Теги для фильтрации
+  tags: string[] = [];
+  pageSize = 20;
   hintUsers: User[] = [];
+  loading = true;
+  searchInput = '';
+  searchQuery = '';
+  currentPage = 0;
   displayedUsers: User[] = [];
   currentUser: User | null = null;
   pageSizeOptions = [20, 50, 100];
-
-  Role = Role;
-  RoleHelper = RoleHelper;
-
-  constructor(
-    private alertService: AlertService,
-    private usersService: UsersService,
-    private authService: AuthService,
-    private route: ActivatedRoute,
-    private router: Router
-  ) {
-    super();
-  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.authService.getUser().subscribe(user => this.currentUser = user);
       this.searchQuery = params['search_query'] || '';
       this.tags = params['tags'] ? params['tags'].split(',').map((tag: string) => tag.trim()) : [];
-      this.searchInput = (this.searchQuery + ' ' + (this.tags.length ? ' #' + this.tags.join(' #') : '')).trim(); // Обновляем searchInput
+
+      // Формируем searchInput без лишних пробелов
+      this.searchInput = [
+        this.searchQuery,
+        ...this.tags.map(t => `#${t}`)
+      ].join(' ').trim();
+
       this.loadUsers();
     });
   }
 
-  // Функция для отображения имени пользователя в автозаполнении
   displayFn(user: string): string {
     return user || '';
   }
 
-  // Обновление подсказок при вводе текста
   onInputChange(): void {
-    if (this.searchInput.trim() === '') {
+    if (this.searchInput.trim() === '')
       this.hintUsers = [];
-    } else {
+    else
       this.hintUsers = this.users.filter(user =>
         user.username.toLowerCase().includes(this.searchInput.toLowerCase())
       );
-    }
   }
 
-  // Поиск при нажатии Enter или клике на иконку
   onSearch(): void {
-    this.parseSearchInput(); // Разбираем ввод на текст и теги
-    this.updateUrl(); // Обновляем URL
-    this.filterUsers(); // Фильтруем пользователей
+    this.parseSearchInput();
+    this.updateUrl();
+    this.filterUsers();
   }
 
   onSelected(event: MatAutocompleteSelectedEvent): void {
@@ -124,52 +121,86 @@ export class UsersComponent extends MediumScreenSupport implements OnInit {
 
   // Фильтрация пользователей для отображения в списке
   filterUsers(): void {
-    this.loading = true; // Начало загрузки
-    this.currentPage = 0; // Сброс текущей страницы при новом поиске
+    this.loading = true;
+    this.currentPage = 0;
 
-    // Фильтрация по тексту запроса и тегам
+    const searchQueryNormalized = this.searchQuery.trim().toLowerCase();
+
+    // Разделяем теги на категории
+    const roleTags: string[] = [];
+    const statusTags: string[] = [];
+    const adminTags = ['a', 'admin', 'а', 'админ', 'администратор'];
+    const backupTags = ['b', 'back', 'backup', 'п', 'поддержка'];
+    const specialistTags = ['s', 'spec', 'specialist', 'с', 'спец', 'специалист'];
+    const userTags = ['u', 'usr', 'user', 'ю', 'юзер', 'пользователь'];
+
+    this.tags.forEach(tag => {
+      const normalizedTag = tag.toLowerCase();
+
+      // Определяем принадлежность к ролям
+      const isRoleTag = [
+        ...adminTags,
+        ...specialistTags,
+        ...backupTags,
+        ...userTags
+      ].includes(normalizedTag);
+
+      // Определяем принадлежность к статусам
+      const isStatusTag = [
+        'here',
+        'act', 'active',
+        'off', 'offline'
+      ].includes(normalizedTag);
+
+      if (isRoleTag) roleTags.push(normalizedTag);
+      if (isStatusTag) statusTags.push(normalizedTag);
+    });
+
     this.hintUsers = this.users.filter(user => {
-      const matchesSearchQuery = this.searchQuery === '' || user.username.toLowerCase().includes(this.searchQuery.toLowerCase());
+      const matchesSearchQuery = searchQueryNormalized === '' ||
+        user.username.toLowerCase().includes(searchQueryNormalized);
 
-      // Фильтрация по тегам ролей
-      const matchesRoleTags = this.tags.length === 0 || this.tags.some(tag => {
-        const normalizedTag = tag.toLowerCase();
-        if (['a', 'admin', 'а', 'админ', 'администратор'].includes(normalizedTag))
-          return user.role === Role.Admin;
-        else if (['s', 'spec', 'specialist', 'с', 'спец', 'специалист'].includes(normalizedTag))
-          return user.role === Role.Specialist;
-        else if (['b', 'back', 'backup', 'п', 'поддержка'].includes(normalizedTag))
-          return user.role === Role.Backup;
-        else if (['u', 'usr', 'user', 'п', 'пользователь'].includes(normalizedTag))
-          return user.role === Role.User;
-        return true;
-      });
+      // Проверяем ролевые теги (хотя бы один должен совпасть)
+      const matchesRoleTags = roleTags.length === 0 ||
+        roleTags.some(tag => {
+          if (adminTags.includes(tag))
+            return user.role === Role.Admin;
+          else if (specialistTags.includes(tag))
+            return user.role === Role.Specialist;
+          else if (backupTags.includes(tag))
+            return user.role === Role.Backup;
+          else if (userTags.includes(tag))
+            return user.role === Role.User;
+          return false;
+        });
 
-      // Фильтрация по тегам статусов
-      const matchesStatusTags = this.tags.length === 0 || this.tags.some(tag => {
-        const normalizedTag = tag.toLowerCase();
-        if (normalizedTag === 'here')
-          return user.status === Status.Online;
-        else if (normalizedTag === 'active')
-          return user.status === Status.Activity;
-        else if ((normalizedTag === 'off' || normalizedTag === 'offline'))
-          return user.status === Status.Offline;
-        return true;
-      });
+      // Проверяем статусные теги (хотя бы один должен совпасть)
+      const matchesStatusTags = statusTags.length === 0 ||
+        statusTags.some(tag => {
+          if (tag === 'here')
+            return user.status === Status.Online;
+          else if (['act', 'active'].includes(tag))
+            return user.status === Status.Activity;
+          else if (['off', 'offline'].includes(tag))
+            return user.status === Status.Offline;
+          return false;
+        });
 
       return matchesSearchQuery && matchesRoleTags && matchesStatusTags;
     });
 
     this.updateDisplayedUsers();
-    this.loading = false; // Завершение загрузки
+    this.loading = false;
   }
 
   // Разбор ввода пользователя на searchQuery и теги
   parseSearchInput(): void {
-    const parts = this.searchInput.split('#');
-    this.searchQuery = parts[0].trim(); // Текст до первого #
-    this.tags = parts.slice(1).map(tag => tag.trim()); // Теги
+    // Разделяем ввод на части, игнорируя пустые теги
+    const parts = this.searchInput.split('#').map(p => p.trim());
+    this.searchQuery = parts[0]; // Первая часть - текст запроса
+    this.tags = parts.slice(1).filter(tag => tag.length > 0); // Остальные - непустые теги
   }
+
 
   // Обновление URL с новыми параметрами
   updateUrl(): void {
@@ -239,7 +270,7 @@ export class UsersComponent extends MediumScreenSupport implements OnInit {
       }).subscribe(response => {
         if (!response.succeed) {
           this.alertService.showSnackBar('Произошла ошибка при обновлении роли пользователя');
-          console.error(response.message);
+          this.logService.errorWithData(response.message);
           return;
         }
         user.role = newRole;
@@ -278,7 +309,7 @@ export class UsersComponent extends MediumScreenSupport implements OnInit {
       }).subscribe(response => {
         if (!response.succeed) {
           this.alertService.showSnackBar('Произошла ошибка при обновлении роли пользователя');
-          console.error(response.message);
+          this.logService.errorWithData(response.message);
           return;
         }
         user.role = newRole;
@@ -306,12 +337,14 @@ export class UsersComponent extends MediumScreenSupport implements OnInit {
           }
 
           this.alertService.showSnackBar(`Произошла непредвиденная ошибка, повторите попытку позже`);
-          console.error(err);
+          this.logService.errorWithData(err);
         }
       });
     });
   }
 
+  protected readonly Role = Role;
   protected readonly Status = Status;
+  protected readonly RoleHelper = RoleHelper;
   protected readonly StatusHelper = StatusHelper;
 }

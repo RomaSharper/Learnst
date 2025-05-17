@@ -50,7 +50,9 @@
 
   <!-- Скрипты -->
   <script>
-    function onloadTurnstileCallback() { console.log('Cloudflare Turnstile loaded'); }
+    function onloadTurnstileCallback() {
+      console.log(`[${new Date().toISOString()}] Cloudflare Turnstile загружена`);
+    }
   </script>
   <script type="module" src="https://cdn.jsdelivr.net/npm/player.style/sutro/+esm"></script>
   <script type="module" src="https://cdn.jsdelivr.net/npm/hls-video-element@1.2/+esm"></script>

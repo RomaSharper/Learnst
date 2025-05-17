@@ -14,6 +14,7 @@ import {QuestionsComponent} from '../questions/questions.component';
 import {AlertService} from '../../services/alert.service';
 import {MatCardModule} from '@angular/material/card';
 import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
+import {LogService} from '../../services/log.service';
 
 @Return()
 @Component({
@@ -25,11 +26,12 @@ import {NoDownloadingDirective} from '../../directives/no-downloading.directive'
     MatCardModule,
     MatButtonModule,
     QuestionsComponent,
-    MatProgressSpinnerModule,
     NoDownloadingDirective,
+    MatProgressSpinnerModule
   ]
 })
 export class LessonComponent extends MediumScreenSupport implements OnInit {
+  private logService = inject(LogService);
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
@@ -92,7 +94,7 @@ export class LessonComponent extends MediumScreenSupport implements OnInit {
   }
 
   private handleError(message: string, error: any) {
-    console.error(message, error);
+    this.logService.errorWithData(message, error);
     this.loading.set(false);
     this.alertService.showSnackBar('Не удалось загрузить урок');
   }
@@ -105,7 +107,7 @@ export class LessonComponent extends MediumScreenSupport implements OnInit {
         if (!userLesson)
           this.createUserLesson(lessonId);
       },
-      error: err => console.error('Ошибка при проверке UserLessons:', err)
+      error: err => this.logService.errorWithData('Ошибка при проверке UserLessons:', err)
     });
   }
 
@@ -114,7 +116,7 @@ export class LessonComponent extends MediumScreenSupport implements OnInit {
       userId: this.userId!,
       lessonId: lessonId
     }).subscribe({
-      error: err => console.error('Ошибка при создании записи в UserLessons:', err)
+      error: err => this.logService.errorWithData('Ошибка при создании записи в UserLessons:', err)
     });
   }
 
@@ -125,7 +127,7 @@ export class LessonComponent extends MediumScreenSupport implements OnInit {
         this.loading.set(false);
       },
       error: err => {
-        console.error('Ошибка загрузки Markdown:', err);
+        this.logService.errorWithData('Ошибка загрузки Markdown:', err);
         this.alertService.showSnackBar('Произошла ошибка при загрузке документа');
         this.loading.set(false);
       }

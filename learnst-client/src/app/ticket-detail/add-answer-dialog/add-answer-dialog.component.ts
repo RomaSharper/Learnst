@@ -1,6 +1,6 @@
 import { AlertService } from '../../../services/alert.service';
 import { AuthService } from '../../../services/auth.service';
-import { Component, Inject, OnInit } from '@angular/core';
+import {Component, inject, Inject, OnInit} from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TicketService } from '../../../services/tickets.service';
@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { User } from '../../../models/User';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import {LogService} from '../../../services/log.service';
 
 @Component({
   selector: 'app-add-answer-dialog',
@@ -18,14 +19,14 @@ export class AddAnswerDialogComponent implements OnInit {
   user!: User;
   answerForm!: FormGroup;
 
-  constructor(
-    public dialogRef: MatDialogRef<AddAnswerDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { ticketId: string },
-    private fb: FormBuilder,
-    private ticketService: TicketService,
-    private authService: AuthService,
-    private alertService: AlertService
-  ) {
+  private fb = inject(FormBuilder);
+  private logService = inject(LogService);
+  private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private ticketService = inject(TicketService);
+  public dialogRef = inject(MatDialogRef<AddAnswerDialogComponent>);
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { ticketId: string }) {
   }
 
   ngOnInit(): void {
@@ -48,7 +49,7 @@ export class AddAnswerDialogComponent implements OnInit {
         },
         error: err => {
           this.alertService.showSnackBar('Ошибка при добавлении ответа');
-          console.error(err);
+          this.logService.error(err);
         }
       });
     }

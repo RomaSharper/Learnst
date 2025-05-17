@@ -222,7 +222,7 @@
       flex-direction: row;
 
       li {
-        padding: 4px 8px;
+        padding: 4px;
 
         a:not(.donate-btn) {
           width: 100%;
@@ -245,7 +245,7 @@
             background: var(--mat-sys-primary);
           }
 
-          &:hover::after {
+          &.active::after, &:hover::after {
             opacity: 1;
           }
         }
@@ -277,6 +277,17 @@
   }
 }
 
+.img-link {
+  gap: 8px;
+  align-items: center;
+  display: flex !important;
+
+  img {
+    width: 24px;
+    border-radius: 50%;
+  }
+}
+
 @media (max-width: 1280px) and (min-width: 768px) {
   .main-navigation {
     li:not(.user-area) {
@@ -294,16 +305,5 @@
         height: 24px;
       }
     }
-  }
-}
-
-.img-link {
-  gap: 8px;
-  align-items: center;
-  display: flex !important;
-
-  img {
-    width: 24px;
-    border-radius: 50%;
   }
 }

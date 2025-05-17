@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import {Component, inject, Inject} from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -20,6 +20,7 @@ import { FileService } from '../../../services/file.service';
 import { ValidationService } from '../../../services/validation.service';
 import { AnswerType } from '../../../enums/AnswerType';
 import { LessonType } from '../../../enums/LessonType';
+import {LogService} from '../../../services/log.service';
 
 @Component({
   selector: 'app-lesson-dialog',
@@ -46,7 +47,7 @@ export class LessonDialogComponent {
   answerTypes = AnswerTypeHelper.getAnswerTypes();
   lessonTypes = LessonTypeHelper.getLessonTypes();
 
-  LessonType = LessonType;
+  private logService = inject(LogService);
 
   constructor(
     private fb: FormBuilder,
@@ -64,20 +65,18 @@ export class LessonDialogComponent {
     });
 
     // Сохраняем старый URL файла (если редактируем)
-    if (data.lesson) {
+    if (data.lesson)
       this.oldFileUrl = data.lesson.longReadUrl || data.lesson.videoUrl;
-    }
 
     // Отслеживаем изменение типа урока
-    this.lessonForm.get('lessonType')?.valueChanges.subscribe((value: LessonType) => {
-      this.updateFormValidation(value);
-    });
+    this.lessonForm.get('lessonType')?.valueChanges.subscribe((value: LessonType) =>
+      this.updateFormValidation(value));
   }
 
   // Создание группы для вопроса
   createQuestionGroup(question?: Question): FormGroup {
     const questionGroup = this.fb.group({
-      id: [question?.id || ValidationService.emptyGuid], // Guid
+      id: [question?.id || ValidationService.emptyGuid],
       text: [question?.text || '', Validators.required],
       answerType: [question?.answerType || AnswerType.Single, Validators.required],
       answers: this.fb.array(question?.answers?.map(a => this.createAnswerGroup(a)) || []),
@@ -87,13 +86,15 @@ export class LessonDialogComponent {
     questionGroup.get('answerType')?.valueChanges.subscribe(answerType => {
       if (answerType === AnswerType.Single) {
         const answers = questionGroup.get('answers') as FormArray;
-        const firstCorrectIndex = answers.controls.findIndex(answer => answer.get('isCorrect')?.value);
+        const firstCorrectIndex = answers.controls.findIndex(answer =>
+          answer.get('isCorrect')?.value);
 
         // Если есть хотя бы один правильный ответ, оставляем его, остальные делаем неправильными
         if (firstCorrectIndex === -1) return;
         answers.controls.forEach((answer, index) => {
-          if (index !== firstCorrectIndex)
-            answer.get('isCorrect')?.setValue(false, { emitEvent: false });
+          if (index !== firstCorrectIndex) answer.get('isCorrect')?.setValue(false, {
+            emitEvent: false
+          });
         });
       }
     });
@@ -152,7 +153,7 @@ export class LessonDialogComponent {
     const answers = questionGroup.get('answers') as FormArray;
 
     if (!answers) {
-      console.error('FormArray "answers" не найден в вопросе.');
+      this.logService.errorWithData('Ответы не найдены в вопросе.');
       return;
     }
 
@@ -160,7 +161,6 @@ export class LessonDialogComponent {
 
     // Установите идентификатор вопроса
     newAnswerGroup.get('questionId')?.setValue(questionGroup.get('id')?.value);
-
     answers.push(newAnswerGroup);
   }
 
@@ -208,10 +208,10 @@ export class LessonDialogComponent {
     }
 
     // Если выбран новый файл, загружаем его
-    if (this.selectedFile) {
+    if (this.selectedFile)
       this.fileService.upload(this.selectedFile).pipe(
         catchError(err => {
-          console.error('Не удалось загрузить файл:', err);
+          this.logService.errorWithData('Не удалось загрузить файл:', err);
           return of(null);
         })
       ).subscribe({
@@ -237,19 +237,20 @@ export class LessonDialogComponent {
         },
         error: (error) => {
           this.alertService.showSnackBar('Произошла ошибка при загрузке файла');
-          console.error('Ошибка при загрузке файла:', error);
+          this.logService.errorWithData('Ошибка при загрузке файла:', error);
         }
       });
-    } else {
+    else
       // Если файл не выбран, просто закрываем диалог
       this.dialogRef.close({
         ...this.lessonForm.value,
         id: this.data.lesson?.id || ValidationService.emptyGuid // Сохраняем id, если он есть
       });
-    }
   }
 
   onCancel(): void {
     this.dialogRef.close();
   }
+
+  protected readonly LessonType = LessonType;
 }

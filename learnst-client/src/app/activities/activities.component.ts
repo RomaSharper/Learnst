@@ -26,6 +26,7 @@ import { AlertService } from '../../services/alert.service';
 import { AuthService } from '../../services/auth.service';
 import { LessonType } from '../../enums/LessonType';
 import { FileService } from '../../services/file.service';
+import {LogService} from '../../services/log.service';
 
 @Return()
 @Component({
@@ -51,9 +52,10 @@ import { FileService } from '../../services/file.service';
   ]
 })
 export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
+  private logService = inject(LogService);
+  private fileService = inject(FileService);
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
-  private fileService = inject(FileService);
   private alertService = inject(AlertService);
   private activitiesService = inject(ActivitiesService);
 
@@ -69,8 +71,6 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
   activities: Activity[] = [];
   paginatedActivities: Activity[] = [];
   pageSizeOptions = [6, 12, 24];
-
-  Role = Role;
 
   constructor(public location: Location, public router: Router) {
     super();
@@ -116,14 +116,13 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
 
     this.activitiesService.getUserActivities(this.user.id).pipe(
       catchError(err => {
-        console.error('Ошибка при загрузке записей пользователя:', err);
+        this.logService.errorWithData('Ошибка при загрузке записей пользователя:', err);
         this.loading = false; // Завершение загрузки в случае ошибки
         return of([]);
       })
     ).subscribe(enrollments => {
-      this.activities.forEach(activity => {
-        activity.isEnrolled = enrollments.some(e => e.activityId === activity.id);
-      });
+      this.activities.forEach(activity =>
+        activity.isEnrolled = enrollments.some(e => e.activityId === activity.id));
       this.filterActivities();
       this.loading = false; // Завершение загрузки
     });
@@ -139,26 +138,15 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
   updateUrl(): void {
     const queryParams: any = {};
 
-    if (this.searchQuery)
-      queryParams.search_query = this.searchQuery;
-    else
-      queryParams.search_query = null;
-
-    if (this.tags.length > 0)
-      queryParams.tags = this.tags.join(',');
-    else
-      queryParams.tags = null;
-
-    if (this.level)
-      queryParams.level = this.level; // Добавляем параметр level
-    else
-      queryParams.level = null;
+    queryParams.search_query = this.searchQuery ? this.searchQuery : null;
+    queryParams.tags = this.tags.length > 0 ? this.tags.join(',') : null;
+    queryParams.level = this.level || null; // Добавляем параметр level
 
     // Обновляем URL с новыми параметрами
     this.router.navigate([], {
-      relativeTo: this.route,
       queryParams,
-      queryParamsHandling: 'merge', // Объединяем с существующими параметрами
+      relativeTo: this.route,
+      queryParamsHandling: 'merge',
     });
   }
 
@@ -176,7 +164,8 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
         return false;
 
       // Если searchQuery пустой, пропускаем фильтрацию по нему
-      const matchesSearchQuery = this.searchQuery === '' || activity.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+      const matchesSearchQuery = this.searchQuery === ''
+        || activity.title.toLowerCase().includes(this.searchQuery.toLowerCase());
 
       // Если тегов нет, пропускаем фильтрацию по ним
       const matchesTags = this.tags.length === 0 || this.tags.some(tag => {
@@ -205,13 +194,11 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
   toggleActivity(event: MouseEvent, activity: Activity): void {
     event.stopPropagation();
     if (!this.user || !this.user.id) return;
-
     this.loading = true; // Начало загрузки
-    if (activity.isEnrolled) {
+    if (activity.isEnrolled)
       this.unroll(this.user.id, activity.id);
-    } else {
+    else
       this.enroll(this.user.id, activity.id);
-    }
   }
 
   // Подписка на курс
@@ -222,7 +209,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
     }).pipe(
       catchError(err => {
         this.alertService.showSnackBar('Не удалось записаться на курс');
-        console.error('Ошибка записи на курс:', err);
+        this.logService.errorWithData('Ошибка записи на курс:', err);
         this.loading = false; // Завершение загрузки в случае ошибки
         return of(undefined);
       })
@@ -244,7 +231,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
     this.activitiesService.deleteUserActivity(userId, activityId).pipe(
       catchError(err => {
         this.alertService.showSnackBar('Не удалось отписаться от курса');
-        console.error('Ошибка отписки от курса:', err);
+        this.logService.errorWithData('Ошибка отписки от курса:', err);
         this.loading = false; // Завершение загрузки в случае ошибки
         return of(undefined);
       })
@@ -254,6 +241,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
           activity.isEnrolled = false;
         return activity;
       });
+
       this.filterActivities();
       this.alertService.showSnackBar('Вы успешно отписались от курса');
       this.loading = false; // Завершение загрузки
@@ -291,17 +279,16 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
 
       // Удаляем все файлы, связанные с активностью
       this.deleteActivityFiles(activity).subscribe({
-        next: () => {
+        next: () =>
           // После успешного удаления файлов удаляем саму активность
           this.activitiesService.deleteActivity(activity.id).subscribe(() => {
             this.activities = this.activities.filter(a => a.id !== activity.id);
             this.alertService.showSnackBar('Активность успешно удалена!');
             this.filterActivities();
-          });
-        },
+          }),
         error: (error) => {
           this.alertService.showSnackBar('Не удалось удалить файлы активности.');
-          console.error('Ошибка при удалении файлов:', error);
+          this.logService.errorWithData('Ошибка при удалении файлов:', error);
         }
       });
     });
@@ -315,12 +302,11 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
       deleteObservables.push(this.fileService.delete(activity.avatarUrl));
 
     // Удаляем картинки инфокарточек
-    if (activity.infoCards) {
+    if (activity.infoCards)
       activity.infoCards.forEach(infoCard => {
         if (infoCard.iconUrl)
           deleteObservables.push(this.fileService.delete(infoCard.iconUrl));
       });
-    }
 
     // Удаляем файлы уроков
     if (activity.topics) {
@@ -346,9 +332,9 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
 
     // Объединяем все запросы на удаление в один поток
     return forkJoin(deleteObservables).pipe(
-      map(() => { }),
+      map(() => {}),
       catchError(error => {
-        console.error('Ошибка при удалении файлов:', error);
+        this.logService.errorWithData('Ошибка при удалении файлов:', error);
         throw error;
       })
     );
@@ -357,4 +343,6 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
   toDate(date?: string | number | Date): Date {
     return date ? new Date(date) : new Date();
   }
+
+  protected readonly Role = Role;
 }

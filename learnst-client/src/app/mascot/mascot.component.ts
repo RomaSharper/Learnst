@@ -17,6 +17,7 @@ import {NoDownloadingDirective} from '../../directives/no-downloading.directive'
 import {ThemeService} from '../../services/theme.service';
 import {AudioService} from '../../services/audio.service';
 import {AuthService} from '../../services/auth.service';
+import {LogService} from '../../services/log.service';
 
 @Component({
   selector: 'app-mascot',
@@ -40,6 +41,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   bounceTrigger = signal(false);
 
   private router = inject(Router);
+  private logService = inject(LogService);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private audioService = inject(AudioService);
@@ -944,11 +946,6 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
                   } else if (param)
                     throw new Error(`Страница ${pageName} не требует указания параметра`);
 
-                  const botMessage: Message = {
-                    isBot: true,
-                    text: displayText
-                  };
-
                   this.typeMessage({ text: displayText, mood: 'happy' });
                   await this.router.navigate([navigationPath]);
                   this.scrollToBottom();
@@ -1220,7 +1217,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     let baseResponse = this.getBaseResponse(category);
     baseResponse = this.applyContextModifications(baseResponse);
     baseResponse = this.applyMoodModifications(baseResponse);
-    console.log(`Настроение Нико (-5 ... 5): ${this.moodIntensity}`);
+    this.logService.log(`Настроение Нико (-5 ... 5): ${this.moodIntensity}`);
 
     return {
       text: baseResponse,
@@ -1478,7 +1475,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       </table>
 
       <span class="help-note">
-        ⓘ Несколько команд разделяйте через точку с запятой (;)
+        Ⓘ Несколько команд разделяйте через точку с запятой (;)
       </span>
     `;
   }

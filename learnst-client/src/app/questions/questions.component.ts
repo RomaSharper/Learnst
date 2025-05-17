@@ -15,6 +15,7 @@ import {MatDividerModule} from '@angular/material/divider';
 import {StepperSelectionEvent} from '@angular/cdk/stepper';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {lastValueFrom} from 'rxjs';
+import {LogService} from '../../services/log.service';
 
 @Return()
 @Component({
@@ -33,6 +34,7 @@ import {lastValueFrom} from 'rxjs';
   ]
 })
 export class QuestionsComponent implements OnChanges {
+  private logService = inject(LogService);
   private authService = inject(AuthService);
   private answersService = inject(AnswersService);
 
@@ -54,7 +56,7 @@ export class QuestionsComponent implements OnChanges {
       if (this.questions?.length && this.userId)
         this.loadUserAnswers();
       else
-        console.error('Вопросы не загружены.');
+        this.logService.errorWithData('Вопросы не загружены.');
     });
   }
 
@@ -90,8 +92,9 @@ export class QuestionsComponent implements OnChanges {
       this.selectedAnswers = [];
       this.calculateProgress();
       this.isTestEnded = this.isTestCompleted();
-    } catch (err) {
-      console.error('Ошибка сохранения:', err);
+    } catch (error) {
+      if (!(error instanceof Error)) return;
+      this.logService.errorWithData('Ошибка сохранения:', error);
     }
   }
 
@@ -247,7 +250,7 @@ export class QuestionsComponent implements OnChanges {
         this.updateSelectedStep();
       },
       error: err => {
-        console.error('Ошибка загрузки ответов:', err);
+        this.logService.errorWithData('Ошибка загрузки ответов:', err);
         this.questions!.forEach(q => this.loadingQuestions.delete(q.id));
       }
     });

@@ -10,9 +10,9 @@
   }
 
   <mat-form-field appearance="outline" class="full-width mt">
-    <mat-label>Поиск курсов</mat-label>
+    <mat-label>Поиск активностей</mat-label>
     <input matInput [(ngModel)]="searchInput" (keydown.enter)="onSearch()" placeholder="Начинайте вводить название..."
-           maxlength="2048">
+          maxlength="2048">
     <button type="button" mat-icon-button matSuffix (click)="onSearch()">
       <mat-icon>search</mat-icon>
     </button>
@@ -55,17 +55,17 @@
             }
           </mat-card-header>
           <img mat-card-image [src]="activity.avatarUrl!" [alt]="activity.title"
-               noDownloading loading="lazy" placeholder="/assets/icons/placeholder.png">
+              noDownloading loading="lazy" placeholder="/assets/icons/placeholder.png">
           @if (user) {
             <mat-card-actions>
               @if (activity.isClosed) {
-                Запись на курс закрыта
+                Запись на активность закрыта
               } @else if (toDate(activity.endAt) < now) {
-                Курс был открыт до {{ activity.endAt | ruDate }}
+                Активность была открыта до {{ activity.endAt | ruDate }}
               } @else {
                 <button type="button" mat-flat-button class="course-btn full-width"
                         (click)="toggleActivity($event, activity)">
-                  {{ activity.isEnrolled ? 'Отписаться от курса' : 'Записаться на курс' }}
+                  {{ activity.isEnrolled ? 'Отписаться' : 'Записаться' }}
                 </button>
               }
             </mat-card-actions>

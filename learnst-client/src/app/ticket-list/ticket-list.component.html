@@ -1,17 +1,17 @@
-<mat-card class="ticket-list-container">
+<mat-card class="ticket-list-container container">
   <div class="action-bar">
     <a routerLink="/" mat-stroked-button class="back-btn">
       <mat-icon class="pixel-icon">arrow_back</mat-icon>
-      <span class="btn-text">На главную</span>
+      <span>На главную</span>
     </a>
 
-    <button mat-flat-button
-            class="add-btn"
-            (click)="openCreateTicketDialog()"
-            [@pulseAnimation]="'hover'">
+    <a class="add-btn"
+      mat-flat-button
+      [@pulseAnimation]="'hover'"
+      (click)="openCreateTicketDialog()">
       <mat-icon>add</mat-icon>
-      <span class="btn-text">Добавить</span>
-    </button>
+      <span>Добавить</span>
+    </a>
   </div>
 
   <div class="ticket-grid">
@@ -22,10 +22,10 @@
     } @else {
       @for (ticket of paginatedTickets; track ticket.id) {
         <mat-card class="ticket-card"
-                  (click)="navigateToTicketDetails(ticket.id!)"
-                  [@cardHover]="'hover'">
+                  [@cardHover]="'hover'"
+                  (click)="navigateToTicketDetails(ticket.id!)">
           <div class="type-banner"
-               [style.background]="TicketTypeHelper.getColor(ticket.type)">
+              [style.background]="TicketTypeHelper.getColor(ticket.type)">
             {{ TicketTypeHelper.getName(ticket.type) }}
             <div class="status-icon">
               <mat-icon>{{ TicketStatusHelper.getStatusIcon(ticket.status) }}</mat-icon>
@@ -34,18 +34,16 @@
 
           <div class="card-content">
             <h3 class="title">{{ ticket.title }}</h3>
-
             <p class="description">{{ (ticket.description || '') | ellipsis:100 }}</p>
-
             <div class="meta-footer">
               <div class="author-info" (click)="$event.stopPropagation()">
                 <button mat-stroked-button
                         [matMenuTriggerFor]="userMenu"
                         class="user-btn">
                   <img [src]="ticket.author?.avatarUrl"
-                       class="pixel-avatar"
-                       noDownloading
-                       alt="Аватар">
+                      class="pixel-avatar"
+                      noDownloading
+                      alt="Аватар">
                   <span class="username">{{ ticket.author?.username! | ellipsis:12 }}</span>
                 </button>
                 <mat-menu #userMenu>
@@ -65,16 +63,16 @@
         <div class="empty-state">
           <div class="empty-illustration">
             <img src="assets/niko/sad.webp"
-                 class="pixel-image"
-                 noDownloading
-                 alt="Пусто">
+                class="pixel-image"
+                noDownloading
+                alt="Пусто">
           </div>
           <h3 class="empty-title">Нет тикетов</h3>
-          <button mat-flat-button
+          <a mat-flat-button
                   class="create-btn"
                   (click)="openCreateTicketDialog()">
             Создать первый тикет
-          </button>
+          </a>
         </div>
       }
     }
