@@ -355,10 +355,10 @@ export class ActivityComponent extends MediumScreenSupport implements OnInit {
   }
 
   private nameToIndex(name: string | null): number {
-    return name === 'info' ? 0 : 1;
+    return name === 'plan' ? 1 : 0;
   }
 
   private indexToName(index: number | null): string {
-    return index === 0 ? 'info' : 'plan';
+    return index === 1 ? 'plan' : 'info';
   }
 }

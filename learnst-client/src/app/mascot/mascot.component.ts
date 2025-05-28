@@ -18,6 +18,8 @@ import {ThemeService} from '../../services/theme.service';
 import {AudioService} from '../../services/audio.service';
 import {AuthService} from '../../services/auth.service';
 import {LogService} from '../../services/log.service';
+import { Arrays } from '../../helpers/Arrays';
+import {chatStyles, tableStyles} from '../../constants/styles';
 
 @Component({
   selector: 'app-mascot',
@@ -36,6 +38,7 @@ import {LogService} from '../../services/log.service';
 export class MascotComponent extends MediumScreenSupport implements OnDestroy, OnInit, AfterViewInit {
   userInput = signal('');
   isTyping = signal(false);
+  userName = signal('Гость');
   isChatOpen = signal(false);
   scaleTrigger = signal(false);
   bounceTrigger = signal(false);
@@ -64,10 +67,21 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   };
 
   private readonly RESERVED = [
-    'volume', 'music', 'custom_cursors', 'page', 'user',
-    'date', 'time'
+    'volume', 'music', 'custom_cursors', 'page', 'user', 'whoami', 'date', 'time'
   ];
   private readonly STORAGE_KEY = 'chat_data';
+  private readonly EMPTY_CONTEXT: ChatContext = {
+    messages: [],
+    lastTopics: [],
+    moodIntensity: 0,
+    currentTopic: '',
+    userVariables: {},
+    userPreferences: {},
+    complimentCounter: 0,
+    currentMood: 'normal',
+    mentionedEntities: [],
+    nextComplimentAt: this.generateRandomComplimentThreshold()
+  };
   private readonly MOOD_MAP: { [key: string]: number } = {
     joke: 1,
     love: 2,
@@ -579,39 +593,39 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       text: 'YouTube канал, на котором точно Фиби что-то выклаывает раз в пол года <img width="24" src="https://cdn.7tv.app/emote/01F8G9MDAR0009YQPYZYCKHYKQ/1x.avif" alt="SUSSY">: <a class="link" href="https://www.youtube.com/@Fibi66601" target="_blank">https://www.youtube.com/@Fibi66601</a>'
     },
     '/plan': {
-      mood: this.random<NikoMood>('normal', 'open_mouth', 'speak'),
+      mood: Arrays.random<NikoMood>('normal', 'open_mouth', 'speak'),
       text: 'На данный момент проходим следующие игры: Террария кооп с модом Каламити, <img width="24" src="https://cdn.7tv.app/emote/01GHAB48CR000BH04EQR1SJPS8/1x.avif" alt="bajgenHeart">, Майнкрафт хардкор на все ачивки <img width="24" src="https://cdn.7tv.app/emote/01GERMH9M0000BQ5E4E4CKHN7S/1x.avif" alt="catDespair"> и Дарк Соулс 2 <img width="24" src="https://cdn.7tv.app/emote/01GRFJRB0G0007S059RQTKBPCS/1x.avif" alt="PraiseTheSun">. А в ближайшее время будет Dead Space 2023 <img width="24" src="https://cdn.7tv.app/emote/01F8PZ34B00006FPNFN9FJMHXG/1x.avif" alt="wideAmogus">'
     },
     '/auc': {
-      mood: this.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
+      mood: Arrays.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
       text: 'Проводит стрим, где за бесплатно (1 раз) и за донаты (много раз) можно заказать почти любую игру на прохождение. Затем крутим рулетку. Чем больше суммы на игре тем больше шансов (но не 100%). Что выпадет - в то и играем. Обязательно играю 4 часа. Затем если игра нравится, то играю дальше. Если нет, то увы <img width="24" src="https://cdn.7tv.app/emote/01GB8R1ZF0000BX30STW7STTS2/1x.avif" alt="Jokerge">'
     },
     '/fibi': {
-      mood: this.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
+      mood: Arrays.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
       text: 'Начинающий стримлер. Активно стримит чуть меньше года, втбуером стал пол года назад. Играет в основном соло игры, иногда редко что-то проходит кооперативное. Чаще всего можно увидеть Террарию, Вр чат, Майнкрафт, а так же любые игры, которые выпадают на Аукционе <img width="24" src="https://cdn.7tv.app/emote/01F6ME9FRG0005TFYTWP1H8R42/1x.avif" alt="catJam">'
     },
     '/kuper': {
-      mood: this.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
+      mood: Arrays.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
       text: 'Самый сладкий модератор. Любитель новеллы под названием Некопара а так лобото....АХАХА, ЭТО ЖЕ ЛОБОТОМИЯ КАРПАРЕШОН, А ТАМ КРАСНЫЙ ТУМАН, ЭТО ЖЕ ОТСЫЛКА НА ЛОБОТИМИЮ КАРПОРЕЙШОН АХАХА!!!!11!!! УЭээЭЭЭЭэЭЭ <img width="24" src="https://cdn.7tv.app/emote/01J6Y38X400001T67YKRJPS59G/1x.avif" alt="Cinnamon_AAAA"> <img width="24" src="https://cdn.7tv.app/emote/01J6Y38X400001T67YKRJPS59G/1x.avif" alt="Cinnamon_AAAA"> <img width="24" src="https://cdn.7tv.app/emote/01J6Y38X400001T67YKRJPS59G/1x.avif" alt="Cinnamon_AAAA">'
     },
     '/remuno': {
-      mood: this.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
+      mood: Arrays.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
       text: 'Милый котик. Много мяукает. Только в добрые руки. Обращаться на Вы <img width="24" src="https://cdn.7tv.app/emote/01F6T2BZ5R000FFMY8SXKA600Q/1x.avif" alt="lickL">'
     },
     '/phobia': {
-      mood: this.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
+      mood: Arrays.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
       text: 'Любимый модератор <img width="24" src="https://cdn.7tv.app/emote/01F6NCKMP000052X5637DW2XDY/1x.avif" alt="meow">. Очень милый и справедливый. Только очень странное поведение, когда кто-то говорит МОХ <img width="24" src="https://cdn.7tv.app/emote/01F6MA6Y100002B6P5MWZ5D916/1x.avif" alt="Hmm">. Бесконечно хорни, поглотитель блинов а еще ВОССЛАВЬ СОЛНЦЕ!!!! <img width="24" src="https://cdn.7tv.app/emote/01GRFJRB0G0007S059RQTKBPCS/1x.avif" alt="PraiseTheSun"> <img width="24" src="https://cdn.7tv.app/emote/01GRFJRB0G0007S059RQTKBPCS/1x.avif" alt="PraiseTheSun"> <img width="24" src="https://cdn.7tv.app/emote/01GRFJRB0G0007S059RQTKBPCS/1x.avif" alt="PraiseTheSun">'
     },
     '/kris': {
-      mood: this.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
+      mood: Arrays.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
       text: 'Очень милый и дружелюбный котик <img width="24" src="https://cdn.7tv.app/emote/01J6Y3QRPR000EYP9HFG8ZSZZN/1x.avif" alt="Coconut_Shy"> Целовашки и обнимашки лучше не предлагать, может не отказаться <img width="24" src="https://cdn.7tv.app/emote/01GVFW01E8000A3PWSY9YK31TP/1x.avif" alt="BoyKisser"> Иногда смущается, а иногда сильно смущается. AVE BASIL <img width="24" src="https://cdn.7tv.app/emote/01H0Y5SPCG00047GN16BFCRN7N/1x.avif" alt="Basil">'
     },
     '/furri': {
       text: 'Я НЕ ФУРРИ !!!!! <img width="24" src="https://cdn.7tv.app/emote/01GBFAYKGR000FWWN7MDZZ8XQN/1x.avif" alt="RAGEY">',
-      mood: this.random<NikoMood>('very_uncomfortable', 'very_uncomfortable_looking_left', 'uncomfortable', 'surprised')
+      mood: Arrays.random<NikoMood>('very_uncomfortable', 'very_uncomfortable_looking_left', 'uncomfortable', 'surprised')
     },
     '/femboy': {
-      mood: this.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
+      mood: Arrays.random<NikoMood>('amazed', 'normal', 'open_mouth', 'smiling', 'speak'),
       text: 'Я НЕ ФЕМБОЙ!!!! <img width="24" src="https://cdn.7tv.app/emote/01GBFAYKGR000FWWN7MDZZ8XQN/1x.avif" alt="RAGEY">'
     },
   };
@@ -619,15 +633,12 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   get messages() {
     return this.context.messages;
   }
-
   get currentMood() {
     return this.context.currentMood;
   }
-
   set currentMood(value: NikoMood) {
     this.context.currentMood = value;
   }
-
   get time() {
     return new Date().toLocaleTimeString(navigator.language, {
       hour: 'numeric',
@@ -635,7 +646,6 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       second: '2-digit'
     });
   }
-
   get date() {
     return new Date().toLocaleDateString(navigator.language, {
       weekday: 'long',
@@ -644,38 +654,14 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       day: 'numeric'
     });
   }
-
-  get user() {
-    let user = '';
-    this.authService.getUser().subscribe(u => user = u?.username || 'Гость');
-    return user;
-  }
-
   get volume() {
     return this.audioService.targetVolume();
   }
-
   get music() {
     return this.audioService.isEnabled() ? 'on' : 'off';
   }
-
   get customCursors() {
     return this.themeService.cursorsEnabled() ? 'on' : 'off';
-  }
-
-  ngOnInit(): void {
-    this.loadFromStorage();
-  }
-
-  ngAfterViewInit(): void {
-    const messagesContainer = document.querySelector('.messages');
-    if (messagesContainer)
-      messagesContainer.addEventListener('scroll', () => this.updateScrollParallax());
-  }
-
-  ngOnDestroy(): void {
-    window.clearTimeout(this.timer);
-    this.saveToLocalStorage();
   }
 
   @HostListener('document:click', ['$event'])
@@ -694,14 +680,19 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       this.isChatOpen.set(false);
   }
 
-  toggleChat() {
-    this.bounceTrigger.set(true);
-    const wasOpen = this.isChatOpen();
-    this.isChatOpen.update(v => !v);
+  ngOnInit(): void {
+    this.loadFromStorage();
+    this.authService.getUser().subscribe(u =>
+      this.userName.set(u?.username || 'Гость'));
+  }
 
-    if (!wasOpen)
-      setTimeout(this.scrollToBottom, 100);
-    setTimeout(() => this.bounceTrigger.set(false), 600);
+  ngAfterViewInit(): void {
+    document.querySelector('.messages')?.addEventListener('scroll', () => this.updateScrollParallax());
+  }
+
+  ngOnDestroy(): void {
+    window.clearTimeout(this.timer);
+    this.saveToLocalStorage();
   }
 
   async sendMessage() {
@@ -725,15 +716,16 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     }
 
     if (input.includes('/')) {
-      if (input.includes(';')) {
-        const commands = input.split(';').map(c => c.trim()).filter(c => c);
-        for (const command of commands) {
-          this.userInput.set(command);
-          await this.sendSingleCommand(command);
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-      } else
+      if (!input.includes(';')) {
         await this.sendSingleCommand(input);
+        return;
+      }
+
+      for (const command of input.split(';').map(c => c.trim()).filter(c => c)) {
+        this.userInput.set(command);
+        await this.sendSingleCommand(command);
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
       return;
     }
 
@@ -748,6 +740,14 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     this.updateContext(input, category);
     this.updateMood(category);
     this.saveToLocalStorage();
+  }
+
+  toggleChat() {
+    this.bounceTrigger.set(true);
+    const wasOpen = this.isChatOpen();
+    this.isChatOpen.update(v => !v);
+    if (!wasOpen) setTimeout(this.scrollToBottom, 100);
+    setTimeout(() => this.bounceTrigger.set(false), 600);
   }
 
   clearChatHistoryHandle(event: Event) {
@@ -767,7 +767,9 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
   private async sendSingleCommand(input: string) {
     if (input.startsWith('/')) {
-      const parts = input.slice(1).split(' ');
+      const parts = input.startsWith('/get')
+        ? Arrays.split(input.slice(1), ' ', 2)
+        : input.slice(1).split(' ');
       const command = parts[0];
       const args = parts.slice(1);
 
@@ -778,10 +780,12 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
             this.typeMessage(this.COMMANDS[input]);
             setTimeout(() => this.clearChatHistory(), 1000);
             return;
+
           case 'export':
             this.typeMessage(this.COMMANDS[input]);
             setTimeout(() => this.exportHistory(), 1000);
             return;
+
           case 'echo':
             const {expression, vars, hasQuotes} = this.parseEchoArgs(input.slice(5).trim());
 
@@ -789,22 +793,23 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
               throw new Error('Фраза должна быть заключена в кавычки');
 
             // Проверка переменных
-            const missingVars = vars.filter(v =>
-              !this.context.userVariables[v] &&
-              !this.RESERVED.includes(v)
-            );
+            const missingVars = vars.filter(v => {
+              const isReserved = this.RESERVED.includes(v.toLowerCase());
+              return !isReserved && !this.context.userVariables[v];
+            });
 
             if (missingVars.length > 0)
               throw new Error(`Не найдены переменные: ${missingVars.join(', ')}`);
 
-            // Подстановка значений и вычисление
-            let result = this.evaluateExpression(expression)?.toString() ?? '';
+            let result = expression;
+            for (const v of vars) {
+              const value = this.getVariableValue(v)?.toString() || '';
+              result = result.replace(new RegExp(`%${v}%`, 'gi'), value);
+            }
 
-            // Обработка HTML
             this.typeMessage({text: result, mood: 'speak'});
-            this.addMessageToContext({text: result, isBot: true});
-            this.scrollToBottom();
             return;
+
           case 'delete':
             if (args.length < 1)
               throw new Error('Недостаточно аргументов. Используйте: /delete <переменная>');
@@ -823,6 +828,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
               text: `✅ Переменная %${variableName}% удалена`
             });
             return;
+
           case 'get':
             const targetVar = args[0].replace(/%/g, '');
 
@@ -831,24 +837,17 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
             this.typeMessage({
               mood: 'normal',
-              text: (this.RESERVED.includes(targetVar)
-                ? {
-                  time: this.time,
-                  date: this.date,
-                  user: this.user,
-                  music: this.music,
-                  volume: this.volume,
-                  custom_cursors: this.customCursors
-                }[targetVar]
-                : this.context.userVariables[targetVar])!.toString()
+              text: this.getVariableValue(targetVar).toString()
             });
             return;
+
           case 'help':
             this.typeMessage({
               mood: 'speak',
               text: this.generateHelpText()
             });
             return;
+
           case 'play':
             if (args.length < 1)
               throw new Error('Недостаточно аргументов. Используйте: /play <номер трека>');
@@ -875,6 +874,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
                 text: `Не удалось воспроизвести трек (см. консоль разработчика)`
               });
             return;
+
           case 'set':
             if (args.length < 2)
               throw new Error('Недостаточно аргументов. Используйте: /set <переменная> <значение>');
@@ -918,6 +918,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
                   let text = `🔊 Громкость установлена на ${volume}`;
                   this.typeMessage({text, mood: 'normal'});
                   break;
+
                 case 'page':
                   const paramRequiredPages = ['activity', 'user'];
                   const pageParts = value.split(':');
@@ -933,20 +934,22 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
                   if (paramRequiredPages.includes(pageName)) {
                     if (!param)
-                      throw new Error(`Для страниц "${paramRequiredPages.join('", "')}" требуется параметр в формате: /set page ${pageName}:<параметр>`);
+                      throw new Error(
+                        `Для страниц "${paramRequiredPages.join('", "')}" требуется параметр в формате: /set page ${pageName}:<параметр>`
+                      );
 
                     navigationPath += `/${param}`;
                     displayText += ` с параметром "${param}"`;
                   } else if (param)
                     throw new Error(`Страница ${pageName} не требует указания параметра`);
 
-                  this.typeMessage({text: displayText, mood: 'happy'});
+                  this.typeMessage({mood: 'happy', text: displayText});
                   await this.router.navigate([navigationPath]);
                   this.scrollToBottom();
                   return;
 
                 default:
-                  throw new Error(`Неизвестное свойство: ${variable}`);
+                  throw new Error(`Свойство "${variable}" невозможно изменить`);
               }
               return;
             }
@@ -972,14 +975,16 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
               throw new Error(`Ошибка установки переменной: ${(e as Error).message}`);
             }
             return;
+
           case 'twitch':
             this.typeMessage(this.COMMANDS[input]);
             setTimeout(() => this.router.navigate(['/twitch']), 300);
             return;
+
           default:
             const response = this.COMMANDS[input] || {
-              mood: this.random('uncomfortable', 'freaked_out', 'freaked_out_looking_left', 'surprised'),
-              text: this.random('Не могу понять команду', 'Я тебя не понял...', 'Что?', 'Повтори пожалуйста', 'Я ничего не понимаю...')
+              mood: Arrays.random('uncomfortable', 'freaked_out', 'freaked_out_looking_left', 'surprised'),
+              text: Arrays.random('Не могу понять команду', 'Я тебя не понял...', 'Что?', 'Повтори пожалуйста', 'Я ничего не понимаю...')
             };
 
             const botMessage: Message = {
@@ -990,6 +995,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
             this.addMessageToContext(botMessage);
             this.context.currentMood = response.mood;
             this.saveToLocalStorage();
+            break;
         }
       } catch (error) {
         this.showError(this.getCommandError(error as Error, input));
@@ -999,19 +1005,16 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
   private loadFromStorage() {
     const encryptedData = localStorage.getItem(this.STORAGE_KEY);
-    if (encryptedData) {
-      const data = CryptoService.decryptData<ChatContext>(encryptedData, environment.encryptionKey);
-      if (data) {
-        this.context = {
-          ...this.context,
-          ...data,
-          messages: data.messages.map(msg => ({
-            ...msg,
-            displayedText: msg.text // Восстанавливаем отображение
-          }))
-        };
-      }
-    }
+    if (!encryptedData) return;
+
+    const data = CryptoService.decryptData<ChatContext>(encryptedData, environment.encryptionKey);
+    if (!data) return;
+
+    this.context = {
+      ...this.context,
+      ...data,
+      messages: data.messages
+    };
   }
 
   private saveToLocalStorage() {
@@ -1025,18 +1028,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   }
 
   private clearChatHistory() {
-    this.context = {
-      messages: [],
-      lastTopics: [],
-      moodIntensity: 0,
-      currentTopic: '',
-      userVariables: {},
-      userPreferences: {},
-      complimentCounter: 0,
-      currentMood: 'normal',
-      mentionedEntities: [],
-      nextComplimentAt: this.generateRandomComplimentThreshold()
-    };
+    this.context = this.EMPTY_CONTEXT;
     localStorage.removeItem(this.STORAGE_KEY);
   }
 
@@ -1045,61 +1037,6 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       this.alertService.showSnackBar('Нет истории для экспорта', 'OK');
       return;
     }
-
-    const styles = `
-    <style>
-      :root {
-        --surface: #ffffff;
-        --on-surface: #212121;
-        --secondary-container: #e3f2fd;
-        --on-secondary-container: #0d47a1;
-      }
-
-      body {
-        font-family: Roboto, sans-serif;
-        margin: 20px;
-        background: var(--surface);
-        color: var(--on-surface);
-      }
-
-      .chat-export {
-        max-width: 600px;
-        margin: 0 auto;
-        border: 1px solid #e0e0e0;
-        border-radius: 16px;
-        padding: 20px;
-      }
-
-      .message {
-        margin: 12px 0;
-        padding: 12px 16px;
-        border-radius: 20px;
-        max-width: 80%;
-      }
-
-      .user-message {
-        margin-left: auto;
-        background: #f5f5f5;
-        border-radius: 20px 20px 4px 20px;
-      }
-
-      .bot-message {
-        border-radius: 20px 20px 20px 4px;
-        background: var(--secondary-container);
-      }
-
-      .header {
-        text-align: center;
-        margin-bottom: 30px;
-      }
-
-      .timestamp {
-        font-size: 0.8em;
-        color: #666;
-        margin-top: 10px;
-      }
-    </style>
-    `;
 
     const messagesHtml = this.messages
       .map(msg => `
@@ -1117,7 +1054,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       <head>
         <meta charset="utf-8">
         <title>История чата с Нико</title>
-        ${styles}
+        ${chatStyles}
       </head>
       <body>
         <div class="chat-export">
@@ -1142,15 +1079,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     window.URL.revokeObjectURL(url);
   }
 
-  private random<T>(...array: T[]): T {
-    return array[Math.floor(Math.random() * array.length)];
-  }
-
-  private parseEchoArgs(input: string): {
-    expression: string,
-    vars: string[],
-    hasQuotes: boolean
-  } {
+  private parseEchoArgs(input: string): { expression: string, vars: string[], hasQuotes: boolean } {
     let expression = '';
     const vars = [];
 
@@ -1173,7 +1102,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     return {
       expression: input,
       hasQuotes: !!isQuoted,
-      vars: [...new Set(vars)].filter(v => !this.RESERVED.includes(v))
+      vars: [...new Set(vars)]
     };
   }
 
@@ -1221,14 +1150,14 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
   private getBaseResponse(category: string): string {
     const responses = this.RESPONSES[category] || ['Мяу...'];
-    const response = this.random(...responses);
+    const response = Arrays.random(...responses);
 
     // Замена специальных тегов
     return response.replace(/\$topic/g, this.currentTopic)
       .replace(/\$entity/g, this.context.mentionedEntities[0] || 'что-то')
       .replace(/\$name/g, this.context.userPreferences.name || 'друг')
-      .replace(/\$game/g, this.random('Oneshot', 'Omori', 'Terraria', 'Minecraft'))
-      .replace(/\$food/g, this.random('тунец', 'молоко', 'печеньки'));
+      .replace(/\$game/g, Arrays.random('Oneshot', 'Omori', 'Terraria', 'Minecraft'))
+      .replace(/\$food/g, Arrays.random('тунец', 'молоко', 'печеньки'));
   }
 
   private generateRandomComplimentThreshold(): number {
@@ -1254,37 +1183,37 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
     switch (true) {
       case (this.moodIntensity <= -5):
-        this.context.currentMood = this.random<NikoMood>('very_uncomfortable', 'crying');
+        this.context.currentMood = Arrays.random<NikoMood>('very_uncomfortable', 'crying');
         modifiedResponse += ' 😥 М-мяу...';
         break;
 
       case (this.moodIntensity >= -4 && this.moodIntensity <= -3):
-        this.context.currentMood = this.random<NikoMood>('sad', 'distressed');
+        this.context.currentMood = Arrays.random<NikoMood>('sad', 'distressed');
         modifiedResponse += ' 😞 Мя-яу...';
         break;
 
       case (this.moodIntensity >= -2 && this.moodIntensity <= -1):
-        this.context.currentMood = this.random<NikoMood>('uncomfortable', 'looking_left');
+        this.context.currentMood = Arrays.random<NikoMood>('uncomfortable', 'looking_left');
         modifiedResponse += ' 😨';
         break;
 
       case (this.moodIntensity >= 1 && this.moodIntensity <= 2):
-        this.context.currentMood = this.random<NikoMood>('normal', 'smiling');
+        this.context.currentMood = Arrays.random<NikoMood>('normal', 'smiling');
         modifiedResponse += ' 🙂';
         break;
 
       case (this.moodIntensity >= 3 && this.moodIntensity <= 4):
-        this.context.currentMood = this.random<NikoMood>('happy', 'amazed');
+        this.context.currentMood = Arrays.random<NikoMood>('happy', 'amazed');
         modifiedResponse += ' 😊';
         break;
 
       case (this.moodIntensity >= 5):
-        this.context.currentMood = this.random<NikoMood>('surprised', 'eyes_closed');
+        this.context.currentMood = Arrays.random<NikoMood>('surprised', 'eyes_closed');
         modifiedResponse += ' 🥰 УРРРР!';
         break;
 
       default: // 0
-        this.context.currentMood = this.random<NikoMood>('normal', 'speak');
+        this.context.currentMood = Arrays.random<NikoMood>('normal', 'speak');
         modifiedResponse += '~';
     }
 
@@ -1311,7 +1240,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   private calculateCurrentMood(): NikoMood {
     if (this.moodIntensity > 3) return 'happy';
     if (this.moodIntensity < -3) return 'distressed';
-    return this.random(...this.MOOD_MATRIX[this.currentTopic] || ['normal']);
+    return Arrays.random(...this.MOOD_MATRIX[this.currentTopic] || ['normal']);
   }
 
   private extractEntities(text: string): string[] {
@@ -1320,7 +1249,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
   private addCompliment(response: string): string {
     const compliments = ['Кстати, ты сегодня прекрасно выглядишь!', 'Ты молодец!', 'Как всегда, умничка!'];
-    return `${response} ${this.random(...compliments)}`;
+    return `${response} ${Arrays.random(...compliments)}`;
   }
 
   private typeMessage(response: { text: string; mood: NikoMood }): void {
@@ -1349,7 +1278,6 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
         this.timer = window.setTimeout(typeNextChar, typingSpeed);
         return;
       }
-
       this.isTyping.set(false);
     };
 
@@ -1364,10 +1292,9 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     const punctuationDelay = 50; // Задержка для пунктуации
 
     // Увеличиваем задержку для знаков препинания
-    if (/[.!?,;:]$/.test(text))
-      return baseSpeed + speedVariation + punctuationDelay;
-
-    return baseSpeed + Math.random() * speedVariation;
+    return /[.!?,;:]$/.test(text)
+      ? baseSpeed + speedVariation + punctuationDelay
+      : baseSpeed + Math.random() * speedVariation;
   }
 
   private showError(message: string): void {
@@ -1396,42 +1323,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
   private generateHelpText(): string {
     return `
-      <style>
-        .help-table {
-          width: 100%;
-          margin: 16px 0;
-          overflow: hidden;
-          border-collapse: collapse;
-          color: var(--mat-sys-color-on-surface);
-          background: var(--mat-sys-color-surface-container);
-          border-radius: var(--mat-sys-shape-corner-extra-large);
-        }
-
-        .help-table th {
-          text-align: left;
-          padding: var(--mat-sys-spacing-3);
-          color: var(--mat-sys-color-primary);
-          background: var(--mat-sys-color-surface-container-high);
-        }
-
-        .help-table td {
-          padding: var(--mat-sys-spacing-3);
-          border-bottom: 1px solid var(--mat-sys-color-outline-variant);
-        }
-
-        .help-table code {
-          padding: 2px 6px;
-          color: var(--mat-sys-color-on-secondary-container);
-          background: var(--mat-sys-color-secondary-container);
-          border-radius: var(--mat-sys-shape-corner-extra-small);
-        }
-
-        .help-note {
-          display: block;
-          margin-top: var(--mat-sys-spacing-3);
-          color: var(--mat-sys-color-on-surface-variant);
-        }
-      </style>
+      ${tableStyles}
 
       <table class="help-table">
         <thead>
@@ -1469,78 +1361,28 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
       </table>
 
       <span class="help-note">
-        Ⓘ Несколько команд разделяйте через точку с запятой (;)
+        Ⓘ Несколько команд разделяйте с помощью точки с запятой (;)
       </span>
     `;
   }
 
-  private evaluateExpression(expression: string): string | undefined {
-    try {
-      // Обрабатываем конкатенацию строк
-      const concatRegex = /(?:"([^"]*)"|'([^']*)'|(%\w+%)|(\d+(?:\.\d+)?))\s*\+\s*/g;
-      const parts = [];
-      let lastIndex = 0;
-      let match;
-
-      while ((match = concatRegex.exec(expression)) !== null) {
-        const [full, dq, sq, varName, num] = match;
-        if (dq !== undefined) parts.push(dq);
-        if (sq !== undefined) parts.push(sq);
-        if (varName !== undefined) parts.push(this.getVariableValue(varName.slice(1, -1)));
-        if (num !== undefined) parts.push(num);
-        lastIndex = match.index + full.length;
-      }
-
-      // Добавляем остаток выражения
-      const remaining = expression.slice(lastIndex);
-      if (remaining) parts.push(remaining);
-
-      // Вычисляем математические выражения в каждой части
-      return parts.map(part => {
-        const mathMatch = part.toString().match(/^\((.*)\)$/);
-        if (mathMatch) {
-          return String(new Function(`return ${mathMatch[1]}`)());
-        }
-        return part;
-      }).join('');
-    } catch (e) {
-      throw new Error(`Ошибка вычисления выражения: ${(e as Error).message}`);
-    }
-  }
-
   private getVariableValue(name: string): string | number | boolean {
-    if (this.RESERVED.includes(name)) {
-      switch (name) {
-        case 'volume':
-          return this.audioService.targetVolume();
+    const lowerName = name.toLowerCase();
 
-        case 'music':
-          return this.audioService.isEnabled() ? 'on' : 'off';
-
-        case 'custom_cursors':
-          return this.themeService.cursorsEnabled() ? 'on' : 'off';
-
-        case 'user': {
-          let username = 'Гость';
-          this.authService.getUser().subscribe(u => username = u?.username || username);
-          return username;
-        }
-
-        case 'date':
-          return this.date;
-
-        case 'time':
-          return this.time;
-
-        case 'page':
-          return this.router.url;
-
-        default:
-          return '';
+    // Для зарезервированных переменных (без учета регистра)
+    if (this.RESERVED.includes(lowerName))
+      switch (lowerName) {
+        case 'volume': return this.audioService.targetVolume();
+        case 'music': return this.audioService.isEnabled() ? 'on' : 'off';
+        case 'custom_cursors': return this.themeService.cursorsEnabled() ? 'on' : 'off';
+        case 'user': case 'whoami': return this.userName();
+        case 'date': return this.date;
+        case 'time': return this.time;
+        case 'page': return this.router.url;
+        default: return '';
       }
-    }
 
-    // Для пользовательских переменных
+    // Для пользовательских переменных (с учетом регистра)
     return this.context.userVariables[name] || '';
   }
 

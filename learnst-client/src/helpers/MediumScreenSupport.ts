@@ -5,11 +5,7 @@ import {WindowService} from "../services/window.service";
   selector: '[appMediumScreenSupport]'
 })
 export class MediumScreenSupport {
-  isMediumScreen!: boolean;
-
-  constructor() {
-    this.isMediumScreen = WindowService.isMediumScreen();
-  }
+  isMediumScreen = WindowService.isMediumScreen();
 
   @HostListener('window:resize', ['$event'])
   resizeHandler(_event: Event): void {

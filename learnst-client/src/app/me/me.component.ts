@@ -506,7 +506,6 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
 
   private prepareExportData(): any {
     const user = this.user()!;
-
     return {
       copyright: `© ${new Date().getFullYear()} RomaSharper. All rights reserved.`,
       exportDate: new Date().toISOString(),
@@ -536,22 +535,22 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
           ? SocialMediaPlatform[user.externalLoginType]
           : undefined,
         socialMediaProfiles: user.socialMediaProfiles.map(p => ({
-          platform: SocialMediaPlatform[p.platform],
-          url: p.url
+          url: p.url,
+          platform: SocialMediaPlatform[p.platform]
         })),
 
         // Образование и опыт работы
         educations: user.educations.map(e => ({
-          institutionName: e.institutionName,
           degree: e.degree,
-          graduationYear: e.graduationYear
+          graduationYear: e.graduationYear,
+          institutionName: e.institutionName
         })),
         workExperiences: user.workExperiences.map(w => ({
-          companyName: w.companyName,
+          endDate: w.endDate,
           position: w.position,
-          description: w.description,
           startDate: w.startDate,
-          endDate: w.endDate
+          companyName: w.companyName,
+          description: w.description
         })),
 
         // Активности и прогресс
@@ -565,29 +564,26 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
         tickets: user.tickets.map(t => ({
           id: t.id,
           title: t.title,
-          description: t.description,
-          status: TicketStatus[t.status],
+          createdAt: t.createdAt,
           type: TicketType[t.type],
-          createdAt: t.createdAt
+          description: t.description,
+          status: TicketStatus[t.status]
         })),
         ticketAnswers: user.ticketAnswers.map(ta => ({
           id: ta.id,
           content: ta.content,
-          createdAt: ta.createdAt,
-          ticketId: ta.ticketId
+          ticketId: ta.ticketId,
+          createdAt: ta.createdAt
         })),
 
         // Настройки
-        theme: {
-          id: user.themeId
-        }
+        theme: { id: user.themeId }
       }
     };
   }
 
   private jsonReplacer(key: string, value: any): any {
-    // Убираем циклические ссылки
-    if (key === 'user') return value;
+    if (key === 'user') return value; // Убираем циклические ссылки
     return value instanceof Date ? value.toISOString() : value;
   }
 

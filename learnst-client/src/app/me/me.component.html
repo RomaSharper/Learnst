@@ -12,34 +12,39 @@
 
       <!-- Личные данные -->
       <mat-card class="full-width" appearance="outlined">
-        <h3>
-          Личные данные
-          @if (user()!.externalLoginType) {
-            <img
-              inspectable
-              noDownloading
-              class="social-icon"
-              placeholder="/assets/icons/placeholder.png"
-              [alt]="SocialMediaPlatformHelper.getName(user()!.externalLoginType!)"
-              [src]="SocialMediaPlatformHelper.getImagePath(user()!.externalLoginType!)"
-              [matTooltip]="SocialMediaPlatformHelper.getName(user()!.externalLoginType!)"
-            >
-          }
-        </h3>
+        @if (user()!.externalLoginType) {
+          <h3 [matTooltip]="SocialMediaPlatformHelper.getName(user()!.externalLoginType!)">
+            Личные данные
+              <img
+                inspectable
+                noDownloading
+                class="social-icon"
+                placeholder="/assets/icons/placeholder.png"
+                [alt]="SocialMediaPlatformHelper.getName(user()!.externalLoginType!)"
+                [src]="SocialMediaPlatformHelper.getImagePath(user()!.externalLoginType!)">
+          </h3>
+        } @else {
+          <h3>Личные данные</h3>
+        }
 
-        <div class="avatar-container">
+        <div class="avatar-container"
+             matTooltipPosition="below"
+             (mouseup)="openFilePicker()"
+             matTooltip="Изменить аватар">
+
           <input
             type="file"
             class="hidden"
             id="avatarInput"
             accept="image/*"
-            (change)="onFileSelected($event)"
-          >
-          <img [src]="user()!.avatarUrl!" [alt]="user()!.username" noDownloading
-               (click)="openFilePicker()" class="avatar" matTooltip="Изменить аватар"
-               placeholder="/assets/icons/user-192x192.png" matTooltipPosition="below">
+            (change)="onFileSelected($event)">
+
+          <img [src]="user()!.avatarUrl!" [alt]="user()!.username"
+               placeholder="/assets/icons/user-192x192.png" noDownloading class="avatar">
+
           <!-- Бейджик статуса -->
-          <div class="status-badge" [ngClass]="StatusHelper.getStatusClass(user()!.status!)"
+          <div class="status-badge"
+               [ngClass]="StatusHelper.getStatusClass(user()!.status!)"
                [matTooltip]="StatusHelper.getStatusName(user()!.status!)"></div>
         </div>
 
