@@ -12,8 +12,9 @@ public class OpenIdAuthenticationRequest
     {
         _parameters = query.ToDictionary(
             k => k.Key.ToLowerInvariant(), 
-            v => v.Value);
-            
+            v => v.Value
+        );
+        
         _parameters["openid.mode"] = "check_authentication";
         _parameters["openid.assoc_handle"] = assocHandle;
         _parameters["openid.signed"] = signed;
@@ -26,7 +27,8 @@ public class OpenIdAuthenticationRequest
         var content = new FormUrlEncodedContent(_parameters);
         var response = await client.PostAsync(
             "https://steamcommunity.com/openid/login", 
-            content);
+            content
+        );
 
         return response.IsSuccessStatusCode 
                && (await response.Content.ReadAsStringAsync())

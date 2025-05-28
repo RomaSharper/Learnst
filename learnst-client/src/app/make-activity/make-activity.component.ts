@@ -164,12 +164,12 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
   constructor(public location: Location, public router: Router) {
     super();
     this.activityForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3)]],
-      description: [''],
-      avatarUrl: [''],
-      level: [Level.Easy, Validators.required],
-      isClosed: [false],
       endAt: [''],
+      avatarUrl: [''],
+      isClosed: [false],
+      description: [''],
+      level: [Level.Easy, Validators.required],
+      title: ['', [Validators.required, Validators.minLength(3)]],
       minimalScore: [0, [Validators.min(0), this.maxScoreValidator.bind(this)]]
     });
   }
@@ -212,22 +212,18 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
 
   openFilePicker(): void {
     const fileInput = document.getElementById('avatarInput') as HTMLInputElement;
-    if (fileInput) {
+    if (fileInput)
       fileInput.click();
-    }
   }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
+    if (!input.files || input.files.length === 0) return;
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.previewAvatarUrl = e.target!.result as string; // Временное отображение нового аватара
-      };
-      reader.readAsDataURL(this.selectedFile);
-    }
+    this.selectedFile = input.files[0];
+    const reader = new FileReader();
+    reader.onload = e => this.previewAvatarUrl = e.target!.result as string; // Временное отображение нового аватара
+    reader.readAsDataURL(this.selectedFile);
   }
 
   // Методы для работы с тэгами
@@ -292,8 +288,7 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result)
-        this.infoCards.push(result);
+      if (result) this.infoCards.push(result);
     });
   }
 
@@ -305,9 +300,7 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.infoCards[index] = result;
-      }
+      if (result) this.infoCards[index] = result;
     });
   }
 
@@ -448,13 +441,16 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
           `Тема "${topic.title}" должна содержать минимум один урок.`
         );
         return false;
-      } else if (topic.lessons.length > 30) {
+      }
+
+      if (topic.lessons.length > 10) {
         this.alertService.showSnackBar(
-          `Количество уроков в теме "${topic.title}" не должно превышать 30 (Текущее кол-во: ${topic.lessons.length}).`
+          `Количество уроков в теме "${topic.title}" не должно превышать 10 (Текущее кол-во: ${topic.lessons.length}).`
         );
         return false;
       }
     }
+
     return true;
   }
 
@@ -504,9 +500,9 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
             return false;
           }
 
-          if (question.answerType === AnswerType.Multiple && correctAnswersCount < 2) {
+          if (question.answerType === AnswerType.Multiple && correctAnswersCount < 1) {
             this.alertService.showSnackBar(
-              `Вопрос "${question.text}" (множественный выбор) должен содержать минимум два правильных ответа.`
+              `Вопрос "${question.text}" (множественный выбор) должен содержать минимум один правильный ответ.`
             );
             return false;
           }
@@ -528,7 +524,7 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
         throw err;
       })
     ).subscribe({
-      next: (response) => {
+      next: response => {
         if (this.oldAvatarUrl)
           this.deleteOldAvatar(this.oldAvatarUrl);
         this.activityForm.patchValue({avatarUrl: response.fileUrl});
@@ -580,6 +576,7 @@ export class MakeActivityComponent extends MediumScreenSupport implements OnInit
 
   private handleError(message: string, error: Error | null = null): void {
     this.alertService.showSnackBar(message);
-    if (error) this.logService.errorWithData(message, error);
+    if (error)
+      this.logService.errorWithData(message, error);
   }
 }
