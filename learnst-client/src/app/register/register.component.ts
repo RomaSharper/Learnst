@@ -215,7 +215,8 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
   openEmailHelp(): void {
     this.alertService.openMessageDialog(
       'О поддерживаемых доменах',
-      'На платформе Learnst в качестве безопасности поддерживаются только следующие домены: mail.ru, xmail.ru, gmail.com, vk.com, yandex.ru, icloud.com.');
+      'На платформе Learnst в качестве безопасности поддерживаются только следующие домены: mail.ru, xmail.ru, gmail.com, vk.com, yandex.ru, icloud.com.'
+    );
   }
 
   private initTurnstile() {

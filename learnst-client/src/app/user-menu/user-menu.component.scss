@@ -33,6 +33,7 @@
       border-radius: 50%;
       margin-bottom: 12px;
       border: 2px solid var(--mat-sys-primary);
+      background-color: var(--mat-sys-surface-container-highest);
     }
 
     .names {
@@ -91,7 +92,6 @@
   }
 }
 
-/* Меню аккаунтов */
 //noinspection ALL
 .accounts-menu {
   margin-top: 8px !important;
@@ -152,22 +152,23 @@
   }
 }
 
-/* Ховер-эффекты */
 //noinspection CssUnusedSymbol
-.account-btn:hover {
-  background: var(--mat-sys-hover-state-layer-opacity) !important;
-}
+.account-btn {
+  .current {
+    .account-username {
+      font-weight: 500 !important;
+      color: var(--mat-sys-primary) !important;
+    }
+    
+    mat-icon {
+      color: var(--mat-sys-primary) !important;
+    }
+  }
 
-.account-btn:hover .account-actions mat-icon {
-  color: var(--mat-sys-primary) !important;
-}
-
-/* Текущий аккаунт */
-.account-btn.current .account-username {
-  font-weight: 500 !important;
-  color: var(--mat-sys-primary) !important;
-}
-
-.account-btn.current mat-icon {
-  color: var(--mat-sys-primary) !important;
+  &:hover {
+    background: var(--mat-sys-hover-state-layer-opacity) !important;
+    .account-actions mat-icon {
+      color: var(--mat-sys-primary) !important;
+    }
+  }
 }

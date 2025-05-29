@@ -41,7 +41,6 @@
         @if (form.get('email')?.hasError('asyncValidation')) {
           <mat-progress-spinner matSuffix mode="indeterminate" diameter="20"></mat-progress-spinner>
         }
-
         @if (form.get('email')?.hasError('duplicateEmail')) {
           <mat-error>Почта уже занята</mat-error>
         } @else if (form.get('email')?.hasError('invalidDomain') && form.get('email')?.touched) {

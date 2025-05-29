@@ -12,40 +12,28 @@ export class ValidationService {
   static urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-@]*)*\/?$/;
 
   static emptyGuid = '00000000-0000-0000-0000-000000000000';
-  static emailDomains = ['mail.ru', 'xmail.ru', 'gmail.com', 'vk.com', 'yandex.ru', 'icloud.com'];
+  static emailDomains = ['mail.ru', 'xmail.ru', 'gmail.com', 'vk.com', 'yandex.ru', 'icloud.com', 'proton.me', 'protonmail.com'];
 
   static forbiddenWords = [
     // Основные оскорбления (английские)
-    'bitch', 'asshole', 'nigger', 'nigga', 'fuck', 'fucker', 'motherfucker',
+    'bitch', 'asshole', 'nigger', 'niger', 'nigga', 'fuck', 'fucker', 'motherfucker',
     'shit', 'cunt', 'whore', 'slut', 'dick', 'pussy', 'bastard', 'retard',
     'douche', 'wanker', 'twat', 'pedo', 'rapist', 'scum', 'jizz', 'cum',
 
     // Русские оскорбления
-    'сука', 'сучка', 'блядь', 'блять', 'хуй', 'хуё', 'пидор', 'пидарас',
-    'мудак', 'говно', 'долбоёб', 'шлюха', 'дебил', 'кретин', 'еблан', 'жопа',
-    'залупа', 'мразь', 'падла', 'сволочь', 'урод', 'чмо', 'гандон', 'козёл',
-    'лох', 'пердун', 'пизда', 'ебучка', 'выёбок', 'манда', 'ссанина',
+    'suka', 'suchka', 'blyad', 'blyat', 'hui', 'huy', 'pidor', 'pidoras',
+    'mudak', 'govno', 'shit', 'dolboeb', 'shluha', 'zalupa', 'pizda', 'cunt',
 
     // Украинские оскорбления
-    'бля', 'хуйло', 'курва', 'гівно', 'пізда', 'мусор', 'хамло', 'тупий',
-    'виродок', 'срака', 'падлюка', 'свиня', 'чорт', 'дідько', 'перець',
-    'халява', 'шльондра', 'москаль', 'кацап', 'свидомый',
+    'moscal', 'kacap', 'ork',
 
     // Расистские термины
-    'чурка', 'хач', 'жид', 'нигер', 'расист', 'фашист', 'нацист',
-    'белый мусор', 'чёрный', 'yellowface', 'spic', 'wetback', 'kike', 'gook',
+    'black', 'yellowface', 'spic', 'wetback', 'kike', 'gook',
     'chink', 'raghead', 'coon', 'porchmonkey', 'beaner', 'towelhead',
 
-    // Сексуальные термины
-    'секс', 'порно', 'голый', 'нагота', 'мастурбация', 'проститутка',
-    'изнасилование', 'педофил', 'вуайерист', 'инцест', 'зоофил', 'садо',
-    'мазо', 'оргия', 'эрекция', 'сперма', 'вагина', 'член', 'соси', 'трахни',
-    'ебать', 'кончил', 'оргазм',
-
     // Термины насилия
-    'убийца', 'убивать', 'резать', 'стрелять', 'террорист', 'бомба',
-    'самоубийство', 'пытка', 'избиение', 'кровь', 'расчленить', 'захват',
-    'заложник', 'маньяк', 'покушение',
+    'killer', 'kill', 'slash', 'slasher', 'shoot', 'shooter', 'terrorist', 'bomb',
+    'kys', 'kicker', 'blood', 'capture', 'assassin', 'suicide',
 
     // Современный сленг и интернет-термины
     'simp', 'incel', 'thot', 'karen', 'neckbeard', 'cuck', 'soyboy', 'cuntface',
@@ -54,34 +42,15 @@ export class ValidationService {
 
     // Альтернативные написания и символы
     'f4ck', 'b1tch', 'n1gg3r', '5uk4', 'bl9d', 'xyй', 'h\\/\\i', 'p!zda',
-    'bl**t', 'mud@k', 'd0lbaeb', 'pi3or', 'govn0', '3жopa', 'cyka', 'blyat',
-    '6лядь', 'xуесос', 'ъуъ', 'и$пать', 'ёб@ный', 'п@дон', 'чм0', 'г0вно',
-
-    // Запрещенные исторические термины
-    'фашист', 'наци', 'свастика', '1488', '88', '14words', 'aryan', 'supremacy',
-    'white-power', 'kkk', 'nsdap', 'reich', 'holocaust', 'nazi', 'gas-chamber',
+    'bl**t', 'mud@k', 'd0lbaeb', 'pi3or', 'govn0', 'cyka', 'blyat',
 
     // Гендерные оскорбления
-    'трансгендер', 'гомик', 'лесбиянка', 'педик', 'гей', 'феменистка', 'содомит',
-    'гермафродит', 'андрогин', 'квир', 'nonbinary', 'tranny', 'shemale', 'faggot',
-    'dyke', 'homo',
-
-    // Религиозные оскорбления
-    'еретик', 'сатана', 'дьявол', 'ислам', 'жид', 'мусульманин', 'иудей',
-    'язычник', 'безбожник', 'коран', 'библия', 'аллах', 'богомол', 'секта',
-
-    // Дискриминация по возрасту
-    'старый', 'дряхлый', 'старуха', 'младенец', 'подросток', 'пенсионер',
-    'динозавр', 'малолетка', 'недоросль',
-
-    // Дискриминация по здоровью
-    'инвалид', 'даун', 'аутист', 'дебил', 'калека', 'псих', 'шизофреник',
-    'олигофрен', 'эпилептик', 'алкаш', 'наркоман', 'идиот',
+    'tranny', 'shemale', 'faggot', 'dyke',
 
     // Дополнительные фильтры
     'scat', 'coprophilia', 'necrophilia', 'zoophilia', 'pedo', 'lolita',
     'underage', 'childporn', 'cp', 'loli', 'shota', 'drugs', 'meth', 'heroin',
-    'cocaine', 'weed', 'lsd', 'overdose', 'suicide', 'kill'
+    'cocaine', 'weed', 'lsd', 'overdose'
   ];
 
   static loginValidator(control: FormControl): ValidationErrors | null {
@@ -143,47 +112,7 @@ export class ValidationService {
 
   // Проверка на запрещенные слова
   static containsForbiddenWords(input: string): boolean {
-    const normalizedInput = input.toLowerCase();
-
-    // Проверка на наличие слова в списке запрещённых слов на латинице
-    if (ValidationService.forbiddenWords.some(word => word.toLowerCase() === normalizedInput)) {
-      return true;
-    }
-
-    // Транслитерация введённого слова с латиницы в кириллицу
-    const transliteratedInput = ValidationService.transliterateToCyrillic(normalizedInput);
-
-    // Проверка на наличие транслитерированного слова в списке запрещённых слов на кириллице
-    return ValidationService.forbiddenWords.some(word => {
-      return word.toLowerCase() === transliteratedInput;
-    });
-  }
-
-  // Функция транслитерации латиницы в кириллицу
-  // Функция транслитерации латиницы в кириллицу
-  static transliterateToCyrillic(input: string): string {
-    const translitMap: { [key: string]: string } = {
-      'ch': 'ч',
-      'sh': 'ш',
-      'zh': 'ж',
-      'yu': 'ю',
-      'ya': 'я',
-      'ts': 'ц',
-      'a': 'а', 'b': 'б', 'c': 'ц', 'd': 'д', 'e': 'е', 'f': 'ф',
-      'g': 'г', 'h': 'х', 'i': 'и', 'j': 'й', 'k': 'к', 'l': 'л',
-      'm': 'м', 'n': 'н', 'o': 'о', 'p': 'п', 'q': 'к', 'r': 'р',
-      's': 'с', 't': 'т', 'u': 'у', 'v': 'в', 'w': 'в', 'x': 'кс',
-      'y': 'и', 'z': 'з'
-    };
-
-    // Преобразуем вход в стрим, чтобы первым делом заменить пары символов, потом одинарные
-    let result = input;
-
-    // Проходим по каждой паре символов
-    for (const [key, value] of Object.entries(translitMap))
-      result = result.replace(new RegExp(key, 'gi'), value); // 'gi' - для нечувствительного к регистру
-
-    return result;
+    return ValidationService.forbiddenWords.some(word => input.toLowerCase().includes(word.toLowerCase()));
   }
 
   static uniqueEmailValidator(userService: UsersService): AsyncValidatorFn {
