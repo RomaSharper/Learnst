@@ -1,4 +1,4 @@
-import {Component, inject, signal} from '@angular/core';
+import {Component, computed, inject, signal} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
@@ -41,12 +41,6 @@ import {LogService} from '../../services/log.service';
   ]
 })
 export class LoginComponent {
-  loading = signal(false);
-  hidePassword = signal(true);
-  form = new FormGroup({
-    login: new FormControl('', [Validators.required, ValidationService.loginValidator]),
-    password: new FormControl('', [Validators.required])
-  });
   private code = '';
   private router = inject(Router);
   private dialog = inject(MatDialog);
@@ -55,6 +49,15 @@ export class LoginComponent {
   private alertService = inject(AlertService);
   private emailService = inject(EmailService);
   private usersService = inject(UsersService);
+
+  loading = signal(false);
+  hidePassword = signal(true);
+  accounts = this.authService.accounts;
+  manyAccounts = computed(() => this.accounts()!.length >= 5);
+  form = new FormGroup({
+    login: new FormControl('', [Validators.required, ValidationService.loginValidator]),
+    password: new FormControl('', [Validators.required])
+  });
 
   onSubmit() {
     if (this.form.invalid) {

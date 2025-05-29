@@ -1,25 +1,25 @@
-import {AfterViewInit, Component, HostListener, inject, OnDestroy, OnInit, signal} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import {AlertService} from '../../services/alert.service';
-import {Message} from '../../models/Message';
-import {NikoMood} from '../../models/NikoMood';
-import {MediumScreenSupport} from '../../helpers/MediumScreenSupport';
-import {Router} from '@angular/router';
-import {ChatContext} from '../../models/ChatContext';
-import {CryptoService} from '../../services/crypto.service';
-import {environment} from '../../environments/environment';
-import {NoDownloadingDirective} from '../../directives/no-downloading.directive';
-import {ThemeService} from '../../services/theme.service';
-import {AudioService} from '../../services/audio.service';
-import {AuthService} from '../../services/auth.service';
-import {LogService} from '../../services/log.service';
+import { AfterViewInit, Component, ElementRef, HostListener, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { AlertService } from '../../services/alert.service';
+import { Message } from '../../models/Message';
+import { NikoMood } from '../../models/NikoMood';
+import { MediumScreenSupport } from '../../helpers/MediumScreenSupport';
+import { Router } from '@angular/router';
+import { ChatContext } from '../../models/ChatContext';
+import { CryptoService } from '../../services/crypto.service';
+import { environment } from '../../environments/environment';
+import { NoDownloadingDirective } from '../../directives/no-downloading.directive';
+import { ThemeService } from '../../services/theme.service';
+import { AudioService } from '../../services/audio.service';
+import { AuthService } from '../../services/auth.service';
+import { LogService } from '../../services/log.service';
 import { Arrays } from '../../helpers/Arrays';
-import {chatStyles, tableStyles} from '../../constants/styles';
+import { chatStyles, tableStyles } from '../../constants/styles';
 
 @Component({
   selector: 'app-mascot',
@@ -42,6 +42,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   isChatOpen = signal(false);
   scaleTrigger = signal(false);
   bounceTrigger = signal(false);
+  @ViewChild('entry', { static: false }) entry!: ElementRef<HTMLInputElement>;
 
   private router = inject(Router);
   private logService = inject(LogService);
@@ -698,19 +699,19 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   async sendMessage() {
     if (!this.userInput().trim() || this.isTyping()) return;
     const input = this.userInput().trim();
-    const newMessage: Message = {text: input, isBot: false};
+    const newMessage: Message = { text: input, isBot: false };
     this.addMessageToContext(newMessage);
 
     // Отсылка на клуб ь.
     if (input.toLowerCase() === 'ь.') {
-      this.typeMessage({text: 'ь.', mood: 'april_fools'});
+      this.typeMessage({ text: 'ь.', mood: 'april_fools' });
       this.userInput.set('');
       return;
     }
 
     // Отсылка на гойду
     if (input.toLowerCase().includes('гойда')) {
-      this.typeMessage({text: 'ГОЙДА!', mood: 'amazed'});
+      this.typeMessage({ text: 'ГОЙДА!', mood: 'amazed' });
       this.userInput.set('');
       return;
     }
@@ -740,6 +741,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     this.updateContext(input, category);
     this.updateMood(category);
     this.saveToLocalStorage();
+    this.entry.nativeElement.focus();
   }
 
   toggleChat() {
@@ -787,10 +789,10 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
             return;
 
           case 'echo':
-            const {expression, vars, hasQuotes} = this.parseEchoArgs(input.slice(5).trim());
+            const { expression, vars, hasQuotes, isExpression } = this.parseEchoArgs(input.slice(5).trim());
 
-            if (!hasQuotes)
-              throw new Error('Фраза должна быть заключена в кавычки');
+            if (!hasQuotes && !isExpression)
+              throw new Error('Фраза должна быть заключена в кавычки или скобки %(...)%');
 
             // Проверка переменных
             const missingVars = vars.filter(v => {
@@ -801,13 +803,17 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
             if (missingVars.length > 0)
               throw new Error(`Не найдены переменные: ${missingVars.join(', ')}`);
 
-            let result = expression;
+            let result = isExpression
+              ? this.evaluateExpression(expression, vars)
+              : expression;
+
+            // Заменяем оставшиеся переменные
             for (const v of vars) {
               const value = this.getVariableValue(v)?.toString() || '';
               result = result.replace(new RegExp(`%${v}%`, 'gi'), value);
             }
 
-            this.typeMessage({text: result, mood: 'speak'});
+            this.typeMessage({ text: result, mood: 'speak' });
             return;
 
           case 'delete':
@@ -901,7 +907,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
                   } else {
                     this.audioService.toggleMusic(isOn);
                     let text = `🎵 Фоновая музыка ${isOn ? 'включена' : 'выключена'}`;
-                    this.typeMessage({text, mood: isOn ? 'happy' : 'sad'});
+                    this.typeMessage({ text, mood: isOn ? 'happy' : 'sad' });
                   }
                   break;
 
@@ -916,7 +922,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
                   this.audioService.setVolume(volume);
                   let text = `🔊 Громкость установлена на ${volume}`;
-                  this.typeMessage({text, mood: 'normal'});
+                  this.typeMessage({ text, mood: 'normal' });
                   break;
 
                 case 'page':
@@ -943,7 +949,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
                   } else if (param)
                     throw new Error(`Страница ${pageName} не требует указания параметра`);
 
-                  this.typeMessage({mood: 'happy', text: displayText});
+                  this.typeMessage({ mood: 'happy', text: displayText });
                   await this.router.navigate([navigationPath]);
                   this.scrollToBottom();
                   return;
@@ -970,7 +976,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
 
               this.context.userVariables[variable] = parsedValue;
               let text = `✅ Переменная %${variable}% установлена`;
-              this.typeMessage({text, mood: 'happy'});
+              this.typeMessage({ text, mood: 'happy' });
             } catch (e) {
               throw new Error(`Ошибка установки переменной: ${(e as Error).message}`);
             }
@@ -1020,7 +1026,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
   private saveToLocalStorage() {
     const dataToSave = {
       ...this.context,
-      messages: this.context.messages.map(({text, isBot}) => ({text, isBot}))
+      messages: this.context.messages.map(({ text, isBot }) => ({ text, isBot }))
     };
 
     const encryptedData = CryptoService.encryptData(dataToSave, environment.encryptionKey);
@@ -1068,7 +1074,7 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     </html>
     `;
 
-    const blob = new Blob([html], {type: 'text/html'});
+    const blob = new Blob([html], { type: 'text/html' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -1079,31 +1085,92 @@ export class MascotComponent extends MediumScreenSupport implements OnDestroy, O
     window.URL.revokeObjectURL(url);
   }
 
-  private parseEchoArgs(input: string): { expression: string, vars: string[], hasQuotes: boolean } {
-    let expression = '';
+  private parseEchoArgs(input: string): { expression: string, vars: string[], hasQuotes: boolean, isExpression: boolean } {
+    input = input.trim();
     const vars = [];
+    let isExpression = false;
+    let expression = input;
+    let hasQuotes = false;
 
-    // Проверяем наличие кавычек
-    const trimmed = input.trim();
-    const isQuoted = /^(["'`])(.*)\1$/.exec(trimmed);
-
-    if (isQuoted) {
-      expression = isQuoted[2];
-      input = expression;
+    // Проверяем наличие скобок для выражений %(...)%
+    const exprMatch = /^%\((.*)\)%$/.exec(input);
+    if (exprMatch) {
+      isExpression = true;
+      expression = exprMatch[1];
+    }
+    // Проверяем наличие кавычек только если это не выражение
+    else {
+      const quoteMatch = /^(["'`])(.*)\1$/.exec(input);
+      if (quoteMatch) {
+        expression = quoteMatch[2];
+        hasQuotes = true;
+      }
     }
 
-    // Парсим переменные и выражения
+    // Парсим переменные
     const varRegex = /%([^%]+)%/g;
     let match;
-
-    while ((match = varRegex.exec(input)) !== null)
+    while ((match = varRegex.exec(expression)) !== null) {
       vars.push(match[1]);
+    }
 
     return {
-      expression: input,
-      hasQuotes: !!isQuoted,
-      vars: [...new Set(vars)]
+      expression,
+      vars: [...new Set(vars)],
+      hasQuotes,
+      isExpression
     };
+  }
+
+  private evaluateExpression(expr: string, vars: string[]): string {
+    try {
+      // Заменяем переменные на их значения
+      let evaluatedExpr = expr;
+      for (const v of vars) {
+        const value = this.getVariableValue(v)?.toString() || '';
+        evaluatedExpr = evaluatedExpr.replace(new RegExp(`%${v}%`, 'gi'), value);
+      }
+
+      // Проверяем на конкатенацию строк
+      if (evaluatedExpr.includes('+')) {
+        const parts = evaluatedExpr.split('+').map(part => part.trim());
+
+        const hasString = parts.some(part =>
+          (part.startsWith("'") && part.endsWith("'")) ||
+          (part.startsWith('"') && part.endsWith('"'))
+        );
+
+        if (hasString) {
+          return parts.map(part => {
+            if ((part.startsWith("'") && part.endsWith("'")) ||
+              (part.startsWith('"') && part.endsWith('"'))) {
+              return part.slice(1, -1);
+            }
+            if (!isNaN(Number(part))) {
+              return part;
+            }
+            throw new Error(`Нельзя конкатенировать строку с ${part}`);
+          }).join('');
+        }
+      }
+
+      // Проверяем на математические операции
+      if (/[\+\-\*\/]/.test(evaluatedExpr)) {
+        // Удаляем все пробелы для математического выражения
+        const mathExpr = evaluatedExpr.replace(/\s+/g, '');
+        if (/^[\d\+\-\*\/\.]+$/.test(mathExpr)) {
+          const result = eval(mathExpr);
+          if (isNaN(result)) throw new Error('Некорректное математическое выражение');
+          return result.toString();
+        } else {
+          throw new Error('Математические операции возможны только с числами');
+        }
+      }
+
+      return evaluatedExpr;
+    } catch (e) {
+      throw new Error(`Ошибка вычисления выражения: ${(e as Error).message}`);
+    }
   }
 
   private scrollToBottom(): void {

@@ -198,6 +198,11 @@ img {
   }
 }
 
+.closed {
+  pointer-events: none;
+  filter: blur(2px) brightness(95%);
+}
+
 .error {
   color: var(--mat-sys-on-error) !important;
 
@@ -671,8 +676,8 @@ mat-date-range-input {
 }
 
 .activity-more-button {
-  top: 20px;
-  right: 12px;
+  top: 16px;
+  right: 8px;
   pointer-events: auto;
   position: absolute !important;
 }

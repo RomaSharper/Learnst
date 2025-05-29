@@ -16,130 +16,126 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Пароль</mat-label>
         <input
-          [type]="hidePassword() ? 'password' : 'text'"
-          autocomplete="current-password"
-          formControlName="password"
-          id="password"
           matInput
+          id="password"
           maxlength="50"
+          formControlName="password"
           placeholder="Введите пароль"
-        >
+          autocomplete="current-password"
+          [type]="hidePassword() ? 'password' : 'text'">
+
         <button
-          (click)="hidePassword.set(!hidePassword())"
-          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
-          [matTooltip]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
-          class="input-button"
-          mat-icon-button
           matSuffix
           type="button"
-        >
+          mat-icon-button
+          class="input-button"
+          (click)="hidePassword.set(!hidePassword())"
+          [matTooltip]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
+          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'">
           <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
         @if (form.get('password')?.invalid && form.get('password')?.touched) {
           <mat-error>Пожалуйста, введите пароль.</mat-error>
         }
       </mat-form-field>
-      <button [disabled]="form.invalid || loading()" class="full-width" color="primary" mat-flat-button type="submit">
+      <button [disabled]="form.invalid || manyAccounts() || loading()" class="full-width" color="primary" mat-flat-button type="submit">
         @if (loading()) {
           <mat-spinner diameter="20"></mat-spinner>
+        } @else if (manyAccounts()) {
+          Слишком много аккаунтов
         } @else {
           Войти
         }
       </button>
     </form>
 
-    <div class="separator">
-      <span class="or-text">Или войти с</span>
-    </div>
+    @if (!manyAccounts()) {
+      <div class="separator">
+        <span class="or-text">Или войти с</span>
+      </div>
 
-    <!-- Социальные сети -->
-    <div class="social-grid">
-      <a
-        class="social-btn google-btn"
-        href="https://api-learnst.runasp.net/oauth2/google/init"
-        mat-raised-button
-        matTooltip="Войти с Google"
-        matTooltipPosition="below"
-      >
-        <img alt="Google" class="social-icon"
-             noDownloading src="assets/icons/socials/google.png">
-      </a>
+      <!-- Социальные сети -->
+      <div class="social-grid" [class.disabled]="manyAccounts()">
+        <a
+          mat-raised-button
+          matTooltipPosition="below"
+          matTooltip="Войти с Google"
+          class="social-btn google-btn"
+          href="https://api-learnst.runasp.net/oauth2/google/init">
+          <img alt="Google" class="social-icon"
+              noDownloading src="assets/icons/socials/google.png">
+        </a>
 
-      <a
-        class="social-btn yandex-btn"
-        href="https://api-learnst.runasp.net/oauth2/yandex/init"
-        mat-raised-button
-        matTooltip="Войти с Яндекс"
-        matTooltipPosition="below"
-      >
-        <img alt="Yandex" class="social-icon"
-             noDownloading src="assets/icons/socials/yandex.png">
-      </a>
+        <a
+          mat-raised-button
+          matTooltipPosition="below"
+          matTooltip="Войти с Яндекс"
+          class="social-btn yandex-btn"
+          href="https://api-learnst.runasp.net/oauth2/yandex/init">
+          <img alt="Yandex" class="social-icon"
+              noDownloading src="assets/icons/socials/yandex.png">
+        </a>
 
-      <a
-        class="social-btn vk-btn"
-        href="https://api-learnst.runasp.net/oauth2/vk/init"
-        mat-raised-button
-        matTooltip="Войти через ВКонтакте"
-        matTooltipPosition="below"
-      >
-        <img alt="VK" class="social-icon"
-             noDownloading src="assets/icons/socials/vk.png">
-      </a>
+        <a
+          mat-raised-button
+          class="social-btn vk-btn"
+          matTooltipPosition="below"
+          matTooltip="Войти через ВКонтакте"
+          href="https://api-learnst.runasp.net/oauth2/vk/init">
+          <img alt="VK" class="social-icon"
+              noDownloading src="assets/icons/socials/vk.png">
+        </a>
 
-      <a
-        class="social-btn github-btn"
-        href="https://api-learnst.runasp.net/oauth2/github/init"
-        mat-raised-button
-        matTooltip="Войти через Github"
-        matTooltipPosition="below"
-      >
-        <img alt="GitHub" class="social-icon"
-             noDownloading src="assets/icons/socials/github.png">
-      </a>
+        <a
+          mat-raised-button
+          matTooltipPosition="below"
+          class="social-btn github-btn"
+          matTooltip="Войти через Github"
+          href="https://api-learnst.runasp.net/oauth2/github/init">
+          <img alt="GitHub" class="social-icon"
+              noDownloading src="assets/icons/socials/github.png">
+        </a>
 
-      <a
-        class="social-btn discord-btn"
-        href="https://api-learnst.runasp.net/oauth2/discord/init"
-        mat-raised-button
-        matTooltip="Войти через Discord"
-        matTooltipPosition="below"
-      >
-        <img alt="Discord" class="social-icon"
-             noDownloading src="assets/icons/socials/discord.png">
-      </a>
+        <a
+          mat-raised-button
+          matTooltipPosition="below"
+          class="social-btn discord-btn"
+          matTooltip="Войти через Discord"
+          href="https://api-learnst.runasp.net/oauth2/discord/init">
+          <img alt="Discord" class="social-icon"
+              noDownloading src="assets/icons/socials/discord.png">
+        </a>
 
-      <a
-        class="social-btn steam-btn"
-        href="https://api-learnst.runasp.net/oauth2/steam/init"
-        mat-raised-button
-        matTooltip="Войти через Steam"
-        matTooltipPosition="below"
-      >
-        <img alt="Steam" class="social-icon"
-             noDownloading src="assets/icons/socials/steam.png">
-      </a>
+        <a
+          mat-raised-button
+          matTooltipPosition="below"
+          class="social-btn steam-btn"
+          matTooltip="Войти через Steam"
+          href="https://api-learnst.runasp.net/oauth2/steam/init">
+          <img alt="Steam" class="social-icon"
+              noDownloading src="assets/icons/socials/steam.png">
+        </a>
 
-      <a
-        class="social-btn twitch-btn"
-        href="https://api-learnst.runasp.net/oauth2/twitch/init"
-        mat-raised-button
-        matTooltip="Войти через Twitch"
-        matTooltipPosition="below"
-      >
-        <img alt="Twitch" class="social-icon"
-             noDownloading src="assets/icons/socials/twitch.png">
-      </a>
-    </div>
+        <a
+          mat-raised-button
+          matTooltipPosition="below"
+          class="social-btn twitch-btn"
+          matTooltip="Войти через Twitch"
+          href="https://api-learnst.runasp.net/oauth2/twitch/init">
+          <img alt="Twitch" class="social-icon"
+              noDownloading src="assets/icons/socials/twitch.png">
+        </a>
+      </div>
+    }
 
-    <app-accounts-manager/>
+    <app-accounts-manager />
 
   </mat-card-content>
   <mat-card-actions class="center-control form-actions">
-    <button mat-raised-button routerLink="/register" type="button">
+    <button mat-button routerLink="/register" type="button">
       Создать аккаунт
     </button>
-    <button (click)="openResetPasswordDialog()" mat-button type="button"> <!-- Добавлено -->
+    <button mat-button (click)="openResetPasswordDialog()" type="button">
       Восстановить пароль
     </button>
     <button mat-button routerLink="/manuals/privacypolicy" type="button">

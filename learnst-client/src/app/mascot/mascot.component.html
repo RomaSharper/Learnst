@@ -90,12 +90,14 @@
       <div class="input-box">
         <div class="input-wrapper">
           <input
+            #entry
             class="material-input"
             [disabled]="isTyping()"
             [(ngModel)]="userInput"
             (keyup.enter)="sendMessage()"
             placeholder="Напишите сообщение...">
           <button
+            type="button"
             class="send-button"
             (click)="sendMessage()"
             [disabled]="isTyping()">

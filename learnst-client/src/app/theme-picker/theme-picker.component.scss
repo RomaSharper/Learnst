@@ -11,17 +11,11 @@
       width: 60px;
       height: 60px;
       border-radius: 50%;
-      cursor: var(--cursor-pointer);
+      cursor: var(--cursor-pointer) !important;
       transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 
       &.selected {
         animation: highlight 0.5s ease-in-out;
-      }
-
-      //noinspection CssUnusedSymbol
-      &.closed {
-        pointer-events: none;
-        filter: blur(2px) brightness(95%);
       }
 
       @keyframes highlight {

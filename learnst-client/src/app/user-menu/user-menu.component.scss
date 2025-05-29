@@ -111,11 +111,26 @@
   flex-direction: row;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  &.current {
+  &.current, &:hover {
+    -webkit-backdrop-filter: brightness(120%);
     backdrop-filter: brightness(120%);
+
+    mat-icon {
+      color: var(--mat-sys-primary) !important;
+    }
+
+    .account-username {
+      font-weight: 500 !important;
+      color: var(--mat-sys-primary) !important;
+    }
 
     .account-avatar {
       border: 2px solid var(--mat-sys-primary);
+      background: var(--mat-sys-surface-container-highest);
+    }
+    
+    .account-actions mat-icon {
+      color: var(--mat-sys-primary) !important;
     }
   }
 }
@@ -149,26 +164,5 @@
   mat-icon {
     transition: color 0.2s ease;
     color: var(--mat-sys-on-surface-variant);
-  }
-}
-
-//noinspection CssUnusedSymbol
-.account-btn {
-  .current {
-    .account-username {
-      font-weight: 500 !important;
-      color: var(--mat-sys-primary) !important;
-    }
-    
-    mat-icon {
-      color: var(--mat-sys-primary) !important;
-    }
-  }
-
-  &:hover {
-    background: var(--mat-sys-hover-state-layer-opacity) !important;
-    .account-actions mat-icon {
-      color: var(--mat-sys-primary) !important;
-    }
   }
 }
