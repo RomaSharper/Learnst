@@ -1,3 +1,5 @@
+@use "mixins.scss" as mix;
+
 html {
   overflow: hidden;
   scroll-behavior: smooth;
@@ -30,10 +32,10 @@ p, h1, h2, h3, h4, h5, h6 {
 a {
   text-decoration: none;
   font-size: 18px !important;
-}
 
-a, button {
-  font-weight: bold !important;
+  &, button {
+    font-weight: bold !important;
+  }
 }
 
 input::-ms-clear,
@@ -42,12 +44,8 @@ input::-ms-reveal {
 }
 
 img {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  
+  @include mix.user-select(none);
+
   pointer-events: none;
   transform: translateZ(30px);
   vertical-align: middle !important;

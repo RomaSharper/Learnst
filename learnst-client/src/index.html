@@ -56,23 +56,13 @@
       console.log(`[${new Date().toISOString()}] Cloudflare Turnstile загружена`);
     }
 
-    const stopPrintKey = () => {
-      var input = document.createElement("input");
-      input.setAttribute("value", ".");
-      input.setAttribute("width", "0");
-      input.style.height = "0px";
-      input.style.width = "0px";
-      input.style.border = "0px";
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand("copy");
-      input.remove(input);
-      console.log(`[${new Date().toISOString()}] Предотвращено копирование`);
-    }
+    const trackPrintScreen = () => navigator.clipboard.writeText('Learnst').then(
+      () => console.log(`[${new Date().toISOString()}] Произведено копирование`)
+    );
 
     window.addEventListener("keyup", e => {
-      if (e.keyCode !== 44)
-        stopPrintKey();
+      if (e.keyCode === 44)
+        trackPrintScreen();
     });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/player.style/sutro/+esm" type="module"></script>

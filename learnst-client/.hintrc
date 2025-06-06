@@ -38,7 +38,13 @@
         "frame-title": "off"
       }
     ],
-    "detect-css-reflows/composite": "off"
+    "detect-css-reflows/composite": "off",
+    "axe/parsing": [
+      "default",
+      {
+        "duplicate-id-active": "off"
+      }
+    ]
   },
   "browserslist": [
     "defaults",

@@ -1,3 +1,5 @@
+@use "mixins.scss" as mix;
+
 .scale {
   &-1-5 {
     transform: scale(1.5);
@@ -122,38 +124,31 @@
   right: 8px;
 }
 
+.more-button, .upload-button, .activity-more-button {
+  position: absolute !important;
+}
+
 .more-button {
   top: 4px;
   right: 12px;
-  pointer-events: auto;
-  position: absolute !important;
 }
 
 .activity-more-button {
   top: 16px;
   right: 8px;
-  pointer-events: auto;
-  position: absolute !important;
 }
 
 .upload-button {
   top: 8px;
   right: -8px;
-  position: absolute !important;
 }
 
 .select {
   &-all {
-    -webkit-user-select: all;
-    -moz-user-select: all;
-    -ms-user-select: all;
-    user-select: all;
+    @include mix.user-select(all);
   }
 
   &-none {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    @include mix.user-select(none);
   }
 }
