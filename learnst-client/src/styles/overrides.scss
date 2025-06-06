@@ -1,0 +1,120 @@
+//noinspection CssUnusedSymbol
+.cdk-overlay-container {
+  z-index: 1000;
+  position: fixed;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+
+  .cdk-global-overlay-wrapper {
+    align-items: safe center;
+    justify-content: safe center;
+  }
+}
+
+mat-paginator {
+  margin-top: 20px;
+  align-items: flex-start;
+  display: flex !important;
+
+  @media (max-width: 767px) {
+    margin: 12px;
+  }
+}
+
+.mat-mdc-paginator-container {
+  justify-content: flex-start !important;
+}
+
+.mat-mdc-paginator-range-label {
+  margin: 8px;
+}
+
+mat-list-item {
+  height: fit-content !important;
+}
+
+mat-progress-spinner {
+  margin: 0 8px;
+}
+
+//noinspection CssUnusedSymbol
+.cdk-global-scrollblock {
+  top: 0 !important;
+}
+
+//noinspection CssUnusedSymbol
+.mat-mdc-menu-panel {
+  min-width: 200px !important;
+  border-radius: 20px !important;
+  box-shadow: var(--mat-sys-level3);
+}
+
+//noinspection CssUnusedSymbol
+.mat-mdc-menu-content {
+  padding: 0 !important;
+  background: var(--mat-sys-secondary-container);
+}
+
+//noinspection CssUnusedSymbol
+.mat-mdc-card {
+  box-shadow: var(--mat-sys-level2);
+  background: var(--mat-sys-secondary);
+}
+
+mat-tab-body {
+  height: 100%;
+  min-height: 100svh;
+}
+
+//noinspection CssUnusedSymbol
+.mat-tree {
+  background: var(--mat-sys-secondary-container) !important;
+}
+
+//noinspection CssUnusedSymbol
+.mat-mdc-standard-chip {
+  //noinspection CssUnusedSymbol
+  .mdc-evolution-chip__cell--primary,
+  .mdc-evolution-chip__action--primary,
+  .mat-mdc-chip-action-label {
+    overflow: hidden !important;
+  }
+}
+
+mat-chip-row {
+  max-width: 120px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: var(--cursor-pointer) !important;
+}
+
+//noinspection CssUnusedSymbol
+.mat-step-header .mat-step-icon {
+  background-color: transparent !important;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 4px * 4;
+}
+
+mat-date-range-input {
+  width: 100%;
+}
+
+//noinspection CssUnusedSymbol
+.mat-calendar-body-cell {
+  border-radius: 20px;
+}
+
+//noinspection CssUnusedSymbol
+.mat-mdc-dialog-content {
+  padding: var(--mat-dialog-with-actions-content-padding, 20px 24px 0) !important;
+}
+
+.mat-internal-form-field label {
+  width: 100%;
+}

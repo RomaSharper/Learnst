@@ -1,0 +1,7 @@
+.error {
+  color: var(--mat-sys-on-error) !important;
+
+  &.with-background {
+    background-color: var(--mat-sys-error) !important;
+  }
+}

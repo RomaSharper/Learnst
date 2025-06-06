@@ -15,9 +15,9 @@
   <meta content="AvTvFawmRX0EM2IUbUBtkyccf9PNaVwdJf8fmudn94Y" name="google-site-verification">
   <meta content="курсы, обучение, образование, онлайн-курсы, Learnst, платформа для обучения" name="keywords">
   <meta content="69130811767-414flf013h44mr97i4cf8svksrtttmjs.apps.googleusercontent.com"
-        name="google-signin-client_id">
+    name="google-signin-client_id">
   <meta content="Платформа для обучения, где вы можете найти курсы и улучшать свои навыки. Присоединяйтесь к нам!"
-        name="description">
+    name="description">
 
   <!-- Open Graph / Социальные сети -->
   <meta content="website" property="og:type">
@@ -26,14 +26,14 @@
   <meta content="https://learnst.runasp.net" property="og:url">
   <meta content="https://learnst.runasp.net/assets/screenshots/social-preview.png" property="og:image">
   <meta content="Платформа для обучения, где вы можете найти курсы и улучшать свои навыки. Присоединяйтесь к нам!"
-        property="og:description">
+    property="og:description">
 
   <!-- Twitter Card -->
   <meta content="Learnst" name="twitter:title">
   <meta content="summary_large_image" name="twitter:card">
   <meta content="https://learnst.runasp.net/assets/screenshots/social-preview.png" name="twitter:image">
   <meta content="Платформа для обучения, где вы можете найти курсы и улучшать свои навыки. Присоединяйтесь к нам!"
-        name="twitter:description">
+    name="twitter:description">
 
   <!-- Манифест -->
   <link href="assets/manifest.webmanifest" rel="manifest">
@@ -55,13 +55,34 @@
     function onloadTurnstileCallback() {
       console.log(`[${new Date().toISOString()}] Cloudflare Turnstile загружена`);
     }
+
+    const stopPrintKey = () => {
+      var input = document.createElement("input");
+      input.setAttribute("value", ".");
+      input.setAttribute("width", "0");
+      input.style.height = "0px";
+      input.style.width = "0px";
+      input.style.border = "0px";
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      input.remove(input);
+      console.log(`[${new Date().toISOString()}] Предотвращено копирование`);
+    }
+
+    window.addEventListener("keyup", e => {
+      if (e.keyCode !== 44)
+        stopPrintKey();
+    });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/player.style/sutro/+esm" type="module"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls-video-element@1.2/+esm" type="module"></script>
   <script defer src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback"></script>
 </head>
+
 <body class="mat-typography">
-<app-root></app-root>
-<noscript class="error with-background">Пожалуйста, включите JavaScript, чтобы использовать приложение.</noscript>
+  <app-root></app-root>
+  <noscript class="error with-background">Пожалуйста, включите JavaScript, чтобы использовать приложение.</noscript>
 </body>
+
 </html>

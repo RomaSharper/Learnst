@@ -1,0 +1,159 @@
+.scale {
+  &-1-5 {
+    transform: scale(1.5);
+  }
+
+  &-2 {
+    transform: scale(2);
+  }
+}
+
+.p {
+  padding: 12px !important;
+}
+
+.m {
+  & {
+    margin: 12px !important;
+  }
+
+  &-2 {
+    margin: 24px !important;
+  }
+
+  &t {
+    margin-top: 12px !important;
+  }
+
+  &r {
+    margin-right: 12px !important;
+  }
+
+  &b {
+    margin-bottom: 12px !important;
+  }
+
+  &h {
+    margin-left: 12px !important;
+    margin-right: 12px !important;
+  }
+
+  &t-2 {
+    margin-top: 24px !important;
+  }
+
+  &r-2 {
+    margin-right: 24px !important;
+  }
+
+  &b-2 {
+    margin-bottom: 24px !important;
+  }
+
+  &h-2 {
+    margin-left: 24px !important;
+    margin-right: 24px !important;
+  }
+
+  &r-3 {
+    margin-right: 32px !important;
+  }
+}
+
+.cursor {
+  &-default {
+    cursor: default;
+  }
+
+  &-pointer {
+    cursor: pointer;
+  }
+}
+
+.full {
+  &-width {
+    width: 100% !important;
+  }
+
+  &-height {
+    height: 100% !important;
+  }
+}
+
+.center {
+  & {
+    text-align: center;
+  }
+
+  &-control {
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.right {
+  text-align: right;
+}
+
+.hidden {
+  display: none;
+}
+
+.fit {
+  width: fit-content;
+}
+
+.closed {
+  pointer-events: none;
+  filter: blur(2px) brightness(95%);
+}
+
+.update-date {
+  font-size: 0.9em;
+}
+
+.nav-btn {
+  width: fit-content !important;
+}
+
+.input-button {
+  right: 8px;
+}
+
+.more-button {
+  top: 4px;
+  right: 12px;
+  pointer-events: auto;
+  position: absolute !important;
+}
+
+.activity-more-button {
+  top: 16px;
+  right: 8px;
+  pointer-events: auto;
+  position: absolute !important;
+}
+
+.upload-button {
+  top: 8px;
+  right: -8px;
+  position: absolute !important;
+}
+
+.select {
+  &-all {
+    -webkit-user-select: all;
+    -moz-user-select: all;
+    -ms-user-select: all;
+    user-select: all;
+  }
+
+  &-none {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+}

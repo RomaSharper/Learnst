@@ -1,0 +1,19 @@
+.separator {
+  display: flex;
+  margin: 16px 0;
+  position: relative;
+  align-items: center;
+
+  &::before,
+  &::after {
+    flex: 1;
+    height: 1px;
+    content: "";
+    background-color: var(--mdc-filled-button-container-color, var(--mat-sys-primary));
+  }
+
+  .or-text {
+    padding: 0 8px;
+    color: var(--text-color-secondary);
+  }
+}

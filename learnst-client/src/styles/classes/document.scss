@@ -1,0 +1,26 @@
+.document {
+  margin-bottom: 40px;
+
+  h2 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+  }
+  
+  ul {
+    padding: 0;
+    list-style-type: none;
+  }
+  
+  li {
+    margin-bottom: 5px;
+  }
+  
+  a {
+    font-size: 1.1em;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

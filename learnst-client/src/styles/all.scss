@@ -1,0 +1,31 @@
+* {
+  word-break: break-word;
+  box-sizing: border-box;
+  transition-behavior: allow-discrete !important;
+  font-family: "MyFont", "Motiva Sans", "Roboto", system-ui, "Helvetica Neue", "Consolas", sans-serif;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity .2s ease-in,
+    scale .2s ease-in,
+    display .2s ease-in;
+  }
+
+  @starting-style:not(.loading-screen) {
+    opacity: 0;
+    scale: 1.05;
+  }
+
+  //noinspection CssUnusedSymbol
+  &[hidden]:not(.loading-screen) {
+    scale: .95;
+    opacity: 0;
+    display: none !important;
+    transition-duration: .4s;
+    transition-timing-function: ease-out;
+  }
+}
+
+::selection {
+  color: var(--mat-sys-on-primary-container);
+  background-color: var(--mat-sys-primary-container);
+}

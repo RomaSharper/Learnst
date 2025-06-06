@@ -163,16 +163,6 @@ input[type="number"] {
   }
 
   &::-moz-number-text {
-    padding-right: 24px; // Добавляем место для курсора
-  }
-}
-
-// Анимации с обновленными переменными
-@keyframes system-busy {
-  0% {
-    cursor: var(--cursor-wait) !important;
-  }
-  50% {
-    cursor: var(--cursor-progress) !important;
+    padding-right: 24px;
   }
 }

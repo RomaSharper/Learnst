@@ -1,0 +1,142 @@
+html {
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100svh;
+  font-size: 18px;
+  line-height: 1.4;
+  position: relative;
+  isolation: isolate;
+  overflow-x: hidden;
+  background: var(--background) fixed;
+  color: var(--mat-sys-on-secondary-container);
+
+  @media (max-width: 767px) {
+    margin-top: 53px;
+    height: calc(100svh - 53px);
+    transition: padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  text-wrap: pretty;
+  width: fit-content;
+}
+
+a {
+  text-decoration: none;
+  font-size: 18px !important;
+}
+
+a, button {
+  font-weight: bold !important;
+}
+
+input::-ms-clear,
+input::-ms-reveal {
+  display: none;
+}
+
+img {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  
+  pointer-events: none;
+  transform: translateZ(30px);
+  vertical-align: middle !important;
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+
+  @media print {
+    & {
+      display: none;
+    }
+
+    &::before {
+      content: "Изображение защищено копирайтом, копирование запрещено"
+    }
+  }
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 18px;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+textarea {
+  resize: vertical;
+  max-height: 200px;
+  min-height: fit-content;
+}
+
+//noinspection CssUnusedSymbol
+table:not(.mat-calendar-table) {
+  width: 100%;
+  margin: 2rem 0;
+  cursor: default;
+  overflow: hidden;
+  border-spacing: 0;
+  position: relative;
+  border-collapse: separate;
+  box-shadow: var(--mat-sys-level2);
+  border-radius: var(--mat-sys-corner-medium);
+  background: var(--mat-sys-surface-container);
+
+  th, td {
+    text-align: left;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    &:not(:last-child) {
+      border-right: 1px solid var(--mat-sys-outline-variant);
+    }
+  }
+
+  thead {
+    background: var(--mat-sys-surface-container-high);
+
+    th {
+      top: 0;
+      position: sticky;
+      padding: 1.25rem 1.5rem;
+      font: var(--mat-sys-title-medium);
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  tbody {
+    tr {
+      transition: background-color 0.2s ease;
+
+      &:nth-child(even) {
+        background: var(--mat-sys-surface-container-high);
+      }
+
+      &:hover {
+        background: var(--mat-sys-surface-container-high);
+      }
+
+      &:last-child td {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      transition: padding 0.2s ease;
+      color: var(--mat-sys-on-surface);
+      font: var(--mat-sys-title-medium);
+    }
+  }
+}

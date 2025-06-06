@@ -1,0 +1,24 @@
+.form-container {
+  padding: 20px;
+  max-width: 560px;
+  margin: 20px auto;
+  border-radius: 20px;
+
+  form > *:not(:last-child) {
+    margin-bottom: 16px;
+  }
+
+  @media (max-width: 767px) {
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    min-height: calc(100svh - 53px);
+  }
+}
+
+.form-actions {
+  gap: 20px;
+  padding: 8px;
+  margin-top: 20px;
+  flex-direction: column !important;
+}

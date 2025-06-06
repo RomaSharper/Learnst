@@ -1,0 +1,133 @@
+.profile-container {
+  padding: 20px;
+
+  @media (max-width: 767px) {
+    .container {
+      margin: 12px;
+    }
+  }
+
+  h1 {
+    font-size: 24px;
+    margin-bottom: 4px * 4;
+  }
+
+  .loading {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .profile-grid {
+    gap: 8px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    mat-card {
+      padding: 20px;
+      position: relative;
+
+      h2 {
+        margin-bottom: 8px;
+        padding-right: 40px;
+      }
+
+      @media (max-width: 767px) {
+        padding: 8px;
+      }
+    }
+  }
+
+  .user-info {
+    gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+
+  .avatar-container {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 8px;
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      cursor: var(--cursor-pointer) !important;
+    }
+
+    .hidden {
+      display: none;
+    }
+  }
+
+  // Общие стили для карточек с информацией
+  .work-item,
+  .social-card,
+  .education-item {
+    padding: 8px;
+    position: relative;
+    margin-bottom: 8px;
+    border-radius: 20px;
+
+    a {
+      gap: 16px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+
+      div {
+        flex: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+
+    div:not(:last-child) {
+      margin-bottom: 4px;
+      padding-right: 40px;
+    }
+  }
+
+  // Специфичные стили для социальных сетей
+  .cards {
+    margin-top: 8px;
+
+    .social-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      img {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
+
+  .save-button {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 767px) {
+    .profile-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .user-info {
+      grid-template-columns: 1fr;
+    }
+  }
+}

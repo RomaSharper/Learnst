@@ -1,0 +1,21 @@
+::-webkit-scrollbar {
+  width: 4px;
+  overflow-y: scroll;
+  box-shadow: var(--mat-sys-level2);
+  background: var(--mat-sys-surface-container-highest);
+
+  &-track {
+    border-radius: 8px;
+  }
+
+  &-corner {
+    background: var(--mat-sys-primary);
+  }
+
+  &-thumb {
+    border-radius: 8px;
+    background-clip: content-box;
+    border: 2px solid transparent;
+    background: var(--mat-sys-primary);
+  }
+}

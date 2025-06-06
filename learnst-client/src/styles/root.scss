@@ -1,0 +1,17 @@
+@use "@angular/material" as mat;
+@use "sass:map";
+
+:root {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+
+  @include mat.tooltip-overrides((
+    container-color: var(--mat-sys-secondary-container),
+    supporting-text-color: var(--mat-sys-on-secondary-container)
+  ));
+
+  @include mat.snack-bar-overrides((
+    container-color: var(--mat-sys-secondary-container),
+    supporting-text-color: var(--mat-sys-on-secondary-container)
+  ));
+}

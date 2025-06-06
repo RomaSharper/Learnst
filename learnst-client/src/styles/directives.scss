@@ -1,0 +1,19 @@
+[inspectable] {
+  contain: paint;
+  background: transparent;
+}
+
+[inspectable] {
+  img {
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    position: relative;
+  }
+
+  &:hover img {
+    transform: translateZ(30px) scale(1.1);
+  }
+}

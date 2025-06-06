@@ -1,0 +1,90 @@
+.avatar-container {
+  position: relative;
+  margin-right: 12px;
+
+  .status-badge {
+    right: 0;
+    bottom: 0;
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+    display: flex;
+    background: white;
+    position: absolute;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: var(--mat-sys-level2);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+
+    &.online {
+      opacity: 1;
+      animation: pulse 1.5s infinite;
+      background: linear-gradient(145deg, #66bb6a, #4caf50);
+    }
+
+    &.offline {
+      opacity: 1;
+      background: linear-gradient(145deg, #616161, #424242); // Более темный градиент
+
+      &::after {
+        top: 50%;
+        left: 50%;
+        width: 12px;
+        height: 12px;
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        border: 2px solid white;
+        background-color: transparent;
+        transform: translate(-50%, -50%);
+      }
+
+      &::before {
+        top: 50%;
+        left: 50%;
+        width: 8px;
+        height: 2px;
+        content: '';
+        position: absolute;
+        background-color: white;
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+    }
+
+    &.activity {
+      opacity: 1;
+      animation: pulse 1.5s infinite;
+      background: linear-gradient(145deg, #ffa726, #fb8c00);
+
+      &::before {
+        content: '';
+        width: 12px;
+        height: 12px;
+        background-color: white;
+        clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        position: absolute;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .status-badge {
+      width: 18px;
+      height: 18px;
+      padding: 3px;
+      border-width: 1.5px;
+
+      &.offline::after {
+        width: 8px;
+        height: 8px;
+      }
+
+      &.activity::before {
+        width: 8px;
+        height: 8px;
+      }
+    }
+  }
+}

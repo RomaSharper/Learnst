@@ -1,0 +1,15 @@
+.user-btn {
+  padding: 1rem;
+  border-radius: 20px;
+
+  .pixel-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--mat-primary);
+  }
+
+  .username {
+    margin-left: 0.5rem;
+  }
+}
