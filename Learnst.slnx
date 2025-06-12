@@ -9,7 +9,5 @@
   <Project Path="Learnst.Api\Learnst.Api.csproj" Type="Classic C#">
     <Configuration Solution="Debug|Any CPU" Project="Debug|Any CPU|Deploy" />
   </Project>
-  <Project Path="Learnst.Application\Learnst.Application.csproj" Type="Classic C#" />
-  <Project Path="Learnst.Domain\Learnst.Domain.csproj" Type="Classic C#" />
   <Project Path="Learnst.Infrastructure\Learnst.Infrastructure.csproj" Type="Classic C#" />
 </Solution>

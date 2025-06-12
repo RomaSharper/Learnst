@@ -23,12 +23,12 @@
     </button>
   </mat-form-field>
 
-  <div class="activities-container">
-    @if (loading) {
-      <mat-spinner></mat-spinner>
-    } @else if (!paginatedActivities) {
-      <small>Ничего не найдено...</small>
-    } @else {
+  @if (loading()) {
+    <mat-spinner></mat-spinner>
+  } @else if (!paginatedActivities) {
+    <small>Ничего не найдено...</small>
+  } @else {
+    <div class="activities-container">
       @for (activity of paginatedActivities; track activity.id) {
         <mat-card class="activity-card"
                   [routerLink]="['/activity', activity.id]"
@@ -46,27 +46,45 @@
               {{ activity.title }}
             </mat-card-title>
             @if (user?.role === Role.Specialist && activity.authorId === user?.id || user?.role === Role.Admin) {
-              <button type="button" class="activity-more-button" mat-icon-button
-                      [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+              <button type="button"
+                      mat-icon-button
+                      [matMenuTriggerFor]="menu"
+                      class="activity-more-button"
+                      (click)="$event.stopPropagation()">
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menu="matMenu">
-                <button type="button" mat-menu-item (click)="editActivity(activity)">Изменить</button>
-                <button type="button" mat-menu-item
-                        (click)="openOrCloseActivity(activity)">{{ activity.isClosed ? 'Открыть' : 'Закрыть' }}
+                <button type="button"
+                        mat-menu-item
+                        (click)="editActivity(activity)">
+                  Изменить
                 </button>
-                <button type="button" mat-menu-item (click)="deleteActivity(activity)" class="delete">Удалить</button>
+                <button type="button"
+                        mat-menu-item
+                        (click)="openOrCloseActivity(activity)">
+                  {{ activity.isClosed ? 'Открыть' : 'Закрыть' }}
+                </button>
+                <button type="button"
+                        class="delete"
+                        mat-menu-item
+                        (click)="deleteActivity(activity)">
+                  Удалить
+                </button>
               </mat-menu>
             }
           </mat-card-header>
-          <img mat-card-image [src]="activity.avatarUrl!" [alt]="activity.title"
-               noDownloading loading="lazy" placeholder="/assets/icons/placeholder.png">
+          <img noDownloading
+               mat-card-image
+               loading="lazy"
+               [alt]="activity.title"
+               [src]="activity.avatarUrl!"
+               placeholder="/assets/icons/placeholder.png">
           @if (user) {
             <mat-card-actions>
               @if (activity.isClosed) {
-                Запись на активность закрыта
+                <small>Запись на активность закрыта</small>
               } @else if (toDate(activity.endAt) < now) {
-                Активность была открыта до {{ activity.endAt | ruDate }}
+                <small>Активность была открыта до {{ activity.endAt | ruDate }}</small>
               } @else {
                 <button type="button"
                         mat-flat-button
@@ -79,12 +97,12 @@
           }
         </mat-card>
       }
-    }
-  </div>
+    </div>
+  }
 
   <mat-paginator
+    [pageSize]="pageSize"
     (page)="onPageChange($event)"
     [length]="filteredActivities.length"
-    [pageSizeOptions]="pageSizeOptions"
-    [pageSize]="pageSize"/>
+    [pageSizeOptions]="pageSizeOptions"/>
 </mat-card>

@@ -1,5 +1,5 @@
 import {CommonModule, Location} from '@angular/common';
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule, MatIconButton} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
@@ -56,7 +56,6 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
   pageSize = 6;
   pageIndex = 0;
   now = new Date();
-  loading = true;
   searchInput = '';
   searchQuery = '';
   user: User | null = null;
@@ -65,6 +64,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
   paginatedActivities: Activity[] = [];
   pageSizeOptions = [6, 12, 24];
   protected readonly Role = Role;
+  loading = signal(true);
   private logService = inject(LogService);
   private fileService = inject(FileService);
   private route = inject(ActivatedRoute);
@@ -134,7 +134,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
   }
 
   loadActivities(): void {
-    this.loading = true; // Начало загрузки
+    this.loading.set(true); // Начало загрузки
     this.activitiesService.getActivities().subscribe(activities => {
       this.activities = activities;
       this.loadUserEnrollments();
@@ -143,28 +143,28 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
 
   loadUserEnrollments(): void {
     if (!this.user?.id) {
-      this.loading = false; // Завершение загрузки, если пользователь не авторизован
+      this.loading.set(false); // Завершение загрузки, если пользователь не авторизован
       return;
     }
 
     this.activitiesService.getUserActivities(this.user.id).pipe(
       catchError(err => {
         this.logService.errorWithData('Ошибка при загрузке записей пользователя:', err);
-        this.loading = false; // Завершение загрузки в случае ошибки
+        this.loading.set(false); // Завершение загрузки в случае ошибки
         return of([]);
       })
     ).subscribe(enrollments => {
       this.activities.forEach(activity =>
         activity.isEnrolled = enrollments.some(e => e.activityId === activity.id));
       this.filterActivities();
-      this.loading = false; // Завершение загрузки
+      this.loading.set(false); // Завершение загрузки
     });
   }
 
   filterActivities(): void {
     this.pageIndex = 0; // Сброс индекса страницы
     this.paginatedActivities = this.filteredActivities.slice(0, this.pageSize);
-    this.loading = false; // Завершение загрузки
+    this.loading.set(false); // Завершение загрузки
   }
 
   // Обновление URL с новыми параметрами
@@ -195,7 +195,6 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
     event.stopPropagation();
     if (!this.user || !this.user.id)
       return;
-    this.loading = true; // Начало загрузки
     if (activity.isEnrolled)
       await this.unroll(this.user.id, activity.id);
     else
@@ -211,7 +210,6 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
       catchError(err => {
         this.alertService.showSnackBar('Не удалось записаться на активность');
         this.logService.errorWithData('Ошибка записи на активность:', err);
-        this.loading = false; // Завершение загрузки в случае ошибки
         return of(undefined);
       })
     ).subscribe(response => {
@@ -223,7 +221,6 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
       });
       this.filterActivities();
       this.alertService.showSnackBar('Вы успешно записались на активность');
-      this.loading = false; // Завершение загрузки
     });
   }
 
@@ -241,7 +238,6 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
       catchError(err => {
         this.alertService.showSnackBar('Не удалось отписаться от активности');
         this.logService.errorWithData('Ошибка отписки от активности:', err);
-        this.loading = false; // Завершение загрузки в случае ошибки
         return of(undefined);
       })
     ).subscribe(_response => {
@@ -253,16 +249,15 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
 
       this.filterActivities();
       this.alertService.showSnackBar('Вы успешно отписались от активности');
-      this.loading = false;
     });
   }
 
   onPageChange(event: any): void {
-    this.loading = true;
+    this.loading.set(true);
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
     this.paginatedActivities = this.filteredActivities.slice(this.pageIndex * this.pageSize, (this.pageIndex + 1) * this.pageSize);
-    this.loading = false;
+    this.loading.set(false);
   }
 
   editActivity(activity: Activity): void {
