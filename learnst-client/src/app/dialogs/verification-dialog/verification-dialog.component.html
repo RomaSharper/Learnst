@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Введите код подтверждения</h2>
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Код подтверждения</mat-label>
+      <input
+        (keydown.enter)="confirm()"
+        formControlName="code"
+        matInput
+        maxlength="6"
+        placeholder="Введите код"
+        required>
+      <mat-hint align="end">{{ form.value.code ? form.value.code.length : 0 }} / 6</mat-hint>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button (click)="confirm()" color="primary" mat-raised-button type="button">Подтвердить</button>
+  <button (click)="close()" mat-stroked-button type="button">Отмена</button>
+</mat-dialog-actions>

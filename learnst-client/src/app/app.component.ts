@@ -6,20 +6,20 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
-import {NoDownloadingDirective} from '../directives/no-downloading.directive';
-import {PlaceholderImageDirective} from '../directives/placeholder-image.directive';
-import {MediumScreenSupport} from '../helpers/MediumScreenSupport';
-import {User} from '../models/User';
-import {EllipsisPipe} from '../pipes/ellipsis.pipe';
-import {AlertService} from '../services/alert.service';
-import {AuthService} from '../services/auth.service';
-import {ThemeService} from '../services/theme.service';
-import {UserMenuComponent} from './user-menu/user-menu.component';
-import {MascotComponent} from './mascot/mascot.component';
-import {UserStatusService} from '../services/user.status.service';
-import {AudioService} from '../services/audio.service';
-import {Status} from '../enums/Status';
-import {LogService} from '../services/log.service';
+import {NoDownloadingDirective} from '../angular/directives/no-downloading.directive';
+import {PlaceholderImageDirective} from '../angular/directives/placeholder-image.directive';
+import {MediumScreenSupport} from '../data/helpers/MediumScreenSupport';
+import {User} from '../data/models/User';
+import {EllipsisPipe} from '../angular/pipes/ellipsis.pipe';
+import {AlertService} from '../data/services/alert.service';
+import {AuthService} from '../data/services/auth.service';
+import {ThemeService} from '../data/services/theme.service';
+import {UserMenuComponent} from './widgets/user-menu/user-menu.component';
+import {MascotComponent} from './widgets/mascot/mascot.component';
+import {UserStatusService} from '../data/services/user.status.service';
+import {AudioService} from '../data/services/audio.service';
+import {Status} from '../data/enums/Status';
+import {LogService} from '../data/services/log.service';
 
 @Component({
   selector: 'app-root',

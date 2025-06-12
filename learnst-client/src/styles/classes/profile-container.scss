@@ -1,12 +1,6 @@
 .profile-container {
   padding: 20px;
 
-  @media (max-width: 767px) {
-    .container {
-      margin: 12px;
-    }
-  }
-
   h1 {
     font-size: 24px;
     margin-bottom: 4px * 4;

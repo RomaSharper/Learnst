@@ -57,7 +57,7 @@ body {
 /* Интерактивные элементы */
 //noinspection ALL
 mat-select, mat-select *, mat-select + *,
-[role="button"], [role="link"], a *, button *,
+[role="button"], [role="link"], a *, button *, .cursor-pointer,
 .mat-mdc-form-field, .mat-mdc-option, .mat-mdc-option *, .mat-mdc-menu-item,
 .mat-mdc-slide-toggle *, .mat-mdc-snack-bar-action, .mat-mdc-button-touch-target, .mat-mdc-radio-button * {
   cursor: var(--cursor-pointer) !important;

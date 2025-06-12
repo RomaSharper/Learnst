@@ -1,0 +1,10 @@
+<ng-container (keydown.enter)="onConfirm()">
+  <h2 mat-dialog-title>{{ data.title }}</h2>
+  <mat-dialog-content>
+    <p>{{ data.message }}</p>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button (click)="onCancel()" color="warn" mat-stroked-button type="button">{{ data.cancelText }}</button>
+    <button (click)="onConfirm()" color="primary" mat-stroked-button type="button">{{ data.confirmText }}</button>
+  </mat-dialog-actions>
+</ng-container>

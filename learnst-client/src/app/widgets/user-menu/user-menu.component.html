@@ -1,0 +1,104 @@
+<div class="user-menu">
+  @if (loading()) {
+    <mat-spinner class="m-2" diameter="20"/>
+  } @else if (user) {
+    <div
+      class="banner"
+      [style.background]="getBannerStyle(user.banner)"
+    >
+      @if (!redirectOnly) {
+        <button type="button" mat-icon-button matTooltip="Изменить баннер"
+                (click)="openChangeBannerDialog($event)" class="edit-banner-btn">
+          <mat-icon>edit</mat-icon>
+        </button>
+      }
+    </div>
+
+    <div class="profile-info" (click)="$event.stopPropagation()">
+      <img [src]="user.avatarUrl!" class="avatar" [alt]="user.username | ellipsis:8"
+           noDownloading placeholder="/assets/icons/user-192x192.png">
+      <div class="names">
+        <h3>{{ user.fullName }}</h3>
+        <span>
+          {{ user.username }}
+        </span>
+      </div>
+      <p class="about-me">{{ user.aboutMe }}</p>
+    </div>
+
+    @if (redirectOnly) {
+      <div class="stats full-width">
+        <p class="followers-count">
+          {{ followersCount() | plural:'подписчик':'подписчика':'подписчиков' }}
+        </p>
+      </div>
+      <div class="actions full-width">
+        @if (user.id !== currentUser()?.id) {
+          <button
+            type="button"
+            color="primary"
+            mat-flat-button
+            class="follow-button"
+            [disabled]="loading()"
+            (click)="handleFollow()"
+          >
+            <mat-icon>{{ isFollowing() ? 'person_remove' : 'person_add' }}</mat-icon>
+            {{ isFollowing() ? 'Отписаться' : 'Подписаться' }}
+          </button>
+        }
+        <button
+          type="button"
+          mat-stroked-button
+          class="profile-button"
+          [routerLink]="['/user', user.username]"
+        >
+          <mat-icon>person</mat-icon>
+          Перейти к профилю
+        </button>
+      </div>
+    } @else {
+      <button type="button" class="user-menu-item" mat-menu-item routerLink="/me">
+        <mat-icon>edit</mat-icon>
+        Редактировать профиль
+      </button>
+
+      <mat-menu #accountsMenu="matMenu" class="accounts-menu">
+        @for (acc of accounts(); track acc.id) {
+          <button class="account-btn" type="button" mat-menu-item
+                  [class.current]="acc.isCurrent" (click)="switchAccount(acc.id)">
+            <img [src]="acc.avatarUrl!" class="account-avatar" noDownloading
+                 placeholder="/assets/icons/user-192x192.png" alt="Avatar">
+            <span class="account-username">{{ acc.username | ellipsis:8 }}</span>
+            <div class="account-actions">
+              @if (acc.isCurrent) {
+                <mat-icon matTooltip="Ваш текущий аккаунт">person_check</mat-icon>
+              } @else {
+                <mat-icon matTooltip="Выйти из аккаунта"
+                          (click)="deleteAccount(acc.id, $event)">
+                  logout
+                </mat-icon>
+              }
+            </div>
+          </button>
+        }
+        <button type="button" class="account-btn user-menu-item"
+                mat-menu-item routerLink="/login">
+          <mat-icon>person_add</mat-icon>
+          <span class="account-username">Добавить аккаунт</span>
+        </button>
+      </mat-menu>
+
+      <button type="button" mat-menu-item [matMenuTriggerFor]="accountsMenu">
+        <mat-icon>switch_account</mat-icon>
+        Сменить аккаунт
+      </button>
+
+      <button type="button" class="user-menu-item" mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Выйти
+      </button>
+    }
+  } @else {
+    <div class="error with-background">Пользователь не был загружен</div>
+  }
+</div>

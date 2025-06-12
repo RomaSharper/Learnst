@@ -1,0 +1,60 @@
+<h2 mat-dialog-title>{{ workExperienceForm.value.id ? 'Редактировать опыт работы' : 'Добавить опыт работы' }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="workExperienceForm">
+    <mat-form-field appearance="outline">
+      <mat-label>Компания</mat-label>
+      <input (keydown.enter)="save()" formControlName="companyName" matInput placeholder="Компания" required>
+      @if (workExperienceForm.get('companyName')?.hasError('required')) {
+        <mat-error>
+          Поле обязательно для заполнения.
+        </mat-error>
+      }
+      @if (workExperienceForm.get('companyName')?.hasError('maxlength')) {
+        <mat-error>
+          Максимальная длина — 100 символов.
+        </mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Должность</mat-label>
+      <input (keydown.enter)="save()" formControlName="position" matInput placeholder="Должность" required>
+      @if (workExperienceForm.get('position')?.hasError('required')) {
+        <mat-error>
+          Поле обязательно для заполнения.
+        </mat-error>
+      }
+      @if (workExperienceForm.get('position')?.hasError('maxlength')) {
+        <mat-error>
+          Максимальная длина — 100 символов.
+        </mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Период работы</mat-label>
+      <mat-date-range-input [rangePicker]="picker">
+        <input (keydown.enter)="save()" formControlName="startDate" matStartDate placeholder="Начало" required>
+        <input formControlName="endDate" matEndDate placeholder="Конец">
+      </mat-date-range-input>
+      <mat-datepicker-toggle [for]="picker" matIconSuffix></mat-datepicker-toggle>
+      <mat-date-range-picker #picker [touchUi]="isMediumScreen"></mat-date-range-picker>
+      @if (workExperienceForm.get('startDate')?.hasError('required')) {
+        <mat-error>
+          Поле обязательно для заполнения.
+        </mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Описание</mat-label>
+      <textarea (keydown.enter)="save()" formControlName="description" matInput placeholder="О работе"></textarea>
+      @if (workExperienceForm.get('description')?.hasError('maxlength')) {
+        <mat-error>
+          Максимальная длина — 500 символов.
+        </mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button (click)="onNoClick()" mat-stroked-button type="button">Закрыть</button>
+  <button (click)="save()" [disabled]="workExperienceForm.invalid" mat-stroked-button type="button">Сохранить</button>
+</mat-dialog-actions>

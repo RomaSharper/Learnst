@@ -1,0 +1,347 @@
+<div class="profile-container">
+  <h1>Управление профилем</h1>
+  @if (loading()) {
+    <mat-spinner></mat-spinner>
+  } @else if (!user()) {
+    <div class="error with-background">Пользователь не найден</div>
+  } @else {
+    <div class="profile-grid">
+      <!-- Личные данные -->
+      <mat-card class="full-width" appearance="outlined">
+        <a routerLink="/"
+           mat-stroked-button
+           class="back-btn full-width mb">
+          <mat-icon>arrow_back</mat-icon>
+          <span>На главную</span>
+        </a>
+
+        @if (user()!.externalLoginType) {
+          <h3 [matTooltip]="SocialMediaPlatformHelper.getName(user()!.externalLoginType!)">
+            Личные данные
+              <img
+                inspectable
+                noDownloading
+                class="social-icon"
+                placeholder="/assets/icons/placeholder.png"
+                [alt]="SocialMediaPlatformHelper.getName(user()!.externalLoginType!)"
+                [src]="SocialMediaPlatformHelper.getImagePath(user()!.externalLoginType!)">
+          </h3>
+        } @else {
+          <h3>Личные данные</h3>
+        }
+
+        <div class="avatar-container"
+             matTooltipPosition="below"
+             (mouseup)="openFilePicker()"
+             matTooltip="Изменить аватар">
+
+          <input
+            type="file"
+            class="hidden"
+            id="avatarInput"
+            accept="image/*"
+            (change)="onFileSelected($event)">
+
+          <img [src]="user()!.avatarUrl!" [alt]="user()!.username"
+               placeholder="/assets/icons/user-192x192.png" noDownloading class="avatar">
+
+          <!-- Бейджик статуса -->
+          <div class="status-badge"
+               [ngClass]="StatusHelper.getStatusClass(user()!.status!)"
+               [matTooltip]="StatusHelper.getStatusName(user()!.status!)"></div>
+        </div>
+
+        <mat-card appearance="outlined" class="registration-card">
+          <div class="card-content">
+            @if (isVeteran) {
+              <div class="veteran-section">
+                <div class="medal-container" matTooltip="Пользователь авторизован уже больше года">
+                  <mat-icon class="medal-icon">military_tech</mat-icon>
+                  <span class="veteran-text">Ветеран</span>
+                </div>
+              </div>
+            }
+            <div class="registration-info">
+              <div class="date-container">
+                <mat-icon class="calendar-icon">calendar_month</mat-icon>
+                <div class="date-content">
+                  <span class="caption">Дата регистрации</span>
+                  <span class="date">{{ user()!.createdAt | ruDate }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card>
+
+        <mat-card class="mb-2 stats full-width" appearance="outlined">
+          <div class="stat-item">
+            <div class="stat-value">{{ followersCount() }}</div>
+            <div class="stat-label">Подписчиков</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ created() }}</div>
+            <div class="stat-label">Создано активностей</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ enrolled() }}</div>
+            <div class="stat-label">Записан(а) на</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ completed() }}</div>
+            <div class="stat-label">Пройдено</div>
+          </div>
+        </mat-card>
+
+        <div class="user-info">
+          <mat-form-field appearance="outline">
+            <mat-label>ФИО</mat-label>
+            <input matInput id="fullname" [(ngModel)]="user()!.fullName" placeholder="Иванов Иван Иванович"
+                   maxlength="48"
+                   (input)="onUserInfoChange()">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Имя пользователя</mat-label>
+            <input matInput id="username" [(ngModel)]="user()!.username" placeholder="Имя пользователя" maxlength="20"
+                   minlength="3" (input)="onUserInfoChange()" required>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Дата рождения</mat-label>
+            <input matInput id="date" [(ngModel)]="user()!.dateOfBirth" placeholder="Выберите день рождения" readonly
+                   (dateChange)="onUserInfoChange()" [matDatepicker]="picker" [min]="minDate" [max]="maxDate">
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker [touchUi]="isMediumScreen"></mat-datepicker>
+            <button type="button" mat-icon-button matTooltip="Очистить дату" class="clear-date-btn"
+                    (click)="clearDate()">
+              <mat-icon>close</mat-icon>
+            </button>
+            <mat-hint>dd.mm.yyyy</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Электронная почта</mat-label>
+            <input matInput id="email" type="email" [(ngModel)]="user()!.emailAddress" placeholder="Электронная почта"
+                   maxlength="255" (input)="onUserInfoChange()">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Город</mat-label>
+            <input matInput id="city" type="text" [(ngModel)]="user()!.city" placeholder="Город" maxlength="50"
+                   (input)="onUserInfoChange()">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Резюме</mat-label>
+            <textarea matInput id="resume" [(ngModel)]="user()!.resumeText" maxlength="500"
+                      placeholder="Введите ваше резюме" rows="4" (input)="onUserInfoChange()"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Обо мне</mat-label>
+            <textarea matInput id="aboutMe" [(ngModel)]="user()!.aboutMe" maxlength="500"
+                      placeholder="Расскажите о себе"
+                      rows="4" (input)="onUserInfoChange()"></textarea>
+          </mat-form-field>
+
+          <div class="full-width">
+            <mat-slide-toggle
+              [checked]="user()!.isHidden"
+              (change)="toggleVisibility()"
+            >
+              Скрытый профиль
+            </mat-slide-toggle>
+          </div>
+        </div>
+      </mat-card>
+
+      <!-- Изменить пароль -->
+      <mat-card appearance="outlined">
+        <h3>Изменить пароль</h3>
+        <mat-form-field appearance="outline">
+          <mat-label>Старый пароль</mat-label>
+          <input
+            matInput
+            maxlength="50"
+            autocomplete="off"
+            [(ngModel)]="oldPassword"
+            placeholder="Введите старый пароль"
+            [type]="hidePassword ? 'password' : 'text'"
+          >
+          <!-- Иконка "глазика" -->
+          <button
+            matSuffix
+            type="button"
+            mat-icon-button
+            class="input-button"
+            (click)="hidePassword = !hidePassword"
+            [matTooltip]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'"
+            [attr.aria-label]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Новый пароль</mat-label>
+          <input
+            matInput
+            maxlength="50"
+            autocomplete="off"
+            [(ngModel)]="newPassword"
+            placeholder="Введите новый пароль"
+            [type]="hidePassword ? 'password' : 'text'"
+          >
+          <!-- Иконка "глазика" -->
+          <button
+            matSuffix
+            type="button"
+            mat-icon-button
+            class="input-button"
+            (click)="hidePassword = !hidePassword"
+            [matTooltip]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'"
+            [attr.aria-label]="hidePassword ? 'Показать пароль' : 'Скрыть пароль'"
+          >
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+        <button type="button" mat-flat-button class="full-width" (click)="changePassword()">
+          @if (passwordChanging) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            Сохранить изменения
+          }
+        </button>
+      </mat-card>
+
+      <!-- Социальные сети -->
+      <mat-card class="full-height" appearance="outlined">
+        <h3>Социальные сети</h3>
+        <button type="button" mat-flat-button color="primary" (click)="openSocialMediaModal()">
+          Добавить профиль
+        </button>
+        <div class="cards">
+          @for (socialMediaProfile of user()!.socialMediaProfiles; track socialMediaProfile.id) {
+            <div class="social-card">
+              <a [href]="socialMediaProfile.url" target="_blank">
+                <img [src]="SocialMediaPlatformHelper.getImagePath(socialMediaProfile.platform)"
+                     [matTooltip]="socialMediaProfile.url" alt="Social Media" noDownloading>
+                <div>{{ SocialMediaPlatformHelper.getName(socialMediaProfile.platform) }}</div>
+              </a>
+              <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="socialMenu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #socialMenu="matMenu">
+                <button type="button" mat-menu-item (click)="openSocialMediaModal(socialMediaProfile)">Изменить</button>
+                <button type="button" mat-menu-item (click)="deleteSocialMedia(socialMediaProfile)">Удалить</button>
+              </mat-menu>
+            </div>
+          }
+        </div>
+      </mat-card>
+
+      <!-- Образование -->
+      <mat-card class="full-height" appearance="outlined">
+        <h3>Образование</h3>
+        <button type="button" mat-flat-button color="primary" (click)="openEducationModal()">
+          Добавить образование
+        </button>
+        <div class="cards">
+          @for (education of user()!.educations; track education) {
+            <div class="education-item">
+              <div><strong>Вуз:</strong> {{ education.institutionName }}</div>
+              <div><strong>Факультет:</strong> {{ education.degree }}</div>
+              <div><strong>Год выпуска:</strong> {{ education.graduationYear }}</div>
+              <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="educationMenu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #educationMenu="matMenu">
+                <button type="button" mat-menu-item (click)="openEducationModal(education)">Изменить</button>
+                <button type="button" mat-menu-item (click)="deleteEducation(education)">Удалить</button>
+              </mat-menu>
+            </div>
+          }
+        </div>
+      </mat-card>
+
+      <!-- Опыт работы -->
+      <mat-card class="full-height" appearance="outlined">
+        <h3>Опыт работы</h3>
+        <button type="button" mat-flat-button color="primary" (click)="openWorkExperienceModal()">
+          Добавить опыт работы
+        </button>
+        <div class="cards">
+          @for (job of user()!.workExperiences; track job) {
+            <div class="work-item">
+              <div><strong>Компания:</strong> {{ job.companyName }}</div>
+              <div><strong>Должность:</strong> {{ job.position }}</div>
+              <div><strong>Период работы:</strong> {{ job.startDate | dateRange: job.endDate }}</div>
+              <div><strong>Описание:</strong> {{ job.description || 'Отсутствует' }}</div>
+              <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="workMenu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #workMenu="matMenu">
+                <button type="button" mat-menu-item (click)="openWorkExperienceModal(job)">Изменить</button>
+                <button type="button" mat-menu-item (click)="deleteWorkExperience(job)">Удалить</button>
+              </mat-menu>
+            </div>
+          }
+        </div>
+      </mat-card>
+
+      <!-- Экспорт -->
+      <mat-card class="full-width mb-2" appearance="outlined">
+        <h3>Экспорт данных</h3>
+        <p>
+          Запросить экспорт данных аккаунта.
+        </p>
+        <div class="import-export-buttons">
+          <button
+            type="button"
+            color="accent"
+            mat-flat-button
+            (click)="exportData('json')">
+            Экспорт JSON
+          </button>
+          <button
+            type="button"
+            color="accent"
+            mat-flat-button
+            (click)="exportData('xml')">
+            Экспорт XML
+          </button>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Настройка вида сайта -->
+    <mat-card class="full-width mb-2" appearance="outlined">
+      <app-theme-picker/>
+    </mat-card>
+
+    <!-- Удалить профиль -->
+    <mat-card class="full-width p" appearance="outlined">
+      <div class="delete-profile-wrapper">
+        <button
+          color="warn"
+          type="button"
+          mat-flat-button
+          (click)="deleteProfile()"
+          class="mb full-width error with-background">
+          Удалить мой профиль
+        </button>
+        <strong>Внимание: это действие необратимо. Все ваши данные будут удалены.</strong>
+      </div>
+    </mat-card>
+
+    @if (unsavedChanges) {
+      <div class="save-button-wrapper">
+        <button type="button" mat-flat-button class="save-button" (click)="saveChanges()">
+          @if (changesSaving) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            Сохранить изменения
+          }
+        </button>
+      </div>
+    }
+  }
+</div>

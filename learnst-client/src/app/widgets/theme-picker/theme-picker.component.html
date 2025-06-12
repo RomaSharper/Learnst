@@ -1,0 +1,13 @@
+<div class="theme-picker" noDownloading>
+  <h3>Выбор темы</h3>
+  <div class="theme-grid">
+    @for (theme of themes; track theme.id) {
+      <div
+        class="theme-preview touchable"
+        (click)="selectTheme(theme.id)"
+        [matTooltip]="theme.displayName"
+        [style.background]="theme.preview"
+        [class.selected]="isThemeSelected(theme.id)"></div>
+    }
+  </div>
+</div>

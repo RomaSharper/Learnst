@@ -1,0 +1,37 @@
+<mat-card appearance="outlined" class="container">
+  <a (click)="goBack()" [class.full-width]="isMediumScreen" class="mb nav-btn" mat-stroked-button>
+    Назад
+  </a>
+
+  @if (loading()) {
+    <mat-spinner></mat-spinner>
+  } @else if (!lesson) {
+    <div class="error with-background">Урок не найден</div>
+  } @else {
+    @switch (lesson.lessonType) {
+      @case (LessonType.LongRead) {
+        <div class="md-container" [innerHTML]="innerHTML"></div>
+      }
+      @case (LessonType.Video) {
+        <h1>{{ lesson.title }}</h1>
+        <media-theme-sutro
+          style="--media-secondary-color: var(--mat-sys-secondary-container); --media-accent-color: var(--mat-sys-primary-container);"
+        >
+          <video
+            slot="media"
+            playsinline
+            crossorigin
+            noDownloading
+            [src]="lesson.videoUrl"
+          >
+            Ваш браузер не поддерживает видео
+          </video>
+        </media-theme-sutro>
+      }
+      @case (LessonType.Test) {
+        <h1>{{ lesson.title }}</h1>
+        <app-questions [questions]="lesson.questions"></app-questions>
+      }
+    }
+  }
+</mat-card>

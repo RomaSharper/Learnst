@@ -1,0 +1,325 @@
+<!--suppress ALL -->
+<div class="profile-container">
+  @if (loading()) {
+    <mat-spinner></mat-spinner>
+  } @else if (!user()) {
+    <div class="error with-background">Пользователь не найден</div>
+  } @else if (user()?.isHidden && currentUser()?.role !== Role.Admin) {
+    <div class="profile-grid">
+      <!-- Личные данные -->
+      <div class="full-width">
+        <mat-card appearance="outlined">
+          <a (click)="goBack()"
+             mat-stroked-button
+             class="mb full-width">
+            <mat-icon>arrow_back</mat-icon>
+            Назад
+          </a>
+
+          <h3 class="profile-header">
+            Личные данные
+            <small class="profile-hidden-notice">Профиль скрыт</small>
+          </h3>
+
+          <div class="avatar-container">
+            <img
+              loading="lazy"
+              noDownloading
+              class="avatar"
+              [alt]="user()!.username"
+              [src]="user()?.avatarUrl!"
+              placeholder="/assets/icons/user-192x192.png">
+
+            <!-- Бейджик статуса -->
+            <div class="status-badge"
+                 [ngClass]="StatusHelper.getStatusClass(user()!.status)"
+                 [matTooltip]="StatusHelper.getStatusName(user()!.status)"></div>
+          </div>
+
+          <mat-card appearance="outlined" class="registration-card">
+            <div class="card-content">
+              @if (isVeteran) {
+                <div class="veteran-container"
+                     matTooltip="Медалька даётся пользователям, зарегистрированным более года назад">
+                  <div class="veteran-badge">
+                    <mat-icon class="veteran-icon">military_tech</mat-icon>
+                    <span>Ветеран</span>
+                  </div>
+                </div>
+              }
+
+              <div class="registration-info">
+                <mat-icon class="calendar-icon">calendar_month</mat-icon>
+                <div>
+                  <div class="caption">Дата регистрации</div>
+                  <div class="date">{{ user()?.createdAt | ruDate }}</div>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+
+          <div class="actions full-width mb-2">
+            <button
+              type="button"
+              color="primary"
+              mat-flat-button
+              [disabled]="loading()"
+              (click)="handleFollow()">
+              <mat-icon>{{ isFollowing() ? 'person_remove' : 'person_add' }}</mat-icon>
+              {{ isFollowing() ? 'Отписаться' : 'Подписаться' }}
+            </button>
+          </div>
+
+          <mat-card class="mb-2 stats full-width" appearance="outlined">
+            <div class="stat-item">
+              <div class="stat-value">{{ followersCount() }}</div>
+              <div class="stat-label">Подписчиков</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ created() }}</div>
+              <div class="stat-label">Создано активностей</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ enrolled() }}</div>
+              <div class="stat-label">Записан(а) на</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ completed() }}</div>
+              <div class="stat-label">Пройдено</div>
+            </div>
+          </mat-card>
+
+          <div class="user-info">
+            <mat-form-field appearance="outline">
+              <mat-label>Имя пользователя</mat-label>
+              <input matInput id="username" [(ngModel)]="user()!.username" maxlength="20" minlength="3"
+                     required readonly>
+              <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                      matTooltipPosition="below" (click)="copy(user()!.username)">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+  } @else {
+    <div class="profile-grid">
+      <!-- Личные данные -->
+      <div class="full-width">
+        <mat-card appearance="outlined">
+          <a (click)="goBack()"
+             mat-stroked-button
+             class="mb full-width">
+            <mat-icon>arrow_back</mat-icon>
+            Назад
+          </a>
+
+          @if (user()!.externalLoginType) {
+            <h3 [matTooltip]="SocialMediaPlatformHelper.getName(user()!.externalLoginType!)">
+              Личные данные
+                <img
+                  noDownloading
+                  class="social-icon"
+                  placeholder="/assets/icons/placeholder.png"
+                  [alt]="SocialMediaPlatformHelper.getName(user()!.externalLoginType!)"
+                  [src]="SocialMediaPlatformHelper.getImagePath(user()!.externalLoginType!)">
+            </h3>
+          } @else {
+            <h3>Личные данные</h3>
+          }
+
+          <div class="avatar-container">
+            <img [src]="user()?.avatarUrl!" [alt]="user()!.username" class="avatar"
+                 placeholder="/assets/icons/user-192x192.png" loading="lazy" noDownloading>
+            <!-- Бейджик статуса -->
+            <div class="status-badge" [ngClass]="StatusHelper.getStatusClass(user()!.status)"
+                 [matTooltip]="StatusHelper.getStatusName(user()!.status)"></div>
+          </div>
+
+          <mat-card appearance="outlined" class="registration-card">
+            <div class="card-content">
+              @if (isVeteran) {
+                <div class="veteran-section">
+                  <div class="medal-container" matTooltip="Пользователь авторизован уже больше года">
+                    <mat-icon class="medal-icon">military_tech</mat-icon>
+                    <span class="veteran-text">Ветеран</span>
+                  </div>
+                </div>
+              }
+              <div class="registration-info">
+                <div class="date-container">
+                  <mat-icon class="calendar-icon">calendar_month</mat-icon>
+                  <div class="date-content">
+                    <span class="caption">Дата регистрации</span>
+                    <span class="date">{{ user()!.createdAt | ruDate }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+
+          <mat-card class="mb-2 stats full-width" appearance="outlined">
+            <div class="stat-item">
+              <div class="stat-value">{{ followersCount() }}</div>
+              <div class="stat-label">Подписчиков</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ created() }}</div>
+              <div class="stat-label">Создано активностей</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ enrolled() }}</div>
+              <div class="stat-label">Записан(а) на</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">{{ completed() }}</div>
+              <div class="stat-label">Пройдено</div>
+            </div>
+          </mat-card>
+
+          <div class="actions full-width mb-2">
+            <button
+              type="button"
+              color="primary"
+              mat-flat-button
+              [disabled]="loading()"
+              (click)="handleFollow()"
+            >
+              <mat-icon>{{ isFollowing() ? 'person_remove' : 'person_add' }}</mat-icon>
+              {{ isFollowing() ? 'Отписаться' : 'Подписаться' }}
+            </button>
+          </div>
+          <div class="user-info">
+            @if (user()!.fullName) {
+              <mat-form-field appearance="outline">
+                <mat-label>ФИО</mat-label>
+                <input matInput id="fullname" [(ngModel)]="user()!.fullName" placeholder="Не указано" maxlength="48"
+                       readonly>
+                <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                        matTooltipPosition="below" (click)="copy(user()!.fullName!)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </mat-form-field>
+            }
+            <mat-form-field appearance="outline">
+              <mat-label>Имя пользователя</mat-label>
+              <input matInput id="username" [(ngModel)]="user()!.username" maxlength="20" minlength="3" required
+                     readonly>
+              <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                      matTooltipPosition="below" (click)="copy(user()!.username)">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </mat-form-field>
+            @if (user()!.dateOfBirth) {
+              <mat-form-field appearance="outline">
+                <mat-label>Дата рождения</mat-label>
+                <input matInput id="date" type="date" [(ngModel)]="user()!.dateOfBirth" required readonly>
+                <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                        matTooltipPosition="below" (click)="copy(user()!.dateOfBirth!)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </mat-form-field>
+            }
+            @if (user()!.emailAddress) {
+              <mat-form-field appearance="outline">
+                <mat-label>Электронная почта</mat-label>
+                <input matInput id="email" type="email" [(ngModel)]="user()!.emailAddress" required maxlength="255"
+                       readonly>
+                <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                        matTooltipPosition="below" (click)="copy(user()!.emailAddress!)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </mat-form-field>
+            }
+            @if (user()!.city) {
+              <mat-form-field appearance="outline">
+                <mat-label>Город</mat-label>
+                <input matInput id="city" [(ngModel)]="user()!.city" placeholder="Не указан" maxlength="50" readonly>
+                <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                        matTooltipPosition="below" (click)="copy(user()!.city!)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </mat-form-field>
+            }
+            @if (user()!.resumeText) {
+              <mat-form-field appearance="outline">
+                <mat-label>Резюме</mat-label>
+                <textarea matInput id="resume" [(ngModel)]="user()!.resumeText" maxlength="500" placeholder="Не указано"
+                          rows="4" readonly></textarea>
+                <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                        matTooltipPosition="below" (click)="copy(user()!.resumeText!)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </mat-form-field>
+            }
+            @if (user()!.aboutMe) {
+              <mat-form-field appearance="outline">
+                <mat-label>Обо мне</mat-label>
+                <textarea matInput id="aboutMe" [(ngModel)]="user()!.aboutMe" maxlength="500" rows="4"
+                          placeholder="Изменить статус" readonly></textarea>
+                <button type="button" mat-icon-button matSuffix matTooltip="Скопировать"
+                        matTooltipPosition="below" (click)="copy(user()!.aboutMe!)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </mat-form-field>
+            }
+          </div>
+        </mat-card>
+      </div>
+
+      <!-- Социальные сети -->
+      @if (user()!.socialMediaProfiles.length > 0) {
+        <mat-card class="full-height" appearance="outlined">
+          <h3>Социальные сети</h3>
+          <div class="cards">
+            @for (socialMediaProfile of user()!.socialMediaProfiles; track socialMediaProfile.id) {
+              <div class="social-card">
+                <a [href]="socialMediaProfile.url" target="_blank">
+                  <img
+                    noDownloading
+                    [title]="socialMediaProfile.url"
+                    [src]="SocialMediaPlatformHelper.getImagePath(socialMediaProfile.platform)">
+                  <div>{{ SocialMediaPlatformHelper.getName(socialMediaProfile.platform) }}</div>
+                </a>
+              </div>
+            }
+          </div>
+        </mat-card>
+      }
+
+      <!-- Образование -->
+      @if (user()!.educations.length > 0) {
+        <mat-card class="full-height" appearance="outlined">
+          <h3>Образование</h3>
+          <div class="cards">
+            @for (education of user()!.educations; track education) {
+              <div class="education-item">
+                <div><strong>Вуз:</strong> {{ education.institutionName }}</div>
+                <div><strong>Факультет:</strong> {{ education.degree }}</div>
+                <div><strong>Год выпуска:</strong> {{ education.graduationYear }}</div>
+              </div>
+            }
+          </div>
+        </mat-card>
+      }
+
+      <!-- Опыт работы -->
+      @if (user()!.workExperiences.length > 0) {
+        <mat-card class="full-width full-height" appearance="outlined">
+          <h3>Опыт работы</h3>
+          <div class="cards">
+            @for (job of user()!.workExperiences; track job) {
+              <div class="work-item">
+                <div><strong>Компания:</strong> {{ job.companyName }}</div>
+                <div><strong>Должность:</strong> {{ job.position }}</div>
+                <div><strong>Период работы:</strong> {{ job.startDate | dateRange: job.endDate }}</div>
+                <div><strong>Описание:</strong> {{ job.description || 'Отсутствует' }}</div>
+              </div>
+            }
+          </div>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

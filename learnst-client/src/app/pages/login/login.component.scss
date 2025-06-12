@@ -1,0 +1,125 @@
+@use 'sass:map';
+@use 'index' as mat;
+
+.social-grid {
+  gap: 12px;
+  display: grid;
+  justify-items: center;
+  transition: all 0.3s ease;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); // Динамическое количество столбцов
+
+  @media (max-width: 768px) {
+    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); // Динамическое количество столбцов
+  }
+}
+
+// Основные стили для всех кнопок
+.social-btn {
+  width: 100%;
+  border: none;
+  overflow: hidden;
+  position: relative;
+  transform: translateY(0);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); // Заменил @transition-time
+
+  &:hover {
+    transform: translateY(-2px); // Заменил @step * 0.5
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); // Заменил @step * 3
+
+    &::after {
+      opacity: 0.1;
+    }
+  }
+
+  &:active {
+    transition: all 0.15s; // Заменил @short-transition-time * 0.5
+    transform: translateY(4px); // Заменил @step
+  }
+
+  &::after {
+    top: 0;
+    left: 0;
+    opacity: 0;
+    width: 100%;
+    content: '';
+    height: 100%;
+    position: absolute;
+    transition: opacity 0.3s; // Заменил @transition-time
+    background: radial-gradient(circle at center, white 0%, transparent 100%);
+  }
+}
+
+// Анимация иконок
+.social-icon {
+  height: 64px; // Заменил @step * 16
+  vertical-align: middle;
+  transform-origin: center;
+  transition: transform 0.3s ease, filter 0.3s ease; // Заменил @transition-time
+
+  .social-btn:hover & {
+    animation: iconBounce 0.6s ease both; // Заменил @transition-time * 2
+  }
+}
+
+.google-btn {
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%); // Добавил переменные
+  color: #757575; // Добавил цвет текста
+
+  &:hover {
+    box-shadow: 0 8px 32px rgba(66, 133, 244, 0.2); // Заменил @step * 4
+    background: linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%);
+  }
+
+  .social-icon {
+    filter: drop-shadow(0 4px 4px rgba(66, 133, 244, 0.3)); // Заменил @step * 0.5
+  }
+}
+
+.vk-btn {
+  background: linear-gradient(145deg, #4c75a3 0%, #3a5979 100%); // Используем цвета VK, добавил переменные
+  color: white; // Цвет текста VK
+}
+
+.yandex-btn {
+  background: linear-gradient(145deg, #ffcc00 0%, #ffcc00 100%); // Используем цвета Yandex, добавил переменные
+  color: black; // Цвет текста Yandex
+}
+
+.github-btn {
+  background: linear-gradient(145deg, #24292e 0%, #1a1e22 100%); // Используем цвета GitHub, добавил переменные
+  color: white; // Цвет текста GitHub
+}
+
+.discord-btn {
+  background: linear-gradient(145deg, #7289da 0%, #5c6ad2 100%); // Используем цвета Discord, добавил переменные
+  color: white; // Цвет текста Discord
+}
+
+.steam-btn {
+  background: linear-gradient(145deg, #171a21 0%, #000000 100%); // Используем цвета Steam, добавил переменные
+  color: white; // Цвет текста Steam
+}
+
+.twitch-btn {
+  background: linear-gradient(145deg, #6441a5 0%, #4b2e83 100%); // Используем цвета Twitch, добавил переменные
+  color: white; // Цвет текста Twitch
+}
+
+// Адаптивность
+@media (max-width: 768px) { // Заменил @medium-screen
+  .social-btn {
+    padding: 48px; // Заменил @step * 12
+    border-radius: 20px; // Заменил @step * 5
+
+    &:hover {
+      transform: translateY(-1px); // Заменил @step * 0.25
+    }
+
+    .social-icon {
+      .social-btn:hover & {
+        animation: iconBounce 0.3s ease-in-out both; // Заменил @transition-time
+      }
+    }
+  }
+}

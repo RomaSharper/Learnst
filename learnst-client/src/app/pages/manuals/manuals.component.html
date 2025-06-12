@@ -1,0 +1,22 @@
+<mat-card appearance="outlined" class="md-container">
+  <a class="back-btn mb" mat-stroked-button routerLink="/">
+    <mat-icon>arrow_back</mat-icon>
+    <span>На главную</span>
+  </a>
+
+  <h1>Документы и справочные материалы</h1>
+
+  <mat-nav-list class="links-list">
+    @for (link of links; track link) {
+      <a
+        mat-list-item
+        class="full-width"
+        [routerLink]="link.path"
+        routerLinkActive="active-link">
+        <mat-icon matListItemIcon>description</mat-icon>
+        <span matListItemTitle>{{ link.title }}</span>
+        <span matListItemLine class="hint">Подробная информация</span>
+      </a>
+    }
+  </mat-nav-list>
+</mat-card>

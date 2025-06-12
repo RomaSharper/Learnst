@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>{{ educationForm.value.id ? 'Редактировать образование' : 'Добавить образование' }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="educationForm">
+    <mat-form-field appearance="outline">
+      <mat-label>Вуз</mat-label>
+      <input (keydown.enter)="save()" formControlName="institutionName" matInput maxlength="100" minlength="3"
+             placeholder="Название вуза" required>
+      @if (educationForm.get('institutionName')?.hasError('required')) {
+        <mat-error>Поле обязательно для заполнения.</mat-error>
+      } @else if (educationForm.get('institutionName')?.hasError('minlength')) {
+        <mat-error>Минимальная длина - 3 символа.</mat-error>
+      } @else if (educationForm.get('institutionName')?.hasError('maxlength')) {
+        <mat-error>Максимальная длина — 100 символов.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Факультет</mat-label>
+      <input (keydown.enter)="save()" formControlName="degree" matInput maxlength="100" minlength="3" placeholder="Факультет"
+             required>
+      @if (educationForm.get('degree')?.hasError('required')) {
+        <mat-error>Поле обязательно для заполнения.</mat-error>
+      } @else if (educationForm.get('institutionName')?.hasError('minlength')) {
+        <mat-error>Минимальная длина - 3 символа.</mat-error>
+      } @else if (educationForm.get('degree')?.hasError('maxlength')) {
+        <mat-error>Максимальная длина — 100 символов.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Год выпуска</mat-label>
+      <input (keydown.enter)="save()" formControlName="graduationYear" matInput placeholder="Год выпуска" required
+             type="number">
+      @if (educationForm.get('graduationYear')?.hasError('required')) {
+        <mat-error>Поле обязательно для заполнения.</mat-error>
+      }
+      @if (educationForm.get('graduationYear')?.hasError('min') || educationForm.get('graduationYear')?.hasError('max')) {
+        <mat-error>Год должен быть между 1900 и {{ currentYear }}.</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button (click)="onNoClick()" mat-stroked-button type="button">Закрыть</button>
+  <button (click)="save()" [disabled]="educationForm.invalid" mat-stroked-button type="button">Сохранить</button>
+</mat-dialog-actions>

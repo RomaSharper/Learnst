@@ -1,0 +1,102 @@
+<mat-card [class.mb-4]="isMediumScreen" appearance="outlined" class="container">
+  <a routerLink="/"
+     mat-stroked-button
+     class="back-btn mb">
+    <mat-icon>arrow_back</mat-icon>
+    На главную
+  </a>
+
+  <!-- Поле поиска с автозаполнением -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Поиск пользователей</mat-label>
+    <input (input)="onInputChange()" (keydown.enter)="onSearch()" [(ngModel)]="searchInput" [matAutocomplete]="auto" matInput
+           maxlength="2048" placeholder="Начните вводить имя или роль (например, #админ)..."/>
+    <button (click)="onSearch()" mat-icon-button matSuffix type="button">
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <!-- Автозаполнение -->
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelected($event)" [displayWith]="displayFn">
+    @for (user of hintUsers; track user.id) {
+      <mat-option [value]="user.username">
+        {{ user.username }}
+      </mat-option>
+    }
+  </mat-autocomplete>
+
+  <div class="users-container">
+    @for (user of displayedUsers; track user) {
+      <mat-card [routerLink]="['/user', user.username]" appearance="outlined">
+        <mat-card-content class="user-card">
+          <div class="avatar-container">
+            <img [src]="user.avatarUrl!" alt="Avatar" class="avatar" placeholder="/assets/icons/user-192x192.png"
+                 loading="lazy" noDownloading>
+            <!-- Бейджик статуса -->
+            <div class="status-badge" [ngClass]="StatusHelper.getStatusClass(user.status)"
+                 [matTooltip]="StatusHelper.getStatusName(user.status)"></div>
+          </div>
+          <div class="user-info">
+            <p [matTooltip]="RoleHelper.getName(user.role)" [matTooltipDisabled]="user.role === Role.User">
+              {{ user.username }}
+              @switch (user.role) {
+                @case (Role.Backup) {
+                  <mat-icon class="role-icon backup-icon">support_agent</mat-icon>
+                }
+                @case (Role.Specialist) {
+                  <mat-icon class="role-icon specialist-icon">build</mat-icon>
+                }
+                @case (Role.Admin) {
+                  <mat-icon class="role-icon admin-icon">star</mat-icon>
+                }
+              }
+            </p>
+          </div>
+          @if (currentUser?.role === Role.Admin && user.role !== Role.Admin && user.id !== currentUser?.id) {
+            <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="menu"
+                    (click)="$event.stopPropagation()">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              @if (user.role === Role.User || user.role === Role.Backup) {
+                <button type="button" mat-menu-item (click)="upRole(user)">
+                  @switch (user.role) {
+                    @case (Role.User) {
+                      Повысить до поддержки
+                    }
+                    @case (Role.Backup) {
+                      Повысить до специалиста
+                    }
+                  }
+                </button>
+              }
+              @if (user.role !== Role.User) {
+                <button type="button" mat-menu-item (click)="downRole(user)">
+                  @switch (user.role) {
+                    @case (Role.Specialist) {
+                      Понизить до поддержки
+                    }
+                    @case (Role.Backup) {
+                      Понизить до пользователя
+                    }
+                  }
+                </button>
+              }
+              <button type="button" mat-menu-item (click)="deleteUser(user)" class="delete">Удалить</button>
+            </mat-menu>
+          }
+        </mat-card-content>
+      </mat-card>
+    } @empty {
+      @if (loading) {
+        <mat-spinner></mat-spinner>
+      } @else {
+        <div>Ничего не найдено...</div>
+      }
+    }
+  </div>
+
+  <mat-paginator (page)="onPageChange($event)" [length]="users.length" [pageSizeOptions]="pageSizeOptions"
+                 [pageSize]="pageSize" showFirstLastButtons>
+  </mat-paginator>
+</mat-card>

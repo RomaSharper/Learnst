@@ -1,0 +1,222 @@
+<mat-card appearance="outlined" class="activity-form-container">
+  <a [class.full-width]="isMediumScreen" class="mb" mat-stroked-button routerLink="/activities">
+    Назад
+  </a>
+
+  <form
+    (keydown.enter)="$event.preventDefault()" (ngSubmit)="onSubmit()"
+    [formGroup]="activityForm" class="activity-form">
+    <!-- Основные поля -->
+    <mat-form-field appearance="outline">
+      <mat-label>Название</mat-label>
+      <input formControlName="title" matInput maxlength="50" required>
+      @if (activityForm.get('title')?.hasError('required')) {
+        <mat-error>
+          Название обязательно
+        </mat-error>
+      } @else if (activityForm.get('title')?.hasError('minlength')) {
+        <mat-error>
+          Название должно быть не менее 3 символов
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Описание</mat-label>
+      <textarea formControlName="description" matInput maxlength="500"></textarea>
+    </mat-form-field>
+
+    <!-- Поле для выбора файла -->
+    <div class="avatar-section">
+      <div class="avatar-preview-container">
+        @if (previewAvatarUrl) {
+          <img [src]="previewAvatarUrl" alt="Аватар активности"
+               class="avatar-preview" noDownloading inspectable>
+        }
+      </div>
+      <button (click)="openFilePicker()" class="choose-preview-button full-width" mat-stroked-button
+              type="button">
+        Выбрать превью
+      </button>
+      <input (change)="onFileSelected($event)" accept="image/png, image/jpeg, image/jpg" class="hidden"
+             id="avatarInput" type="file">
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Уровень</mat-label>
+      <mat-select formControlName="level">
+        @for (level of levels; track level) {
+          <mat-option [value]="level.value">
+            {{ level.label }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Минимальное кол-во баллов для сертификата</mat-label>
+      <input
+        [max]="getTotalQuestionsCount()"
+        formControlName="minimalScore"
+        matInput
+        min="0"
+        step="1"
+        type="number"
+      >
+      <mat-hint>Максимум: {{ getTotalQuestionsCount() }}</mat-hint>
+      @if (activityForm.get('minimalScore')?.hasError('maxScore')) {
+        <mat-error>Значение не должно превышать максимум.</mat-error>
+      } @else if (activityForm.get('minimalScore')?.hasError('min')) {
+        <mat-error>Значение должно быть не меньше 0.</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Дата закрытия</mat-label>
+      <input [matDatepicker]="picker" formControlName="endAt" matInput readonly>
+      <mat-datepicker-toggle [for]="picker" matSuffix></mat-datepicker-toggle>
+      <mat-datepicker #picker [touchUi]="isMediumScreen"></mat-datepicker>
+    </mat-form-field>
+
+    <mat-slide-toggle class="mb" formControlName="isClosed">Сделать активность закрытой</mat-slide-toggle>
+
+    <!-- Тэги -->
+    <div class="form-section">
+      <h3>Тэги</h3>
+      <mat-form-field appearance="outline">
+        <mat-label>Добавить тэг</mat-label>
+        <mat-chip-grid #tagGrid aria-label="Выбор тэгов">
+          @for (tag of tags; track $index) {
+            <mat-chip-row [matTooltip]="tag" (removed)="removeTag(tag)">
+              {{ tag }}
+              <button type="button" matChipRemove [attr.aria-label]="'Удалить ' + tag">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+          }
+        </mat-chip-grid>
+        <input
+          #tagInput
+          (input)="filterTags(tagInput.value)"
+          (matChipInputTokenEnd)="addTagFromInput($event)"
+          [matAutocomplete]="tagAuto"
+          [matChipInputFor]="tagGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          maxlength="50"
+          name="currentTag"
+          placeholder="Начинайте вводить тэг..."
+        >
+        <mat-autocomplete #tagAuto="matAutocomplete" (optionSelected)="addTagFromAutocomplete($event)">
+          @for (tag of filteredTags; track tag) {
+            <mat-option [value]="tag">{{ tag }}</mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <!-- Целевая аудитория -->
+    <div class="form-section">
+      <h3>Кому подойдёт эта активность</h3>
+      <mat-form-field appearance="outline">
+        <mat-label>Добавить аудиторию</mat-label>
+        <mat-chip-grid #audienceGrid aria-label="Выбор аудитории">
+          @for (audience of targetAudience; track $index) {
+            <mat-chip-row [matTooltip]="audience" (removed)="removeAudience(audience)">
+              {{ audience }}
+              <button type="button" matChipRemove [attr.aria-label]="'Удалить ' + audience">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+          }
+        </mat-chip-grid>
+        <input
+          (matChipInputTokenEnd)="addAudience($event)"
+          [matChipInputFor]="audienceGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          matInput
+          maxlength="50"
+          placeholder="Новая аудитория..."
+        >
+      </mat-form-field>
+    </div>
+
+    <!-- Чек-лист -->
+    <div class="form-section">
+      <h3>Чек-лист</h3>
+      <mat-form-field appearance="outline">
+        <mat-label>Добавить пункт чек-листа</mat-label>
+        <mat-chip-grid #checklistGrid aria-label="Выбор пунктов чек-листа">
+          @for (item of checkList; track $index) {
+            <mat-chip-row [matTooltip]="item" (removed)="removeChecklistItem(item)">
+              {{ item }}
+              <button type="button" matChipRemove [attr.aria-label]="'Удалить ' + item">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+          }
+        </mat-chip-grid>
+        <input
+          (matChipInputTokenEnd)="addChecklistItem($event)"
+          [matChipInputFor]="checklistGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          matInput
+          maxlength="100"
+          placeholder="Новый пункт..."
+        >
+      </mat-form-field>
+    </div>
+
+    <!-- Справочные карты -->
+    <div class="form-section">
+      <h3>Справочные карты</h3>
+      @for (infoCard of infoCards; track infoCard; let i = $index) {
+        <mat-card class="info-card" appearance="outlined">
+          <div class="info-card-content">
+            <div class="preview-container">
+              <img [src]="infoCard.iconUrl!" noDownloading inspectable
+                   placeholder="/assets/icons/placeholder.png" alt="Icon">
+            </div>
+            <p><strong>{{ InfoTypeHelper.getName(infoCard.infoType) }}</strong></p>
+            <p>{{ infoCard.text }}</p>
+          </div>
+          <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button type="button" mat-menu-item (click)="editInfoCard(i)">Изменить</button>
+            <button type="button" mat-menu-item (click)="removeInfoCard(i)">Удалить</button>
+          </mat-menu>
+        </mat-card>
+      }
+      <button (click)="addInfoCard()" mat-stroked-button type="button">Добавить инфокарту</button>
+    </div>
+
+    <!-- Темы -->
+    <div class="form-section">
+      <h3>Темы</h3>
+      @for (topic of topics; track topic; let i = $index) {
+        <mat-card class="topic" appearance="outlined">
+          <div class="topic-content">
+            <p><strong>{{ topic.title }}</strong></p>
+          </div>
+          <button type="button" class="more-button" mat-icon-button [matMenuTriggerFor]="topicMenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #topicMenu="matMenu">
+            <button type="button" mat-menu-item (click)="editTopic(i)">Изменить</button>
+            <button type="button" mat-menu-item (click)="removeTopic(i)">Удалить</button>
+          </mat-menu>
+        </mat-card>
+      }
+      <button (click)="addTopic()" mat-stroked-button type="button">
+        Добавить тему
+      </button>
+    </div>
+
+    <!-- Кнопка сохранения -->
+    <button [disabled]="activityForm.invalid" class="full-width mt-2" color="primary" mat-flat-button
+            type="submit">
+      {{ activityId ? 'Обновить' : 'Создать' }}
+    </button>
+  </form>
+</mat-card>

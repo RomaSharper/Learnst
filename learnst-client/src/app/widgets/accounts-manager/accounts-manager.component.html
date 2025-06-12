@@ -1,0 +1,55 @@
+@if (authService.accounts()?.length) {
+  <div class="separator">
+    <span class="or-text">Совершен вход</span>
+  </div>
+
+  <div class="accounts-container">
+    <mat-list>
+      @for (account of authService.accounts(); track account.id) {
+        <mat-list-item (click)="switchAccount(account.id)">
+          <div class="account-item">
+            <img mat-list-avatar
+                 [alt]="account.username"
+                 [src]="account.avatarUrl!"
+                 placeholder="/assets/icons/user-192x192.png">
+            <div class="account-info">
+              <span>{{ account.username }}</span>
+              @if (account.lastLogin) {
+                <small>Последний вход: {{ account.lastLogin | ruDateTime: 'relative' }}</small>
+              }
+            </div>
+            <div class="account-actions">
+              @if (account.isCurrent) {
+                <mat-icon matTooltip="Текущий аккаунт">
+                  check_circle
+                </mat-icon>
+              }
+              <button type="button"
+                      mat-icon-button
+                      matTooltip="Выйти из аккаунта"
+                      (click)="removeAccount(account.id, $event)">
+                <mat-icon>logout</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-list-item>
+      }
+    </mat-list>
+
+    @if (!authService.accounts()?.length) {
+      <p>Нет сохраненных аккаунтов</p>
+    }
+
+    <div class="actions">
+      @if (authService.accounts()?.length) {
+        <button type="button"
+                mat-icon-button
+                (click)="logoutAll()"
+                matTooltip="Выйти из всех аккаунтов">
+          <mat-icon>logout</mat-icon>
+          Полностью выйти
+        </button>
+      }
+    </div>
+  </div>
+}

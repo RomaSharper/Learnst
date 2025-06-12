@@ -18,6 +18,8 @@ public class ActivitiesController(ActivitiesRepository repository) : ControllerB
             .Include(a => a.InfoCards)
             .Include(a => a.Topics)
                 .ThenInclude(t => t.Lessons)
+                        .ThenInclude(l => l.Questions)
+                            .ThenInclude(q => q.Answers)
             .ToListAsync());
 
     // GET: api/Activities/5
@@ -82,9 +84,9 @@ public class ActivitiesController(ActivitiesRepository repository) : ControllerB
                 .Include(a => a.InfoCards)
                 .Include(a => a.UserActivities)
                 .Include(a => a.Topics)
-                .ThenInclude(t => t.Lessons)
-                .ThenInclude(l => l.Questions)
-                .ThenInclude(q => q.Answers)
+                    .ThenInclude(t => t.Lessons)
+                        .ThenInclude(l => l.Questions)
+                            .ThenInclude(q => q.Answers)
                 .SingleOrDefaultAsync(a => a.Id == id) ?? throw new NotFoundException<Activity>(id);
             var result = repository.Update(existingActivity, CheckActivity(activity));
             await repository.SaveAsync();

@@ -1,0 +1,83 @@
+<h2 mat-dialog-title>Изменить баннер</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="banner-dialog">
+    <mat-radio-group class="type-selector" formControlName="bannerType">
+      <!-- Изменена структура радио-кнопок -->
+      <mat-radio-button class="type-option" value="color">
+        <div class="option-content">
+          <mat-icon>palette</mat-icon>
+          <span>Цвет фона</span>
+        </div>
+      </mat-radio-button>
+      <mat-radio-button class="type-option" value="image">
+        <div class="option-content">
+          <mat-icon>image</mat-icon>
+          <span>Изображение</span>
+        </div>
+      </mat-radio-button>
+    </mat-radio-group>
+
+    <div class="banner-options">
+      @switch (form.get('bannerType')?.value) {
+        @case ('color') {
+          <div class="color-picker">
+            <input
+              type="color"
+              class="color-input"
+              formControlName="color"
+              (input)="onColorSelected($event.target)">
+            <label>Выберите цвет</label>
+          </div>
+        }
+        @case ('image') {
+          <div class="image-upload">
+            <!-- Перемещена кнопка в контейнер -->
+            <div class="upload-container">
+              @if (isMediumScreen) {
+                <button
+                  mat-mini-fab
+                  color="primary"
+                  class="upload-button"
+                  (click)="fileInput.click()">
+                  <mat-icon>upload</mat-icon>
+                </button>
+              } @else {
+                <button
+                  color="primary"
+                  mat-flat-button
+                  class="upload-button"
+                  (click)="fileInput.click()">
+                  <mat-icon>upload</mat-icon>
+                  Выбрать файл
+                </button>
+              }
+
+              <input
+                hidden
+                #fileInput
+                type="file"
+                accept="image/*"
+                (change)="onFileSelected($event)">
+            </div>
+
+            @if (previewUrl) {
+              <div class="preview">
+                <img [src]="previewUrl" alt="Предпросмотр" noDownloading>
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button (click)="cancel()" mat-stroked-button>Отмена</button>
+  <button
+    (click)="confirm()"
+    [disabled]="!form.valid"
+    color="primary"
+    mat-raised-button>
+    Сохранить
+  </button>
+</mat-dialog-actions>

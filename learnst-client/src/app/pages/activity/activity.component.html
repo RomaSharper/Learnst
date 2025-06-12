@@ -1,0 +1,162 @@
+<mat-card appearance="outlined" class="container">
+  <a routerLink="/"
+     mat-stroked-button
+     class="back-btn mb">
+    <mat-icon>arrow_back</mat-icon>
+    <span>На главную</span>
+  </a>
+
+  @if (loading()) {
+    <mat-spinner></mat-spinner>
+  } @else if (!activity) {
+    <div class="error with-background">Активность не найдена</div>
+  } @else {
+    <h2>{{ activity.title }}</h2>
+
+    <mat-tab-group
+      [(selectedIndex)]="activeTab"
+      (selectedIndexChange)="onTabChange($event)">
+      <!-- Вкладка "Описание" -->
+      <mat-tab label="Описание">
+        <div class="activity-container">
+          <div class="activity-info">
+            <div class="activity-details">
+              <div class="activity-left">
+                <div class="activity-avatar">
+                  <img [src]="activity.avatarUrl!" [alt]="activity.title" inspectable
+                       noDownloading placeholder="/assets/icons/placeholder.png">
+                </div>
+                <p>{{ activity.description }}</p>
+                <div class="tags-container">
+                  @for (tag of activity.tags; track tag) {
+                    <mat-chip (click)="navigateToTag(tag)">
+                      {{ tag }}
+                    </mat-chip>
+                  }
+                </div>
+                <div class="author-container">
+                  <a mat-stroked-button [matMenuTriggerFor]="userMenu"
+                     [matTooltip]="activity.author?.username" class="user-btn">
+                    <img [src]="activity.author?.avatarUrl!" class="user-avatar"
+                         [alt]="activity.author?.username" noDownloading
+                         placeholder="/assets/icons/user-192x192.png">
+                    <span class="username">{{ (activity.author?.username || '') | ellipsis:8 }}</span>
+                  </a>
+
+                  <mat-menu #userMenu="matMenu" class="user-menu-container">
+                    <app-user-menu [user]="activity.author!" [redirectOnly]="true"/>
+                  </mat-menu>
+                </div>
+                <p><strong>Дата создания:</strong> {{ activity.createdAt | ruDate }}</p>
+                <p><strong>Уровень:</strong> {{ LevelHelper.getName(activity.level) }}</p>
+                @if (activity.minimalScore) {
+                  <p><strong>Минимальный балл:</strong> {{ activity.minimalScore }}</p>
+                }
+                @if (activity.targetAudience.length) {
+                  <p><strong>Кому подойдет обучение:</strong></p>
+                  <ul class="list">
+                    @for (audience of activity.targetAudience; track audience) {
+                      <li>{{ audience }}</li>
+                    }
+                  </ul>
+                }
+              </div>
+              <div class="activity-right">
+                <div class="points card">
+                  <p><strong>Баллы:</strong>
+                    {{ earnedPoints }} / {{ totalPoints }}
+                  </p>
+                  <mat-progress-bar [value]="(earnedPoints / totalPoints) * 100"></mat-progress-bar>
+                </div>
+                <div class="lessons card">
+                  <p><strong>Уроки:</strong>
+                    {{ completedLessonsCount }} / {{ totalLessonsCount }}
+                  </p>
+                  <mat-progress-bar [value]="(completedLessonsCount / totalLessonsCount) * 100"></mat-progress-bar>
+                </div>
+                @if (activity.checkList.length) {
+                  <div class="activity-check-list card">
+                    <p><strong>Чек-лист:</strong></p>
+                    <ul class="list">
+                      @for (item of activity.checkList; track item) {
+                        <li>{{ item }}</li>
+                      }
+                    </ul>
+                  </div>
+                }
+                <div
+                  [matTooltip]="isCertificateAvailable()
+                  ? 'Нажмите, чтобы получить сертификат: он будет отправлен вам на почту'
+                  : 'Для получения сертификата необходимо пройти все уроки'
+                  + (activity!.minimalScore
+                    ? ' и набрать минимальное количество баллов'
+                    : '')"
+                >
+                  <button
+                    type="button"
+                    mat-flat-button
+                    color="primary"
+                    class="full-width"
+                    (click)="getCertificate()"
+                    [disabled]="!isCertificateAvailable() || isCertificateLoading()">
+                    @if (isCertificateLoading()) {
+                      <mat-spinner diameter="20"></mat-spinner>
+                    } @else {
+                      Получить сертификат
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+            @if (benefits.length) {
+              <p><strong>Почему стоит учиться:</strong></p>
+              <div class="info-cards">
+                @for (card of benefits; track card.id) {
+                  <div class="info-card" inspectable>
+                    <img [alt]="card.text" [src]="card.iconUrl!" noDownloading>
+                    <p>{{ card.text }}</p>
+                  </div>
+                }
+              </div>
+            }
+            @if (waysToLearn.length > 0) {
+              <p><strong>Как проходит обучение:</strong></p>
+              <div class="info-cards">
+                @for (card of waysToLearn; track card.id) {
+                  <div class="info-card" inspectable>
+                    <img [alt]="card.text" [src]="card.iconUrl!" noDownloading>
+                    <p>{{ card.text }}</p>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Вкладка "План активности" -->
+      <mat-tab label="План">
+        <div class="topics-container">
+          <mat-tree #tree [dataSource]="dataSource" [childrenAccessor]="childrenAccessor">
+            <!-- Шаблон для листовых узлов (уроки) -->
+            <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+              <!-- Используем отключенную кнопку для отступов -->
+              <button type="button" mat-icon-button disabled></button>
+              <a [routerLink]="['/lesson', node.id]" class="lesson-link">{{ node.name }}</a>
+            </mat-tree-node>
+
+            <!-- Шаблон для узлов с дочерними элементами (темы) -->
+            <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding matTreeNodeToggle>
+              <button type="button" mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+                <mat-icon class="mat-icon-rtl-mirror">
+                  {{ tree.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+                </mat-icon>
+              </button>
+              <h3 class="cursor-pointer">{{ node.name }}</h3>
+            </mat-tree-node>
+          </mat-tree>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  }
+</mat-card>
