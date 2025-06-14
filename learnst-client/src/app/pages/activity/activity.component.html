@@ -1,15 +1,26 @@
 <mat-card appearance="outlined" class="container">
-  <a routerLink="/"
-     mat-stroked-button
-     class="back-btn mb">
+  <a mat-stroked-button
+     class="back-btn mb"
+     routerLink="/activities">
     <mat-icon>arrow_back</mat-icon>
-    <span>На главную</span>
+    <span>К активностям</span>
   </a>
+
+  @if (activity && user?.role === Role.Specialist && activity.authorId === user?.id || user?.role === Role.Admin) {
+    <a class="mb"
+       mat-stroked-button
+       [routerLink]="['/activity/make', activity?.id || 'undefined']">
+      <mat-icon>edit</mat-icon>
+      <span>Изменить</span>
+    </a>
+  }
 
   @if (loading()) {
     <mat-spinner></mat-spinner>
   } @else if (!activity) {
-    <div class="error with-background">Активность не найдена</div>
+    <div class="error with-background">
+      Активность не найдена
+    </div>
   } @else {
     <h2>{{ activity.title }}</h2>
 

@@ -32,6 +32,16 @@
   }
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button (click)="onCancel()" mat-stroked-button type="button">Отмена</button>
-  <button (click)="onSave()" [disabled]="topicForm.invalid" mat-stroked-button type="button">Сохранить</button>
+  <button type="button"
+          mat-stroked-button
+          (click)="onCancel()">
+    Отмена
+  </button>
+
+  <button type="button"
+          mat-flat-button
+          (click)="onSave()"
+          [disabled]="topicForm.invalid">
+    Сохранить
+  </button>
 </mat-dialog-actions>

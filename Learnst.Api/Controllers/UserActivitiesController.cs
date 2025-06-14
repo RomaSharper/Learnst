@@ -10,7 +10,12 @@ namespace Learnst.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UserActivitiesController(IAsyncRepository<UserActivity, (Guid, Guid)> repository) : ControllerBase
+public class UserActivitiesController
+(
+    IAsyncRepository<UserAnswer, (Guid, int)> userAnswerRepository,
+    IAsyncRepository<UserLesson, (Guid, Guid)> userLessonRepository,
+    IAsyncRepository<UserActivity, (Guid, Guid)> userActivityRepository
+) : ControllerBase
 {
     private readonly Expression<Func<UserActivity, object?>>[] _includes =
     [
@@ -22,13 +27,13 @@ public class UserActivitiesController(IAsyncRepository<UserActivity, (Guid, Guid
     [HttpGet]
     [Produces("application/json")]
     public async Task<ActionResult<IEnumerable<UserActivity>>> GetUserActivities()
-        => Ok(await repository.GetAsync(includes: _includes));
+        => Ok(await userActivityRepository.GetAsync(includes: _includes));
 
     // GET: api/UserActivities/5
     [HttpGet("{userId:guid}")]
     [Produces("application/json")]
     public async Task<ActionResult<IEnumerable<UserActivity>>> GetUserActivitiesByUserId(Guid userId)
-        => Ok(await repository.GetAsync(where: ua => ua.UserId == userId, includes: _includes));
+        => Ok(await userActivityRepository.GetAsync(where: ua => ua.UserId == userId, includes: _includes));
 
     // GET: api/UserActivities/5/2
     [Produces("application/json")]
@@ -37,7 +42,7 @@ public class UserActivitiesController(IAsyncRepository<UserActivity, (Guid, Guid
     {
         try
         {
-            var userActivity = await repository.GetByIdAsync((userId, activityId), includes: _includes)
+            var userActivity = await userActivityRepository.GetByIdAsync((userId, activityId), includes: _includes)
                 ?? throw new NotFoundException<UserActivity, (Guid, Guid)>((userId, activityId));
             return Ok(userActivity);
         }
@@ -55,7 +60,7 @@ public class UserActivitiesController(IAsyncRepository<UserActivity, (Guid, Guid
     [Produces("application/json")]
     [HttpGet("CheckUserActivity/{userId:guid}/{activityId:guid}")]
     public async Task<ActionResult<bool>> CheckUserActivity(Guid userId, Guid activityId)
-        => await repository.ExistsAsync(ua => ua.UserId == userId && ua.ActivityId == activityId);
+        => await userActivityRepository.ExistsAsync(ua => ua.UserId == userId && ua.ActivityId == activityId);
 
     // POST: api/UserActivities
     [HttpPost]
@@ -64,15 +69,14 @@ public class UserActivitiesController(IAsyncRepository<UserActivity, (Guid, Guid
     {
         try
         {
-
             var (userId, activityId) = (userActivity.UserId, userActivity.ActivityId);
-            if (await repository.ExistsAsync(ua => ua.UserId == userId && ua.ActivityId == activityId))
-                throw new DuplicateException($"Пользователь \"{userId}\" уже записан на активность \"{activityId}\".");
-            await repository.AddAsync(userActivity);
-            await repository.SaveAsync();
+            if (await userActivityRepository.ExistsAsync(ua => ua.UserId == userId && ua.ActivityId == activityId))
+                throw new DuplicateException<UserActivity>($"Пользователь \"{userId}\" уже записан на активность \"{activityId}\".");
+            await userActivityRepository.AddAsync(userActivity);
+            await userActivityRepository.SaveAsync();
             return CreatedAtAction(nameof(GetUserActivity), new { userId, activityId }, userActivity);
         }
-        catch (DuplicateException de)
+        catch (DuplicateException<UserActivity> de)
         {
             return StatusCode(StatusCodes.Status422UnprocessableEntity, new ErrorResponse(de));
         }
@@ -91,11 +95,15 @@ public class UserActivitiesController(IAsyncRepository<UserActivity, (Guid, Guid
         {
             NotEqualsException.ThrowIfNotEquals(userId, userActivity.UserId);
             NotEqualsException.ThrowIfNotEquals(activityId, userActivity.ActivityId);
-            var existingUserActivity = await repository.GetByIdAsync((userId, activityId))
+            var existingUserActivity = await userActivityRepository.GetByIdAsync((userId, activityId))
                 ?? throw new NotFoundException<UserActivity, (Guid, Guid)>((userId, activityId));
-            var result = repository.Update(existingUserActivity, userActivity);
-            await repository.SaveAsync();
+            var result = userActivityRepository.Update(existingUserActivity, userActivity);
+            await userActivityRepository.SaveAsync();
             return Ok(result);
+        }
+        catch (DuplicateException<UserLesson> de)
+        {
+            return StatusCode(StatusCodes.Status422UnprocessableEntity, new ErrorResponse(de));
         }
         catch (Exception ex)
         {
@@ -110,8 +118,12 @@ public class UserActivitiesController(IAsyncRepository<UserActivity, (Guid, Guid
     {
         try
         {
-            await repository.DeleteAsync((userId, activityId));
-            await repository.SaveAsync();
+            await userActivityRepository.DeleteAsync((userId, activityId));
+            foreach (var userLesson in await userLessonRepository.GetAsync(where: ul => ul.UserId == userId))
+                await userLessonRepository.DeleteAsync((userId, userLesson.LessonId));
+            foreach (var userAnswer in await userAnswerRepository.GetAsync(where: ua => ua.UserId == userId))
+                await userAnswerRepository.DeleteAsync((userId, userAnswer.AnswerId));
+            await userActivityRepository.SaveAsync();
             return NoContent();
         }
         catch (NotFoundException<Answer, int> nfe)

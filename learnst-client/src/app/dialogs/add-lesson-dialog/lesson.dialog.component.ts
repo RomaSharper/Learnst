@@ -21,6 +21,7 @@ import {ValidationService} from '../../../data/services/validation.service';
 import {AnswerType} from '../../../data/enums/AnswerType';
 import {LessonType} from '../../../data/enums/LessonType';
 import {LogService} from '../../../data/services/log.service';
+import {MatDivider} from '@angular/material/divider';
 
 @Component({
   selector: 'app-add-lesson-dialog',
@@ -37,7 +38,8 @@ import {LogService} from '../../../data/services/log.service';
     MatFormFieldModule,
     ReactiveFormsModule,
     MatSlideToggleModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatDivider
   ]
 })
 export class LessonDialogComponent {

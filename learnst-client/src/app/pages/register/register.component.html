@@ -57,27 +57,25 @@
       <mat-form-field appearance="outline" class="full-width mb">
         <mat-label>Пароль</mat-label>
         <input
-          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
-          [matTooltip]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
-          [type]="hidePassword() ? 'password' : 'text'"
-          autocomplete="new-password"
-          formControlName="password"
-          id="password"
           matInput
+          id="password"
           maxlength="50"
+          formControlName="password"
+          autocomplete="new-password"
           placeholder="Введите ваш пароль"
-        >
+          [type]="hidePassword() ? 'password' : 'text'"
+          [matTooltip]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
+          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'">
 
         <button
-          (click)="hidePassword.set(!hidePassword())"
-          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
-          [matTooltip]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
-          class="input-button"
-          mat-icon-button
           matSuffix
           tabindex="-1"
           type="button"
-        >
+          mat-icon-button
+          class="input-button"
+          (click)="hidePassword.set(!hidePassword())"
+          [matTooltip]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'"
+          [attr.aria-label]="hidePassword() ? 'Показать пароль' : 'Скрыть пароль'">
           <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
 
@@ -113,11 +111,11 @@
       }
 
       <button
-        [disabled]="form.invalid || form.pending || loading()"
-        class="full-width"
+        type="submit"
         color="primary"
         mat-flat-button
-        type="submit"
+        class="full-width"
+        [disabled]="form.invalid || form.pending || loading()"
       >
         @if (loading()) {
           <mat-spinner diameter="20"></mat-spinner>
@@ -128,13 +126,19 @@
     </form>
   </mat-card-content>
   <mat-card-actions class="center-control form-actions">
-    <button mat-raised-button routerLink="/login" type="button">
+    <button type="button"
+            mat-flat-button
+            routerLink="/login">
       Войти в учетную запись
     </button>
-    <button mat-stroked-button routerLink="/manuals/privacypolicy" type="button">
+    <button type="button"
+            mat-stroked-button
+            routerLink="/manuals/privacypolicy">
       Политика конфиденциальности
     </button>
-    <button mat-stroked-button routerLink="/manuals/termsofuse" type="button">
+    <button type="button"
+            mat-stroked-button
+            routerLink="/manuals/termsofuse">
       Условия использования
     </button>
   </mat-card-actions>

@@ -149,7 +149,7 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
 
     this.activitiesService.getUserActivities(this.user.id).pipe(
       catchError(err => {
-        this.logService.errorWithData('Ошибка при загрузке записей пользователя:', err);
+        this.logService.errorWithData('Ошибка при загрузке данных пользователя:', err);
         this.loading.set(false); // Завершение загрузки в случае ошибки
         return of([]);
       })

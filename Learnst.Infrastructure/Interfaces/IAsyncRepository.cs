@@ -85,7 +85,7 @@ public interface IAsyncRepository<T, in TKey> : IBaseRepository<T, TKey> where T
     /// <param name="descending">Флаг, указывающий, нужно ли выполнить сортировку в обратном порядке.</param>
     /// <param name="includes">Массив выражений для загрузки связанных данных (Include).</param>
     /// <returns>Первая сущность из результатов запроса.</returns>
-    /// <exception cref="NotFoundException">Если результат запроса пуст.</exception>
+    /// <exception cref="NotFoundException{T, TKey}">Если результат запроса пуст.</exception>
     Task<T> GetFirstAsync(
         bool noTracking = true,
         Expression<Func<T, bool>>? where = null,

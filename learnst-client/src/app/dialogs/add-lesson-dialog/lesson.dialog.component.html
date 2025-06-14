@@ -3,21 +3,37 @@
   <form [formGroup]="lessonForm">
     <!-- Название урока -->
     <mat-form-field appearance="outline">
-      <mat-label>Название урока</mat-label>
-      <input formControlName="title" matInput maxlength="50" required>
+      <mat-label>
+        Название урока
+      </mat-label>
+
+      <input matInput
+             required
+             maxlength="50"
+             formControlName="title">
+
       @if (lessonForm.get('title')?.invalid && lessonForm.get('title')?.touched) {
-        <mat-error>Название урока обязательно</mat-error>
+        <mat-error>
+          Название урока обязательно
+        </mat-error>
       }
     </mat-form-field>
 
     <!-- Тип урока -->
     <mat-form-field appearance="outline">
-      <mat-label>Тип урока</mat-label>
-      <mat-select formControlName="lessonType" required>
+      <mat-label>
+        Тип урока
+      </mat-label>
+
+      <mat-select required
+                  formControlName="lessonType">
         @for (lessonType of lessonTypes; track lessonType.value) {
-          <mat-option [value]="lessonType.value">{{ lessonType.label }}</mat-option>
+          <mat-option [value]="lessonType.value">
+            {{ lessonType.label }}
+          </mat-option>
         }
       </mat-select>
+
       @if (lessonForm.get('lessonType')?.invalid && lessonForm.get('lessonType')?.touched) {
         <mat-error>Тип урока обязателен</mat-error>
       }
@@ -41,11 +57,22 @@
       @case (LessonType.Video) {
         <!-- Загрузка .mp4 видео -->
         <mat-form-field appearance="outline">
-          <mat-label>Видео (.mp4)</mat-label>
-          <input matInput formControlName="videoUrl" readonly required>
-          <button type="button" class="upload-button" mat-icon-button (click)="openFilePicker('mp4')">
+          <mat-label>
+            Видео (.mp4)
+          </mat-label>
+
+          <input matInput
+                 readonly
+                 required
+                 formControlName="videoUrl">
+
+          <button type="button"
+                  mat-icon-button
+                  class="upload-button"
+                  (click)="openFilePicker('mp4')">
             <mat-icon>attach_file</mat-icon>
           </button>
+
           @if (lessonForm.get('videoUrl')?.invalid && lessonForm.get('videoUrl')?.touched) {
             <mat-error>Видео обязательно</mat-error>
           }
@@ -55,11 +82,23 @@
         <!-- Создание теста -->
         <div formArrayName="questions">
           @for (question of questions.controls; track question; let i = $index) {
-            <div class="question-card" [formGroupName]="i">
+            <div [formGroupName]="i"
+                 class="question-card">
               <div class="question-content">
+                <h3 class="mt-0">
+                  {{ 'Вопрос ' + (i + 1) }}
+                </h3>
+
                 <mat-form-field appearance="outline">
-                  <mat-label>Вопрос</mat-label>
-                  <input matInput formControlName="text" required maxlength="200">
+                  <mat-label>
+                    Вопрос
+                  </mat-label>
+
+                  <input matInput
+                         required
+                         maxlength="200"
+                         formControlName="text">
+
                   @if (question.get('text')?.invalid && question.get('text')?.touched) {
                     <mat-error>Текст вопроса обязателен</mat-error>
                   }
@@ -67,54 +106,108 @@
 
                 <!-- Тип ответа (Single или Multiple) -->
                 <mat-form-field appearance="outline">
-                  <mat-label>Тип ответа</mat-label>
+                  <mat-label>
+                    Тип ответа
+                  </mat-label>
+
                   <mat-select formControlName="answerType" required>
                     @for (answerType of answerTypes; track answerType.value) {
-                      <mat-option [value]="answerType.value">{{ answerType.label }}</mat-option>
+                      <mat-option [value]="answerType.value">
+                        {{ answerType.label }}
+                      </mat-option>
                     }
                   </mat-select>
+
                   @if (question.get('answerType')?.invalid && question.get('answerType')?.touched) {
-                    <mat-error>Тип ответа обязателен</mat-error>
+                    <mat-error>
+                      Тип ответа обязателен
+                    </mat-error>
                   }
                 </mat-form-field>
 
                 <!-- Ответы -->
                 <div formArrayName="answers">
                   @for (answer of getAnswers(question).controls; track answer; let j = $index) {
-                    <div class="answer-item mb-2" [formGroupName]="j">
+                    <div [formGroupName]="j"
+                         class="answer-item mb-2">
+                      <h4 class="mt-0">
+                        {{ 'Ответ ' + (j + 1) }}
+                      </h4>
+
                       <mat-form-field appearance="outline">
-                        <mat-label>Ответ</mat-label>
-                        <input matInput formControlName="text" required maxlength="100">
+                        <mat-label>
+                          Ответ
+                        </mat-label>
+
+                        <input matInput
+                               required
+                               maxlength="100"
+                               formControlName="text">
+
                         @if (answer.get('text')?.invalid && answer.get('text')?.touched) {
-                          <mat-error>Текст ответа обязателен</mat-error>
+                          <mat-error>
+                            Текст ответа обязателен
+                          </mat-error>
                         }
                       </mat-form-field>
-                      <mat-slide-toggle formControlName="isCorrect" (change)="onCorrectAnswerChange(question, j)">
+
+                      <mat-slide-toggle formControlName="isCorrect"
+                                        (change)="onCorrectAnswerChange(question, j)">
                         Правильный ответ
                       </mat-slide-toggle>
-                      <button type="button" mat-stroked-button color="warn" (click)="removeAnswer(question, j)">Удалить ответ
+
+                      <button type="button"
+                              mat-stroked-button
+                              class="error with-background"
+                              (click)="removeAnswer(question, j)">
+                        Удалить ответ
                       </button>
+
+                      <mat-divider></mat-divider>
                     </div>
                   }
-                  <button type="button" class="add-answer-button" mat-stroked-button color="primary"
-                          (click)="addAnswer(question)">Добавить ответ
+
+                  <button type="button"
+                          mat-stroked-button
+                          (click)="addAnswer(question)"
+                          class="full-width add-answer-button">
+                    Добавить ответ
                   </button>
                 </div>
               </div>
-              <button type="button" class="remove-question-button" mat-stroked-button color="warn" (click)="removeQuestion(i)">
+
+              <button type="button"
+                      mat-stroked-button
+                      (click)="removeQuestion(i)"
+                      class="full-width error with-background remove-question-button">
                 Удалить вопрос
               </button>
             </div>
           }
-          <button type="button" class="add-question-button" mat-stroked-button color="primary" (click)="addQuestion()">Добавить
-            вопрос
+
+          <button type="button"
+                  mat-stroked-button
+                  (click)="addQuestion()"
+                  class="full-width add-question-button">
+            Добавить вопрос
           </button>
         </div>
       }
     }
   </form>
 </mat-dialog-content>
+
 <mat-dialog-actions>
-  <button (click)="onCancel()" mat-stroked-button type="button">Отмена</button>
-  <button (click)="onSave()" [disabled]="lessonForm.invalid" mat-stroked-button type="button">Сохранить</button>
+  <button type="button"
+          mat-stroked-button
+          (click)="onCancel()">
+    Отмена
+  </button>
+
+  <button type="button"
+          mat-flat-button
+          (click)="onSave()"
+          [disabled]="lessonForm.invalid">
+    Сохранить
+  </button>
 </mat-dialog-actions>

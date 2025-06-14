@@ -43,7 +43,7 @@
     <div class="actions">
       @if (authService.accounts()?.length) {
         <button type="button"
-                mat-icon-button
+                mat-stroked-button
                 (click)="logoutAll()"
                 matTooltip="Выйти из всех аккаунтов">
           <mat-icon>logout</mat-icon>

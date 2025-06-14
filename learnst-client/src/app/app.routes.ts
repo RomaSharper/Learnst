@@ -15,7 +15,7 @@ import {PrivacyPolicyComponent} from './pages/manuals/privacy-policy/privacy-pol
 import {RegisterComponent} from './pages/register/register.component';
 import {TermsOfUseComponent} from './pages/manuals/terms-of-use/terms-of-use.component';
 import {TicketComponent} from './pages/ticket/ticket.component';
-import {BackupComponent} from './pages/backup/backup.component';
+import {SupportComponent} from './pages/support/support.component';
 import {UserComponent} from './pages/user/user.component';
 import {CommunityComponent} from './pages/community/community.component';
 import {ManualsComponent} from './pages/manuals/manuals.component';
@@ -52,7 +52,7 @@ export const routes: Routes = [
   },
   {path: 'activity/:activityId', component: ActivityComponent, canActivate: [AuthGuard]},
   {path: 'lesson/:lessonId', component: LessonComponent, canActivate: [AuthGuard]},
-  {path: 'support', component: BackupComponent, canActivate: [AuthGuard]},
+  {path: 'support', component: SupportComponent, canActivate: [AuthGuard]},
   {path: 'ticket/:ticketId', component: TicketComponent, canActivate: [AuthGuard]},
 
   {path: '**', component: NotFoundComponent}

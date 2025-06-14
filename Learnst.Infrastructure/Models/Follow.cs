@@ -14,4 +14,6 @@ public class Follow : ICompositeKeyEntity<(Guid, Guid)>
     [JsonIgnore] public User? Follower { get; set; }
 
     public IEnumerable<string> GetKeyPropertyNames() => [nameof(UserId), nameof(FollowerId)];
+    
+    public string StringKey => $"UserId={UserId}, FollowerId={FollowerId}";
 }

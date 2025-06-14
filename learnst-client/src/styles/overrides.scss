@@ -14,6 +14,13 @@
   }
 }
 
+.mat-mdc-card-title, .mat-mdc-card-subtitle {
+  gap: 8px;
+  margin: 0;
+  align-items: center;
+  display: flex !important;
+}
+
 mat-paginator {
   margin-top: 20px;
   align-items: flex-start;

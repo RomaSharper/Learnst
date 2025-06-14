@@ -14,4 +14,6 @@ public class UserAnswer : ICompositeKeyEntity<(Guid, int)>
     [JsonIgnore] public Answer? Answer { get; set; }
 
     public IEnumerable<string> GetKeyPropertyNames() => [nameof(UserId), nameof(AnswerId)];
+
+    public string StringKey => $"UserId={UserId}, AnswerId={AnswerId}";
 }

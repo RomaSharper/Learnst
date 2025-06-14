@@ -3,6 +3,7 @@
   <component name="SshConfigs">
     <configs>
       <sshConfig authType="PASSWORD" host="site17585.siteasp.net" id="b5ee9786-9df2-4390-8493-e83471fb7f19" port="22" nameFormat="DESCRIPTIVE" username="site17585" useOpenSSHConfig="true" />
+      <sshConfig authType="PASSWORD" host="site15762.siteasp.net" id="bd2b0446-d0a8-432c-ac00-bb5c4ad3d0b4" port="22" nameFormat="DESCRIPTIVE" username="site15762" useOpenSSHConfig="true" />
     </configs>
   </component>
 </project>

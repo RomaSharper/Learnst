@@ -8,11 +8,11 @@
     <div class="profile-grid">
       <!-- Личные данные -->
       <mat-card class="full-width" appearance="outlined">
-        <a routerLink="/"
-           mat-stroked-button
+        <a mat-stroked-button
+           routerLink="/community"
            class="back-btn full-width mb">
           <mat-icon>arrow_back</mat-icon>
-          <span>На главную</span>
+          <span>К сообществу</span>
         </a>
 
         @if (user()!.externalLoginType) {

@@ -133,7 +133,7 @@ export class CommunityComponent extends MediumScreenSupport implements OnInit {
     const roleTags: string[] = [];
     const statusTags: string[] = [];
     const adminTags = ['a', 'admin', 'а', 'админ', 'администратор'];
-    const backupTags = ['b', 'back', 'backup', 'п', 'поддержка'];
+    const backupTags = ['b', 'back', 'support', 'п', 'поддержка'];
     const specialistTags = ['s', 'spec', 'specialist', 'с', 'спец', 'специалист'];
     const userTags = ['u', 'usr', 'user', 'ю', 'юзер', 'пользователь'];
 

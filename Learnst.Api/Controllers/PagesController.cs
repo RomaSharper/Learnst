@@ -183,6 +183,9 @@ public class PagesController : ControllerBase
                         <p>ACCESS VIOLATION DETECTED</p>
                         <p class="error-code">ERROR CODE: 0x7B-PR0T0C0L</p>
                     </div>
+                    <script>
+                        console.error("Ошибка: доступ запрещён");
+                    </script>
                 </body>
                 </html>
                 """, "text/html", Encoding.UTF8);

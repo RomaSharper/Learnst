@@ -12,4 +12,6 @@ public interface ICompositeKeyEntity<out TKey> : IBaseEntity<TKey>
     /// </summary>
     /// <returns>Список имён свойств, составляющих ключ.</returns>
     IEnumerable<string> GetKeyPropertyNames();
+
+    string StringKey { get; }
 }

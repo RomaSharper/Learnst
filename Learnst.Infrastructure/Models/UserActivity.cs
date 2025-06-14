@@ -16,4 +16,6 @@ public class UserActivity : ICompositeKeyEntity<(Guid, Guid)>
     public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
 
     public IEnumerable<string> GetKeyPropertyNames() => [nameof(UserId), nameof(ActivityId)];
+
+    public string StringKey => $"UserId={UserId}, ActivityId={ActivityId}";
 }

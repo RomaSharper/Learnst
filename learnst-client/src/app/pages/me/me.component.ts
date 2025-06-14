@@ -777,9 +777,9 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
     this.usersService.updateUser(this.userId, this.user()!).pipe(
       catchError(err => {
         this.changesSaving = false;
-        this.alertService.showSnackBar(err.error.message || 'Не удалось обновить данные.');
+        this.alertService.showSnackBar(err.error.message || err.error.error.message || 'Не удалось обновить данные.');
         this.logService.errorWithData(err);
-        return of(null); // Возвращаем null, чтобы завершить поток
+        return of(null);
       })
     ).subscribe(updatedResponse => {
       this.changesSaving = false;

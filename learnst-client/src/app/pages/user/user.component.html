@@ -9,11 +9,11 @@
       <!-- Личные данные -->
       <div class="full-width">
         <mat-card appearance="outlined">
-          <a (click)="goBack()"
-             mat-stroked-button
-             class="mb full-width">
+          <a mat-stroked-button
+             routerLink="/community"
+             class="back-btn full-width mb">
             <mat-icon>arrow_back</mat-icon>
-            Назад
+            <span>К сообществу</span>
           </a>
 
           <h3 class="profile-header">
@@ -108,11 +108,11 @@
       <!-- Личные данные -->
       <div class="full-width">
         <mat-card appearance="outlined">
-          <a (click)="goBack()"
-             mat-stroked-button
-             class="mb full-width">
+          <a mat-stroked-button
+             class="mb full-width"
+             routerLink="/community">
             <mat-icon>arrow_back</mat-icon>
-            Назад
+            К сообществу
           </a>
 
           @if (user()!.externalLoginType) {

@@ -361,4 +361,6 @@ export class ActivityComponent extends MediumScreenSupport implements OnInit {
   private indexToName(index: number | null): string {
     return index === 1 ? 'plan' : 'info';
   }
+
+  protected readonly Role = Role;
 }

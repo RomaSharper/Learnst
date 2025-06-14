@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <None Remove="Controllers\SocialMediaProfilesController.cs~" />
+    <None Remove="Properties\PublishProfiles\site15763-WebDeploy.pubxml" />
+    <None Remove="Properties\PublishProfiles\api-learnst.runasp.net-WebDeploy.publishSettings" />
   </ItemGroup>
 
   <ItemGroup>

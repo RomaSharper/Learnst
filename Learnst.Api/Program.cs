@@ -89,7 +89,11 @@ app.UseWebSockets()
     .UseSession()
     .UseCustomSecurity(trustedOrigins, trustedPaths, onError: async (context, _, origin) =>
     {
-        await LogService.WriteLine($"** Запрещен доступ источнику \"{(string.IsNullOrEmpty(origin) ? "null" : origin)}\", так как он не является доверенным. **");
+        await LogService.WriteLine(
+            $"** Запрещен доступ источнику \"{(
+                string.IsNullOrEmpty(origin) ? "null" : origin
+            )}\", так как он не является доверенным. **"
+        );
         context.Response.Redirect("/error");
     });
 

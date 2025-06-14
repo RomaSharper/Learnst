@@ -57,7 +57,7 @@ public class ActivitiesController(ActivitiesRepository repository) : ControllerB
             if (await repository.ExistsAsync(a => a.Id == id))
                 throw new DuplicateException<Activity>(id);
 
-            await repository.AddAsync(CheckActivity(activity));
+            await repository.AddAsync(repository.CheckActivity(activity));
             await repository.SaveAsync();
 
             return CreatedAtAction(nameof(GetActivity), new { id }, activity);
@@ -88,7 +88,8 @@ public class ActivitiesController(ActivitiesRepository repository) : ControllerB
                         .ThenInclude(l => l.Questions)
                             .ThenInclude(q => q.Answers)
                 .SingleOrDefaultAsync(a => a.Id == id) ?? throw new NotFoundException<Activity>(id);
-            var result = repository.Update(existingActivity, CheckActivity(activity));
+            
+            var result = repository.Update(existingActivity, repository.CheckActivity(activity));
             await repository.SaveAsync();
             return Ok(result);
         }
@@ -121,22 +122,5 @@ public class ActivitiesController(ActivitiesRepository repository) : ControllerB
         {
             return BadRequest(new ErrorResponse(ex));
         }
-    }
-
-    private static Activity CheckActivity(Activity activity)
-    {
-        if (activity.InfoCards.Count > 6)
-            throw new ArgumentOutOfRangeException(
-                nameof(activity), activity,
-                "Разрешено максимум 6 инфокарт для активности");
-
-        if (string.Join(string.Empty, activity.CheckList).Length > 2000
-            || string.Join(string.Empty, activity.Tags).Length > 2000
-            || string.Join(string.Empty, activity.TargetAudience).Length > 2000)
-            throw new ArgumentOutOfRangeException(
-                nameof(activity), activity,
-                "Длины чек-листа, тегов и аудитории не должны превышать 2000 символов");
-
-        return activity;
     }
 }

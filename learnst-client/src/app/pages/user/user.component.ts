@@ -1,4 +1,4 @@
-import {Location, NgClass} from '@angular/common';
+import {NgClass} from '@angular/common';
 import {Component, inject, OnInit, signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
@@ -8,11 +8,10 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {finalize} from 'rxjs';
 import {NoDownloadingDirective} from '../../../angular/directives/no-downloading.directive';
 import {PlaceholderImageDirective} from '../../../angular/directives/placeholder-image.directive';
-import {Return} from '../../../data/helpers/Return';
 import {SocialMediaPlatformHelper} from '../../../data/helpers/SocialMediaPlatformHelper';
 import {User} from '../../../data/models/User';
 import {DateRangePipe} from '../../../angular/pipes/date.range.pipe';
@@ -28,29 +27,28 @@ import {ClipboardService} from '../../../data/services/clipboard.service';
 import {catchError} from 'rxjs/operators';
 import {LogService} from '../../../data/services/log.service';
 
-@Return()
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.scss'],
-  imports: [
-    NgClass,
-    RuDatePipe,
-    FormsModule,
-    MatIconModule,
-    MatCardModule,
-    DateRangePipe,
-    MatInputModule,
-    MatButtonModule,
-    MatTooltipModule,
-    MatGridListModule,
-    NoDownloadingDirective,
-    MatProgressSpinnerModule,
-    PlaceholderImageDirective
-  ]
+    imports: [
+      NgClass,
+      RouterLink,
+      RuDatePipe,
+      FormsModule,
+      MatIconModule,
+      MatCardModule,
+      DateRangePipe,
+      MatInputModule,
+      MatButtonModule,
+      MatTooltipModule,
+      MatGridListModule,
+      NoDownloadingDirective,
+      MatProgressSpinnerModule,
+      PlaceholderImageDirective
+    ]
 })
 export class UserComponent extends MediumScreenSupport implements OnInit {
-  goBack!: () => void;
   date = new Date();
   created = signal(0);
   enrolled = signal(0);
@@ -60,20 +58,19 @@ export class UserComponent extends MediumScreenSupport implements OnInit {
   isFollowing = signal(false);
   user = signal<User | null>(null);
   currentUser = signal<User | null>(null);
-  protected readonly SocialMediaPlatformHelper = SocialMediaPlatformHelper;
-  protected readonly StatusHelper = StatusHelper;
-  protected readonly Status = Status;
+
   protected readonly Role = Role;
+  protected readonly Status = Status;
+  protected readonly StatusHelper = StatusHelper;
+  protected readonly SocialMediaPlatformHelper = SocialMediaPlatformHelper;
+
+  private router = inject(Router);
   private logService = inject(LogService);
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private usersService = inject(UsersService);
   private clipboardService = inject(ClipboardService);
-
-  constructor(public router: Router, public location: Location) {
-    super();
-  }
 
   get isVeteran(): boolean {
     if (!this.user()?.createdAt) return false;
