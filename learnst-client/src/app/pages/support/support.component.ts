@@ -85,10 +85,10 @@ export class SupportComponent extends MediumScreenSupport implements OnInit {
 
   loadTickets(): void {
     this.ticketService.getTickets().pipe(
-      catchError(error => {
-        this.logService.errorWithData('Error loading tickets:', error);
-        this.loading = false; // Гарантированно выключаем загрузку
-        return of([]); // Продолжаем цепочку с пустым массивом
+      catchError(err => {
+        this.logService.errorWithData('Ошибка загрузки тикетов:', err);
+        this.loading = false;
+        return of([]);
       })
     ).subscribe({
       next: data => {
@@ -104,7 +104,7 @@ export class SupportComponent extends MediumScreenSupport implements OnInit {
         }
 
         const authorRequests = this.tickets.map(ticket =>
-          this.usersService.getUserById(ticket.authorId).pipe(catchError(() => of(null)))
+          this.usersService.getUserById(ticket.authorId).pipe(catchError(_err => of(null)))
         );
 
         forkJoin(authorRequests).subscribe({

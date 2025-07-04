@@ -138,7 +138,7 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
       this.userId = user.id!;
       this.originalUser = JSON.parse(JSON.stringify(user));
       this.usersService.getUserById(this.userId).pipe(
-        catchError(() => {
+        catchError(_err => {
           this.loading.set(false);
           return of(null);
         })
@@ -656,11 +656,11 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
     return forkJoin({
       emailTaken: user.emailAddress ? this.usersService.getUserByEmail(user.emailAddress).pipe(
         map(user => !!user && user.id !== this.userId),
-        catchError(() => of(false))
+        catchError(_err => of(false))
       ) : of(false),
       usernameTaken: this.usersService.getUserByName(user.username).pipe(
         map(user => !!user && user.id !== this.userId),
-        catchError(() => of(false))
+        catchError(_err => of(false))
       )
     });
   }
@@ -703,10 +703,10 @@ export class MeComponent extends MediumScreenSupport implements OnInit, CanCompo
   private verifyEmail() {
     // Шаг 1: Отправляем код подтверждения
     return this.user && this.emailService.sendVerificationCode(this.user()?.emailAddress!).pipe(
-      catchError(errorObj => {
+      catchError(err => {
         this.alertService.showSnackBar('Ошибка при отправке кода подтверждения.');
         this.changesSaving = false;
-        this.logService.errorWithData(errorObj);
+        this.logService.errorWithData(err);
         return of(null);
       })
     ).subscribe(codeResponse => {

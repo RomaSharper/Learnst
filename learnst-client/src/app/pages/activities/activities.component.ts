@@ -340,11 +340,10 @@ export class ActivitiesComponent extends MediumScreenSupport implements OnInit {
 
     // Объединяем все запросы на удаление в один поток
     return forkJoin(deleteObservables).pipe(
-      map(() => {
-      }),
-      catchError(error => {
-        this.logService.errorWithData('Ошибка при удалении файлов:', error);
-        throw error;
+      map(() => {}),
+      catchError(err => {
+        this.logService.errorWithData('Ошибка при удалении файлов:', err);
+        throw err;
       })
     );
   }

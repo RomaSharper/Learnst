@@ -147,9 +147,9 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
 
     // Шаг 1: Отправляем код подтверждения
     this.emailService.sendVerificationCode(user.emailAddress!).pipe(
-      catchError(errorObj => {
+      catchError(err => {
         this.alertService.showSnackBar('Ошибка при отправке кода подтверждения.');
-        this.logService.errorWithData(errorObj);
+        this.logService.errorWithData(err);
         return of(null);
       })
     ).subscribe(codeResponse => {
@@ -170,11 +170,11 @@ export class RegisterComponent extends MediumScreenSupport implements AfterViewI
         if (codeResponse.code === result?.toString()) {
           // Если код введен правильно, продолжаем создание пользователя
           this.usersService.createUser(user).pipe(
-            catchError(errorObj => {
-              this.logService.errorWithData('Полная ошибка:', errorObj);
-              const error: string = errorObj?.message ?? 'Произошла ошибка при регистрации. Попробуйте еще раз.';
+            catchError(err => {
+              this.logService.errorWithData('Полная ошибка:', err);
+              const error = err?.message ?? 'Произошла ошибка при регистрации. Попробуйте еще раз.';
               this.alertService.showSnackBar(error);
-              this.loading.set(false); // Выключаем состояние загрузки при ошибке
+              this.loading.set(false);
               return of(null);
             })
           ).subscribe(registeredUser => {

@@ -72,14 +72,14 @@ public class CertificateService(ApplicationDbContext context) : ICertificateServ
         gfx.DrawString("Learnst Terminal", titleFont, new XSolidBrush(mainColor), 60, 120);
 
         // Блок информации о пользователе
-        DrawTerminalBox(gfx, new XRect(60, 160, 480, 160), "User Data", mainColor, accentColor);
+        DrawTerminalBox(gfx, new XRect(60, 160, 480, 160), "User Data", accentColor);
         gfx.DrawString($"USER: {user.FullName}", bodyFont, new XSolidBrush(mainColor), 80, 200);
         gfx.DrawString($"ISSUED: {DateTime.UtcNow:yyyy-MM-dd}", bodyFont, new XSolidBrush(mainColor), 80, 230);
         gfx.DrawString($"COURSE: {activity.Title}", bodyFont, new XSolidBrush(mainColor), 80, 260);
 
         // Блок с кодом подтверждения
         var code = Guid.NewGuid().ToString()[..8].ToUpper();
-        DrawTerminalBox(gfx, new XRect(60, 340, 480, 80), "Hash Code", mainColor, accentColor);
+        DrawTerminalBox(gfx, new XRect(60, 340, 480, 80), "Hash Code", accentColor);
         gfx.DrawString(code, codeFont, new XSolidBrush(mainColor),
             new XRect(60, 340, 480, 80), XStringFormats.Center);
 
@@ -88,7 +88,7 @@ public class CertificateService(ApplicationDbContext context) : ICertificateServ
         return stream.ToArray();
     }
 
-    private static void DrawTerminalBox(XGraphics gfx, XRect rect, string title, XColor mainColor, XColor accentColor)
+    private static void DrawTerminalBox(XGraphics gfx, XRect rect, string title, XColor accentColor)
     {
         var boxPen = new XPen(accentColor, 1.5);
         gfx.DrawRectangle(boxPen, rect);

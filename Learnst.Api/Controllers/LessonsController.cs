@@ -10,7 +10,7 @@ namespace Learnst.Api.Controllers;
 public class LessonsController(ApplicationDbContext context) : ControllerBase
 {
     // GET: api/Topics/5/Lessons
-    [Produces("application/json")]
+    [HttpGet]
     public async Task<ActionResult<IEnumerable<Lesson>>> GetLessonsByTopicId(Guid topicId)
     {
         return await context.Lessons
@@ -24,7 +24,7 @@ public class LessonsController(ApplicationDbContext context) : ControllerBase
     }
 
     // GET: api/Lessons/5
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<ActionResult<Lesson>> GetLesson(Guid id)
     {
         var lesson = await context.Lessons
@@ -56,7 +56,7 @@ public class LessonsController(ApplicationDbContext context) : ControllerBase
     }
 
     // PUT: api/Lessons/5
-    [HttpPut("{id}")]
+    [HttpPut("{id:guid}")]
     public async Task<IActionResult> PutLesson(Guid id, Lesson lesson)
     {
         if (id != lesson.Id)
@@ -79,7 +79,7 @@ public class LessonsController(ApplicationDbContext context) : ControllerBase
     }
 
     // DELETE: api/Lessons/5
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteLesson(Guid id)
     {
         var lesson = await context.Lessons.FindAsync(id);

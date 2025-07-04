@@ -194,8 +194,8 @@ export class ActivityComponent extends MediumScreenSupport implements OnInit {
     this.certificateService.sendCertificateByEmail({
       userId, activityId, emailAddress
     }).pipe(
-      catchError(error => {
-        this.logService.errorWithData('Произошла ошибка при отправке сертификата', error);
+      catchError(err => {
+        this.logService.errorWithData('Произошла ошибка при отправке сертификата', err);
         this.alertService.showSnackBar('Произошла неожиданная ошибка. Попробуйте позже');
         this.isCertificateLoading.set(false);
         return of(null);

@@ -1,7 +1,7 @@
 ﻿using Learnst.Api.Models;
+using Learnst.Api.Services;
 using Learnst.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Drawing;
 
 namespace Learnst.Api.Controllers;
 
@@ -36,77 +36,129 @@ public class EmailController(IEmailSender emailSender) : ControllerBase
             return BadRequest("Пожалуйста, укажите адрес электронной почты.");
 
         var verificationCode = GenerateVerificationCode();
+        var device = DeviceService.GetInfo(HttpContext);
+        
         const string subject = "Ваш код подтверждения";
         var body = """
-                    <!-- Основной контейнер с эффектом матрицы -->
-                    <div style="margin:0;padding:20px;background:#0a0a1a;font-family:'Courier New',monospace;border:3px solid #4a8ba8;padding:30px;max-width:600px;margin:0 auto;background:#0e1724;position:relative;box-shadow:0 0 15px rgba(74,139,168,0.3);">
-                        <!-- Фоновый эффект терминала -->
-                        <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:
-                            repeating-linear-gradient(0deg, 
-                                rgba(74,139,168,0.05) 0px, 
-                                rgba(74,139,168,0.05) 1px, 
-                                transparent 2px, 
-                                transparent 3px),
-                            repeating-linear-gradient(90deg, 
-                                rgba(74,139,168,0.04) 0px, 
-                                rgba(74,139,168,0.04) 1px, 
-                                transparent 2px, 
-                                transparent 3px);z-index:1;">
-                        </div>
-
-                        <!-- Заголовок с неоновым эффектом -->
-                        <div style="border:2px solid #4a8ba8;padding:15px;margin-bottom:30px;text-align:center;position:relative;z-index:2;background:#0a121f;">
-                            <h1 style="margin:0;font-size:24px;letter-spacing:3px;color:#9bd3dd;text-shadow:0 0 8px #4a8ba8;">
-                                ⚡ SYSTEM VERIFICATION ⚡
-                            </h1>
-                        </div>
-
-                        <!-- Блок с кодом в стиле цифрового дисплея -->
-                        <div style="background:#0e1a2b;padding:25px;text-align:center;margin:30px 0;border:2px solid #4a8ba8;position:relative;z-index:2;">
-                            <div style="font-size:32px;letter-spacing:10px;padding:15px;display:inline-block;color:#9bd3dd;
-                                        border:1px solid #4a8ba8;background:#0a121f;
-                                        box-shadow:inset 0 0 15px rgba(74,139,168,0.3);font-weight:bold;">
-                                ░▒▓ %code% ▓▒░
+                    <div style="margin:0 auto; padding:0; max-width:640px; font-family: 'Inter', Arial, sans-serif; background-color: #f7f7f8;">
+                    
+                        <!-- Основной контейнер -->
+                        <div style="background:white; border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.08); border:1px solid #e1e1e8; margin:0 auto;">
+                    
+                            <!-- Шапка с логотипом -->
+                            <div style="text-align:center; padding:40px 35px 30px; border-bottom:1px solid #f0f0f8;">
+                                <img src="https://learnst.runasp.net/assets/icons/favicon.png" alt="Learnst" style="height:48px; margin-bottom:20px;">
+                                <h1 style="margin:0; font-size:26px; font-weight:700; color:#0f0f23; line-height:1.3;">
+                                    Подтверждение почты Learnst
+                                </h1>
+                                <p style="margin:12px 0 0; font-size:16px; color:#6a6a8a;">
+                                    Для завершения регистрации введите код подтверждения
+                                </p>
                             </div>
-                        </div>
-
-                        <!-- Сообщение с ASCII-артом -->
-                        <div style="border-left:3px solid #4a8ba8;padding:15px;margin:30px 0;position:relative;z-index:2;background:#0a121f;">
-                            <div style="margin:0;color:#9bd3dd;font-size:14px;line-height:1.5;white-space:pre-wrap;">
-                    [!] █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
-                        █ WARNING SYSTEM CORRUPTION █
-                        █▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█
-
-                    ► Input verification code to restore
-                    ► Time remaining: [■■■■■■■■□□] 80%
-                    ► Emergency protocol: ACTIVATED
+                    
+                            <!-- Код подтверждения -->
+                            <div style="text-align:center; padding:40px 35px; border-bottom:1px solid #f0f0f8;">
+                                <p style="margin:0 0 16px; font-size:16px; font-weight:500; color:#6a6a8a;">
+                                    Ваш код подтверждения:
+                                </p>
+                                <div style="display:inline-block; background:#f0ebff; border-radius:6px; padding:18px 30px; border:2px solid #d9d1ff;">
+                                    <div style="font-size:42px; font-weight:700; color:#9146ff; font-family: monospace, sans-serif; letter-spacing:0 !important;">
+                                        %code%
+                                    </div>
+                                </div>
+                                <p style="margin:16px 0 0; font-size:14px; color:#6a6a8a;">
+                                    Код действует, пока открыто окно подтверждения
+                                </p>
                             </div>
-                        </div>
-
-                        <!-- Интерактивная панель -->
-                        <div style="border:2px dashed #4a8ba8;padding:15px;margin:30px 0;position:relative;z-index:2;">
-                            <div style="color:#9bd3dd;font-size:12px;display:flex;justify-content:space-between;">
-                                <span>STATUS: <span style="color:#8cc14c;">■ ONLINE</span></span>
-                                <span>VERSION: 2.4.1</span>
-                                <span>CPU: 87%</span>
+                    
+                            <!-- Информационные карточки -->
+                            <div style="padding:40px 35px; margin-bottom: 12px; border-bottom:1px solid #f0f0f8;">
+                                <div style="display:flex; flex-wrap:wrap; margin-left:-10px; margin-right:-10px;">
+                                    <div style="flex:1; min-width:240px; padding:0 10px; margin-bottom:20px;">
+                                        <div style="background:#f9f9ff; border-radius:6px; padding:22px; border:1px solid #eaeaff; height:100%;">
+                                            <h3 style="margin:0 0 16px; font-size:17px; font-weight:600; color:#0f0f23;">
+                                                <span style="color:#9146ff; font-weight:700;">1. </span>
+                                                Как использовать код
+                                            </h3>
+                                            <ul style="margin:0; padding-left:20px; font-size:15px; color:#5a5a7a; line-height:1.6;">
+                                                <li>Вернитесь в окно регистрации</li>
+                                                <li>Введите 6-значный код</li>
+                                                <li>Нажмите "Подтвердить"</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                    
+                                    <div style="flex:1; min-width:240px; padding:0 10px; margin-bottom:20px;">
+                                        <div style="background:#f9f9ff; border-radius:6px; padding:22px; border:1px solid #eaeaff; height:100%;">
+                                            <h3 style="margin:0 0 16px; font-size:17px; font-weight:600; color:#0f0f23;">
+                                                <span style="color:#9146ff; font-weight:700;">2. </span>
+                                                Безопасность аккаунта
+                                            </h3>
+                                            <ul style="margin:0; padding-left:20px; font-size:15px; color:#5a5a7a; line-height:1.6;">
+                                                <li>Никому не сообщайте этот код</li>
+                                                <li>Learnst не запрашивает пароли по почте</li>
+                                                <li>Код сгенерирован только для вас</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-
-                        <!-- Pixel cat image с эффектом свечения -->
-                        <img src="https://avatars.mds.yandex.net/i?id=a35db5aba997d422b81d0d02b48b5512013f19a8cdde56eb-11476564-images-thumbs&n=13" 
-                                style="display:block;margin:40px auto 0;width:100px;filter:drop-shadow(0 0 8px #4a8ba8);">
-
-                        <!-- Подвал с анимированным текстом -->
-                        <div style="text-align:center;font-size:12px;color:#4a8ba8;margin-top:40px;position:relative;z-index:2;">
-                            <span style="animation:blink 1s infinite;">⚠</span> AUTOMATED SECURITY SYSTEM MESSAGE <span style="animation:blink 1s infinite;">⚠</span>
+                    
+                            <!-- Системная информация -->
+                            <div style="padding:40px 35px; margin-bottom: 12px; border-bottom:1px solid #f0f0f8;">
+                                <div style="background:#f9f9ff; border-radius:6px; padding:22px; border:1px solid #eaeaff;">
+                                    <h3 style="margin:0 0 16px; font-size:16px; font-weight:600; color:#0f0f23; display:flex; align-items:center;">
+                                        <span style="display:inline-block; width:8px; height:8px; background:#9146ff; border-radius:50%; margin-right:8px;"></span>
+                                        Информация о запросе
+                                    </h3>
+                                    <div style="display:flex; flex-wrap:wrap; margin-left:-10px; margin-right:-10px;">
+                                        <div style="flex:1; min-width:240px; padding:0 10px; margin-bottom:15px;">
+                                            <div style="margin-bottom:6px; font-size:13px; color:#5a5a7a;">Устройство:</div>
+                                            <div style="font-weight:500; color:#0f0f23; display:flex; align-items:center;">
+                                                <span>%device_info%</span>
+                                            </div>
+                                        </div>
+                                        <div style="flex:1; min-width:240px; padding:0 10px; margin-bottom:15px;">
+                                            <div style="margin-bottom:6px; font-size:13px; color:#5a5a7a;">Браузер:</div>
+                                            <div style="font-weight:500; color:#0f0f23; display:flex; align-items:center;">
+                                                <span>%browser_name%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <!-- Предупреждение (стиль Twitch) -->
+                            <div style="padding:0 35px 40px;margin-top: 20px;">
+                                <div style="background:#fffbeb; border-radius:4px; padding:18px 22px; border:1px solid #ffd666;">
+                                    <p style="margin:0; font-size:14px; font-weight:600; color:#8e4e10; line-height:1.5; text-align:center;">
+                                        Если вы не регистрировались или не восстанавливали пароль на Learnst, проигнорируйте это письмо.
+                                    </p>
+                                </div>
+                            </div>
+                    
+                            <!-- Поддержка -->
+                            <div style="text-align:center; padding:25px 35px 35px;">
+                                <p style="margin:0 0 15px; font-size:15px; color:#6a6a8a;">
+                                    Вопросы? Пишите в поддержку:
+                                </p>
+                                <a href="mailto:support@learnst.runasp.net" style="display:inline-block; background:#9146ff; color:white; text-decoration:none; font-weight:600; padding:12px 28px; border-radius:4px; font-size:15px; margin-top:5px;">
+                                    support@learnst.runasp.net
+                                </a>
+                                <p style="margin:25px 0 0; font-size:14px; color:#9a9ab0;">
+                                    © 2025 Learnst · Образовательная платформа
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    """.Replace("%code%", verificationCode);
+                    """.Replace("%code%", verificationCode)
+                        .Replace("%device_info%", device.Info)
+                        .Replace("%browser_name%", device.BrowserName);
 
         try
         {
             await emailSender.SendEmailAsync(request.Email, subject, body);
-            return Ok(new { Code = verificationCode }); // Возвращаем код (в реальном приложении лучше не показывать код)
+            return Ok(new { Code = verificationCode });
         }
         catch (Exception ex)
         {

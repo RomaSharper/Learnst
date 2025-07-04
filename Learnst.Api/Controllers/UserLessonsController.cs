@@ -34,7 +34,7 @@ public class UserLessonsController(IAsyncRepository<UserLesson, (Guid, Guid)> re
         ));
     }
 
-    // GET: api/UserLessons/5
+    // GET: api/UserLessons/1/2
     [Produces("application/json")]
     [HttpGet("{userId:guid}/{lessonId:guid}")]
     public async Task<ActionResult<UserLesson>> GetUserLesson(Guid userId, Guid lessonId)
@@ -46,9 +46,9 @@ public class UserLessonsController(IAsyncRepository<UserLesson, (Guid, Guid)> re
                 includes: _includes
             ));
         }
-        catch (NotFoundException<UserLesson, (Guid, Guid)> nfe)
+        catch (NotFoundException nfe)
         {
-            return NotFound(nfe);
+            return NotFound(new ErrorResponse(nfe));
         }
     }
 

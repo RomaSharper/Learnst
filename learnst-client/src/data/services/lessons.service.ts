@@ -1,6 +1,7 @@
 import {HttpClient} from '@angular/common/http';
 import {inject, Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
+import {catchError} from 'rxjs/operators';
 import {environment} from '../../env/environment';
 import {Lesson} from '../models/Lesson';
 import {UserLesson} from '../models/UserLesson';
@@ -22,7 +23,14 @@ export class LessonsService {
   }
 
   getUserLesson(userId: string, lessonId: string): Observable<UserLesson | null> {
-    return this.http.get<UserLesson>(`${this.apiUrl}/userLessons/${userId}/${lessonId}`);
+    return this.http.get<UserLesson>(`${this.apiUrl}/userLessons/${userId}/${lessonId}`).pipe(
+      catchError(err => {
+        console.log(err);
+        if (err.status == 404)
+          return of(null);
+        throw err;
+      })
+    );
   }
 
   createUserLesson(userLesson: UserLesson): Observable<UserLesson> {

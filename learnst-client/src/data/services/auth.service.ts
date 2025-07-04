@@ -40,9 +40,9 @@ export class AuthService {
     return this.http.post<{ token: string }>(`${this.API_URL}/auth`, {login, password})
       .pipe(
         tap(({token}) => this.handleAuthenticationSuccess(token)),
-        catchError(error => {
-          this.logService.errorWithData('Ошибка входа:', error);
-          throw error;
+        catchError(err => {
+          this.logService.errorWithData('Ошибка входа:', err);
+          throw err;
         })
       );
   }
@@ -108,9 +108,10 @@ export class AuthService {
     return this.currentUser$.pipe(
       switchMap(userDao => userDao?.openid ? this.usersService.getUserById(userDao.openid) : of(null)),
       tap(user => {
-        if (user) this.updateAccountInfo(user);
+        if (user)
+          this.updateAccountInfo(user);
       }),
-      catchError(() => of(null))
+      catchError(_err => of(null))
     );
   }
 

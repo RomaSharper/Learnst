@@ -1,7 +1,4 @@
-﻿using Learnst.Infrastructure.Interfaces;
-using Learnst.Infrastructure.Models;
-
-namespace Learnst.Infrastructure.Exceptions;
+﻿namespace Learnst.Infrastructure.Exceptions;
 
 /// <summary>
 /// Исключение, которое возникает, когда запрашиваемая сущность уже существует.

@@ -69,9 +69,9 @@ export class LoginComponent {
     const formValue = this.form.value;
     this.authService.login(formValue.login!, formValue.password!)
       .pipe(
-        catchError(error => {
-          this.logService.errorWithData('Ошибка', error.message);
-          this.loading.set(false); // Выключаем состояние загрузки при ошибке
+        catchError(err => {
+          this.logService.errorWithData('Ошибка', err.message);
+          this.loading.set(false);
           this.alertService.showSnackBar('Произошла ошибка при авторизации.');
           return of(undefined);
         })

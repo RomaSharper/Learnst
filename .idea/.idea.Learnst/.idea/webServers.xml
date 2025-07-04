@@ -2,15 +2,15 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="e14453b8-0607-4ecc-9d35-9ff82142294b" name="Dev Learnst" url="http://api-learnst.runasp.net">
+      <webServer id="e14453b8-0607-4ecc-9d35-9ff82142294b" name="Dev Learnst" url="https://dev-learnst.runasp.net">
         <fileTransfer rootFolder="/wwwroot" accessType="SFTP" host="site17585.siteasp.net" port="22" sshConfigId="b5ee9786-9df2-4390-8493-e83471fb7f19" sshConfig="site17585@site17585.siteasp.net:22 password">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
         </fileTransfer>
       </webServer>
-      <webServer id="5014f266-4fd5-486c-833c-daeef39f285a" name="Learnst">
-        <fileTransfer accessType="SFTP" host="site15762.siteasp.net" port="22" sshConfigId="bd2b0446-d0a8-432c-ac00-bb5c4ad3d0b4" sshConfig="site15762@site15762.siteasp.net:22 password">
+      <webServer id="5014f266-4fd5-486c-833c-daeef39f285a" name="Learnst" url="https://api-learnst.runasp.net">
+        <fileTransfer rootFolder="/wwwroot" accessType="SFTP" host="site15762.siteasp.net" port="22" sshConfigId="bd2b0446-d0a8-432c-ac00-bb5c4ad3d0b4" sshConfig="site15762@site15762.siteasp.net:22 password">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

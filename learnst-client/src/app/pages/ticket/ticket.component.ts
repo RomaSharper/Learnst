@@ -83,13 +83,13 @@ export class TicketComponent extends MediumScreenSupport implements OnInit {
           switchMap(ticket => {
             // Загрузка автора тикета и авторов ответов
             const author$ = this.usersService.getUserById(ticket.authorId).pipe(
-              catchError(() => of({fullName: 'Неизвестный автор'} as User))
+              catchError(_err => of({fullName: 'Неизвестный автор'} as User))
             );
 
             const answers$ = ticket.ticketAnswers.length > 0
               ? forkJoin(ticket.ticketAnswers.map(answer =>
                 this.usersService.getUserById(answer.authorId).pipe(
-                  catchError(() => of({fullName: 'Неизвестный автор'} as User))
+                  catchError(_err => of({fullName: 'Неизвестный автор'} as User))
                 )))
               : of([]);
 

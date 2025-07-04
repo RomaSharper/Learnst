@@ -125,7 +125,7 @@ export class ValidationService {
           if (exists) return {duplicateEmail: true};
           return null;
         }),
-        catchError(() => of(null))
+        catchError(_err => of(null))
       );
     };
   }
@@ -140,7 +140,7 @@ export class ValidationService {
           if (exists) return {duplicateUsername: true};
           return null;
         }),
-        catchError(() => of(null))
+        catchError(_err => of(null))
       );
     };
   }
@@ -150,8 +150,8 @@ export class ValidationService {
       if (!control.value || control.invalid) return of(null);
 
       return usersService.checkEmailExists(control.value).pipe(
-        map(exists => (exists ? null : {emailNotFound: true})),
-        catchError(() => of(null))
+        map(exists => (exists ? null : { emailNotFound: true })),
+        catchError(_err => of(null))
       );
     };
   }
